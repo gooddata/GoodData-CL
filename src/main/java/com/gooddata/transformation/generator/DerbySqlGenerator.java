@@ -162,10 +162,11 @@ public class DerbySqlGenerator {
             } else {
                 whereClause = cols + " = d_" + ssn + "_" + scn + ".hashid";
             }
-            script += "DELETE FROM d_" + ssn + "_" + scn + ";"; 
+            //script += "DELETE FROM d_" + ssn + "_" + scn + ";";
             script += "INSERT INTO d_" + ssn + "_" + scn + "(" + lcols.replace(CONCAT_OPERATOR, ",") +
                       ",hashid) SELECT DISTINCT " + cols.replace(CONCAT_OPERATOR, ",") + "," + cols +
-                      " FROM " + "o_" + ssn + ";\n\n";
+                      " FROM " + "o_" + ssn + " WHERE "+ cols + " NOT IN (SELECT hashid FROM d_" +
+                      ssn + "_" + scn + ");\n\n";
         }
 
         for (SourceColumn column : facts) {

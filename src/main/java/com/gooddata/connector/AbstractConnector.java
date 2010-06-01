@@ -3,6 +3,7 @@ package com.gooddata.connector;
 import com.gooddata.connector.exceptions.InitializationException;
 import com.gooddata.connector.exceptions.InternalErrorException;
 import com.gooddata.connector.exceptions.MetadataFormatException;
+import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
@@ -14,6 +15,7 @@ import com.gooddata.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.List;
 
 /**
@@ -160,10 +162,30 @@ public abstract class AbstractConnector {
      * @throws IOException IO issues 
      */
     public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName) throws IOException {
-        load(parts, dir);
-        FileUtil.writeStringToFile(dli.getDLIManifest(parts), dir + System.getProperty("file.separator") +
-                GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
-        FileUtil.compressDir(dir, archiveName);
+        deploySnapshot(dli, parts, dir, archiveName, null);
+    }
+
+    /**
+     * Adds CSV headers to all CSV files
+     * @param parts the Data Loading Interface parts
+     * @param dir target directory where the data package will be stored
+     * @throws IOException IO issues
+     */
+    protected void addHeaders(List<DLIPart> parts, String dir) throws IOException {
+        for(DLIPart part : parts) {
+            String fn = part.getFileName();
+            List<Column> cols = part.getColumns();
+            String header = "";
+            for(Column col : cols) {
+                if(header != null && header.length() > 0) {
+                    header += ","+col.getName();
+                }
+                else {
+                    header += col.getName();                    
+                }
+            }
+            FileUtil.appendCsvHeader(header, dir + System.getProperty("file.separator") + fn);
+        }
     }
 
     /**
@@ -179,6 +201,7 @@ public abstract class AbstractConnector {
         loadSnapshot(parts, dir, snapshotIds);
         FileUtil.writeStringToFile(dli.getDLIManifest(parts), dir + System.getProperty("file.separator") +
                 GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
+        addHeaders(parts, dir);
         FileUtil.compressDir(dir, archiveName);
     }
 

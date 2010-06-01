@@ -1,0 +1,30 @@
+<schema>
+  <name>ga</name>
+  <columns>
+    <column>
+      <name>date</name>
+      <title>Date</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
+      <name>country</name>
+      <title>Country</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
+      <name>visits</name>
+      <title>Visits</title>
+      <ldmType>FACT</ldmType>
+    </column>
+    <column>
+      <name>pageviews</name>
+      <title>Pageviews</title>
+      <ldmType>FACT</ldmType>
+    </column>
+    <column>
+      <name>new_visits</name>
+      <title>New Visits</title>
+      <ldmType>FACT</ldmType>
+    </column>
+  </columns>
+</schema>

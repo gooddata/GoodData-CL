@@ -80,6 +80,31 @@ public class FileUtil {
     }
 
     /**
+     * Create a new temporary file. Use something like
+     *
+     * @return the new file
+     * @throws IOException if there is an error creating the temporary file
+     */
+    public static File getTempFile() throws IOException {
+        final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
+        File newTempFile;
+        final int maxAttempts = 9;
+        int attemptCount = 0;
+        do {
+            attemptCount++;
+            if (attemptCount > maxAttempts) {
+                throw new IOException(
+                        "The highly improbable has occurred! Failed to " +
+                                "create a unique temporary directory after " +
+                                maxAttempts + " attempts.");
+            }
+            String fileName = UUID.randomUUID().toString() + ".csv";
+            newTempFile = new File(sysTempDir, fileName);
+        } while (newTempFile.exists());
+        return newTempFile;
+    }
+
+    /**
      * Recursively delete file or directory
      *
      * @param fileOrDir the file or dir to delete
@@ -127,6 +152,28 @@ public class FileUtil {
             sbr.append(ln+"\n");
         fr.close();
         return sbr.toString();
+    }
+
+    /**
+     * Appends the CSV header to the existing file
+     * @param header header without the trailing \n
+     * @param fileName  the CSV file
+     * @throws IOException in case of IO issues
+     */
+    public static void appendCsvHeader(String header, String fileName) throws IOException {
+        File tmpFile = getTempFile();
+        BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        bw.write(header+"\n");
+        for(String ln = br.readLine(); ln != null; ln = br.readLine()) {
+            bw.write(ln+"\n");
+        }
+        br.close();
+        bw.flush();
+        bw.close();
+        File oldFile = new File(fileName);
+        oldFile.delete();
+        tmpFile.renameTo(oldFile);
     }
 
 
