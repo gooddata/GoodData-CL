@@ -108,14 +108,12 @@
               <descriptorRefs>
                     <descriptorRef>jar-with-dependencies</descriptorRef>
               </descriptorRefs>
-              <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>com.gooddata.processor.GdcDI</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
+                <archive>
+                    <manifest>
+                        <addClasspath>true</addClasspath>
+                        <mainClass>com.gooddata.processor.GdcDI</mainClass>
+                    </manifest>
+                </archive>
             </configuration>
             </plugin>
         </plugins>
