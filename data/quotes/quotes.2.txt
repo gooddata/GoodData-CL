@@ -1,0 +1,3 @@
+OpenProject(id=gvtd1b6t7kjbikgm9h1n61i9ph3g6v0w);
+LoadCsv(name=Quotes,csvDataFile=../data/quotes/quotes.csv,configFile=../data/quotes/quotes.config.xml);
+TransferData();

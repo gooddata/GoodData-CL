@@ -1,0 +1,5 @@
+CreateProject(name=Quotes);
+#GenerateCsvConfigTemplate(csvHeaderFile=../data/quotes/quotes.hdr.csv,configFile=../data/quotes/quotes.config.xml);
+LoadCsv(name=Quotes,csvDataFile=../data/quotes/quotes.csv,configFile=../data/quotes/quotes.config.xml);
+GenerateMaql(maqlFile=../data/quotes/quotes.maql);
+ExecuteMaql(maqlFile=../data/quotes/quotes.maql);

@@ -1,9 +1,0 @@
-CreateProject(name=Quotes);
-#OpenProject(id=gvtd1b6t7kjbikgm9h1n61i9ph3g6v0w);
-#GenerateCsvConfigTemplate(csvHeaderFile=../data/quotes.hdr.csv,configFile=../data/quotes.config.xml);
-LoadCsv(name=Quotes,csvDataFile=../data/quotes.csv,configFile=../data/quotes.config.xml);
-GenerateMaql(maqlFile=../data/quotes.maql);
-ExecuteMaql(maqlFile=../data/quotes.maql);
-TransferAllData();
-#DropSnapshots();
-ListSnapshots();
