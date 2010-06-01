@@ -31,22 +31,23 @@ import java.util.regex.Pattern;
  */
 public class GdcDI {
 
-    private static Command[] cmdHelp = new Command[] {
-        new Command("CreateProject", "name=new project name,desc=new project description"),
-        new Command("OpenProject", "id=existing project id"),
-        new Command("GenerateCsvConfigTemplate", "csvHeaderFile=CSV header file (1 header row only),"+
+    private static com.gooddata.processor.Command[] cmdHelp = new com.gooddata.processor.Command[] {
+        new com.gooddata.processor.Command("CreateProject", "name=new project name,desc=new project description"),
+        new com.gooddata.processor.Command("OpenProject", "id=existing project id"),
+        new com.gooddata.processor.Command("GenerateCsvConfigTemplate", "csvHeaderFile=CSV header file (1 header row only),"+
             "configFile=configuration file (will be overwritten)"),
-        new Command("LoadCsv", "name=dataset name,"+
+        new com.gooddata.processor.Command("LoadCsv", "name=dataset name,"+
             "configFile=configuration file (will be overwritten)," +
             "csvDataFile=CSV datafile (data only no headers)"),
         new Command("GenerateMaql", "maqlFile=MAQL file (will be overwritten)"),
         new Command("ExecuteMaql", "maqlFile=MAQL file"),
         new Command("ListSnapshots", ""),
         new Command("DropSnapshots", ""),
-        new Command("TransferAllData", ""),
+        new Command("TransferData", "incremental=incremental transfer (true | false)"),
         new Command("TransferSnapshots", "firstSnapshot=the first transferred snapshot id," +
-                "lastSnapshot=the last transferred snapshot id"),
-        new Command("TransferLastSnapshot", "")
+                "lastSnapshot=the last transferred snapshot id," +
+                "incremental=incremental transfer (true | false)"),
+        new Command("TransferLastSnapshot", "incremental=incremental transfer (true | false)")
     };
 
 
@@ -275,7 +276,7 @@ public class GdcDI {
 
             }
 
-            if(command.getCommand().equalsIgnoreCase("TransferAllData")) {
+            if(command.getCommand().equalsIgnoreCase("TransferData")) {
                 if(connector != null) {
                     if(!connector.isInitialized())
                         connector.initialize();
@@ -284,6 +285,16 @@ public class GdcDI {
                     DLI dli = restApi.getDLIById("dataset." + connector.getName().toLowerCase(), projectId);
                     List<DLIPart> parts= restApi.getDLIParts("dataset." + connector.getName().toLowerCase(), projectId);
                     // target directories and ZIP names
+
+                    String incremental = (String)command.getParameters().get("incremental");
+                    if(incremental != null && incremental.length() > 0 && incremental.equalsIgnoreCase("true")) {
+                        for(DLIPart part : parts) {
+                            if(part.getFileName().startsWith("f_")) {
+                                part.setLoadMode(DLIPart.LM_INCREMENTAL);
+                            }
+                        }
+                    }
+
                     File tmpDir = FileUtil.createTempDir();
                     File tmpZipDir = FileUtil.createTempDir();
                     String archiveName = tmpDir.getName();
@@ -301,7 +312,7 @@ public class GdcDI {
                     restApi.startLoading(projectId, archiveName);
                 }
                 else
-                    printErrorHelpandExit("TransferAllData: No data source loaded. Use a 'LoadXXX' to load a data source.",
+                    printErrorHelpandExit("TransferData: No data source loaded. Use a 'LoadXXX' to load a data source.",
                             o);
 
             }
@@ -340,11 +351,17 @@ public class GdcDI {
                                         projectId);
                                 List<DLIPart> parts= restApi.getDLIParts("dataset." +
                                         connector.getName().toLowerCase(), projectId);
-                                for(DLIPart part : parts) {
-                                    if(part.getFileName().startsWith("f_")) {
-                                        part.setLoadMode(DLIPart.LM_INCREMENTAL);
+
+                                String incremental = (String)command.getParameters().get("incremental");
+                                if(incremental != null && incremental.length() > 0 &&
+                                        incremental.equalsIgnoreCase("true")) {
+                                    for(DLIPart part : parts) {
+                                        if(part.getFileName().startsWith("f_")) {
+                                            part.setLoadMode(DLIPart.LM_INCREMENTAL);
+                                        }
                                     }
                                 }
+
                                 // target directories and ZIP names
                                 File tmpDir = FileUtil.createTempDir();
                                 File tmpZipDir = FileUtil.createTempDir();
@@ -388,11 +405,17 @@ public class GdcDI {
                             projectId);
                     List<DLIPart> parts= restApi.getDLIParts("dataset." +
                             connector.getName().toLowerCase(), projectId);
-                    for(DLIPart part : parts) {
-                        if(part.getFileName().startsWith("f_")) {
-                            part.setLoadMode(DLIPart.LM_INCREMENTAL);
+
+                    String incremental = (String)command.getParameters().get("incremental");
+                    if(incremental != null && incremental.length() > 0 &&
+                            incremental.equalsIgnoreCase("true")) {
+                        for(DLIPart part : parts) {
+                            if(part.getFileName().startsWith("f_")) {
+                                part.setLoadMode(DLIPart.LM_INCREMENTAL);
+                            }
                         }
                     }
+
                     // target directories and ZIP names
                     File tmpDir = FileUtil.createTempDir();
                     File tmpZipDir = FileUtil.createTempDir();
