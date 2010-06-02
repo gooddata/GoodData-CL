@@ -1,5 +1,4 @@
-This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities
-that work on top of the GoodData REST APIs.
+This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities that work on top of the GoodData REST APIs.
 
 # Getting Started
 
@@ -28,6 +27,6 @@ that work on top of the GoodData REST APIs.
          -p,--password <arg>   GoodData password
          -u,--username <arg>   GoodData username
 
-5. if you want, place gdi.sh into your executable path
+5. if you want, place gdi.sh into your executable path, for example:
 
-        $ sudo ln -s /.../bin/gdi.sh /usr/local/bin/gdi
+        $ sudo ln -s /<path-to-source-dir>/bin/gdi.sh /usr/local/bin/gdi
