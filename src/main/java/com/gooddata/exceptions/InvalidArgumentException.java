@@ -1,4 +1,4 @@
-package com.gooddata.processor.exceptions;
+package com.gooddata.exceptions;
 
 /**
  * Invalid argument exception

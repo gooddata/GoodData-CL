@@ -1,4 +1,4 @@
-OpenProject(id=3hd3e9xx3miuauoruhqdvkgrl84u4o9j);
+OpenProject(id=gluou62s80f18m3v6sxmb32hj891ao5g);
 LoadCsv(name=GA,csvDataFile=../data/ga/ga.2009.01.csv,configFile=../data/ga/ga.config.xml);
 GenerateMaql(maqlFile=../data/ga/ga.maql);
 ExecuteMaql(maqlFile=../data/ga/ga.maql);

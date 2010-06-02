@@ -1,6 +1,6 @@
 package com.gooddata.modeling.model;
 
-import com.gooddata.modeling.exceptions.ModelingException;
+import com.gooddata.exceptions.ModelException;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.*;
@@ -137,13 +137,13 @@ public class SourceSchema {
      * Returns a column by it's name
      * @param name name to search for (case sensitive)
      * @return the matching column
-     * @throws ModelingException thrown if the column doesn't exist
+     * @throws com.gooddata.exceptions.ModelException thrown if the column doesn't exist
      */
-    public SourceColumn getColumnByName(String name) throws ModelingException {
+    public SourceColumn getColumnByName(String name) throws ModelException {
         for (SourceColumn c : columns)
             if (c.getName().equals(name))
                 return c;
-        throw new ModelingException("Column " + name + " not found.");
+        throw new ModelException("Column " + name + " not found.");
 
     }
 

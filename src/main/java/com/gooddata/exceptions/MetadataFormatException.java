@@ -1,4 +1,4 @@
-package com.gooddata.connector.exceptions;
+package com.gooddata.exceptions;
 
 /**
  * GoodData metadata format exception

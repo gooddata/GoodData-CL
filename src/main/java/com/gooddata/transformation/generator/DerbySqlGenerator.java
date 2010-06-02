@@ -1,15 +1,19 @@
 package com.gooddata.transformation.generator;
 
+import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.transformation.generator.model.PdmColumn;
+import com.gooddata.transformation.generator.model.PdmSchema;
+import com.gooddata.transformation.generator.model.PdmTable;
 import com.gooddata.util.StringUtil;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * GoodData Derby SQL generator. Generates the DDL (tables and indexes), DML (transformation SQL) and other
@@ -24,197 +28,142 @@ public class DerbySqlGenerator {
     // Derby SQL concat operator to merge LABEL content
     private static final String CONCAT_OPERATOR = " || '" + HASH_SEPARATOR + "' || ";
 
+
     /**
-     * Generates the Derby SQL tables and indexes that accommodate the normalization
-     * @param schema the LDM schema
+     * Generates the DDL initialization
+     * @param schema the PDM schema
      * @return the SQL script
+     * @throws ModelException if there is a problem with the PDM schema (e.g. multiople source or fact tables)
      */
-    public String generateDDL(SourceSchema schema) {
-        String ssn = StringUtil.formatShortName(schema.getName());
+    public String generateDdlSql(PdmSchema schema) throws ModelException {
         String script = "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS DOUBLE\n" +
                 " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
                 " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.atod';\n\n";
-        script += "CREATE TABLE snapshots (\n"+
-                        " id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),\n" +
-                        " name VARCHAR(255),\n tmstmp BIGINT,\n firstid INT,\n lastid INT,\n PRIMARY KEY (id));\n\n";
-        script += "CREATE TABLE o_" + ssn + " (\n";
-        // fact table
-        String fscript = "CREATE TABLE f_" + ssn + " (\n";
-        script += " genid INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),\n";
-        fscript += " id INT NOT NULL,\n";
-
-        HashMap<String, List<SourceColumn>> lookups = new HashMap<String, List<SourceColumn>>();
-
-        for (SourceColumn column : schema.getColumns()) {
-            String scn = StringUtil.formatShortName(column.getName());
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_ATTRIBUTE)) {
-                script += " o_" + scn + " VARCHAR(255),\n";
-                fscript += " " + scn + "_id INT,\n";
-                if (!lookups.containsKey(scn)) {
-                    lookups.put(scn, new ArrayList<SourceColumn>());
-                }
-                List<SourceColumn> l = lookups.get(scn);
-                l.add(column);
+        for(PdmTable table : schema.getTables()) {
+            String pk = "";
+            script += "CREATE TABLE " + table.getName() + " (\n";
+            for( PdmColumn column : table.getColumns()) {
+                script += " "+ column.getName() + " " + column.getType();
+                if(column.isAutoIncrement())
+                    script += " GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)";
+                if(column.isUnique())
+                    script += " UNIQUE";
+                if(column.isPrimaryKey())
+                    if(pk != null && pk.length() > 0)
+                        pk += "," + column.getName();
+                    else
+                        pk += column.getName();
+                script += ",\n";
             }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
-                script += " o_" + scn + " VARCHAR(255),\n";
-                String scnPk = StringUtil.formatShortName(column.getPk());
-                if (!lookups.containsKey(scnPk)) {
-                    lookups.put(scnPk, new ArrayList<SourceColumn>());
-                }
-                List<SourceColumn> l = lookups.get(scnPk);
-                l.add(column);
-            }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
-                script += " o_" + scn + " VARCHAR(255),\n";
-                fscript += " f_" + scn + " VARCHAR(255),\n";
-            }
+            script += " PRIMARY KEY (" + pk + ")\n);\n\n";
         }
-        script += " PRIMARY KEY (genid)\n);\n";
-        fscript += " PRIMARY KEY (id)\n);\n\n";
-
-        script += "\n" + fscript + "\n";
-
-        for (String column : lookups.keySet()) {
-            script += "CREATE TABLE d_" + ssn + "_" + column + "(\n";
-            script += " id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),\n";
-            script += " hashid VARCHAR(1000) UNIQUE,\n";
-            List<SourceColumn> l = lookups.get(column);
-            for (SourceColumn c : l) {
-                String scnNm = StringUtil.formatShortName(c.getName());
-                script += " nm_" + scnNm + " VARCHAR(255),\n";
-            }
-            script += " PRIMARY KEY (id)\n);\n\n";
-        }
-
         return script;
     }
 
     /**
-     * Generates the Derby SQL statements that perform the normalization
-     * @param schema the LDM schema
+     * Generates the data normalization script
+     * @param schema the PDM schema
      * @return the SQL script
+     * @throws ModelException if there is a problem with the PDM schema (e.g. multiople source or fact tables)
      */
-    public String generateDML(SourceSchema schema) {
+    public String generateNormalizeSql(PdmSchema schema) throws ModelException {
         String script = "";
-        String ssn = StringUtil.formatShortName(schema.getName());
-        HashMap<String, List<SourceColumn>> lookups = new HashMap<String, List<SourceColumn>>();
-        List<SourceColumn> facts = new ArrayList<SourceColumn>();
-
-        for (SourceColumn column : schema.getColumns()) {
-            String scn = StringUtil.formatShortName(column.getName());
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_ATTRIBUTE)) {
-                if (!lookups.containsKey(scn)) {
-                    lookups.put(scn, new ArrayList<SourceColumn>());
+        // fact table INSERT statement components
+        String factInsertFromClause = schema.getSourceTable().getName();
+        String factInsertWhereClause = "";        
+        for(PdmTable lookupTable : schema.getLookupTables()) {
+            // INSERT tbl(insertColumns) SELECT nestedSelectColumns FROM nestedSelectFromClause
+            // WHERE nestedSelectWhereClause  
+            String insertColumns = "hashid";
+            // fact table cols
+            String nestedSelectColumns = "";
+            // new fact table insert's nested select from
+            String nestedSelectFromClause = "";
+            // concatenate all representing columns to create a unique hashid
+            String concatenatedRepresentingColumns = "";
+            // new fact table insert's nested select where
+            String nestedSelectWhereClause = "";
+            Set<PdmTable> factInsertFromClauseTables = new HashSet<PdmTable>(); 
+            for(PdmColumn column : lookupTable.getRepresentingColumns()) {
+                insertColumns += "," + column.getName();
+                nestedSelectColumns += "," + column.getSourceColumn();
+                // if there are LABELS, the lookup can't be added twice to the FROM clause
+                if(!factInsertFromClauseTables.contains(lookupTable)) {
+                    factInsertFromClause += "," + lookupTable.getName();
+                    factInsertFromClauseTables.add(lookupTable);                    
                 }
-                List<SourceColumn> l = lookups.get(scn);
-                l.add(column);
-            }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
-                String scnPk = StringUtil.formatShortName(column.getPk());
-                if (!lookups.containsKey(scnPk)) {
-                    lookups.put(scnPk, new ArrayList<SourceColumn>());
-                }
-                List<SourceColumn> l = lookups.get(scnPk);
-                l.add(column);
-            }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
-                facts.add(column);
-            }
-        }
-        // source table cols
-        String fcols = "";
-        // fact table cols
-        String nfcols = "";
-        // new fact table insert's nested select from
-        String fromClause = "";
-        // new fact table insert's nested select where
-        String whereClause = "";
-        for (String column : lookups.keySet()) {
-            String scn = StringUtil.formatShortName(column);
-            if (fcols.length() > 0) {
-                fcols += ",d_" + ssn + "_" + scn + ".id AS " + scn + "_id";
-                nfcols += "," + scn + "_id";
-                fromClause += ",d_" + ssn + "_" + scn;
-            } else {
-                fcols = "o_" + ssn + ".genid,d_" + ssn + "_" + scn + ".id AS " + scn + "_id";
-                nfcols = "id," + scn + "_id";
-                fromClause += "o_" + ssn + ",d_" + ssn + "_" + scn;
-            }
-            List<SourceColumn> l = lookups.get(column);
-            // lookup cols
-            String lcols = "";
-            // original table cols
-            String cols = "";
-            for (SourceColumn c : l) {
-                String scnNm = StringUtil.formatShortName(c.getName());
-                if (lcols.length() > 0) {
-                    lcols += CONCAT_OPERATOR + "nm_" + scnNm;
-                    cols += CONCAT_OPERATOR + "o_" + ssn + "." + "o_" + scnNm;
-                } else {
-                    lcols = "nm_" + scnNm;
-                    cols = "o_" + ssn + "." + "o_" + scnNm;
-                }
+                if(concatenatedRepresentingColumns.length() > 0)
+                    concatenatedRepresentingColumns += CONCAT_OPERATOR +  column.getSourceColumn();
+                else
+                    concatenatedRepresentingColumns = column.getSourceColumn();
             }
 
-            if (whereClause.length() > 0) {
-                whereClause += " AND " + cols + " = d_" + ssn + "_" + scn + ".hashid";
-            } else {
-                whereClause = cols + " = d_" + ssn + "_" + scn + ".hashid";
-            }
-            //script += "DELETE FROM d_" + ssn + "_" + scn + ";";
-            script += "INSERT INTO d_" + ssn + "_" + scn + "(" + lcols.replace(CONCAT_OPERATOR, ",") +
-                      ",hashid) SELECT DISTINCT " + cols.replace(CONCAT_OPERATOR, ",") + "," + cols +
-                      " FROM " + "o_" + ssn + " WHERE "+ cols + " NOT IN (SELECT hashid FROM d_" +
-                      ssn + "_" + scn + ");\n\n";
+            if(factInsertWhereClause.length() > 0)
+                factInsertWhereClause += " AND " + concatenatedRepresentingColumns + "=" + lookupTable.getName() + ".hashid";
+            else
+                factInsertWhereClause += concatenatedRepresentingColumns + "=" + lookupTable.getName() + ".hashid";
+
+            // add the concatenated columns that fills the hashid to the beginning
+            nestedSelectColumns = concatenatedRepresentingColumns + nestedSelectColumns;
+
+            script += "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
+                      ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
+                      " WHERE "+ concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " + lookupTable.getName() +
+                      ");\n\n";
         }
 
-        for (SourceColumn column : facts) {
-            String scn = StringUtil.formatShortName(column.getName());
-            if (fcols.length() > 0) {
-                fcols += "," + "o_" + scn;
-                nfcols += "," + "f_" + scn;
-            } else {
-                fcols = "genid," + "o_" + scn;
-                nfcols = "id," + "f_" + scn;
+        PdmTable factTable = schema.getFactTable();
+        String insertColumns = "";
+        String nestedSelectColumns = "";
+        for(PdmColumn factTableColumn : factTable.getColumns()) {
+            if(insertColumns.length() >0) {
+                insertColumns += "," + factTableColumn.getName();
+                nestedSelectColumns += "," + factTableColumn.getSourceColumn();
+            }
+            else {
+                insertColumns += factTableColumn.getName();
+                nestedSelectColumns += factTableColumn.getSourceColumn();
             }
         }
 
-        if (whereClause.length() > 0) {
-            whereClause += " AND " + "o_" + ssn + ".genid NOT IN (SELECT id FROM f_" + ssn + ")";
-        } else {
-            whereClause += "o_" + ssn + ".genid NOT IN (SELECT id FROM f_" + ssn + ")";
-        }
-        //delete the unfinished snapshots
-        script += "DELETE FROM snapshots WHERE name = 'f_" + ssn
-                  + "' AND lastid IS NULL;\n\n";
+        if (factInsertWhereClause.length() > 0)
+            factInsertWhereClause += " AND " + schema.getSourceTable().getName() + ".o_genid NOT IN (SELECT id FROM " +
+                    schema.getFactTable().getName() + ")";
+        else
+            factInsertWhereClause += schema.getSourceTable().getName() + ".o_genid NOT IN (SELECT id FROM " +
+                    schema.getFactTable().getName() + ")";
+
+        script += "DELETE FROM snapshots WHERE name = '" + factTable.getName() + "' AND lastid IS NULL;\n\n";
         Date dt = new Date();
-        script += "INSERT INTO snapshots(name,tmstmp,firstid) SELECT 'f_" + ssn + "'," + dt.getTime()
-                   + ",MAX(id)+1 FROM f_" + ssn + ";\n\n";
-        script += "UPDATE snapshots SET firstid = 0 WHERE name = 'f_" + ssn + "' AND firstid IS NULL;\n\n";
-        script += "INSERT INTO f_" + ssn + "(" + nfcols + ") SELECT " + fcols + " FROM " + fromClause +
-                  " WHERE " + whereClause + ";\n\n";
-        script += "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM f_" + ssn + ") WHERE name = 'f_" + ssn
-                  + "' AND lastid IS NULL;\n\n";
+        script += "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '" + factTable.getName() + "'," + dt.getTime()
+                   + ",MAX(id)+1 FROM " + factTable.getName() + ";\n\n";
+        script += "UPDATE snapshots SET firstid = 0 WHERE name = '" + factTable.getName() + "' AND firstid IS NULL;\n\n";
+        script += "INSERT INTO " + factTable.getName() + "(" + insertColumns + ") SELECT " + nestedSelectColumns +
+                  " FROM " + factInsertFromClause + " WHERE " + factInsertWhereClause + ";\n\n";
+        script += "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM " + factTable.getName() + ") WHERE name = '" +
+                  factTable.getName() + "' AND lastid IS NULL;\n\n";
+
         return script;
     }
 
     /**
      * Generates the Derby SQL that extracts the data from a CSV file to the normalization database
-     * @param schema the LDM schema
+     * @param schema the PDM schema
      * @return the SQL script
+     * @throws ModelException in case when there is a problem with the PDM model
      */
-    public String generateExtract(SourceSchema schema, String file) {
-        String ssn = StringUtil.formatShortName(schema.getName());
+    public String generateExtractSql(PdmSchema schema, String file) throws ModelException {
         String cols = "";
-        for (SourceColumn c : schema.getColumns()) {
-            if (cols != null && cols.length() > 0)
-                cols += "," + StringUtil.formatShortName("o_" + c.getName());
-            else
-                cols += StringUtil.formatShortName("o_" + c.getName());
+        PdmTable sourceTable = schema.getSourceTable();
+        for (PdmColumn c : sourceTable.getColumns()) {
+            if(!c.isAutoIncrement())
+                if (cols != null && cols.length() > 0)
+                    cols += "," + StringUtil.formatShortName( c.getName());
+                else
+                    cols += StringUtil.formatShortName(c.getName());
         }
         return "CALL SYSCS_UTIL.SYSCS_IMPORT_DATA " +
-                "(NULL, '" + ("o_" + ssn).toUpperCase() + "', '" + cols.toUpperCase() + 
+                "(NULL, '" + sourceTable.getName().toUpperCase() + "', '" + cols.toUpperCase() + 
                 "', null, '" + file + "', null, null, null,0);\n\n";
     }
 
@@ -225,37 +174,45 @@ public class DerbySqlGenerator {
      * @param snapshotIds specific snapshots IDs that will be integrated
      * @return the SQL script
      */
-    public String generateLoad(DLIPart part, String dir, int[] snapshotIds) {
+    public String generateLoadSql(PdmSchema schema, DLIPart part, String dir, int[] snapshotIds) throws ModelException {
         String file = dir + System.getProperty("file.separator") + part.getFileName();
-        String ssn = StringUtil.formatShortName(part.getFileName().split("\\.")[0]);
+        String dliTable = StringUtil.formatShortName(part.getFileName().split("\\.")[0]);
+
+        PdmTable pdmTable = schema.getTableByName(dliTable);
+
         List<Column> columns = part.getColumns();
         String cols = "";
         for (Column c : columns) {
+            PdmColumn col = pdmTable.getColumnByName(c.getName());
             // fact table fact columns
-            if(ssn.startsWith("f_") && !c.getName().endsWith("id")) {
+            if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) &&
+                    SourceColumn.LDM_TYPE_FACT.equals(col.getLdmTypeReference())) {
                 if (cols != null && cols.length() > 0)
-                    cols += ",ATOD(" + ssn.toUpperCase() + "." + StringUtil.formatShortName("f_" + c.getName())+")";
+                    cols += ",ATOD(" + dliTable.toUpperCase() + "." +
+                            StringUtil.formatShortName(c.getName())+")";
                 else
-                    cols +=  "ATOD(" + ssn.toUpperCase() + "." + StringUtil.formatShortName("f_" + c.getName())+")";
+                    cols +=  "ATOD(" + dliTable.toUpperCase() + "." +
+                            StringUtil.formatShortName(c.getName())+")";
             }
             // lookup table name column
-            else if (c.getName().startsWith("nm")) {
+            else if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(pdmTable.getType()) && 
+                    SourceColumn.LDM_TYPE_ATTRIBUTE.equals(col.getLdmTypeReference())) {
                 if (cols != null && cols.length() > 0)
-                    cols += ",CAST(" + ssn.toUpperCase() + "." + StringUtil.formatShortName(c.getName())+
+                    cols += ",CAST(" + dliTable.toUpperCase() + "." + StringUtil.formatShortName(c.getName())+
                             " AS VARCHAR(128))";
                 else
-                    cols +=  "CAST("+ssn.toUpperCase() + "." + StringUtil.formatShortName(c.getName())+
+                    cols +=  "CAST("+dliTable.toUpperCase() + "." + StringUtil.formatShortName(c.getName())+
                             " AS VARCHAR(128))";
             }
             else {
                 if (cols != null && cols.length() > 0)
-                    cols += "," + ssn.toUpperCase() + "." + StringUtil.formatShortName(c.getName());
+                    cols += "," + dliTable.toUpperCase() + "." + StringUtil.formatShortName(c.getName());
                 else
-                    cols +=  ssn.toUpperCase() + "." + StringUtil.formatShortName(c.getName());
+                    cols +=  dliTable.toUpperCase() + "." + StringUtil.formatShortName(c.getName());
             }
         }
         String whereClause = "";
-        if(ssn.startsWith("f_") && snapshotIds != null && snapshotIds.length > 0) {
+        if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) && snapshotIds != null && snapshotIds.length > 0) {
             String inClause = "";
             for(int i : snapshotIds) {
                 if(inClause.length()>0)
@@ -263,11 +220,11 @@ public class DerbySqlGenerator {
                 else
                     inClause = "" + i;
             }
-            whereClause = ",SNAPSHOTS WHERE " + ssn.toUpperCase() +
+            whereClause = ",SNAPSHOTS WHERE " + dliTable.toUpperCase() +
                     ".ID BETWEEN SNAPSHOTS.FIRSTID and SNAPSHOTS.LASTID AND SNAPSHOTS.ID IN (" + inClause + ")";
         }
         return "CALL SYSCS_UTIL.SYSCS_EXPORT_QUERY " +
-                "('SELECT " + cols + " FROM " + ssn.toUpperCase() + whereClause + "', '" + file
+                "('SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause + "', '" + file
                 + "', null, null, null);\n\n";
     }
 

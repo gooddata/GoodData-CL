@@ -1,21 +1,18 @@
 package com.gooddata.connector;
 
-import com.gooddata.connector.exceptions.InitializationException;
-import com.gooddata.connector.exceptions.InternalErrorException;
-import com.gooddata.connector.exceptions.MetadataFormatException;
+import com.gooddata.exceptions.InternalErrorException;
+import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
-import com.gooddata.modeling.exceptions.ModelingException;
 import com.gooddata.modeling.generator.MaqlGenerator;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.transformation.generator.DerbySqlGenerator;
+import com.gooddata.transformation.generator.model.PdmSchema;
 import com.gooddata.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.List;
 
 /**
@@ -32,6 +29,11 @@ public abstract class AbstractConnector {
      * The LDM schema of the data source
      */
     protected SourceSchema schema;
+
+    /**
+     * PDM schema
+     */
+    private PdmSchema pdm;
 
     /**
      * The project id
@@ -75,7 +77,7 @@ public abstract class AbstractConnector {
         this(projectId, name);
         this.configFileName = configFileName;
         this.readSchema();
-        this.schema.setName(name);
+        getSchema().setName(name);
     }
 
     /**
@@ -83,7 +85,8 @@ public abstract class AbstractConnector {
      * @throws IOException in case of an IO issue
      */
     protected void readSchema() throws IOException {
-        this.schema = SourceSchema.createSchema(new File(this.configFileName));
+        setSchema(SourceSchema.createSchema(new File(this.configFileName)));
+        setPdm(PdmSchema.createSchema(getSchema()));
     }
 
     /**
@@ -94,8 +97,9 @@ public abstract class AbstractConnector {
 
     /**
      * Initializes Connector
+     * @throws ModelException imn case of PDM schema issues 
      */
-    public abstract void initialize();
+    public abstract void initialize() throws ModelException;
 
     /**
      * Lists the current snapshots
@@ -112,20 +116,23 @@ public abstract class AbstractConnector {
     
     /**
      * Extracts the data from the source system.
+     * @throws ModelException in case of PDM schema issues 
      */
-    public abstract void extract();
+    public abstract void extract() throws ModelException;
 
     /**
      * Transforms (normalizes) the data.
+     * @throws ModelException in case of PDM schema issues 
      */
-    public abstract void transform();
+    public abstract void transform() throws ModelException;
 
     /**
      * Load the all normalized data from the Derby SQL to the GoodData data package on the disk
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
+     * @throws ModelException in case of PDM schema issues 
      */
-    public abstract void load(List<DLIPart> parts, String dir);
+    public abstract void load(List<DLIPart> parts, String dir) throws ModelException;
 
     /**
      * Load the normalized data from the Derby SQL to the GoodData data package on the disk
@@ -133,8 +140,9 @@ public abstract class AbstractConnector {
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
      * @param snapshotIds snapshot ids that are going to be loaded (if NULL, all snapshots are going to be loaded)
+     * @throws ModelException in case of PDM schema issues 
      */
-    public abstract void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds);
+    public abstract void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds) throws ModelException;
 
     /**
      * Get last snapshot number
@@ -159,9 +167,11 @@ public abstract class AbstractConnector {
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
      * @param archiveName the name of the target ZIP archive
-     * @throws IOException IO issues 
+     * @throws IOException IO issues
+     * @throws ModelException in case of PDM schema issues 
      */
-    public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName) throws IOException {
+    public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName)
+            throws IOException, ModelException {
         deploySnapshot(dli, parts, dir, archiveName, null);
     }
 
@@ -196,8 +206,10 @@ public abstract class AbstractConnector {
      * @param archiveName the name of the target ZIP archive
      * @param snapshotIds snapshot ids that are going to be loaded (if NULL, all snapshots are going to be loaded) 
      * @throws IOException IO issues
+     * @throws ModelException in case of PDM schema issues 
      */
-    public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds) throws IOException {
+    public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
+            throws IOException, ModelException {
         loadSnapshot(parts, dir, snapshotIds);
         FileUtil.writeStringToFile(dli.getDLIManifest(parts), dir + System.getProperty("file.separator") +
                 GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
@@ -237,4 +249,19 @@ public abstract class AbstractConnector {
         this.name = name;
     }
 
+    /**
+     * PDM schema getter
+     * @return pdm schema
+     */
+    public PdmSchema getPdm() {
+        return pdm;
+    }
+
+    /**
+     * PDM schema setter
+     * @param pdm PDM schema
+     */
+    public void setPdm(PdmSchema pdm) {
+        this.pdm = pdm;
+    }
 }

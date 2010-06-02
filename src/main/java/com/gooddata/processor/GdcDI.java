@@ -2,18 +2,16 @@ package com.gooddata.processor;
 
 import com.gooddata.connector.AbstractConnector;
 import com.gooddata.connector.CsvConnector;
-import com.gooddata.connector.exceptions.InternalErrorException;
+import com.gooddata.exceptions.InvalidArgumentException;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.processor.exceptions.InvalidArgumentException;
 import com.gooddata.util.FileUtil;
 import org.apache.commons.cli.*;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -134,6 +132,7 @@ public class GdcDI {
                         projectId = restApi.createProject(name, desc);
                     else
                         projectId = restApi.createProject(name, name);
+                    System.out.println("Project id = '"+projectId+"' created.");
                 }
                 else
                     printErrorHelpandExit("CreateProject: Command requires the 'name' parameter.", o);

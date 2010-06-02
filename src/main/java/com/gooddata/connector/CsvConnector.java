@@ -1,8 +1,8 @@
 package com.gooddata.connector;
 
-import com.gooddata.connector.exceptions.InitializationException;
-import com.gooddata.connector.exceptions.MetadataFormatException;
-import com.gooddata.modeling.exceptions.ModelingException;
+import com.gooddata.exceptions.InitializationException;
+import com.gooddata.exceptions.MetadataFormatException;
+import com.gooddata.exceptions.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.StringUtil;
@@ -10,10 +10,6 @@ import com.gooddata.util.StringUtil;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.apache.derby.tools.ij.runScript;
 
@@ -100,12 +96,13 @@ public class CsvConnector extends AbstractDerbyConnector {
 
     /**
      * Extracts the source data CSV to the Derby database where it is going to be transformed
+     * @throws ModelException in case of PDM schema issues 
      */
-    public void extract() {
+    public void extract() throws ModelException {
         Connection con = null;
         try {
             con = connect();
-            String sql = sg.generateExtract(schema, dataFile.getAbsolutePath());
+            String sql = sg.generateExtractSql(getPdm(), dataFile.getAbsolutePath());
             InputStream is = new ByteArrayInputStream(sql.getBytes("UTF-8"));
             int result = runScript(con, is, "UTF-8", System.out, "UTF-8");
         }

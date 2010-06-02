@@ -94,7 +94,7 @@ public class MaqlGenerator {
                     folderStatement = ", FOLDER {ffld." + sfn + "}";
                 }
                 script += "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
-                        + "\"" + folderStatement + ") AS {f_" + ssn + "." + scn + "};\n";
+                        + "\"" + folderStatement + ") AS {f_" + ssn + ".f_" + scn + "};\n";
                 script += "ALTER DATASET {dataset." + ssn + "} ADD {fact." + ssn + "." + scn + "};\n\n";
             }
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {

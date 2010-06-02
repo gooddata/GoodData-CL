@@ -1,6 +1,7 @@
 package com.gooddata.connector;
 
-import com.gooddata.connector.exceptions.InternalErrorException;
+import com.gooddata.exceptions.InternalErrorException;
+import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.transformation.generator.DerbySqlGenerator;
 
@@ -76,12 +77,13 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
 
     /**
      * Initializes the Derby database schema that is going to be used for the data normalization
+     * @throws ModelException imn case of PDM schema issues
      */
-    public void initialize() {
+    public void initialize() throws ModelException {
         Connection con = null;
         try {
             con = connect();
-            String sql = sg.generateDDL(schema);
+            String sql = sg.generateDdlSql(getPdm());
             // run the SQL script
             InputStream is = new ByteArrayInputStream(sql.getBytes("UTF-8"));
             int result = runScript(con, is, "UTF-8", System.out, "UTF-8");
@@ -105,12 +107,13 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
     /**
      * Perform the data normalization (generate lookups) in the Derby database. The database must contain the required
      * tables
+     * @throws ModelException in case of PDM schema issues
      */
-    public void transform() {
+    public void transform() throws ModelException {
         Connection con = null;
         try {
             con = connect();
-            String sql = sg.generateDML(schema);
+            String sql = sg.generateNormalizeSql(getPdm());
             // run the SQL script
             InputStream is = new ByteArrayInputStream(sql.getBytes("UTF-8"));
             int result = runScript(con, is, "UTF-8", System.out, "UTF-8");
@@ -142,7 +145,7 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
     /**
      * Lists the current snapshots
      * @return list of snapshots as String
-     * @throws InternalErrorException in case of internal issues (e.g. uninitialized schema)
+     * @throws com.gooddata.exceptions.InternalErrorException in case of internal issues (e.g. uninitialized schema)
      */
     public String listSnapshots() throws InternalErrorException {
         String result = "ID\t\tFROM ROWID\t\tTO ROWID\t\tTIME\n";
@@ -256,8 +259,9 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
      * Load the all normalized data from the Derby SQL to the GoodData data package on the disk
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
+     * @throws ModelException in case of PDM schema issues 
      */
-    public void load(List<DLIPart> parts, String dir) {
+    public void load(List<DLIPart> parts, String dir) throws ModelException {
         loadSnapshot(parts, dir, null);
     }
 
@@ -267,8 +271,9 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
      * @param snapshotIds snapshot ids that are going to be loaded (if NULL, all snapshots are going to be loaded)
+     * @throws ModelException in case of PDM schema issues 
      */
-    public void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds) {
+    public void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds) throws ModelException {
         Connection con = null;
         try {
             con = connect();
@@ -276,7 +281,7 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
             // generate SELECT INTO CSV Derby SQL
             // the required data structures are taken for each DLI part
             for (DLIPart p : parts) {
-                sql += sg.generateLoad(p, dir, snapshotIds);
+                sql += sg.generateLoadSql(getPdm(), p, dir, snapshotIds);
             }
             // run the SQL script
             InputStream is = new ByteArrayInputStream(sql.getBytes("UTF-8"));
