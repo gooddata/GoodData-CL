@@ -4,6 +4,7 @@ import com.gooddata.exceptions.InternalErrorException;
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.transformation.generator.DerbySqlGenerator;
+import com.gooddata.transformation.generator.DerbySqlGeneratorUpdate;
 
 import java.io.*;
 import java.sql.*;
@@ -25,7 +26,7 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
     /**
      * The derby SQL generator
      */
-    protected DerbySqlGenerator sg = new DerbySqlGenerator();
+    protected DerbySqlGeneratorUpdate sg = new DerbySqlGeneratorUpdate();
 
 
     /**

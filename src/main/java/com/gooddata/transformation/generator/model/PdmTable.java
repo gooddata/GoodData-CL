@@ -1,6 +1,7 @@
 package com.gooddata.transformation.generator.model;
 
 import com.gooddata.exceptions.ModelException;
+import com.gooddata.modeling.model.SourceColumn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,9 @@ public class PdmTable {
     // name
     private String name;
 
+    // the source column that the lookup represents
+    private String representedLookupColumn;
+
     /**
      * Constructor
      * @param name column name
@@ -47,6 +51,16 @@ public class PdmTable {
         setType(type);
     }
 
+    /**
+     * Constructor
+     * @param name column name
+     * @param type column type
+     * @param lookupSourceColumn source column that the lookup represents
+     */
+    public PdmTable(String name, String type, String lookupSourceColumn) {
+        this(name, type);
+        setRepresentedLookupColumn(lookupSourceColumn);
+    }
    
     /**
      * Columns getter
@@ -118,6 +132,38 @@ public class PdmTable {
         return cols;
     }
 
+
+    /**
+     * Returns all columns that are represented in the source table
+     * @param ldmReference the LDM reference to search for
+     * @return all columns that represent the LDM type
+     */
+    protected List<PdmColumn> getColumnsByLdmReference(String ldmReference) {
+        List<PdmColumn> cols = new ArrayList<PdmColumn>();
+        for(PdmColumn col : getColumns()) {
+            if(col != null && ldmReference.equals(col.getLdmTypeReference())) {
+                cols.add(col);
+            }
+        }
+        return cols;
+    }
+
+    /**
+     * Returns table's fact columns
+     * @return table's fact columns
+     */
+    public List<PdmColumn> getFactColumns() {
+        return getColumnsByLdmReference(SourceColumn.LDM_TYPE_FACT);
+    }
+
+    /**
+     * Returns table's attribute columns
+     * @return table's attribute columns
+     */
+    public List<PdmColumn> getAttributeColumns() {
+        return getColumnsByLdmReference(SourceColumn.LDM_TYPE_ATTRIBUTE);
+    }
+
     /**
      * Returns column by name
      * @param name the name of the column
@@ -130,5 +176,21 @@ public class PdmTable {
                 return c;
         }
         throw new ModelException("Column with name '" + name + "' doesn't exist.");
+    }
+
+    /**
+     * Returns source column that the lookup represents
+     * @return source column that the lookup represents
+     */
+    public String getRepresentedLookupColumn() {
+        return representedLookupColumn;
+    }
+
+    /**
+     * Sets source column that the lookup represents
+     * @param representedLookupColumn source column that the lookup represents
+     */
+    public void setRepresentedLookupColumn(String representedLookupColumn) {
+        this.representedLookupColumn = representedLookupColumn;
     }
 }

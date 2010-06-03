@@ -92,7 +92,7 @@ public class PdmSchema {
         pdm.addTable(fact);
 
         for (String column : lookups.keySet()) {
-            PdmTable lookup = new PdmTable("d_" + pdm.getName() + "_" + column, PdmTable.PDM_TABLE_TYPE_LOOKUP);
+            PdmTable lookup = new PdmTable("d_" + pdm.getName() + "_" + column, PdmTable.PDM_TABLE_TYPE_LOOKUP, column);
             lookup.addColumn(new PdmColumn("id", PdmColumn.PDM_COLUMN_TYPE_INT,
                     new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
             lookup.addColumn(new PdmColumn("hashid", PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,

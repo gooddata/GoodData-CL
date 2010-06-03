@@ -157,8 +157,11 @@ public class DerbySqlGenerator {
         script += "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '" + factTable.getName() + "'," + dt.getTime()
                    + ",MAX(id)+1 FROM " + factTable.getName() + ";\n\n";
         script += "UPDATE snapshots SET firstid = 0 WHERE name = '" + factTable.getName() + "' AND firstid IS NULL;\n\n";
+        
         script += "INSERT INTO " + factTable.getName() + "(" + insertColumns + ") SELECT " + nestedSelectColumns +
                   " FROM " + factInsertFromClause + " WHERE " + factInsertWhereClause + ";\n\n";
+
+
         script += "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM " + factTable.getName() + ") WHERE name = '" +
                   factTable.getName() + "' AND lastid IS NULL;\n\n";
         script += "UPDATE snapshots SET lastid = 0 WHERE name = '" + factTable.getName() + "' AND lastid IS NULL;\n\n";
