@@ -148,8 +148,8 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
      * @throws com.gooddata.exceptions.InternalErrorException in case of internal issues (e.g. uninitialized schema)
      */
     public String listSnapshots() throws InternalErrorException {
-        String result = "ID\t\tFROM ROWID\t\tTO ROWID\t\tTIME\n";
-        result += "------------------------------------------------\n";        
+        String result = "ID        FROM ROWID        TO ROWID        TIME\n";
+              result += "------------------------------------------------\n";
         Connection con = null;
         Statement s = null;
         ResultSet r = null;
@@ -163,7 +163,7 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
                 int lastid = r.getInt(3);
                 long tmstmp = r.getLong(4);
                 Date tm = new Date(tmstmp);
-                result += id + "\t\t" + firstid + "\t\t" + lastid + "\t\t" + tm + "\n";
+                result += id + "        " + firstid + "        " + lastid + "        " + tm + "\n";
             }
         }
         catch (SQLException e) {

@@ -57,6 +57,8 @@ public class DerbySqlGenerator {
             }
             script += " PRIMARY KEY (" + pk + ")\n);\n\n";
         }
+        script += "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() +
+                      "',0,0,0);\n\n";
         return script;
     }
 
@@ -70,7 +72,8 @@ public class DerbySqlGenerator {
         String script = "";
         // fact table INSERT statement components
         String factInsertFromClause = schema.getSourceTable().getName();
-        String factInsertWhereClause = "";        
+        String factInsertWhereClause = "";
+        PdmTable factTable = schema.getFactTable();
         for(PdmTable lookupTable : schema.getLookupTables()) {
             // INSERT tbl(insertColumns) SELECT nestedSelectColumns FROM nestedSelectFromClause
             // WHERE nestedSelectWhereClause  
@@ -108,11 +111,11 @@ public class DerbySqlGenerator {
 
             script += "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
                       ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
-                      " WHERE "+ concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " + lookupTable.getName() +
-                      ");\n\n";
+                      " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
+                       "') AND " + concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " +
+                       lookupTable.getName() + ");\n\n";
         }
 
-        PdmTable factTable = schema.getFactTable();
         String insertColumns = "";
         String nestedSelectColumns = "";
         for(PdmColumn factTableColumn : factTable.getColumns()) {
@@ -128,12 +131,12 @@ public class DerbySqlGenerator {
 
         if (factInsertWhereClause.length() > 0)
             factInsertWhereClause += " AND " + schema.getSourceTable().getName() + ".o_genid NOT IN (SELECT id FROM " +
-                    schema.getFactTable().getName() + ")";
+                    factTable.getName() + ")";
         else
             factInsertWhereClause += schema.getSourceTable().getName() + ".o_genid NOT IN (SELECT id FROM " +
-                    schema.getFactTable().getName() + ")";
+                    factTable.getName() + ")";
 
-        script += "DELETE FROM snapshots WHERE name = '" + factTable.getName() + "' AND lastid IS NULL;\n\n";
+        //script += "DELETE FROM snapshots WHERE name = '" + factTable.getName() + "' AND lastid = 0;\n\n";
         Date dt = new Date();
         script += "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '" + factTable.getName() + "'," + dt.getTime()
                    + ",MAX(id)+1 FROM " + factTable.getName() + ";\n\n";
@@ -142,6 +145,7 @@ public class DerbySqlGenerator {
                   " FROM " + factInsertFromClause + " WHERE " + factInsertWhereClause + ";\n\n";
         script += "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM " + factTable.getName() + ") WHERE name = '" +
                   factTable.getName() + "' AND lastid IS NULL;\n\n";
+        script += "UPDATE snapshots SET lastid = 0 WHERE name = '" + factTable.getName() + "' AND lastid IS NULL;\n\n";
 
         return script;
     }
