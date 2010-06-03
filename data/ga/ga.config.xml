@@ -4,7 +4,8 @@
     <column>
       <name>date</name>
       <title>Date</title>
-      <ldmType>ATTRIBUTE</ldmType>
+      <ldmType>DATE</ldmType>
+      <format>yyyy-MM-dd</format>
     </column>
     <column>
       <name>country</name>

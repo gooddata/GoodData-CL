@@ -18,7 +18,7 @@ public class PdmColumn {
     public static final String PDM_COLUMN_TYPE_DATE = "INT";
     public static final String PDM_COLUMN_TYPE_INT = "INT";
     public static final String PDM_COLUMN_TYPE_LONG = "BIGINT";
-    public static final String PDM_COLUMN_TYPE_FLOAT = "DECIMAL(15,4)";
+    public static final String PDM_COLUMN_TYPE_FLOAT = "DECIMAL(15,4)";    
 
     // constraints
     public static final String PDM_CONSTRAINT_INDEX_UNIQUE = "UNIQUE";
@@ -40,6 +40,9 @@ public class PdmColumn {
 
     // LDM type reference
     private String ldmTypeReference;
+
+    //data format
+    private String format;
 
 
 
@@ -108,6 +111,21 @@ public class PdmColumn {
      * Constructor
      * @param name column name
      * @param type column type
+     * @param constraints column constraints
+     * @param sourceColumn the source column that the column sourceColumn
+     * @param ldmTypeReference LDM type that the column represents (ATTRIBUTE | LABEL | FACT)
+     * @param format column format (e.g. for date columns) 
+     */
+    public PdmColumn(String name, String type, String[] constraints, String sourceColumn, String ldmTypeReference,
+                     String format) {
+        this(name, type, constraints, sourceColumn, ldmTypeReference);
+        setFormat(format);
+    }
+
+    /**
+     * Constructor
+     * @param name column name
+     * @param type column type
      * @param sourceColumn the source column that the column sourceColumn
      * @param ldmTypeReference LDM type that the column represents (ATTRIBUTE | LABEL | FACT) 
      */
@@ -116,6 +134,20 @@ public class PdmColumn {
         setSourceColumn(sourceColumn);
         setLdmTypeReference(ldmTypeReference);
     }
+
+    /**
+     * Constructor
+     * @param name column name
+     * @param type column type
+     * @param sourceColumn the source column that the column sourceColumn
+     * @param ldmTypeReference LDM type that the column represents (ATTRIBUTE | LABEL | FACT)
+     * @param format column format (e.g. for date columns)
+     */
+    public PdmColumn(String name, String type, String sourceColumn, String ldmTypeReference, String format) {
+        this(name, type, sourceColumn, ldmTypeReference);
+        setFormat(format);
+    }
+
 
     /**
      * Name getter
@@ -230,4 +262,19 @@ public class PdmColumn {
         return false;
     }
 
+    /**
+     * Format getter
+     * @return column format
+     */
+    public String getFormat() {
+        return format;
+    }
+
+    /**
+     * Format setter
+     * @param format column format
+     */
+    public void setFormat(String format) {
+        this.format = format;
+    }
 }

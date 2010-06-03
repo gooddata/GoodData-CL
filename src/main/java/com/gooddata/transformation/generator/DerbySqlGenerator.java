@@ -24,9 +24,9 @@ import java.util.Set;
 public class DerbySqlGenerator {
 
     // separates the different LABELs when we concatenate them to create an unique identifier out of them
-    private static final String HASH_SEPARATOR = "%";
+    protected static final String HASH_SEPARATOR = "%";
     // Derby SQL concat operator to merge LABEL content
-    private static final String CONCAT_OPERATOR = " || '" + HASH_SEPARATOR + "' || ";
+    protected static final String CONCAT_OPERATOR = " || '" + HASH_SEPARATOR + "' || ";
 
 
     /**
@@ -39,6 +39,9 @@ public class DerbySqlGenerator {
         String script = "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS DOUBLE\n" +
                 " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
                 " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.atod';\n\n";
+        script += "CREATE FUNCTION DTTOI(str VARCHAR(255), fmt VARCHAR(30)) RETURNS INT\n" +
+                " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
+                " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.dttoi';\n\n";
         // indexes creation script
         for(PdmTable table : schema.getTables()) {
             String iscript = "";
@@ -135,11 +138,19 @@ public class DerbySqlGenerator {
         for(PdmColumn factTableColumn : factTable.getColumns()) {
             if(insertColumns.length() >0) {
                 insertColumns += "," + factTableColumn.getName();
-                nestedSelectColumns += "," + factTableColumn.getSourceColumn();
+                if(SourceColumn.LDM_TYPE_DATE.equals(factTableColumn.getLdmTypeReference()))
+                    nestedSelectColumns += ",DTTOI(" + factTableColumn.getSourceColumn() + ",'" +
+                                           factTableColumn.getFormat()+"')";
+                else
+                    nestedSelectColumns += "," + factTableColumn.getSourceColumn();
             }
             else {
                 insertColumns += factTableColumn.getName();
-                nestedSelectColumns += factTableColumn.getSourceColumn();
+                if(SourceColumn.LDM_TYPE_DATE.equals(factTableColumn.getLdmTypeReference()))
+                    nestedSelectColumns += "DTTOI(" + factTableColumn.getSourceColumn() + ",'" + 
+                                           factTableColumn.getFormat()+"')";
+                else
+                    nestedSelectColumns += factTableColumn.getSourceColumn();
             }
         }
 

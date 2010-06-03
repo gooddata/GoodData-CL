@@ -85,7 +85,8 @@ public class MaqlGenerator {
                         + lcn + "\") AS {d_" + ssn + "_" + scn + ".nm_" + scn + "};\n";
                 script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
             }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
+            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT) ||
+                    column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
                 hasFacts = true;
                 String folderStatement = "";
                 String folder = column.getFolder();

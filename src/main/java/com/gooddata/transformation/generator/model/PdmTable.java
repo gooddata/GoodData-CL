@@ -165,6 +165,14 @@ public class PdmTable {
     }
 
     /**
+     * Returns table's date columns
+     * @return table's datecolumns
+     */
+    public List<PdmColumn> getDateColumns() {
+        return getColumnsByLdmReference(SourceColumn.LDM_TYPE_DATE);
+    }
+
+    /**
      * Returns column by name
      * @param name the name of the column
      * @return the column with the desired name

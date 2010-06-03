@@ -86,6 +86,12 @@ public class PdmSchema {
                 fact.addColumn(new PdmColumn("f_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT, "o_" + scn,
                         SourceColumn.LDM_TYPE_FACT));
             }
+            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
+                source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
+                fact.addColumn(new PdmColumn("f_" + scn, PdmColumn.PDM_COLUMN_TYPE_DATE, "o_" + scn,
+                        SourceColumn.LDM_TYPE_DATE, column.getFormat()));
+            }
+
         }
 
         pdm.addTable(source);

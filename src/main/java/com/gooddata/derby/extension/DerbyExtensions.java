@@ -1,5 +1,10 @@
 package com.gooddata.derby.extension;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,7 +21,8 @@ import java.util.GregorianCalendar;
 public class DerbyExtensions {
 
     private final static String[] DISCARD_CHARS = {"$", "%", ",", "(", ")", "Û", "£", "´"};
-    //private final static SimpleDateFormat dtfb = new SimpleDateFormat("YYYY-MM-DD");
+    private final static DateTimeFormatter baseFmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+
 
     /**
      * Aggresivelly converts string to a numeric type.
@@ -49,9 +55,20 @@ public class DerbyExtensions {
      * @return
      */
     public static int dttoi(String dt, String fmt) {
-        
-          return 0;
+        if(fmt == null || fmt.length() <= 0 || fmt.equals("null"))
+            fmt = "yyyy-MM-dd";
+        DateTime base = baseFmt.parseDateTime("1900-01-01");
+        DateTimeFormatter dtFmt = DateTimeFormat.forPattern(fmt);
+        DateTime d = dtFmt.parseDateTime(dt);
+        Days ds = Days.daysBetween(base, d);
+        return ds.getDays() + 1;
+    }
 
+    static String a;
+
+    public static void main(String[] args) {
+
+        System.out.println(a);
     }
 
 }

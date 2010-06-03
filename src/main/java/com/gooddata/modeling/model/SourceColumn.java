@@ -12,6 +12,7 @@ public class SourceColumn {
     public final static String LDM_TYPE_ATTRIBUTE = "ATTRIBUTE";
     public final static String LDM_TYPE_FACT = "FACT";
     public final static String LDM_TYPE_LABEL = "LABEL";
+    public final static String LDM_TYPE_DATE = "DATE";
 
     /**
      * Column name
@@ -33,6 +34,10 @@ public class SourceColumn {
      * Column's folder
      */
     private String folder;
+    /**
+     * Column's format
+     */
+    private String format;    
 
 
     /**
@@ -152,6 +157,22 @@ public class SourceColumn {
      */    
     public void setFolder(String folder) {
         this.folder = folder;
+    }
+
+    /**
+     * Format getter
+     * @return column format
+     */
+    public String getFormat() {
+        return format;
+    }
+
+    /**
+     * Format setter
+     * @param format column format
+     */
+    public void setFormat(String format) {
+        this.format = format;
     }
 
 }
