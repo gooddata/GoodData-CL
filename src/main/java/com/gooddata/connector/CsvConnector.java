@@ -76,16 +76,16 @@ public class CsvConnector extends AbstractDerbyConnector {
             SourceColumn sc = null;
             switch (i %3) {
                 case 0:
-                    sc = new SourceColumn(StringUtil.formatShortName(header),SourceColumn.LDM_TYPE_ATTRIBUTE, header,
-                            "folder");
+                    sc = new SourceColumn(StringUtil.csvHeaderToIdentifier(header),SourceColumn.LDM_TYPE_ATTRIBUTE,
+                            StringUtil.csvHeaderToTitle(header), "folder");
                     break;
                 case 1:
-                    sc = new SourceColumn(StringUtil.formatShortName(header),SourceColumn.LDM_TYPE_FACT, header,
-                            "folder");
+                    sc = new SourceColumn(StringUtil.csvHeaderToIdentifier(header),SourceColumn.LDM_TYPE_FACT,
+                            StringUtil.csvHeaderToTitle(header), "folder");
                     break;
                 case 2:
-                    sc = new SourceColumn(StringUtil.formatShortName(header),SourceColumn.LDM_TYPE_LABEL, header,
-                            "folder", "existing-attribute-name");
+                    sc = new SourceColumn(StringUtil.csvHeaderToIdentifier(header),SourceColumn.LDM_TYPE_LABEL,
+                            StringUtil.csvHeaderToTitle(header), "folder", "existing-attribute-name");
                     break;
             }
             s.addColumn(sc);

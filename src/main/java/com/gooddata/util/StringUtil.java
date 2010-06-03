@@ -8,9 +8,13 @@ package com.gooddata.util;
  */
 public class StringUtil {
 
-    private static String[] DISCARD_CHARS = {" ", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
+    private static String[] DISCARD_CHARS = {"\"", " ", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
             "$", "%", ",", "(", ")", "Û", "£", "´","@", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "{" ,"}",
-            "[", "]"};
+            "[", "]","\\"};
+
+    private static String[] INVALID_CSV_HEADER_CHARS = {"\"", "'", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
+            "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
+            "[", "]","\\"};
     
     /**
      * Formats a string as identifier
@@ -35,4 +39,27 @@ public class StringUtil {
         return s;
     }
 
+    /**
+     * Formats a CSV header
+     * @param s the string to convert to identifier
+     * @return converted string
+     */
+    public static String csvHeaderToIdentifier(String s) {
+        for ( String r : INVALID_CSV_HEADER_CHARS ) {
+            s = s.replace(r,"");
+        }
+        return s.toLowerCase();
+    }
+
+    /**
+     * Formats a CSV header
+     * @param s the string to convert to identifier
+     * @return converted string
+     */
+    public static String csvHeaderToTitle(String s) {
+        for ( String r : INVALID_CSV_HEADER_CHARS ) {
+            s = s.replace(r,"");
+        }
+        return s;
+    }
 }
