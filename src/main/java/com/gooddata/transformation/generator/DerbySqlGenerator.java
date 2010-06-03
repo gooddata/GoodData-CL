@@ -39,7 +39,9 @@ public class DerbySqlGenerator {
         String script = "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS DOUBLE\n" +
                 " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
                 " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.atod';\n\n";
+        // indexes creation script
         for(PdmTable table : schema.getTables()) {
+            String iscript = "";
             String pk = "";
             script += "CREATE TABLE " + table.getName() + " (\n";
             for( PdmColumn column : table.getColumns()) {
@@ -54,8 +56,20 @@ public class DerbySqlGenerator {
                     else
                         pk += column.getName();
                 script += ",\n";
+                if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType())) {
+                    if(!"o_genid".equals(column.getName()))
+                        iscript += "CREATE INDEX idx_" + table.getName() + "_" + column.getName() + " ON " +
+                              table.getName() + "("+column.getName()+");\n\n";
+                }
+                /* There is an UNIQUE index on the hashid already
+                if(PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(table.getType())) {
+                    if("hashid".equals(column.getName()))
+                        iscript += "CREATE INDEX idx_" + table.getName() + "_" + column.getName() + " ON " +
+                              table.getName() + "("+column.getName()+");\n\n";
+                }
+                */
             }
-            script += " PRIMARY KEY (" + pk + ")\n);\n\n";
+            script += " PRIMARY KEY (" + pk + ")\n);\n\n" + iscript;
         }
         script += "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() +
                       "',0,0,0);\n\n";
@@ -130,11 +144,13 @@ public class DerbySqlGenerator {
         }
 
         if (factInsertWhereClause.length() > 0)
-            factInsertWhereClause += " AND " + schema.getSourceTable().getName() + ".o_genid NOT IN (SELECT id FROM " +
-                    factTable.getName() + ")";
+            factInsertWhereClause += " AND " + schema.getSourceTable().getName() +
+                                     ".o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" +
+                                     factTable.getName() + "')";
         else
-            factInsertWhereClause += schema.getSourceTable().getName() + ".o_genid NOT IN (SELECT id FROM " +
-                    factTable.getName() + ")";
+            factInsertWhereClause += schema.getSourceTable().getName() +
+                                     ".o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + 
+                                     factTable.getName() + "')";
 
         //script += "DELETE FROM snapshots WHERE name = '" + factTable.getName() + "' AND lastid = 0;\n\n";
         Date dt = new Date();
