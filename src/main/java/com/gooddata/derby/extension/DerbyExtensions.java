@@ -64,11 +64,4 @@ public class DerbyExtensions {
         return ds.getDays() + 1;
     }
 
-    static String a;
-
-    public static void main(String[] args) {
-
-        System.out.println(a);
-    }
-
 }
