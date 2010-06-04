@@ -29,26 +29,6 @@ import java.util.regex.Pattern;
  */
 public class GdcDI {
 
-    private static com.gooddata.processor.Command[] cmdHelp = new com.gooddata.processor.Command[] {
-        new com.gooddata.processor.Command("CreateProject", "name=new project name,desc=new project description"),
-        new com.gooddata.processor.Command("OpenProject", "id=existing project id"),
-        new com.gooddata.processor.Command("GenerateCsvConfigTemplate", "csvHeaderFile=CSV header file (1 header row only),"+
-            "configFile=configuration file (will be overwritten)"),
-        new com.gooddata.processor.Command("LoadCsv", "name=dataset name,"+
-            "configFile=configuration file (will be overwritten)," +
-            "csvDataFile=CSV datafile (data only no headers)"),
-        new Command("GenerateMaql", "maqlFile=MAQL file (will be overwritten)"),
-        new Command("ExecuteMaql", "maqlFile=MAQL file"),
-        new Command("ListSnapshots", ""),
-        new Command("DropSnapshots", ""),
-        new Command("TransferData", "incremental=incremental transfer (true | false)"),
-        new Command("TransferSnapshots", "firstSnapshot=the first transferred snapshot id," +
-                "lastSnapshot=the last transferred snapshot id," +
-                "incremental=incremental transfer (true | false)"),
-        new Command("TransferLastSnapshot", "incremental=incremental transfer (true | false)")
-    };
-
-
     /**
      * The main CLI processor
      * @param args command line argument
@@ -496,16 +476,13 @@ public class GdcDI {
      * @param commands commands array
      * @return help text
      */
-    protected static String commandsHelp(Command[] commands) {
-        String helpText = "Commands:\n\n";
-        for(Command cmd : commands) {
-            helpText += " " + cmd.getCommand() + "\n";
-            for(Object pName : cmd.getParameters().keySet()) {
-                String paramName = (String)pName;
-                String paramValue = cmd.getParameters().getProperty(paramName);
-                helpText += "  " + paramName + " - " + paramValue + "\n";
-            }
-            helpText += "\n";
+    protected static String commandsHelp() throws Exception {
+        String helpText = "Script Commands:\n\n";
+        try {
+            String commandHelpText = FileUtil.readStringFromFile("doc/COMMANDS.txt");
+            helpText = helpText + commandHelpText;
+        } catch (IOException e) {
+            throw new Exception("Could not find doc/COMMANDS.txt which is standard part of the install. Please reinstall the tool.");
         }
         return helpText;
     }
@@ -515,12 +492,12 @@ public class GdcDI {
      * @param err the err message
      * @param o options
      */
-    protected static void printErrorHelpandExit(String err, Options o) {
+    protected static void printErrorHelpandExit(String err, Options o) throws Exception {
         HelpFormatter formatter = new HelpFormatter();
         System.out.println("ERROR: " + err);
         formatter.printHelp( "GdcDI", o );
         System.out.println("\n");
-        System.out.println(commandsHelp(cmdHelp));
+        System.out.println(commandsHelp());
         System.exit(1);    
     }
 
