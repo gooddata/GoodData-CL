@@ -2,10 +2,11 @@
 
 # java run wrapper
 
-file=`readlink $0`;      # resolve symlinks if necessary
-file=${file:-$0};        # if not a symlink, use the $0
-PRJ_BIN=`dirname \`dirname $file\``  # base directory
+A=`readlink $0` # resolve symlinks
+A=${A:-$0}      # if original wasn't a symlink, BSD returns empty string
+SCRIPT_REAL_PATH=$(cd ${A%/*} && echo $PWD/${A##*/}) # path to original shell script, resolved from relative paths
+PROJECT_DIR=`dirname \`dirname $SCRIPT_REAL_PATH\``  # base directory
 
-. $PRJ_BIN/bin/cfg.sh
+. $PROJECT_DIR/bin/cfg.sh
 
-java -Dderby.system.home=$PRJ_BIN/db -cp ${CLASSPATH} com.gooddata.processor.GdcDI $*
+java -Dderby.system.home=$PROJECT_DIR/db -cp ${CLASSPATH} com.gooddata.processor.GdcDI $*

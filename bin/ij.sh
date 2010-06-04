@@ -1,9 +1,10 @@
 #! /bin/bash
 
-file=`readlink $0`;      # resolve symlinks if necessary
-file=${file:-$0};        # if not a symlink, use the $0
-PRJ_BIN=`dirname \`dirname $file\``  # base directory
+A=`readlink $0`
+A=${A:-$0}
+SCRIPT_REAL_PATH=$(cd ${A%/*} && echo $PWD/${A##*/}) # path to original shell script
+PROJECT_DIR=`dirname \`dirname $SCRIPT_REAL_PATH\``  # base directory
 
-. $PRJ_BIN/bin/cfg.sh
+. $PROJECT_DIR/bin/cfg.sh
 
 java -cp ${CLASSPATH} org.apache.derby.tools.ij
