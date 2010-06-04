@@ -77,5 +77,10 @@ public class Command {
     public void setParameters(Properties parameters) {
         this.parameters = parameters;
     }
+    
+    @Override
+    public String toString() {
+    	return new StringBuffer(command).append("(").append(parameters).append(")").toString();
+    }
 
 }
