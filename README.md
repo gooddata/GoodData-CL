@@ -27,6 +27,6 @@ This is GoodData data integration toolkit. The toolkit contains data modeling, t
          -p,--password <arg>   GoodData password
          -u,--username <arg>   GoodData username
 
-5. if you want, place gdi.sh into your executable path, for example:
+5. _(optional)_ symlink gdi.sh into your executable path, for example:
 
         $ sudo ln -s /<path-to-source-dir>/bin/gdi.sh /usr/local/bin/gdi
