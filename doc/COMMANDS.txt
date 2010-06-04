@@ -1,10 +1,10 @@
-usage: gdi.sh -u username -p password -h hostname script
+Usage: gdi.sh -u username -p password -h hostname script
  -h,--host <arg>       GoodData host
  -p,--password <arg>   GoodData password
  -u,--username <arg>   GoodData username
  script                path to script file with commands to execute
 
-Commands:
+Script Commands:
 
  CreateProject(name=<project-name>, desc=<description>) - create a new project on the <hostname> server
   project-name - name of the new project

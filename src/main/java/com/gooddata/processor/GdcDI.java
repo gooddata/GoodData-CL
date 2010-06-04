@@ -477,14 +477,11 @@ public class GdcDI {
      * @return help text
      */
     protected static String commandsHelp() throws Exception {
-        String helpText = "Script Commands:\n\n";
         try {
-            String commandHelpText = FileUtil.readStringFromFile("doc/COMMANDS.txt");
-            helpText = helpText + commandHelpText;
+            return FileUtil.readStringFromFile("doc/COMMANDS.txt");
         } catch (IOException e) {
             throw new Exception("Could not find doc/COMMANDS.txt which is standard part of the install. Please reinstall the tool.");
         }
-        return helpText;
     }
 
     /**
@@ -495,8 +492,6 @@ public class GdcDI {
     protected static void printErrorHelpandExit(String err, Options o) throws Exception {
         HelpFormatter formatter = new HelpFormatter();
         System.out.println("ERROR: " + err);
-        formatter.printHelp( "GdcDI", o );
-        System.out.println("\n");
         System.out.println(commandsHelp());
         System.exit(1);    
     }
