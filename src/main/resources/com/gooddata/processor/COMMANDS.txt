@@ -1,8 +1,12 @@
-Usage: gdi.sh -u username -p password -h hostname script
- -h,--host <arg>       GoodData host
+Usage: gdi.sh -u username -p password [ -h hostname ] [ -i project_id ] [-e commands] [<file1>, ...]
+ -h,--host <arg>       GoodData host (secure.gooddata.com by default)
  -p,--password <arg>   GoodData password
  -u,--username <arg>   GoodData username
- script                path to script file with commands to execute
+ -i,--project <arg>    GoodData project identifier (takes the form of an MD5 hash)
+ -e,--execute <arg>    commands to execute
+ file                  path to script file with commands to execute
+ 
+Either -e or file(s) must be specified.
 
 Script Commands:
 
@@ -11,7 +15,7 @@ Script Commands:
   description  - (optional) project description
 
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload
-  identifier - id of an existing project (takes the form of MD5 hash)
+  identifier - id of an existing project (takes the form of an MD5 hash)
 
  GenerateCsvConfigTemplate(csvHeaderFile=<headers>, configFile=<config>) - generate example XML config file from the CSV file
   headers - path to CSV header file (only the first header row will be used)
