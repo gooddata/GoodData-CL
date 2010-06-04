@@ -1,27 +1,29 @@
-package com.gooddata.transformation.generator;
+package com.gooddata.transformation.executor;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.transformation.generator.model.PdmColumn;
-import com.gooddata.transformation.generator.model.PdmSchema;
-import com.gooddata.transformation.generator.model.PdmTable;
+import com.gooddata.transformation.executor.model.PdmColumn;
+import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.transformation.executor.model.PdmTable;
+import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
+import org.apache.log4j.Logger;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
- * GoodData Derby SQL generator. Generates the DDL (tables and indexes), DML (transformation SQL) and other
+ * GoodData Derby SQL executor. Generates the DDL (tables and indexes), DML (transformation SQL) and other
  * SQL statements necessary for the data normalization (lookup generation)
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class DerbySqlGenerator {
+public class DerbySqlExecutor {
+
+    private static Logger l = Logger.getLogger(DerbySqlExecutor.class);
 
     // separates the different LABELs when we concatenate them to create an unique identifier out of them
     protected static final String HASH_SEPARATOR = "%";
@@ -30,63 +32,80 @@ public class DerbySqlGenerator {
 
 
     /**
-     * Generates the DDL initialization
+     * Executes the DDL initialization
+     * @param c JDBC connection
      * @param schema the PDM schema
-     * @return the SQL script
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiople source or fact tables)
+     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
+     * @throws SQLException in case of db problems 
      */
-    public String generateDdlSql(PdmSchema schema) throws ModelException {
-        String script = "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS DOUBLE\n" +
-                " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
-                " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.atod';\n\n";
-        script += "CREATE FUNCTION DTTOI(str VARCHAR(255), fmt VARCHAR(30)) RETURNS INT\n" +
-                " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
-                " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.dttoi';\n\n";
+    public void executeDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+        JdbcUtil.executeUpdate(c,
+            "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS DOUBLE\n" +
+            " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
+            " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.atod'"
+        );
+
+        JdbcUtil.executeUpdate(c,
+            "CREATE FUNCTION DTTOI(str VARCHAR(255), fmt VARCHAR(30)) RETURNS INT\n" +
+            " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
+            " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.dttoi'"
+        );
+
+        String sql = "";
         // indexes creation script
         for(PdmTable table : schema.getTables()) {
-            String iscript = "";
+            List<String> isql = new ArrayList<String>();
             String pk = "";
-            script += "CREATE TABLE " + table.getName() + " (\n";
+            sql += "CREATE TABLE " + table.getName() + " (\n";
             for( PdmColumn column : table.getColumns()) {
-                script += " "+ column.getName() + " " + column.getType();
+                sql += " "+ column.getName() + " " + column.getType();
                 if(column.isAutoIncrement())
-                    script += " GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)";
+                    sql += " GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)";
                 if(column.isUnique())
-                    script += " UNIQUE";
+                    sql += " UNIQUE";
                 if(column.isPrimaryKey())
                     if(pk != null && pk.length() > 0)
                         pk += "," + column.getName();
                     else
                         pk += column.getName();
-                script += ",\n";
+                sql += ",";
                 if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType())) {
                     if(!"o_genid".equals(column.getName()))
-                        iscript += "CREATE INDEX idx_" + table.getName() + "_" + column.getName() + " ON " +
-                              table.getName() + "("+column.getName()+");\n\n";
+                        isql.add("CREATE INDEX idx_" + table.getName() + "_" + column.getName() + " ON " +
+                              table.getName() + "("+column.getName()+")");
                 }
                 /* There is an UNIQUE index on the hashid already
                 if(PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(table.getType())) {
                     if("hashid".equals(column.getName()))
-                        iscript += "CREATE INDEX idx_" + table.getName() + "_" + column.getName() + " ON " +
-                              table.getName() + "("+column.getName()+");\n\n";
+                        isql += "CREATE INDEX idx_" + table.getName() + "_" + column.getName() + " ON " +
+                              table.getName() + "("+column.getName()+")";
                 }
                 */
             }
-            script += " PRIMARY KEY (" + pk + ")\n);\n\n" + iscript;
+            sql += " PRIMARY KEY (" + pk + "))";
+
+            JdbcUtil.executeUpdate(c, sql);
+
+            for(String s : isql) {
+                JdbcUtil.executeUpdate(c, s);
+            }
+            sql = "";
         }
-        script += "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() +
-                      "',0,0,0);\n\n";
-        return script;
+
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() + "',0,0,0)"
+        );
+
     }
 
     /**
-     * Generates the data normalization script
+     * Executes the data normalization script
+     * @param c JDBC connection
      * @param schema the PDM schema
-     * @return the SQL script
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiople source or fact tables)
+     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
+     * @throws SQLException in case of db problems
      */
-    public String generateNormalizeSql(PdmSchema schema) throws ModelException {
-        String script = "";
+    public void executeNormalizeSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
         // fact table INSERT statement components
         String factInsertFromClause = schema.getSourceTable().getName();
         String factInsertWhereClause = "";
@@ -126,11 +145,14 @@ public class DerbySqlGenerator {
             // add the concatenated columns that fills the hashid to the beginning
             nestedSelectColumns = concatenatedRepresentingColumns + nestedSelectColumns;
 
-            script += "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
+            JdbcUtil.executeUpdate(c,
+                    "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
                       ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
                       " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
                        "') AND " + concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " +
-                       lookupTable.getName() + ");\n\n";
+                       lookupTable.getName() + ")"
+            );
+            
         }
 
         String insertColumns = "";
@@ -165,50 +187,71 @@ public class DerbySqlGenerator {
 
         //script += "DELETE FROM snapshots WHERE name = '" + factTable.getName() + "' AND lastid = 0;\n\n";
         Date dt = new Date();
-        script += "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '" + factTable.getName() + "'," + dt.getTime()
-                   + ",MAX(id)+1 FROM " + factTable.getName() + ";\n\n";
-        script += "UPDATE snapshots SET firstid = 0 WHERE name = '" + factTable.getName() + "' AND firstid IS NULL;\n\n";
-        
-        script += "INSERT INTO " + factTable.getName() + "(" + insertColumns + ") SELECT " + nestedSelectColumns +
-                  " FROM " + factInsertFromClause + " WHERE " + factInsertWhereClause + ";\n\n";
 
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '" + factTable.getName() + "'," + dt.getTime() +
+            ",MAX(id)+1 FROM " + factTable.getName()
+        );
+        JdbcUtil.executeUpdate(c,
+            "UPDATE snapshots SET firstid = 0 WHERE name = '" + factTable.getName() +
+            "' AND firstid IS NULL"
+        );
 
-        script += "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM " + factTable.getName() + ") WHERE name = '" +
-                  factTable.getName() + "' AND lastid IS NULL;\n\n";
-        script += "UPDATE snapshots SET lastid = 0 WHERE name = '" + factTable.getName() + "' AND lastid IS NULL;\n\n";
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO " + factTable.getName() + "(" + insertColumns + ") SELECT " + nestedSelectColumns +
+            " FROM " + factInsertFromClause + " WHERE " + factInsertWhereClause
+        );
 
-        return script;
+        JdbcUtil.executeUpdate(c,
+            "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM " + factTable.getName() + ") WHERE name = '" +
+            factTable.getName() + "' AND lastid IS NULL"
+        );
+        JdbcUtil.executeUpdate(c,
+            "UPDATE snapshots SET lastid = 0 WHERE name = '" + factTable.getName() +
+            "' AND lastid IS NULL"
+        );
+
     }
 
     /**
-     * Generates the Derby SQL that extracts the data from a CSV file to the normalization database
+     * Executes the Derby SQL that extracts the data from a CSV file to the normalization database
+     * @param c JDBC connection
      * @param schema the PDM schema
-     * @return the SQL script
      * @throws ModelException in case when there is a problem with the PDM model
+     * @throws SQLException in case of db problems
      */
-    public String generateExtractSql(PdmSchema schema, String file) throws ModelException {
+    public void executeExtractSql(Connection c, PdmSchema schema, String file) throws ModelException, SQLException {
         String cols = "";
         PdmTable sourceTable = schema.getSourceTable();
-        for (PdmColumn c : sourceTable.getColumns()) {
-            if(!c.isAutoIncrement())
+        for (PdmColumn col : sourceTable.getColumns()) {
+            if(!col.isAutoIncrement())
                 if (cols != null && cols.length() > 0)
-                    cols += "," + StringUtil.formatShortName( c.getName());
+                    cols += "," + StringUtil.formatShortName( col.getName());
                 else
-                    cols += StringUtil.formatShortName(c.getName());
+                    cols += StringUtil.formatShortName(col.getName());
         }
-        return "CALL SYSCS_UTIL.SYSCS_IMPORT_DATA " +
-                "(NULL, '" + sourceTable.getName().toUpperCase() + "', '" + cols.toUpperCase() + 
-                "', null, '" + file + "', null, null, 'utf-8',0);\n\n";
+
+        JdbcUtil.executeUpdate(c,
+            "CALL SYSCS_UTIL.SYSCS_IMPORT_DATA " +
+            "(NULL, '" + sourceTable.getName().toUpperCase() + "', '" + cols.toUpperCase() +
+            "', null, '" + file + "', null, null, 'utf-8',0)"
+        );
+        
     }
 
     /**
-     * Generates the Derby SQL that unloads the data from the normalization database to a CSV
+     * Executes the Derby SQL that unloads the data from the normalization database to a CSV
+     * @param c JDBC connection
      * @param part DLI part
      * @param dir target directory
      * @param snapshotIds specific snapshots IDs that will be integrated
-     * @return the SQL script
+     * @throws SQLException in case of db problems 
      */
-    public String generateLoadSql(PdmSchema schema, DLIPart part, String dir, int[] snapshotIds) throws ModelException {
+    public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
+            throws ModelException, SQLException {
+        String sql = "";
+        int rc = 0;
+        
         String file = dir + System.getProperty("file.separator") + part.getFileName();
         String dliTable = StringUtil.formatShortName(part.getFileName().split("\\.")[0]);
 
@@ -216,33 +259,33 @@ public class DerbySqlGenerator {
 
         List<Column> columns = part.getColumns();
         String cols = "";
-        for (Column c : columns) {
-            PdmColumn col = pdmTable.getColumnByName(c.getName());
+        for (Column cl : columns) {
+            PdmColumn col = pdmTable.getColumnByName(cl.getName());
             // fact table fact columns
             if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) &&
                     SourceColumn.LDM_TYPE_FACT.equals(col.getLdmTypeReference())) {
                 if (cols != null && cols.length() > 0)
                     cols += ",ATOD(" + dliTable.toUpperCase() + "." +
-                            StringUtil.formatShortName(c.getName())+")";
+                            StringUtil.formatShortName(cl.getName())+")";
                 else
                     cols +=  "ATOD(" + dliTable.toUpperCase() + "." +
-                            StringUtil.formatShortName(c.getName())+")";
+                            StringUtil.formatShortName(cl.getName())+")";
             }
             // lookup table name column
             else if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(pdmTable.getType()) && 
                     SourceColumn.LDM_TYPE_ATTRIBUTE.equals(col.getLdmTypeReference())) {
                 if (cols != null && cols.length() > 0)
-                    cols += ",CAST(" + dliTable.toUpperCase() + "." + StringUtil.formatShortName(c.getName())+
+                    cols += ",CAST(" + dliTable.toUpperCase() + "." + StringUtil.formatShortName(cl.getName())+
                             " AS VARCHAR(128))";
                 else
-                    cols +=  "CAST("+dliTable.toUpperCase() + "." + StringUtil.formatShortName(c.getName())+
+                    cols +=  "CAST("+dliTable.toUpperCase() + "." + StringUtil.formatShortName(cl.getName())+
                             " AS VARCHAR(128))";
             }
             else {
                 if (cols != null && cols.length() > 0)
-                    cols += "," + dliTable.toUpperCase() + "." + StringUtil.formatShortName(c.getName());
+                    cols += "," + dliTable.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
                 else
-                    cols +=  dliTable.toUpperCase() + "." + StringUtil.formatShortName(c.getName());
+                    cols +=  dliTable.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
             }
         }
         String whereClause = "";
@@ -257,9 +300,13 @@ public class DerbySqlGenerator {
             whereClause = ",SNAPSHOTS WHERE " + dliTable.toUpperCase() +
                     ".ID BETWEEN SNAPSHOTS.FIRSTID and SNAPSHOTS.LASTID AND SNAPSHOTS.ID IN (" + inClause + ")";
         }
-        return "CALL SYSCS_UTIL.SYSCS_EXPORT_QUERY " +
-                "('SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause + "', '" + file
-                + "', null, null, 'utf-8');\n\n";
+
+        JdbcUtil.executeUpdate(c,
+            "CALL SYSCS_UTIL.SYSCS_EXPORT_QUERY " +
+            "('SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause + "', '" + file +
+            "', null, null, 'utf-8')"
+        );
+
     }
 
 }

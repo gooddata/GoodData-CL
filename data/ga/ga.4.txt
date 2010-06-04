@@ -1,3 +1,3 @@
 OpenProject(id=gluou62s80f18m3v6sxmb32hj891ao5g);
-LoadCsv(name=GA,csvDataFile=../data/ga/ga.2009.02.csv,configFile=../data/ga/ga.config.xml);
+LoadCsv(csvDataFile=../data/ga/ga.2009.02.csv,configFile=../data/ga/ga.config.xml);
 TransferLastSnapshot(incremental=true)

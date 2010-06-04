@@ -1,38 +1,38 @@
-package com.gooddata.transformation.generator;
+package com.gooddata.transformation.executor;
 
 import com.gooddata.exceptions.ModelException;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.DLIPart;
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.transformation.generator.model.PdmColumn;
-import com.gooddata.transformation.generator.model.PdmSchema;
-import com.gooddata.transformation.generator.model.PdmTable;
-import com.gooddata.util.StringUtil;
+import com.gooddata.transformation.executor.model.PdmColumn;
+import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.transformation.executor.model.PdmTable;
+import com.gooddata.util.JdbcUtil;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
- * GoodData Derby SQL generator. Generates the DDL (tables and indexes), DML (transformation SQL) and other
+ * GoodData Derby SQL executor. Generates the DDL (tables and indexes), DML (transformation SQL) and other
  * SQL statements necessary for the data normalization (lookup generation)
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class DerbySqlGeneratorUpdate extends DerbySqlGenerator {
+public class DerbySqlExecutorUpdate extends DerbySqlExecutor {
 
     /**
-     * Generates the data normalization script
+     * Executes the data normalization script
+     * @param c JDBC connection
      * @param schema the PDM schema
-     * @return the SQL script
-     * @throws com.gooddata.exceptions.ModelException if there is a problem with the PDM schema (e.g. multiople source or fact tables)
+     * @throws com.gooddata.exceptions.ModelException if there is a problem with the PDM schema
+     * (e.g. multiple source or fact tables)
+     * @throws SQLException in case of db problems 
      */
-    public String generateNormalizeSql(PdmSchema schema) throws ModelException {
-        String script = "";
+    public void executeNormalizeSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+        List<String> usql = new ArrayList<String>();
+
         // fact table INSERT statement components
         PdmTable factTable = schema.getFactTable();
-        String uScript = "";
         for(PdmTable lookupTable : schema.getLookupTables()) {
             // INSERT tbl(insertColumns) SELECT nestedSelectColumns FROM nestedSelectFromClause
             // WHERE nestedSelectWhereClause
@@ -59,17 +59,19 @@ public class DerbySqlGeneratorUpdate extends DerbySqlGenerator {
             // add the concatenated columns that fills the hashid to the beginning
             nestedSelectColumns = concatenatedRepresentingColumns + nestedSelectColumns;
 
-            script += "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
-                      ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
-                      " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
-                       "') AND " + concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " +
-                       lookupTable.getName() + ");\n\n";
+            JdbcUtil.executeUpdate(c,
+                "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
+                ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
+                " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
+                "') AND " + concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " +
+                lookupTable.getName() + ")"
+            );
 
-            uScript += "UPDATE " + factTable.getName() + " SET  " + lookupTable.getRepresentedLookupColumn() +
+            usql.add("UPDATE " + factTable.getName() + " SET  " + lookupTable.getRepresentedLookupColumn() +
                           "_id = (SELECT id FROM " + lookupTable.getName() + " d," + schema.getSourceTable().getName() +
                           " o WHERE " + concatenatedRepresentingColumns + " = d.hashid AND o.o_genid = " +
                           factTable.getName() + ".id) WHERE id > (SELECT MAX(lastid) FROM snapshots WHERE name = '" +
-                          factTable.getName()+"');\n\n";
+                          factTable.getName()+"')");
         }
 
         String insertColumns = "";
@@ -111,21 +113,34 @@ public class DerbySqlGeneratorUpdate extends DerbySqlGenerator {
 
         //script += "DELETE FROM snapshots WHERE name = '" + factTable.getName() + "' AND lastid = 0;\n\n";
         Date dt = new Date();
-        script += "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '" + factTable.getName() + "'," + dt.getTime()
-                   + ",MAX(id)+1 FROM " + factTable.getName() + ";\n\n";
-        script += "UPDATE snapshots SET firstid = 0 WHERE name = '" + factTable.getName() + "' AND firstid IS NULL;\n\n";
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '" + factTable.getName() + "'," + dt.getTime() +
+            ",MAX(id)+1 FROM " + factTable.getName()
+        );
 
-        script += "INSERT INTO " + factTable.getName() + "(id," + factColumns + ") SELECT o_genid," + sourceColumns +
-                  " FROM " + schema.getSourceTable().getName() +
-                  " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='"+factTable.getName()+"');\n\n";
+        JdbcUtil.executeUpdate(c,
+            "UPDATE snapshots SET firstid = 0 WHERE name = '" + factTable.getName() + "' AND firstid IS NULL"
+        );
 
-        script += uScript;
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO " + factTable.getName() + "(id," + factColumns + ") SELECT o_genid," + sourceColumns +
+            " FROM " + schema.getSourceTable().getName() +
+            " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='"+factTable.getName()+"')"
+        );
 
-        script += "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM " + factTable.getName() + ") WHERE name = '" +
-                  factTable.getName() + "' AND lastid IS NULL;\n\n";
-        script += "UPDATE snapshots SET lastid = 0 WHERE name = '" + factTable.getName() + "' AND lastid IS NULL;\n\n";
+        for(String s : usql) {
+            JdbcUtil.executeUpdate(c, s);
+        }
 
-        return script;
+        JdbcUtil.executeUpdate(c,
+            "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM " + factTable.getName() + ") WHERE name = '" +
+            factTable.getName() + "' AND lastid IS NULL"
+        );
+
+        JdbcUtil.executeUpdate(c,
+            "UPDATE snapshots SET lastid = 0 WHERE name = '" + factTable.getName() + "' AND lastid IS NULL"
+        );
+        
     }
 
 }

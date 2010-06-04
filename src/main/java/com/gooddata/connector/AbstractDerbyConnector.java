@@ -3,8 +3,7 @@ package com.gooddata.connector;
 import com.gooddata.exceptions.InternalErrorException;
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.DLIPart;
-import com.gooddata.transformation.generator.DerbySqlGenerator;
-import com.gooddata.transformation.generator.DerbySqlGeneratorUpdate;
+import com.gooddata.transformation.executor.DerbySqlExecutorUpdate;
 
 import java.io.*;
 import java.sql.*;
@@ -24,9 +23,9 @@ import static org.apache.derby.tools.ij.runScript;
 public abstract class AbstractDerbyConnector extends AbstractConnector {
 
     /**
-     * The derby SQL generator
+     * The derby SQL executor
      */
-    protected DerbySqlGeneratorUpdate sg = new DerbySqlGeneratorUpdate();
+    protected DerbySqlExecutorUpdate sg = new DerbySqlExecutorUpdate();
 
 
     /**
@@ -45,24 +44,15 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
         }
     }
 
-    /**
-     * Constructor
-     * @param projectId project id
-     * @param name schema name
-     */
-    protected AbstractDerbyConnector(String projectId, String name) {
-        super(projectId, name);
-    }
 
     /**
      * Constructor
      * @param projectId project id
-     * @param name schema name
      * @param configFileName config file name
      * @throws java.io.IOException in case of an IO issue
      */
-    protected AbstractDerbyConnector(String projectId, String name, String configFileName) throws IOException {
-        super(projectId, name, configFileName);
+    protected AbstractDerbyConnector(String projectId, String configFileName) throws IOException {
+        super(projectId, configFileName);
     }
 
 
@@ -84,16 +74,12 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
         Connection con = null;
         try {
             con = connect();
-            String sql = sg.generateDdlSql(getPdm());
-            // run the SQL script
-            InputStream is = new ByteArrayInputStream(sql.getBytes("UTF-8"));
-            int result = runScript(con, is, "UTF-8", System.out, "UTF-8");
+            sg.executeDdlSql(con, getPdm());
         }
         catch (SQLException e) {
             throw new InternalError(e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            throw new InternalError(e.getMessage());
-        } finally {
+        }
+        finally {
             try {
                 if (con != null && !con.isClosed())
                     con.close();
@@ -114,16 +100,12 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
         Connection con = null;
         try {
             con = connect();
-            String sql = sg.generateNormalizeSql(getPdm());
-            // run the SQL script
-            InputStream is = new ByteArrayInputStream(sql.getBytes("UTF-8"));
-            int result = runScript(con, is, "UTF-8", System.out, "UTF-8");
+            sg.executeNormalizeSql(con, getPdm());
         }
         catch (SQLException e) {
             throw new InternalError(e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            throw new InternalError(e.getMessage());
-        } finally {
+        }
+        finally {
             try {
                 if (con != null && !con.isClosed())
                     con.close();
@@ -282,17 +264,13 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
             // generate SELECT INTO CSV Derby SQL
             // the required data structures are taken for each DLI part
             for (DLIPart p : parts) {
-                sql += sg.generateLoadSql(getPdm(), p, dir, snapshotIds);
+                sg.executeLoadSql(con, getPdm(), p, dir, snapshotIds);
             }
-            // run the SQL script
-            InputStream is = new ByteArrayInputStream(sql.getBytes("UTF-8"));
-            int result = runScript(con, is, "UTF-8", System.out, "UTF-8");
         }
         catch (SQLException e) {
             throw new InternalError(e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            throw new InternalError(e.getMessage());
-        } finally {
+        }
+        finally {
             try {
                 if (con != null && !con.isClosed())
                     con.close();
@@ -302,6 +280,5 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
             }
         }
     }
-
 
 }

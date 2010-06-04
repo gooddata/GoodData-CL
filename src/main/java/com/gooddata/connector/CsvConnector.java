@@ -29,32 +29,30 @@ public class CsvConnector extends AbstractDerbyConnector {
     /**
      * GoodData CSV connector. This constructor creates the connector from a config file
      * @param projectId project id
-     * @param name name of the source
      * @param configFileName schema config file name
      * @param dataFileName primary data file
      * @throws InitializationException issues with the initialization
      * @throws MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue 
      */
-    protected CsvConnector(String projectId, String name, String configFileName, String dataFileName) throws InitializationException,
+    protected CsvConnector(String projectId, String configFileName, String dataFileName) throws InitializationException,
             MetadataFormatException, IOException {
-        super(projectId, name, configFileName);
+        super(projectId, configFileName);
         this.setDataFile(new File(dataFileName));
     }
 
     /**
      * Create a new GoodData CSV connector. This constructor creates the connector from a config file
      * @param projectId project id
-     * @param name name of the source
      * @param configFileName schema config file name
      * @param dataFileName primary data file
      * @throws InitializationException issues with the initialization
      * @throws MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue
      */
-    public static CsvConnector createConnector(String projectId, String name, String configFileName, String dataFileName) throws InitializationException,
+    public static CsvConnector createConnector(String projectId, String configFileName, String dataFileName) throws InitializationException,
             MetadataFormatException, IOException {
-        return new CsvConnector(projectId, name, configFileName, dataFileName);    
+        return new CsvConnector(projectId, configFileName, dataFileName);    
     }
 
     /**
@@ -102,15 +100,12 @@ public class CsvConnector extends AbstractDerbyConnector {
         Connection con = null;
         try {
             con = connect();
-            String sql = sg.generateExtractSql(getPdm(), dataFile.getAbsolutePath());
-            InputStream is = new ByteArrayInputStream(sql.getBytes("UTF-8"));
-            int result = runScript(con, is, "UTF-8", System.out, "UTF-8");
+            sg.executeExtractSql(con, getPdm(), dataFile.getAbsolutePath());
         }
         catch (SQLException e) {
             throw new InternalError(e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            throw new InternalError(e.getMessage());
-        } finally {
+        }
+        finally {
             try {
                 if (con != null && !con.isClosed())
                     con.close();

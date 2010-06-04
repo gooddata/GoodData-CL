@@ -201,7 +201,6 @@ public class GdcDI {
 
     /**
      * Returns the help for commands
-     * @param commands commands array
      * @return help text
      */
     protected static String commandsHelp() throws Exception {
@@ -226,7 +225,12 @@ public class GdcDI {
         System.out.println(commandsHelp());
         System.exit(1);    
     }
-    
+
+    /**
+     * Executes the command
+     * @param command to execute
+     * @throws Exception general error
+     */
     private void processCommand(Command command) throws Exception {        
         if(command.getCommand().equalsIgnoreCase("CreateProject")) {
             String name = (String)command.getParameters().get("name");
@@ -277,44 +281,39 @@ public class GdcDI {
         }
 
         if(command.getCommand().equalsIgnoreCase("LoadCsv")) {
-            String name = (String)command.getParameters().get("name");
             String configFile = (String)command.getParameters().get("configFile");
             String csvDataFile = (String)command.getParameters().get("csvDataFile");
-            if(name != null && name.length() > 0) {
-                if(configFile != null && configFile.length() > 0) {
-                    File conf = new File(configFile);
-                    if(conf.exists()) {
-                        if(csvDataFile != null && csvDataFile.length() > 0) {
-                            File csvf = new File(csvDataFile);
-                            if(csvf.exists())  {
-                                if(projectId != null) {
-                                    connector = CsvConnector.createConnector(projectId, name, configFile, csvDataFile);
-                                }
-                                else
-                                	throw new IllegalArgumentException(
-                                    "LoadCsv: No active project found. Use command 'CreateProject'" +
-                                    " or 'OpenProject' first.");
+            if(configFile != null && configFile.length() > 0) {
+                File conf = new File(configFile);
+                if(conf.exists()) {
+                    if(csvDataFile != null && csvDataFile.length() > 0) {
+                        File csvf = new File(csvDataFile);
+                        if(csvf.exists())  {
+                            if(projectId != null) {
+                                connector = CsvConnector.createConnector(projectId, configFile, csvDataFile);
                             }
                             else
-                            	throw new IllegalArgumentException(
-                                    "LoadCsv: File '" + csvDataFile +
-                                    "' doesn't exists.");
+                                throw new IllegalArgumentException(
+                                "LoadCsv: No active project found. Use command 'CreateProject'" +
+                                " or 'OpenProject' first.");
                         }
                         else
-                        	throw new IllegalArgumentException(
-                                    "LoadCsv: Command requires the 'csvHeaderFile' parameter.");
+                            throw new IllegalArgumentException(
+                                "LoadCsv: File '" + csvDataFile +
+                                "' doesn't exists.");
                     }
                     else
-                    	throw new IllegalArgumentException(
-                                    "LoadCsv: File '" + configFile +
-                                    "' doesn't exists.");
+                        throw new IllegalArgumentException(
+                                "LoadCsv: Command requires the 'csvHeaderFile' parameter.");
                 }
                 else
-                	throw new IllegalArgumentException(
-                        "LoadCsv: Command requires the 'configFile' parameter.");
+                    throw new IllegalArgumentException(
+                                "LoadCsv: File '" + configFile +
+                                "' doesn't exists.");
             }
             else
-            	throw new IllegalArgumentException("LoadCsv: Command requires the 'name' parameter.");
+                throw new IllegalArgumentException(
+                    "LoadCsv: Command requires the 'configFile' parameter.");
         }
 
         if(command.getCommand().equalsIgnoreCase("GenerateMaql")) {

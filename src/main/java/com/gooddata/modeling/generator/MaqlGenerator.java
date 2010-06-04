@@ -85,8 +85,7 @@ public class MaqlGenerator {
                         + lcn + "\") AS {d_" + ssn + "_" + scn + ".nm_" + scn + "};\n";
                 script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
             }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT) ||
-                    column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
+            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
                 hasFacts = true;
                 String folderStatement = "";
                 String folder = column.getFolder();
@@ -97,6 +96,18 @@ public class MaqlGenerator {
                 script += "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
                         + "\"" + folderStatement + ") AS {f_" + ssn + ".f_" + scn + "};\n";
                 script += "ALTER DATASET {dataset." + ssn + "} ADD {fact." + ssn + "." + scn + "};\n\n";
+            }
+            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
+                hasFacts = true;
+                String folderStatement = "";
+                String folder = column.getFolder();
+                if (folder != null && folder.length() > 0) {
+                    String sfn = StringUtil.formatShortName(folder);
+                    folderStatement = ", FOLDER {ffld." + sfn + "}";
+                }
+                script += "CREATE FACT {dt." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
+                        + "\"" + folderStatement + ") AS {f_" + ssn + ".dt_" + scn + "};\n";
+                script += "ALTER DATASET {dataset." + ssn + "} ADD {dt." + ssn + "." + scn + "};\n\n";
             }
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
                 labels.add(column);

@@ -1,4 +1,4 @@
-package com.gooddata.transformation.generator.model;
+package com.gooddata.transformation.executor.model;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
@@ -88,7 +88,7 @@ public class PdmSchema {
             }
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
                 source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                fact.addColumn(new PdmColumn("f_" + scn, PdmColumn.PDM_COLUMN_TYPE_DATE, "o_" + scn,
+                fact.addColumn(new PdmColumn("dt_" + scn, PdmColumn.PDM_COLUMN_TYPE_DATE, "o_" + scn,
                         SourceColumn.LDM_TYPE_DATE, column.getFormat()));
             }
 

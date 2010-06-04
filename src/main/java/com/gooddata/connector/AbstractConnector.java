@@ -8,7 +8,7 @@ import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.modeling.generator.MaqlGenerator;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.transformation.generator.model.PdmSchema;
+import com.gooddata.transformation.executor.model.PdmSchema;
 import com.gooddata.util.FileUtil;
 
 import java.io.File;
@@ -59,25 +59,13 @@ public abstract class AbstractConnector {
     /**
      * Constructor
      * @param projectId project id
-     * @param name schema name
-     */
-    protected AbstractConnector(String projectId, String name) {
-        this.projectId = projectId;
-        this.name = name;
-    }
-
-    /**
-     * Constructor
-     * @param projectId project id 
-     * @param name schema name
      * @param configFileName config file name
      * @throws IOException in case of an IO issue 
      */
-    protected AbstractConnector(String projectId, String name, String configFileName) throws IOException {
-        this(projectId, name);
+    protected AbstractConnector(String projectId, String configFileName) throws IOException {
+        this.projectId = projectId;
         this.configFileName = configFileName;
         this.readSchema();
-        getSchema().setName(name);
     }
 
     /**
@@ -86,6 +74,7 @@ public abstract class AbstractConnector {
      */
     protected void readSchema() throws IOException {
         setSchema(SourceSchema.createSchema(new File(this.configFileName)));
+        setName(getSchema().getName());
         setPdm(PdmSchema.createSchema(getSchema()));
     }
 

@@ -1,3 +1,3 @@
 OpenProject(id=24wcdc6bgqybxjqw5i9sp909xjtt3uhn);
-LoadCsv(name=GA,csvDataFile=../data/ga/ga.2009.01.csv,configFile=../data/ga/ga.config.xml);
+LoadCsv(csvDataFile=../data/ga/ga.2009.01.csv,configFile=../data/ga/ga.config.xml);
 TransferData()
