@@ -145,12 +145,19 @@ public class FileUtil {
      * @throws IOException
      */
     public static String readStringFromFile(String fileName) throws IOException {
-        FileReader fr = new FileReader(fileName);
-        BufferedReader br = new BufferedReader(fr);
+        return readStringFromReader(new FileReader(fileName));
+    }
+    
+    public static String readStringFromStream(InputStream is) throws IOException {
+    	return readStringFromReader(new InputStreamReader(is));
+    }
+    
+    public static String readStringFromReader(Reader r) throws IOException {
+        BufferedReader br = new BufferedReader(r);
         StringBuffer sbr = new StringBuffer();
         for(String ln = br.readLine(); ln != null; ln = br.readLine())
             sbr.append(ln+"\n");
-        fr.close();
+        r.close();
         return sbr.toString();
     }
 

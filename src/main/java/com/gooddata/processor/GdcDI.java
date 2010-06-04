@@ -2,6 +2,7 @@ package com.gooddata.processor;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,9 +206,12 @@ public class GdcDI {
      */
     protected static String commandsHelp() throws Exception {
         try {
-            return FileUtil.readStringFromFile("doc/COMMANDS.txt");
+        	final InputStream is = GdcDI.class.getResourceAsStream("/com/gooddata/processor/COMMANDS.txt");
+        	if (is == null)
+        		throw new IOException();
+            return FileUtil.readStringFromStream(is);
         } catch (IOException e) {
-            throw new Exception("Could not find doc/COMMANDS.txt which is standard part of the install. Please reinstall the tool.");
+            throw new Exception("Could not read com/gooddata/processor/COMMANDS.txt");
         }
     }
 
