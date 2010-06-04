@@ -198,7 +198,7 @@ public class DerbySqlGenerator {
         }
         return "CALL SYSCS_UTIL.SYSCS_IMPORT_DATA " +
                 "(NULL, '" + sourceTable.getName().toUpperCase() + "', '" + cols.toUpperCase() + 
-                "', null, '" + file + "', null, null, null,0);\n\n";
+                "', null, '" + file + "', null, null, 'utf-8',0);\n\n";
     }
 
     /**
@@ -259,7 +259,7 @@ public class DerbySqlGenerator {
         }
         return "CALL SYSCS_UTIL.SYSCS_EXPORT_QUERY " +
                 "('SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause + "', '" + file
-                + "', null, null, null);\n\n";
+                + "', null, null, 'utf-8');\n\n";
     }
 
 }
