@@ -21,7 +21,7 @@ Script Commands:
   headers - path to CSV header file (only the first header row will be used)
   config  - path to configuration file (will be overwritten)
 
- LoadCsv(name=<dataset>, csvDataFile=<data>, configFile=<config>) - load CSV data file using config file describing the file structure, must call OpenProject
+ LoadCsv(csvDataFile=<data>, configFile=<config>) - load CSV data file using config file describing the file structure, must call OpenProject
   dataset - dataset name (must be identical to the dataset name in XML config)
   data    - path to CSV datafile (data only, no header row)
   config  - path to XML configuration file

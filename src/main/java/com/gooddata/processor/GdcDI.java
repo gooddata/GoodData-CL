@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.gooddata.connector.GaConnector;
+import com.gooddata.google.analytics.GaQuery;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -314,6 +317,111 @@ public class GdcDI {
             else
                 throw new IllegalArgumentException(
                     "LoadCsv: Command requires the 'configFile' parameter.");
+        }
+
+        if(command.getCommand().equalsIgnoreCase("GenerateGoogleAnalyticsConfigTemplate")) {
+            String configFile = (String)command.getParameters().get("configFile");
+            String name = (String)command.getParameters().get("name");
+            String dimensions = (String)command.getParameters().get("dimensions");
+            String metrics = (String)command.getParameters().get("metrics");
+            if(configFile != null && configFile.length() > 0) {
+                File cf = new File(configFile);
+                if(dimensions != null && dimensions.length() > 0) {
+                    if(metrics != null && metrics.length() > 0) {
+                        if(name != null && name.length() > 0) {
+                            GaQuery gq = null;
+                            try {
+                                gq = new GaQuery();
+                            } catch (MalformedURLException e) {
+                                throw new IllegalArgumentException(e.getMessage());
+                            }
+                            gq.setDimensions(dimensions);
+                            gq.setMetrics(metrics);
+                            GaConnector.saveConfigTemplate(name, configFile, gq);
+                        }
+                        else
+                            throw new IllegalArgumentException(
+                                         "GenerateGoogleAnalyticsConfigTemplate: Please specify a name using the name parameter.");
+                    }
+                    else
+                        throw new IllegalArgumentException(
+                                     "GenerateGoogleAnalyticsConfigTemplate: Please specify a metrics using the metrics parameter.");
+                }
+                else
+                    throw new IllegalArgumentException(
+                                     "GenerateGoogleAnalyticsConfigTemplate: Please specify a dimensions using the dimensions parameter.");
+            }
+            else
+            	throw new IllegalArgumentException(
+                                     "GenerateGoogleAnalyticsConfigTemplate: Please specify a config file using the configFile parameter.");
+        }
+
+        if(command.getCommand().equalsIgnoreCase("LoadGoogleAnalytics")) {
+            String configFile = (String)command.getParameters().get("configFile");
+            String usr = (String)command.getParameters().get("username");
+            String psw = (String)command.getParameters().get("password");
+            String id = (String)command.getParameters().get("profileId");
+            String dimensions = (String)command.getParameters().get("dimensions");
+            String metrics = (String)command.getParameters().get("metrics");
+            String startDate = (String)command.getParameters().get("startDate");
+            String endDate = (String)command.getParameters().get("endDate");
+            String filters = (String)command.getParameters().get("filters");
+            if(configFile != null && configFile.length() > 0) {
+                File conf = new File(configFile);
+                if(conf.exists()) {
+                    if(projectId != null) {
+                        if(usr != null && usr.length() > 0) {
+                            if(psw != null && psw.length() > 0) {
+                                if(id != null && id.length() > 0) {
+                                    GaQuery gq = null;
+                                    try {
+                                        gq = new GaQuery();
+                                    } catch (MalformedURLException e) {
+                                        throw new IllegalArgumentException(e.getMessage());
+                                    }
+                                    if(dimensions != null && dimensions.length() > 0)
+                                        gq.setDimensions(dimensions.replace("|",","));
+                                    else
+                                        throw new IllegalArgumentException(
+                                     "LoadGoogleAnalytics: Please specify a dimensions using the dimensions parameter.");
+                                    if(metrics != null && metrics.length() > 0)
+                                        gq.setMetrics(metrics.replace("|",","));
+                                    else
+                                        throw new IllegalArgumentException(
+                                     "LoadGoogleAnalytics: Please specify a metrics using the metrics parameter.");
+                                    if(startDate != null && startDate.length() > 0)
+                                        gq.setStartDate(startDate);
+                                    if(endDate != null && endDate.length() > 0)
+                                        gq.setEndDate(endDate);
+                                    if(filters != null && filters.length() > 0)
+                                        gq.setFilters(filters);
+                                    connector = GaConnector.createConnector(projectId, configFile, usr, psw, id, gq);
+                                }
+                                else
+                                    throw new IllegalArgumentException(
+                                         "LoadGoogleAnalytics: Please specify a Google Profile ID using the profileId parameter.");
+                            }
+                            else
+                                throw new IllegalArgumentException(
+                                     "LoadGoogleAnalytics: Please specify a Google username using the username parameter.");
+                        }
+                        else
+                            throw new IllegalArgumentException(
+                                 "LoadGoogleAnalytics: Please specify a Google password using the password parameter.");   
+                    }
+                    else
+                        throw new IllegalArgumentException(
+                        "LoadGoogleAnalytics: No active project found. Use command 'CreateProject'" +
+                        " or 'OpenProject' first.");
+                }
+                else
+                    throw new IllegalArgumentException(
+                                "LoadGoogleAnalytics: File '" + configFile +
+                                "' doesn't exists.");
+            }
+            else
+                throw new IllegalArgumentException(
+                    "LoadGoogleAnalytics: Command requires the 'configFile' parameter.");
         }
 
         if(command.getCommand().equalsIgnoreCase("GenerateMaql")) {

@@ -46,6 +46,7 @@ public class CsvConnector extends AbstractDerbyConnector {
      * @param projectId project id
      * @param configFileName schema config file name
      * @param dataFileName primary data file
+     * @return new CSV Connector 
      * @throws InitializationException issues with the initialization
      * @throws MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue
