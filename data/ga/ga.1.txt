@@ -1,2 +1,0 @@
-CreateProject(name=GA);
-#GenerateCsvConfigTemplate(csvHeaderFile=../data/ga/ga.hdr.csv,configFile=../data/ga/ga.config.xml);
