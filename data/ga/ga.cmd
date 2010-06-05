@@ -1,0 +1,11 @@
+#CreateProject(name=GA);
+OpenProject(id=kvq5uo76t4w87l4bb7mbd2g84yp6k1yi);
+GenerateGoogleAnalyticsConfigTemplate(name=GA,configFile=data/ga/ga.xml,dimensions=ga:date|ga:browser,metrics=ga:visits|ga:pageviews);
+LoadGoogleAnalytics(configFile=data/ga/ga.xml,username=gdc.bot@gmail.com,password=akssirdnij,profileId=ga:7468896,dimensions=ga:date|ga:browser,metrics=ga:visits|ga:pageviews,startDate=2010-01-01,endDate=2010-05-31);
+#GenerateMaql(maqlFile=data/ga/ga.maql);
+#ExecuteMaql(maqlFile=data/ga/ga.maql);
+TransferLastSnapshot(incremental=true);
+#LoadCsv(name=GA,csvDataFile=data/ga/ga.2009.02.csv,configFile=data/ga/ga.config.xml);
+#TransferLastSnapshot(incremental=true);
+#LoadCsv(name=GA,csvDataFile=data/ga/ga.2009.03.csv,configFile=data/ga/ga.config.xml);
+#TransferLastSnapshot(incremental=true);
