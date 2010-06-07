@@ -126,8 +126,6 @@ public class GdcDI {
      */
     public static void main(String[] args) throws Exception {
 
-        String userName = null;
-        String password = null;
         String host = "secure.gooddata.com";
 
         Options o = new Options();
@@ -148,6 +146,9 @@ public class GdcDI {
 	        else {
 	            System.out.println("Using the default GoodData REST API host '" + host + "'.");
 	        }
+	        
+            final String userName = line.getOptionValue("username");
+            final String password = line.getOptionValue("password");
 	        
 	        GdcDI gdcDi = new GdcDI(host, userName, password);
 	        if (line.hasOption("project")) {
