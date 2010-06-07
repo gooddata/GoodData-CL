@@ -17,7 +17,6 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
-import com.gooddata.connector.AbstractConnector;
 import com.gooddata.connector.CsvConnector;
 import com.gooddata.connector.GaConnector;
 import com.gooddata.exceptions.InvalidArgumentException;
@@ -29,6 +28,8 @@ import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.integration.rest.exceptions.GdcLoginException;
 import com.gooddata.util.FileUtil;
+import org.gooddata.connector.AbstractConnector;
+import org.gooddata.connector.backend.AbstractConnectorBackend;
 
 /**
  * The GoodData Data Integration CLI processor.
@@ -49,6 +50,9 @@ public class GdcDI {
     
     private String projectId = null;
     private AbstractConnector connector = null;
+
+
+    private int defaultConnectorBackend = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
 
     
     private GdcDI(final String host, final String userName, final String password) throws GdcLoginException {
@@ -305,7 +309,8 @@ public class GdcDI {
                         File csvf = new File(csvDataFile);
                         if(csvf.exists())  {
                             if(projectId != null) {
-                                connector = CsvConnector.createConnector(projectId, configFile, csvDataFile);
+                                connector = CsvConnector.createConnector(projectId, configFile, csvDataFile,
+                                        defaultConnectorBackend);
                             }
                             else
                                 throw new IllegalArgumentException(
@@ -407,7 +412,8 @@ public class GdcDI {
                                         gq.setEndDate(endDate);
                                     if(filters != null && filters.length() > 0)
                                         gq.setFilters(filters);
-                                    connector = GaConnector.createConnector(projectId, configFile, usr, psw, id, gq);
+                                    connector = GaConnector.createConnector(projectId, configFile, usr, psw, id, gq,
+                                            defaultConnectorBackend);
                                 }
                                 else
                                     throw new IllegalArgumentException(
@@ -501,8 +507,8 @@ public class GdcDI {
                     connector.initialize();
 
                 // retrieve the DLI
-                DLI dli = getRestApi().getDLIById("dataset." + connector.getName().toLowerCase(), projectId);
-                List<DLIPart> parts= getRestApi().getDLIParts("dataset." + connector.getName().toLowerCase(), projectId);
+                DLI dli = getRestApi().getDLIById("dataset." + connector.getSchema().getName().toLowerCase(), projectId);
+                List<DLIPart> parts= getRestApi().getDLIParts("dataset." + connector.getSchema().getName().toLowerCase(), projectId);
                 // target directories and ZIP names
 
                 String incremental = (String)command.getParameters().get("incremental");
@@ -565,10 +571,10 @@ public class GdcDI {
                             if(!connector.isInitialized())
                                 connector.initialize();
                             // retrieve the DLI
-                            DLI dli = getRestApi().getDLIById("dataset." + connector.getName().toLowerCase(),
+                            DLI dli = getRestApi().getDLIById("dataset." + connector.getSchema().getName().toLowerCase(),
                                     projectId);
                             List<DLIPart> parts= getRestApi().getDLIParts("dataset." +
-                                    connector.getName().toLowerCase(), projectId);
+                                    connector.getSchema().getName().toLowerCase(), projectId);
 
                             String incremental = (String)command.getParameters().get("incremental");
                             if(incremental != null && incremental.length() > 0 &&
@@ -619,10 +625,10 @@ public class GdcDI {
                 if(!connector.isInitialized())
                     connector.initialize();
                 // retrieve the DLI
-                DLI dli = getRestApi().getDLIById("dataset." + connector.getName().toLowerCase(),
+                DLI dli = getRestApi().getDLIById("dataset." + connector.getSchema().getName().toLowerCase(),
                         projectId);
                 List<DLIPart> parts= getRestApi().getDLIParts("dataset." +
-                        connector.getName().toLowerCase(), projectId);
+                        connector.getSchema().getName().toLowerCase(), projectId);
 
                 String incremental = (String)command.getParameters().get("incremental");
                 if(incremental != null && incremental.length() > 0 &&
