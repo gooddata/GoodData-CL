@@ -1,0 +1,29 @@
+<schema>
+  <name>Employee</name>
+  <columns>
+    <column>
+      <name>id</name>
+      <title>ID</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+    </column>
+    <column>
+      <name>firstname</name>
+      <title>First Name</title>
+      <ldmType>LABEL</ldmType>
+      <pk>employee id</pk>
+    </column>
+    <column>
+      <name>lastname</name>
+      <title>Last Name</title>
+      <ldmType>LABEL</ldmType>
+      <pk>employee id</pk>
+    </column>
+    <column>
+      <name>department_id</name>
+      <title>Department ID</title>
+      <ldmType>REFERENCE</ldmType>
+      <pk>id</pk>
+      <pkSchema>department</pkSchema>  
+    </column>
+  </columns>
+</schema>
