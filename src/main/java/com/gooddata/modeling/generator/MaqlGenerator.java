@@ -1,11 +1,11 @@
 package com.gooddata.modeling.generator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.StringUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * GoodData MAQL Generator generates the MAQL from the LDM schema object
@@ -15,22 +15,72 @@ import java.util.List;
  */
 public class MaqlGenerator {
 
+    private final SourceSchema schema;
+    private final String ssn, lsn;
+
+    private List<Attribute> attributes = new ArrayList<Attribute>();
+    private List<Fact> facts = new ArrayList<Fact>();
+    private List<Label> labels = new ArrayList<Label>();
+    private List<DateColumn> dates = new ArrayList<DateColumn>();
+    private ConnectionPoint connectionPoint = null;
+
+    private boolean hasFacts = false;
+
+    public MaqlGenerator(SourceSchema schema) {
+        this.schema = schema;
+        this.ssn = StringUtil.formatShortName(schema.getName());
+        this.lsn = StringUtil.formatLongName(schema.getName());
+    }
+
     /**
      * Generates the MAQL from the schema
-     * @param schema the LDM schema object
+     *
      * @return the MAQL as a String
      */
-    public String generateMaql(SourceSchema schema) {
+    public String generateMaql() {
         String script = "";
 
-        String ssn = StringUtil.formatShortName(schema.getName());
-        String lsn = StringUtil.formatLongName(schema.getName());
         script += "CREATE DATASET {dataset." + ssn + "} VISUAL(TITLE \"" + lsn + "\");\n\n";
+        script += generateFoldersMaqlDdl(schema.getColumns());
 
-        // Populate the attribute and the fact folders
-        ArrayList<String> attributeFolders = new ArrayList<String>();
-        ArrayList<String> factFolders = new ArrayList<String>();
+        // generate attributes and facts
         for (SourceColumn column : schema.getColumns()) {
+            processColumn(column);
+        }
+
+        for (final Column c : attributes) {
+            script += c.generateMaqlDdl();
+        }
+        for (final Column c : labels) {
+            script += c.generateMaqlDdl();
+        }
+        for (final Column c : facts) {
+            script += c.generateMaqlDdl();
+        }
+        for (final Column c : dates) {
+            script += c.generateMaqlDdl();
+        }
+
+
+        // generate the facts of / record id special attribute
+        if (connectionPoint != null) {
+            script += connectionPoint.generateMaqlDdl();
+        } else if (hasFacts) {
+            script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \"" + lsn +
+                    " Record ID\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
+            script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
+        }
+
+        // finally synchronize
+        script += "SYNCHRONIZE {dataset." + ssn + "};";
+        return script;
+    }
+
+    private String generateFoldersMaqlDdl(List<SourceColumn> columns) {
+        final ArrayList<String> attributeFolders = new ArrayList<String>();
+        final ArrayList<String> factFolders = new ArrayList<String>();
+
+        for (SourceColumn column : columns) {
             String folder = column.getFolder();
             if (folder != null && folder.length() > 0) {
                 if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
@@ -45,13 +95,13 @@ public class MaqlGenerator {
             }
         }
 
+        String script = "";
         // Generate statements for the ATTRIBUTE folders
         for (String folder : attributeFolders) {
             String sfn = StringUtil.formatShortName(folder);
             String lfn = StringUtil.formatLongName(folder);
             script += "CREATE FOLDER {dim." + sfn + "} VISUAL(TITLE \"" + lfn + "\") TYPE ATTRIBUTE;\n";
         }
-
         script += "\n";
 
         // Generate statements for the FACT folders
@@ -62,75 +112,160 @@ public class MaqlGenerator {
         }
 
         script += "\n";
-
-        // we need to push all labels to the very bottom
-        // as these might reference attributes that hasn't been generated yet
-        List<SourceColumn> labels = new ArrayList<SourceColumn>();
-
-        // generate attributes and facts
-        for (SourceColumn column : schema.getColumns()) {
-            String scn = StringUtil.formatShortName(column.getName());
-            String lcn = StringUtil.formatLongName(column.getTitle());
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_ATTRIBUTE)) {
-                String folderStatement = "";
-                String folder = column.getFolder();
-                if (folder != null && folder.length() > 0) {
-                    String sfn = StringUtil.formatShortName(folder);
-                    folderStatement = ", FOLDER {dim." + sfn + "}";
-                }
-                script += "CREATE ATTRIBUTE {attr." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
-                        + "\"" + folderStatement + ") AS KEYS {d_" + ssn + "_" + scn + ".id} FULLSET, {f_" + ssn + "."
-                        + scn + "_id} WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
-                        + lcn + "\") AS {d_" + ssn + "_" + scn + ".nm_" + scn + "};\n";
-                script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
-            }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
-                String folderStatement = "";
-                String folder = column.getFolder();
-                if (folder != null && folder.length() > 0) {
-                    String sfn = StringUtil.formatShortName(folder);
-                    folderStatement = ", FOLDER {ffld." + sfn + "}";
-                }
-                script += "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
-                        + "\"" + folderStatement + ") AS {f_" + ssn + ".f_" + scn + "};\n";
-                script += "ALTER DATASET {dataset." + ssn + "} ADD {fact." + ssn + "." + scn + "};\n\n";
-            }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
-                String folderStatement = "";
-                String folder = column.getFolder();
-                if (folder != null && folder.length() > 0) {
-                    String sfn = StringUtil.formatShortName(folder);
-                    folderStatement = ", FOLDER {ffld." + sfn + "}";
-                }
-                script += "CREATE FACT {dt." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
-                        + "\"" + folderStatement + ") AS {f_" + ssn + ".dt_" + scn + "};\n";
-                script += "ALTER DATASET {dataset." + ssn + "} ADD {dt." + ssn + "." + scn + "};\n\n";
-            }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
-                labels.add(column);
-            }
-
-        }
-
-        // alter the attributes with labels. This needs to happen after all attributes are defined as these might
-        // be referenced
-        for (SourceColumn column : labels) {
-            String scn = StringUtil.formatShortName(column.getName());
-            String lcn = StringUtil.formatLongName(column.getTitle());
-            String scnPk = StringUtil.formatShortName(column.getPk());
-            script += "ALTER ATTRIBUTE {attr." + ssn + "." + scnPk + "} ADD LABELS {label." + ssn + "." + scnPk + "."
-                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {d_" + ssn + "_" + scnPk + ".nm_" + scn + "};\n\n";
-        }
-
-        // generate the facts of / record id special attribute
-        script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \"" + lsn +
-                    " Record ID\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
-        script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
-
-        // finally synchronize
-        script += "SYNCHRONIZE {dataset." + ssn + "};";
         return script;
     }
 
+    private void processColumn(SourceColumn column) {
+        if (column.getLdmType().equals(SourceColumn.LDM_TYPE_ATTRIBUTE)) {
+            attributes.add(new Attribute(column));
+        } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
+            facts.add(new Fact(column));
+        } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
+            dates.add(new DateColumn(column));
+        } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
+            labels.add(new Label(column));
+        } else
+            processConnectionPoint(column);
+    }
 
+    private void processConnectionPoint(SourceColumn column) {
+        if (column.getLdmType().equals(SourceColumn.LDM_TYPE_CONNECTION_POINT)) {
+            if (connectionPoint != null) {
+                throw new IllegalStateException("Only one connection point per dataset is allowed. "
+                        + "Consider declaring the duplicate connection points as labels of the main connection point.");
+            }
+            connectionPoint = new ConnectionPoint(column);
+        }
+    }
+
+    private abstract class Column {
+        protected final SourceColumn column;
+        protected final String scn, lcn;
+
+        Column(SourceColumn column) {
+            this.column = column;
+            this.scn = StringUtil.formatShortName(column.getName());
+            this.lcn = StringUtil.formatLongName(column.getTitle());
+        }
+
+        public abstract String generateMaqlDdl();
+    }
+
+    private class Attribute extends Column {
+
+        protected final String table;
+        protected final String identifier;
+
+        Attribute(SourceColumn column, String table) {
+            super(column);
+            this.identifier = "attr." + ssn + "." + scn;
+            this.table = (table == null) ? "d_" + ssn + "_" + scn : table;
+        }
+
+        Attribute(SourceColumn column) {
+            this(column, null);
+        }
+
+        @Override
+        public String generateMaqlDdl() {
+            String folderStatement = "";
+            String folder = column.getFolder();
+            if (folder != null && folder.length() > 0) {
+                String sfn = StringUtil.formatShortName(folder);
+                folderStatement = ", FOLDER {dim." + sfn + "}";
+            }
+
+            return "CREATE ATTRIBUTE {" + identifier + "} VISUAL(TITLE \"" + lcn
+                    + "\"" + folderStatement + ") AS KEYS {" + table + ".id} FULLSET, {f_" + ssn + "."
+                    + scn + "_id} WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
+                    + lcn + "\") AS {d_" + ssn + "_" + scn + ".nm_" + scn + "};\n"
+                    + "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
+        }
+
+    }
+
+    private class Fact extends Column {
+
+        private final String table;
+
+        Fact(SourceColumn column) {
+            super(column);
+            hasFacts = true;
+            table = "f_" + ssn;
+        }
+
+        @Override
+        public String generateMaqlDdl() {
+            String folderStatement = "";
+            String folder = column.getFolder();
+            if (folder != null && folder.length() > 0) {
+                String sfn = StringUtil.formatShortName(folder);
+                folderStatement = ", FOLDER {ffld." + sfn + "}";
+            }
+
+            return "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
+                    + "\"" + folderStatement + ") AS {" + table + ".f_" + scn + "};\n"
+                    + "ALTER DATASET {dataset." + ssn + "} ADD {fact." + ssn + "." + scn + "};\n\n";
+        }
+    }
+
+    private class Label extends Column {
+
+        Label(SourceColumn column) {
+            super(column);
+        }
+
+        @Override
+        public String generateMaqlDdl() {
+            String scnPk = StringUtil.formatShortName(column.getPk());
+            return "ALTER ATTRIBUTE {attr." + ssn + "." + scnPk + "} ADD LABELS {label." + ssn + "." + scnPk + "."
+                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {d_" + ssn + "_" + scnPk + ".nm_" + scn + "};\n\n";
+        }
+    }
+
+    private class DateColumn extends Column {
+
+        DateColumn(SourceColumn column) {
+            super(column);
+
+            hasFacts = true;
+        }
+
+        @Override
+        public String generateMaqlDdl() {
+            String folderStatement = "";
+            String folder = column.getFolder();
+            if (folder != null && folder.length() > 0) {
+                String sfn = StringUtil.formatShortName(folder);
+                folderStatement = ", FOLDER {ffld." + sfn + "}";
+            }
+            return "CREATE FACT {dt." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
+                    + "\"" + folderStatement + ") AS {f_" + ssn + ".dt_" + scn + "};\n"
+                    + "ALTER DATASET {dataset." + ssn + "} ADD {dt." + ssn + "." + scn + "};\n\n";
+
+        }
+    }
+
+    private class ConnectionPoint extends Attribute {
+        public ConnectionPoint(SourceColumn column) {
+            super(column, "f_" + ssn);
+        }
+
+        @Override
+        public String generateMaqlDdl() {
+            String folderStatement = "";
+            String folder = column.getFolder();
+            if (folder != null && folder.length() > 0) {
+                String sfn = StringUtil.formatShortName(folder);
+                folderStatement = ", FOLDER {dim." + sfn + "}";
+            }
+
+            return "CREATE ATTRIBUTE {" + identifier + "} VISUAL(TITLE \"" + lcn
+                    + "\"" + folderStatement + ") AS KEYS {" + table + ".id} FULLSET "
+                    + "WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
+                    + lcn + "\") AS {" + table + ".nm_" + scn + "};\n"
+                    + "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
+        }
+    }
 }
+

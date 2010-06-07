@@ -127,9 +127,9 @@ public class GdcDI {
      */
     public static void main(String[] args) throws Exception {
 
+        String host = "secure.gooddata.com";
         String userName = null;
         String password = null;
-        String host = "secure.gooddata.com";
 
         Options o = new Options();
 

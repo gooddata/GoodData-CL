@@ -65,8 +65,8 @@ public abstract class AbstractConnector implements Connector {
      * @return the MAQL in string format
      */
     public String generateMaql() {
-        MaqlGenerator mg = new MaqlGenerator();
-        return mg.generateMaql(schema);
+        MaqlGenerator mg = new MaqlGenerator(schema);
+        return mg.generateMaql();
     }
 
     /**
