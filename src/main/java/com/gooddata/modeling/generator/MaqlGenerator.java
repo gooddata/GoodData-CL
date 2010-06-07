@@ -63,7 +63,6 @@ public class MaqlGenerator {
 
         script += "\n";
 
-        boolean hasFacts = false;
         // we need to push all labels to the very bottom
         // as these might reference attributes that hasn't been generated yet
         List<SourceColumn> labels = new ArrayList<SourceColumn>();
@@ -86,7 +85,6 @@ public class MaqlGenerator {
                 script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
             }
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
-                hasFacts = true;
                 String folderStatement = "";
                 String folder = column.getFolder();
                 if (folder != null && folder.length() > 0) {
@@ -98,7 +96,6 @@ public class MaqlGenerator {
                 script += "ALTER DATASET {dataset." + ssn + "} ADD {fact." + ssn + "." + scn + "};\n\n";
             }
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
-                hasFacts = true;
                 String folderStatement = "";
                 String folder = column.getFolder();
                 if (folder != null && folder.length() > 0) {
@@ -126,11 +123,9 @@ public class MaqlGenerator {
         }
 
         // generate the facts of / record id special attribute
-        if (hasFacts) {
-            script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \"" + lsn +
+        script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \"" + lsn +
                     " Record ID\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
-            script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
-        }
+        script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
 
         // finally synchronize
         script += "SYNCHRONIZE {dataset." + ssn + "};";

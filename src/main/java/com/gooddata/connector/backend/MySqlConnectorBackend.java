@@ -1,6 +1,8 @@
 package com.gooddata.connector.backend;
 
+import com.gooddata.transformation.executor.DerbySqlExecutor;
 import com.gooddata.transformation.executor.DerbySqlExecutorUpdate;
+import com.gooddata.transformation.executor.MySqlExecutor;
 import com.gooddata.transformation.executor.model.PdmSchema;
 import com.gooddata.util.JdbcUtil;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
@@ -19,12 +21,6 @@ import java.sql.*;
  * @version 1.0
  */
 public class MySqlConnectorBackend extends AbstractConnectorBackend implements ConnectorBackend {
-
-    /**
-     * The derby SQL executor
-     */
-    protected DerbySqlExecutorUpdate sg = new DerbySqlExecutorUpdate();
-
 
     /**
      * static initializer of the Derby SQL JDBC driver
@@ -52,6 +48,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
      */
     protected MySqlConnectorBackend(String projectId, String configFileName, PdmSchema pdm) throws IOException {
         super(projectId, configFileName, pdm);
+        sg = new MySqlExecutor();
     }
 
     /**
@@ -74,15 +71,15 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         String protocol = "jdbc:mysql:";
         Connection con = null;
         try {
-            con = DriverManager.getConnection(protocol + "//localhost/" + projectId +"_" + name);
+            con = DriverManager.getConnection(protocol + "//localhost/" + projectId);
         }
         catch (SQLException e) {
             con = DriverManager.getConnection(protocol + "//localhost");
             JdbcUtil.executeUpdate(con,
-                "CREATE DATABASE IF NOT EXISTS " + projectId +"_" + name + " CHARACTER SET utf8"
+                "CREATE DATABASE IF NOT EXISTS " + projectId  + " CHARACTER SET utf8"
             );
             con.close();
-            con = DriverManager.getConnection(protocol + "//localhost/" + projectId +"_" + name);            
+            con = DriverManager.getConnection(protocol + "//localhost/" + projectId);            
         }
         return con;
     }

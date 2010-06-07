@@ -177,7 +177,7 @@ public abstract class AbstractConnector implements Connector {
      * tables
      * @throws ModelException in case of PDM schema issues
      */
-    public void transform() throws ModelException {
+    public void transform() throws ModelException {        
         getConnectorBackend().transform();
     }
 

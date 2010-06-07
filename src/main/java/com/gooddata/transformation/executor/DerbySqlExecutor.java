@@ -10,6 +10,7 @@ import com.gooddata.transformation.executor.model.PdmTable;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
+import org.gooddata.transformation.executor.AbstractSqlExecutor;
 import org.gooddata.transformation.executor.SqlExecutor;
 
 import java.sql.Connection;
@@ -22,7 +23,7 @@ import java.util.*;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class DerbySqlExecutor implements SqlExecutor {
+public class DerbySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
 
     private static Logger l = Logger.getLogger(DerbySqlExecutor.class);
 
@@ -33,13 +34,13 @@ public class DerbySqlExecutor implements SqlExecutor {
 
 
     /**
-     * Executes the DDL initialization
+     * Executes the system DDL initialization
      * @param c JDBC connection
      * @param schema the PDM schema
      * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
-     * @throws SQLException in case of db problems 
+     * @throws SQLException in case of db problems
      */
-    public void executeDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+    public void executeSystemDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
         JdbcUtil.executeUpdate(c,
             "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS DOUBLE\n" +
             " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
@@ -51,6 +52,27 @@ public class DerbySqlExecutor implements SqlExecutor {
             " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
             " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.dttoi'"
         );
+
+        JdbcUtil.executeUpdate(c,
+            "CREATE TABLE snapshots (" +
+                " id INT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)," +
+                " name VARCHAR(255)," +
+                " tmstmp BIGINT," +
+                " firstid INT," +
+                " lastid INT," +
+                " PRIMARY KEY (id)" +
+                ")"
+        );
+    }
+
+    /**
+     * Executes the DDL initialization
+     * @param c JDBC connection
+     * @param schema the PDM schema
+     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
+     * @throws SQLException in case of db problems 
+     */
+    public void executeDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
 
         String sql = "";
         // indexes creation script
@@ -98,6 +120,7 @@ public class DerbySqlExecutor implements SqlExecutor {
         );
 
     }
+
 
     /**
      * Executes the data normalization script
@@ -159,7 +182,7 @@ public class DerbySqlExecutor implements SqlExecutor {
         String insertColumns = "";
         String nestedSelectColumns = "";
         for(PdmColumn factTableColumn : factTable.getColumns()) {
-            if(insertColumns.length() >0) {
+            if(insertColumns.length() > 0) {
                 insertColumns += "," + factTableColumn.getName();
                 if(SourceColumn.LDM_TYPE_DATE.equals(factTableColumn.getLdmTypeReference()))
                     nestedSelectColumns += ",DTTOI(" + factTableColumn.getSourceColumn() + ",'" +

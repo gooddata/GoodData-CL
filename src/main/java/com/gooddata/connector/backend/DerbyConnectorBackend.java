@@ -1,5 +1,6 @@
 package com.gooddata.connector.backend;
 
+import com.gooddata.transformation.executor.DerbySqlExecutor;
 import com.gooddata.transformation.executor.model.PdmSchema;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 import org.gooddata.connector.backend.ConnectorBackend;
@@ -46,6 +47,7 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
      */
     protected DerbyConnectorBackend(String projectId, String configFileName, PdmSchema pdm) throws IOException {
         super(projectId, configFileName, pdm);
+        sg = new DerbySqlExecutor();
     }
 
     /**
@@ -67,7 +69,7 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
      */
     public Connection connect() throws SQLException {
         String protocol = "jdbc:derby:";
-        return DriverManager.getConnection(protocol + projectId +"_" + name + ";create=true");
+        return DriverManager.getConnection(protocol + projectId + ";create=true");
     }
 
     /**
@@ -75,7 +77,7 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
      */
     public void dropSnapshots() {
         File derbyDir = new File (System.getProperty("derby.system.home") +
-                System.getProperty("file.separator") + projectId + "_" + name);
+                System.getProperty("file.separator") + projectId);
         derbyDir.delete();
     }
 

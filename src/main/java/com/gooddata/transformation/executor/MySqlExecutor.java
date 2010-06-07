@@ -10,6 +10,7 @@ import com.gooddata.transformation.executor.model.PdmTable;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
+import org.gooddata.transformation.executor.AbstractSqlExecutor;
 import org.gooddata.transformation.executor.SqlExecutor;
 
 import java.sql.Connection;
@@ -22,7 +23,7 @@ import java.util.*;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class MySqlExecutor implements SqlExecutor {
+public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
 
     private static Logger l = Logger.getLogger(MySqlExecutor.class);
 
@@ -30,6 +31,27 @@ public class MySqlExecutor implements SqlExecutor {
     protected static final String HASH_SEPARATOR = "%";
     // Derby SQL concat operator to merge LABEL content
     protected static final String CONCAT_OPERATOR = ",'" + HASH_SEPARATOR + "'";
+
+    /**
+     * Executes the system DDL initialization
+     * @param c JDBC connection
+     * @param schema the PDM schema
+     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
+     * @throws SQLException in case of db problems
+     */
+    public void executeSystemDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+
+        JdbcUtil.executeUpdate(c,
+            "CREATE TABLE snapshots (" +
+                " id INT GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)," +
+                " name VARCHAR(255)," +
+                " tmstmp BIGINT," +
+                " firstid INT," +
+                " lastid INT," +
+                " PRIMARY KEY (id)" +
+                ")"
+        );
+    }
 
 
     /**

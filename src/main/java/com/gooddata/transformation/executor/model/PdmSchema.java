@@ -20,8 +20,12 @@ public class PdmSchema {
     // tables
     private List<PdmTable> tables = new ArrayList<PdmTable>();
 
-    //
+    // schema name
     private String name;
+
+    // lokup replication for computing ocnsistent REFERENCE IDs
+    private List<PdmLookupReplication> lookupReplications = new ArrayList<PdmLookupReplication>(); 
+
 
     /**
      * Constructor
@@ -39,16 +43,6 @@ public class PdmSchema {
     public static PdmSchema createSchema(SourceSchema schema) {
         PdmSchema pdm = new PdmSchema(StringUtil.formatShortName(schema.getName()));
 
-        PdmTable snapshots = new PdmTable("snapshots", PdmTable.PDM_TABLE_TYPE_SYSTEM);
-        snapshots.addColumn(new PdmColumn("id", PdmColumn.PDM_COLUMN_TYPE_INT,
-                new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
-        snapshots.addColumn(new PdmColumn("name", PdmColumn.PDM_COLUMN_TYPE_TEXT));
-        snapshots.addColumn(new PdmColumn("tmstmp", PdmColumn.PDM_COLUMN_TYPE_LONG));
-        snapshots.addColumn(new PdmColumn("firstid", PdmColumn.PDM_COLUMN_TYPE_INT));
-        snapshots.addColumn(new PdmColumn("lastid", PdmColumn.PDM_COLUMN_TYPE_INT));
-
-        pdm.addTable(snapshots);
-
         PdmTable source = new PdmTable("o_"+pdm.getName(), PdmTable.PDM_TABLE_TYPE_SOURCE);
         source.addColumn(new PdmColumn("o_genid",PdmColumn.PDM_COLUMN_TYPE_INT,
                 new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
@@ -60,9 +54,11 @@ public class PdmSchema {
 
         for (SourceColumn column : schema.getColumns()) {
             String scn = StringUtil.formatShortName(column.getName());
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_ATTRIBUTE)) {
+            String ssn = StringUtil.formatShortName(pdm.getName());
+            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
+                    column.getLdmType().equals(SourceColumn.LDM_TYPE_REFERENCE)) {
                 source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                fact.addColumn(new PdmColumn(scn+"_id", PdmColumn.PDM_COLUMN_TYPE_INT, "d_"+pdm.getName()+"_"+scn +
+                fact.addColumn(new PdmColumn(scn+"_id", PdmColumn.PDM_COLUMN_TYPE_INT, "d_" + ssn + "_"+scn +
                         ".id", SourceColumn.LDM_TYPE_ATTRIBUTE));
                 // add lookup tables
                 if (!lookups.containsKey(scn)) {
@@ -71,6 +67,14 @@ public class PdmSchema {
                 // add column to the lookup
                 List<SourceColumn> l = lookups.get(scn);
                 l.add(column);
+                // process references in a same way as the attributes.
+                // just copy the referenced lookup rows to the referencing lookup
+                if (column.getLdmType().equals(SourceColumn.LDM_TYPE_REFERENCE)) {
+                    String tcn = StringUtil.formatShortName(column.getPk());
+                    String tsn = StringUtil.formatShortName(column.getPkSchema());
+                    pdm.addLookupReplication(new PdmLookupReplication("d_" + tsn +
+                    "_"+tcn, "nm_" + tcn, "d_" + ssn + "_"+scn, "nm_" + scn));
+                }
             }
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
                 source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
@@ -88,10 +92,10 @@ public class PdmSchema {
             }
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
                 source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                fact.addColumn(new PdmColumn("dt_" + scn, PdmColumn.PDM_COLUMN_TYPE_DATE, "o_" + scn,
+                fact.addColumn(new PdmColumn("dt_" + scn + "_id", PdmColumn.PDM_COLUMN_TYPE_DATE, "o_" + scn,
                         SourceColumn.LDM_TYPE_DATE, column.getFormat()));
             }
-
+            
         }
 
         pdm.addTable(source);
@@ -221,6 +225,30 @@ public class PdmSchema {
         if(l.size() <=0)
             throw new ModelException("No source table found in the dataset.");
         throw new ModelException("Multiple source tables found in the dataset.");
+    }
+
+    /**
+     * Returns the active lookup replications
+     * @return active lookup replications
+     */
+    public List<PdmLookupReplication> getLookupReplications() {
+        return lookupReplications;
+    }
+
+    /**
+     * Lookup replications setter
+     * @param lookupReplications lookupReplications list
+     */
+    public void setLookupReplications(List<PdmLookupReplication> lookupReplications) {
+        this.lookupReplications = lookupReplications;
+    }
+
+    /**
+     * Ads a new lookup replication
+     * @param r new lookup replication
+     */
+    public void addLookupReplication(PdmLookupReplication r) {
+        this.getLookupReplications().add(r);
     }
 
 }

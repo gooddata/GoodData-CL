@@ -10,6 +10,7 @@ import com.gooddata.transformation.executor.DerbySqlExecutorUpdate;
 import com.gooddata.transformation.executor.model.PdmSchema;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
+import org.gooddata.transformation.executor.AbstractSqlExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +32,9 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     public static final int CONNECTOR_BACKEND_MYSQL = 2;
 
     /**
-     * The derby SQL executor
+     * The SQL executor
      */
-    protected DerbySqlExecutorUpdate sg = new DerbySqlExecutorUpdate();
+    protected AbstractSqlExecutor sg;
 
 
     /**
@@ -46,10 +47,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      */
     protected String projectId;
 
-    /**
-     * The data source name
-     */
-    protected String name;
+
 
     /**
      * The config file name
@@ -140,22 +138,6 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     }
 
     /**
-     * Data source name getter
-     * @return data source name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Data source name setter
-     * @param name data source name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
      * PDM schema getter
      * @return pdm schema
      */
@@ -178,8 +160,15 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     public void initialize() throws ModelException {
         Connection con = null;
         try {
-            con = connect();
-            sg.executeDdlSql(con, getPdm());
+            if(!isInitialized()) {
+                con = connect();
+                sg.executeSystemDdlSql(con, getPdm());
+            }
+            if(!exists(getPdm().getSourceTable().getName())) {
+                if(con == null)
+                    con = connect();
+                sg.executeDdlSql(con, getPdm());    
+            }
         }
         catch (SQLException e) {
             throw new InternalError(e.getMessage());
@@ -204,6 +193,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
         Connection con = null;
         try {
             con = connect();
+            sg.executeLookupReplicationSql(con, getPdm());
             sg.executeNormalizeSql(con, getPdm());
         }
         catch (SQLException e) {
@@ -301,13 +291,22 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      * @return the initialization status
      */
     public boolean isInitialized() {
+        return exists("snapshots");
+    }
+
+    /**
+     * Returns true if the specified table exists in the DB
+     * @param tbl table name
+     * @return true if the table exists, false otherwise
+     */
+    public boolean exists(String tbl) {
         Connection con = null;
         Statement s = null;
         ResultSet r = null;
         try {
             con = connect();
             s = con.createStatement();
-            r = s.executeQuery("SELECT id,firstid,lastid,tmstmp FROM snapshots WHERE id=0");
+            r = s.executeQuery("SELECT * FROM " + tbl + " WHERE 1=0");
             r.next();
         }
         catch (SQLException e) {

@@ -11,6 +11,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -44,17 +45,17 @@ public class GdcDI {
 	private final String host;
 	private final String userName;
 	private final String password;
-	
+
     private GdcRESTApiWrapper _restApi = null;
     private GdcFTPApiWrapper _ftpApi = null;
-    
+
     private String projectId = null;
     private AbstractConnector connector = null;
 
 
     private int defaultConnectorBackend = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
 
-    
+
     private GdcDI(final String host, final String userName, final String password) throws GdcLoginException {
     	String ftpHost = null;
         // Create the FTP host automatically
@@ -70,21 +71,21 @@ public class GdcDI {
         else {
             throw new IllegalArgumentException("Invalid format of the GoodData REST API host: " + host);
         }
-        
+
         this.host = host;
         this.ftpHost = ftpHost;
         this.userName = userName;
         this.password = password;
     }
-    
+
     private void setProject(String projectId) {
     	this.projectId = projectId;
     }
-    
+
     public void execute(final String commandsStr) throws Exception {
 
         List<Command> cmds = new ArrayList<Command>();
-        
+
         cmds.addAll(parseCmd(commandsStr));
 
         for(Command command : cmds) {
@@ -106,14 +107,14 @@ public class GdcDI {
     	}
     	return _restApi;
     }
-    
+
     private GdcFTPApiWrapper getFtpApi() {
     	if (_ftpApi == null) {
 	        System.out.println("Using the GoodData FTP host '" + ftpHost + "'.");
-	
+
 	        NamePasswordConfiguration ftpConfiguration = new NamePasswordConfiguration("ftp",
 	                ftpHost, userName, password);
-	        
+
 	        _ftpApi = new GdcFTPApiWrapper(ftpConfiguration);
     	}
     	return _ftpApi;
@@ -148,7 +149,23 @@ public class GdcDI {
 	        else {
 	            System.out.println("Using the default GoodData REST API host '" + host + "'.");
 	        }
-	        
+
+            if(line.hasOption("username")) {
+	            userName = line.getOptionValue("username");
+	        }
+	        else {
+	            throw new IllegalArgumentException(
+    		        "Please specify the GoodData username (-u or --username) command-line option.");
+	        }
+
+            if(line.hasOption("password")) {
+	            password = line.getOptionValue("password");
+	        }
+	        else {
+	            throw new IllegalArgumentException(
+    		        "Please specify the GoodData password (-p or --password) command-line option.");
+	        }
+
 	        GdcDI gdcDi = new GdcDI(host, userName, password);
 	        if (line.hasOption("project")) {
 	        	gdcDi.setProject(line.getOptionValue("project"));
@@ -179,7 +196,7 @@ public class GdcDI {
             String[] commands = cmd.split(";");
             for( String component : commands) {
                 component = component.trim();
-                if(component != null && component.length() > 0 && !component.startsWith("#")) {                    
+                if(component != null && component.length() > 0 && !component.startsWith("#")) {
                     Pattern p = Pattern.compile(".*?\\(.*?\\)");
                     Matcher m = p.matcher(component);
                     if(!m.matches())
@@ -242,7 +259,7 @@ public class GdcDI {
         HelpFormatter formatter = new HelpFormatter();
         System.out.println("ERROR: " + err);
         System.out.println(commandsHelp());
-        System.exit(1);    
+        System.exit(1);
     }
 
     /**
@@ -250,7 +267,8 @@ public class GdcDI {
      * @param command to execute
      * @throws Exception general error
      */
-    private void processCommand(Command command) throws Exception {        
+    private void processCommand(Command command) throws Exception {
+
         if(command.getCommand().equalsIgnoreCase("CreateProject")) {
             String name = (String)command.getParameters().get("name");
             String desc = (String)command.getParameters().get("desc");
@@ -425,7 +443,7 @@ public class GdcDI {
                         }
                         else
                             throw new IllegalArgumentException(
-                                 "LoadGoogleAnalytics: Please specify a Google password using the password parameter.");   
+                                 "LoadGoogleAnalytics: Please specify a Google password using the password parameter.");
                     }
                     else
                         throw new IllegalArgumentException(
@@ -503,12 +521,12 @@ public class GdcDI {
 
         if(command.getCommand().equalsIgnoreCase("TransferData")) {
             if(connector != null) {
-                if(!connector.isInitialized())
-                    connector.initialize();
-
+                // connector's schema name
+                String ssn = StringUtil.formatShortName(connector.getSchema().getName());
+                connector.initialize();
                 // retrieve the DLI
-                DLI dli = getRestApi().getDLIById("dataset." + connector.getSchema().getName().toLowerCase(), projectId);
-                List<DLIPart> parts= getRestApi().getDLIParts("dataset." + connector.getSchema().getName().toLowerCase(), projectId);
+                DLI dli = getRestApi().getDLIById("dataset." + ssn, projectId);
+                List<DLIPart> parts= getRestApi().getDLIParts("dataset." + ssn, projectId);
                 // target directories and ZIP names
 
                 String incremental = (String)command.getParameters().get("incremental");
@@ -568,13 +586,13 @@ public class GdcDI {
                             snapshots[i] = fs + i;
                         }
                         if(connector != null) {
-                            if(!connector.isInitialized())
-                                connector.initialize();
+                            // connector's schema name
+                            String ssn = StringUtil.formatShortName(connector.getSchema().getName());
+
+                            connector.initialize();
                             // retrieve the DLI
-                            DLI dli = getRestApi().getDLIById("dataset." + connector.getSchema().getName().toLowerCase(),
-                                    projectId);
-                            List<DLIPart> parts= getRestApi().getDLIParts("dataset." +
-                                    connector.getSchema().getName().toLowerCase(), projectId);
+                            DLI dli = getRestApi().getDLIById("dataset." + ssn, projectId);
+                            List<DLIPart> parts= getRestApi().getDLIParts("dataset." +ssn, projectId);
 
                             String incremental = (String)command.getParameters().get("incremental");
                             if(incremental != null && incremental.length() > 0 &&
@@ -622,13 +640,13 @@ public class GdcDI {
 
         if(command.getCommand().equalsIgnoreCase("TransferLastSnapshot")) {
             if(connector != null) {
-                if(!connector.isInitialized())
-                    connector.initialize();
+                // connector's schema name
+                String ssn = StringUtil.formatShortName(connector.getSchema().getName());
+
+                connector.initialize();
                 // retrieve the DLI
-                DLI dli = getRestApi().getDLIById("dataset." + connector.getSchema().getName().toLowerCase(),
-                        projectId);
-                List<DLIPart> parts= getRestApi().getDLIParts("dataset." +
-                        connector.getSchema().getName().toLowerCase(), projectId);
+                DLI dli = getRestApi().getDLIById("dataset." + ssn, projectId);
+                List<DLIPart> parts= getRestApi().getDLIParts("dataset." + ssn, projectId);
 
                 String incremental = (String)command.getParameters().get("incremental");
                 if(incremental != null && incremental.length() > 0 &&
@@ -663,5 +681,5 @@ public class GdcDI {
                         "Use a 'LoadXXX' to load a data source.");
         }
     }
- 
+
 }

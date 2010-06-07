@@ -29,9 +29,15 @@ public class SourceColumn {
      */
     private String ldmType;
     /**
-     * LABEL's primary attribute
+     * LABEL's or REFERENCE's primary source column
      */
     private String pk;
+
+    /**
+     * REFERENCE's primary source schema
+     */
+    private String pkSchema;
+
     /**
      * Column's folder
      */
@@ -41,6 +47,24 @@ public class SourceColumn {
      */
     private String format;    
 
+
+    /**
+     * SourceColumn constructor
+     * @param name columna name
+     * @param ldmType column LDM type
+     * @param title column type
+     * @param folder column folder
+     * @param pk LABEL's OR REFERENCE's primary source column
+     * @param pkSchema LABEL's OR REFERENCE's primary source schema
+     */
+    public SourceColumn(String name, String ldmType, String title, String folder, String pk, String pkSchema) {
+        this.name = name;
+        this.title = title;
+        this.folder = folder;
+        this.ldmType = ldmType;
+        this.pk = pk;
+        this.pkSchema = pkSchema;
+    }
 
     /**
      * SourceColumn constructor
@@ -114,19 +138,35 @@ public class SourceColumn {
     }
 
     /**
-     * LABEL's primary attribute getter
-     * @return label's primary attribute
+     * LABEL's or REFERENCE's primary source column getter
+     * @return LABEL's or REFERENCE's primary source column
      */
     public String getPk() {
         return pk;
     }
 
     /**
-     * Label's primary attribute setter
-     * @param pk label's primary attribute
+     * LABEL's or REFERENCE's primary source column setter
+     * @param pk LABEL's or REFERENCE's primary source column
      */
     public void setPk(String pk) {
         this.pk = pk;
+    }
+
+    /**
+     * LABEL's or REFERENCE's primary source schema getter
+     * @return LABEL's or REFERENCE's primary source schema
+     */
+    public String getPkSchema() {
+        return pkSchema;
+    }
+
+    /**
+     * LABEL's or REFERENCE's primary source schema setter
+     * @param pks LABEL's or REFERENCE's primary source schema
+     */
+    public void setPkSchema(String pks) {
+        this.pkSchema = pks;
     }
 
     /**

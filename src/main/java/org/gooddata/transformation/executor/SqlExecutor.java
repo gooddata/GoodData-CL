@@ -16,6 +16,15 @@ import java.sql.SQLException;
 public interface SqlExecutor {
 
     /**
+     * Executes the system DDL initialization
+     * @param c JDBC connection
+     * @param schema the PDM schema
+     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
+     * @throws SQLException in case of db problems
+     */
+    public void executeSystemDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException;
+
+    /**
      * Executes the DDL initialization
      * @param c JDBC connection
      * @param schema the PDM schema
@@ -53,5 +62,15 @@ public interface SqlExecutor {
      */
     public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
             throws ModelException, SQLException;
+
+
+    /**
+     * Executes the copying of the referenced lookup tables
+     * @param c JDBC connection
+     * @param schema the PDM schema
+     * @throws com.gooddata.exceptions.ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
+     * @throws java.sql.SQLException in case of db problems
+     */
+    public void executeLookupReplicationSql(Connection c, PdmSchema schema) throws ModelException, SQLException;
 
 }
