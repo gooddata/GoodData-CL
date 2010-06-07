@@ -1,13 +1,13 @@
-OpenProject(id=llownmjvzfmggue790mmkgsuf2521swl);
+CreateProject(name=HR);
 LoadCsv(csvDataFile=data/hr/department.csv, configFile=data/hr/department.xml);
 GenerateMaql(maqlFile=data/hr/department.maql);
 #ExecuteMaql(maqlFile=data/hr/department.maql);
-#TransferData(incremental=false);
+TransferData(incremental=false);
 LoadCsv(csvDataFile=data/hr/employee.csv, configFile=data/hr/employee.xml);
 GenerateMaql(maqlFile=data/hr/employee.maql);
 #ExecuteMaql(maqlFile=data/hr/employee.maql);
-#TransferData(incremental=false);
+TransferData(incremental=false);
 LoadCsv(csvDataFile=data/hr/salary.csv, configFile=data/hr/salary.xml);
 GenerateMaql(maqlFile=data/hr/salary.maql);
 #ExecuteMaql(maqlFile=data/hr/salary.maql);
-#TransferData(incremental=false);
+TransferData(incremental=false);
