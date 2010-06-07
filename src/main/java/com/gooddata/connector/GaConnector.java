@@ -14,6 +14,8 @@ import com.google.gdata.data.analytics.DataFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 import org.apache.log4j.Logger;
+import org.gooddata.connector.AbstractConnector;
+import org.gooddata.connector.Connector;
 
 import java.io.*;
 import java.sql.Connection;
@@ -25,7 +27,7 @@ import java.sql.SQLException;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class GaConnector extends AbstractDerbyConnector {
+public class GaConnector extends AbstractConnector implements Connector {
 
     public static final String GA_DATE = "ga:date";
     
@@ -45,14 +47,16 @@ public class GaConnector extends AbstractDerbyConnector {
      * @param gPsw Google Analytics Password
      * @param gId Google Analytics profileId
      * @param gQuery Google Analytics query
+     * @param connectorBackend connector backend 
      * @throws InitializationException
      * @throws MetadataFormatException
      * @throws IOException
      */
-    protected GaConnector(String projectId, String configFileName, String gUsr, String gPsw, String gId, GaQuery gQuery)
+    protected GaConnector(String projectId, String configFileName, String gUsr, String gPsw, String gId, GaQuery gQuery,
+                          int connectorBackend)
             throws InitializationException,
             MetadataFormatException, IOException {
-        super(projectId, configFileName);
+        super(projectId, configFileName, connectorBackend);
         gQuery.setIds(gId);
         setGoogleAnalyticsUsername(gUsr);
         setGoogleAnalyticsPassword(gPsw);
@@ -67,15 +71,16 @@ public class GaConnector extends AbstractDerbyConnector {
      * @param gPsw Google Analytics Password
      * @param gId Google Analytics profileId
      * @param gQuery Google Analytics query
+     * @param connectorBackend connector backend 
      * @return new Google Analytics Connector
      * @throws InitializationException
      * @throws MetadataFormatException
      * @throws IOException
      */
     public static GaConnector createConnector(String projectId, String configFileName, String gUsr, String gPsw,
-                                String gId, GaQuery gQuery) throws InitializationException,MetadataFormatException,
+                                String gId, GaQuery gQuery, int connectorBackend) throws InitializationException,MetadataFormatException,
                                 IOException {
-        return new GaConnector(projectId, configFileName, gUsr, gPsw, gId, gQuery);
+        return new GaConnector(projectId, configFileName, gUsr, gPsw, gId, gQuery, connectorBackend);
     }
 
     /**
@@ -139,7 +144,6 @@ public class GaConnector extends AbstractDerbyConnector {
         s.writeConfig(new File(configFileName));
     }
 
-    @Override
     /**
      * Extracts the source data CSV to the Derby database where it is going to be transformed
      * @throws ModelException in case of PDM schema issues
@@ -155,8 +159,8 @@ public class GaConnector extends AbstractDerbyConnector {
 		    FeedDumper fd = new FeedDumper(feed, new FileOutputStream(dataFile));
             fd.dump();
             
-            con = connect();
-            sg.executeExtractSql(con, getPdm(), dataFile.getAbsolutePath());
+            con = getConnectorBackend().connect();
+            getConnectorBackend().extract(dataFile);
         }
         catch (SQLException e) {
             throw new InternalError(e.getMessage());

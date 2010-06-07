@@ -6,10 +6,10 @@ import com.gooddata.exceptions.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.StringUtil;
+import org.gooddata.connector.AbstractConnector;
+import org.gooddata.connector.Connector;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 import static org.apache.derby.tools.ij.runScript;
 
@@ -19,11 +19,10 @@ import static org.apache.derby.tools.ij.runScript;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class CsvConnector extends AbstractDerbyConnector {
+public class CsvConnector extends AbstractConnector implements Connector {
 
-    /**
-     * The CSV data file (no headers).
-     */
+    
+    // data file
     private File dataFile;
 
     /**
@@ -31,13 +30,15 @@ public class CsvConnector extends AbstractDerbyConnector {
      * @param projectId project id
      * @param configFileName schema config file name
      * @param dataFileName primary data file
+     * @param connectorBackend connector backend 
      * @throws InitializationException issues with the initialization
      * @throws MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue 
      */
-    protected CsvConnector(String projectId, String configFileName, String dataFileName) throws InitializationException,
+    protected CsvConnector(String projectId, String configFileName, String dataFileName, int connectorBackend)
+            throws InitializationException,
             MetadataFormatException, IOException {
-        super(projectId, configFileName);
+        super(projectId, configFileName, connectorBackend);
         this.setDataFile(new File(dataFileName));
     }
 
@@ -46,14 +47,16 @@ public class CsvConnector extends AbstractDerbyConnector {
      * @param projectId project id
      * @param configFileName schema config file name
      * @param dataFileName primary data file
+     * @param connectorBackend connector backend
      * @return new CSV Connector 
      * @throws InitializationException issues with the initialization
      * @throws MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue
      */
-    public static CsvConnector createConnector(String projectId, String configFileName, String dataFileName) throws InitializationException,
+    public static CsvConnector createConnector(String projectId, String configFileName, String dataFileName,
+                                                int connectorBackend) throws InitializationException,
             MetadataFormatException, IOException {
-        return new CsvConnector(projectId, configFileName, dataFileName);    
+        return new CsvConnector(projectId, configFileName, dataFileName, connectorBackend);    
     }
 
     /**
@@ -94,31 +97,6 @@ public class CsvConnector extends AbstractDerbyConnector {
     }
 
     /**
-     * Extracts the source data CSV to the Derby database where it is going to be transformed
-     * @throws ModelException in case of PDM schema issues 
-     */
-    public void extract() throws ModelException {
-        Connection con = null;
-        try {
-            con = connect();
-            sg.executeExtractSql(con, getPdm(), dataFile.getAbsolutePath());
-        }
-        catch (SQLException e) {
-            throw new InternalError(e.getMessage());
-        }
-        finally {
-            try {
-                if (con != null && !con.isClosed())
-                    con.close();
-            }
-            catch (SQLException e) {
-                throw new InternalError(e.getMessage());
-            }
-        }
-    }
-
-
-    /**
      * Data CSV file getter
      * @return the data CSV file
      */
@@ -134,4 +112,12 @@ public class CsvConnector extends AbstractDerbyConnector {
         this.dataFile = dataFile;
     }
 
+    /**
+     * Extracts the source data CSV to the Derby database where it is going to be transformed
+     * @throws ModelException in case of PDM schema issues
+     */
+    public void extract() throws ModelException {
+        getConnectorBackend().extract(getDataFile());
+    }
+    
 }

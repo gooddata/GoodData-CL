@@ -1,27 +1,34 @@
-package com.gooddata.connector;
+package org.gooddata.connector.backend;
 
 import com.gooddata.exceptions.InternalErrorException;
 import com.gooddata.exceptions.ModelException;
+import com.gooddata.integration.model.Column;
+import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
+import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.transformation.executor.DerbySqlExecutorUpdate;
+import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 
-import static org.apache.derby.tools.ij.runScript;
-
 /**
- * GoodData  abstract derby connector
+ * GoodData abstract connector.
  * This connector creates a GoodData LDM schema from a source schema, extracts the data from the source,
- * normalizes the data, and create the GoodData data deployment package. This connector uses the embedded Derby SQL
- * database.
+ * normalizes the data, and create the GoodData data deployment package.
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public abstract class AbstractDerbyConnector extends AbstractConnector {
+public abstract class AbstractConnectorBackend implements ConnectorBackend {
+
+    // Connector backends
+    public static final int CONNECTOR_BACKEND_DERBY_SQL = 1;
+    public static final int CONNECTOR_BACKEND_MYSQL = 2;
 
     /**
      * The derby SQL executor
@@ -30,41 +37,138 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
 
 
     /**
-     * static initializer of the Derby SQL JDBC driver
+     * PDM schema
      */
-    static {
-        String driver = "org.apache.derby.jdbc.EmbeddedDriver";
-        try {
-            Class.forName(driver).newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+    private PdmSchema pdm;
+
+    /**
+     * The project id
+     */
+    protected String projectId;
+
+    /**
+     * The data source name
+     */
+    protected String name;
+
+    /**
+     * The config file name
+     */
+    protected String configFileName;
+
+    /**
+     * The ZIP archive suffix
+     */
+    protected static final String DLI_ARCHIVE_SUFFIX = ".zip";
 
 
     /**
      * Constructor
      * @param projectId project id
      * @param configFileName config file name
-     * @throws java.io.IOException in case of an IO issue
+     * @param pdm PDM schema
+     * @throws IOException in case of an IO issue 
      */
-    protected AbstractDerbyConnector(String projectId, String configFileName) throws IOException {
-        super(projectId, configFileName);
+    protected AbstractConnectorBackend(String projectId, String configFileName, PdmSchema pdm) throws IOException {
+        this.projectId = projectId;
+        this.configFileName = configFileName;
+        this.pdm = pdm;
     }
 
+    /**
+     * Drops all snapshots
+     * @return  a msg
+     */
+    public abstract void dropSnapshots();
+    
+    
 
     /**
-     * Connects to the Derby database
-     * @return JDBC connection
-     * @throws SQLException
+     * Create the GoodData data package with the ALL data
+     * @param dli the Data Loading Interface that contains the required data structures
+     * @param parts the Data Loading Interface parts
+     * @param dir target directory where the data package will be stored
+     * @param archiveName the name of the target ZIP archive
+     * @throws IOException IO issues
+     * @throws ModelException in case of PDM schema issues 
      */
-    protected Connection connect() throws SQLException {
-        String protocol = "jdbc:derby:";
-        return DriverManager.getConnection(protocol + projectId +"_" + name + ";create=true");
+    public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName)
+            throws IOException, ModelException {
+        deploySnapshot(dli, parts, dir, archiveName, null);
+    }
+
+    /**
+     * Adds CSV headers to all CSV files
+     * @param parts the Data Loading Interface parts
+     * @param dir target directory where the data package will be stored
+     * @throws IOException IO issues
+     */
+    protected void addHeaders(List<DLIPart> parts, String dir) throws IOException {
+        for(DLIPart part : parts) {
+            String fn = part.getFileName();
+            List<Column> cols = part.getColumns();
+            String header = "";
+            for(Column col : cols) {
+                if(header != null && header.length() > 0) {
+                    header += ","+col.getName();
+                }
+                else {
+                    header += col.getName();                    
+                }
+            }
+            FileUtil.appendCsvHeader(header, dir + System.getProperty("file.separator") + fn);
+        }
+    }
+
+    /**
+     * Create the GoodData data package with the data from specified snapshots
+     * @param dli the Data Loading Interface that contains the required data structures
+     * @param parts the Data Loading Interface parts
+     * @param dir target directory where the data package will be stored
+     * @param archiveName the name of the target ZIP archive
+     * @param snapshotIds snapshot ids that are going to be loaded (if NULL, all snapshots are going to be loaded) 
+     * @throws IOException IO issues
+     * @throws ModelException in case of PDM schema issues 
+     */
+    public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
+            throws IOException, ModelException {
+        loadSnapshot(parts, dir, snapshotIds);
+        FileUtil.writeStringToFile(dli.getDLIManifest(parts), dir + System.getProperty("file.separator") +
+                GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
+        addHeaders(parts, dir);
+        FileUtil.compressDir(dir, archiveName);
+    }
+
+    /**
+     * Data source name getter
+     * @return data source name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Data source name setter
+     * @param name data source name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * PDM schema getter
+     * @return pdm schema
+     */
+    public PdmSchema getPdm() {
+        return pdm;
+    }
+
+    /**
+     * PDM schema setter
+     * @param pdm PDM schema
+     */
+    public void setPdm(PdmSchema pdm) {
+        this.pdm = pdm;
     }
 
     /**
@@ -91,7 +195,6 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
         }
     }
 
-
     /**
      * Perform the data normalization (generate lookups) in the Derby database. The database must contain the required
      * tables
@@ -115,15 +218,6 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
                 throw new InternalError(e.getMessage());
             }
         }
-    }
-
-    /**
-     * Drops all snapshots
-     */
-    public void dropSnapshots() {
-        File derbyDir = new File (System.getProperty("derby.system.home") +
-                System.getProperty("file.separator") + projectId + "_" + name);
-        derbyDir.delete();
     }
 
     /**
@@ -236,10 +330,35 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
     }
 
     /**
+     * Extracts the source data CSV to the Derby database where it is going to be transformed
+     * @param dataFile the data file to extract
+     * @throws ModelException in case of PDM schema issues
+     */
+    public void extract(File dataFile) throws ModelException {
+        Connection con = null;
+        try {
+            con = connect();
+            sg.executeExtractSql(con, getPdm(), dataFile.getAbsolutePath());
+        }
+        catch (SQLException e) {
+            throw new InternalError(e.getMessage());
+        }
+        finally {
+            try {
+                if (con != null && !con.isClosed())
+                    con.close();
+            }
+            catch (SQLException e) {
+                throw new InternalError(e.getMessage());
+            }
+        }
+    }
+
+    /**
      * Load the all normalized data from the Derby SQL to the GoodData data package on the disk
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
-     * @throws ModelException in case of PDM schema issues 
+     * @throws ModelException in case of PDM schema issues
      */
     public void load(List<DLIPart> parts, String dir) throws ModelException {
         loadSnapshot(parts, dir, null);
@@ -251,7 +370,7 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
      * @param snapshotIds snapshot ids that are going to be loaded (if NULL, all snapshots are going to be loaded)
-     * @throws ModelException in case of PDM schema issues 
+     * @throws ModelException in case of PDM schema issues
      */
     public void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds) throws ModelException {
         Connection con = null;
@@ -277,5 +396,6 @@ public abstract class AbstractDerbyConnector extends AbstractConnector {
             }
         }
     }
+
 
 }

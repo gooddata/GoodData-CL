@@ -5,6 +5,7 @@ import com.gooddata.transformation.executor.model.PdmColumn;
 import com.gooddata.transformation.executor.model.PdmSchema;
 import com.gooddata.transformation.executor.model.PdmTable;
 import com.gooddata.util.JdbcUtil;
+import org.gooddata.transformation.executor.SqlExecutor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ import java.util.List;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class DerbySqlExecutorUpdate extends DerbySqlExecutor {
+public class DerbySqlExecutorUpdate extends DerbySqlExecutor implements SqlExecutor {
 
     /**
      * Executes the data normalization script

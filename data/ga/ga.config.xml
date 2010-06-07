@@ -1,5 +1,5 @@
 <schema>
-  <name>ga</name>
+  <name>GA</name>
   <columns>
     <column>
       <name>date</name>
@@ -8,23 +8,43 @@
       <format>yyyy-MM-dd</format>
     </column>
     <column>
+      <name>browser</name>
+      <title>Browser</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
+      <name>browserVersion</name>
+      <title>Browser Version</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
       <name>country</name>
       <title>Country</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
-      <name>visits</name>
-      <title>Visits</title>
+      <name>isMobile</name>
+      <title>Mobile Access</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
+      <name>bounces</name>
+      <title>Bounces</title>
       <ldmType>FACT</ldmType>
     </column>
     <column>
-      <name>pageviews</name>
+      <name>newVisits</name>
+      <title>New Visits</title>
+      <ldmType>FACT</ldmType>
+    </column>
+    <column>
+      <name>pageViews</name>
       <title>Pageviews</title>
       <ldmType>FACT</ldmType>
     </column>
     <column>
-      <name>new_visits</name>
-      <title>New Visits</title>
+      <name>visits</name>
+      <title>Visits</title>
       <ldmType>FACT</ldmType>
     </column>
   </columns>

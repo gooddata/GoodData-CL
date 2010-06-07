@@ -1,5 +1,0 @@
-OpenProject(id=or63skdyprp8obqvexuuozicocyx2nyb);
-LoadCsv(csvDataFile=../data/quotes/quotes.csv,configFile=../data/quotes/quotes.config.xml);
-GenerateMaql(maqlFile=../data/quotes/quotes.maql);
-ExecuteMaql(maqlFile=../data/quotes/quotes.maql);
-TransferData();

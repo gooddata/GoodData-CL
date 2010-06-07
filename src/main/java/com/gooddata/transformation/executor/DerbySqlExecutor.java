@@ -10,6 +10,7 @@ import com.gooddata.transformation.executor.model.PdmTable;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
+import org.gooddata.transformation.executor.SqlExecutor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,7 +22,7 @@ import java.util.*;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class DerbySqlExecutor {
+public class DerbySqlExecutor implements SqlExecutor {
 
     private static Logger l = Logger.getLogger(DerbySqlExecutor.class);
 
@@ -59,10 +60,10 @@ public class DerbySqlExecutor {
             sql += "CREATE TABLE " + table.getName() + " (\n";
             for( PdmColumn column : table.getColumns()) {
                 sql += " "+ column.getName() + " " + column.getType();
-                if(column.isAutoIncrement())
-                    sql += " GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)";
                 if(column.isUnique())
                     sql += " UNIQUE";
+                if(column.isAutoIncrement())
+                    sql += " GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)";
                 if(column.isPrimaryKey())
                     if(pk != null && pk.length() > 0)
                         pk += "," + column.getName();
