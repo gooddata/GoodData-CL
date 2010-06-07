@@ -24,8 +24,6 @@ public class MaqlGenerator {
     private List<DateColumn> dates = new ArrayList<DateColumn>();
     private ConnectionPoint connectionPoint = null;
 
-    private boolean hasFacts = false;
-
     public MaqlGenerator(SourceSchema schema) {
         this.schema = schema;
         this.ssn = StringUtil.formatShortName(schema.getName());
@@ -65,7 +63,7 @@ public class MaqlGenerator {
         // generate the facts of / record id special attribute
         if (connectionPoint != null) {
             script += connectionPoint.generateMaqlDdl();
-        } else if (hasFacts) {
+        } else {
             script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \"" + lsn +
                     " Record ID\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
             script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
@@ -190,7 +188,6 @@ public class MaqlGenerator {
 
         Fact(SourceColumn column) {
             super(column);
-            hasFacts = true;
             table = "f_" + ssn;
         }
 
@@ -227,8 +224,6 @@ public class MaqlGenerator {
 
         DateColumn(SourceColumn column) {
             super(column);
-
-            hasFacts = true;
         }
 
         @Override
