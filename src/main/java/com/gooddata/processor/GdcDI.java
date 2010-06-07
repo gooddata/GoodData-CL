@@ -11,8 +11,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.gooddata.connector.GaConnector;
-import com.gooddata.google.analytics.GaQuery;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -21,7 +19,9 @@ import org.apache.commons.cli.Options;
 
 import com.gooddata.connector.AbstractConnector;
 import com.gooddata.connector.CsvConnector;
+import com.gooddata.connector.GaConnector;
 import com.gooddata.exceptions.InvalidArgumentException;
+import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
@@ -39,8 +39,13 @@ import com.gooddata.util.FileUtil;
  */
 public class GdcDI {
 
-    private final GdcRESTApiWrapper restApi;
-    private final GdcFTPApiWrapper ftpApi;
+	private final String ftpHost;
+	private final String host;
+	private final String userName;
+	private final String password;
+	
+    private GdcRESTApiWrapper _restApi = null;
+    private GdcFTPApiWrapper _ftpApi = null;
     
     private String projectId = null;
     private AbstractConnector connector = null;
@@ -61,18 +66,11 @@ public class GdcDI {
         else {
             throw new IllegalArgumentException("Invalid format of the GoodData REST API host: " + host);
         }
-
-        System.out.println("Using the GoodData FTP host '" + ftpHost + "'.");
-
-        NamePasswordConfiguration httpConfiguration = new NamePasswordConfiguration("https", host,
-                userName, password);
-        NamePasswordConfiguration ftpConfiguration = new NamePasswordConfiguration("ftp",
-                ftpHost, userName, password);
         
-        restApi = new GdcRESTApiWrapper(httpConfiguration);
-        ftpApi = new GdcFTPApiWrapper(ftpConfiguration);
-
-        restApi.login();
+        this.host = host;
+        this.ftpHost = ftpHost;
+        this.userName = userName;
+        this.password = password;
     }
     
     private void setProject(String projectId) {
@@ -90,6 +88,32 @@ public class GdcDI {
         }
     }
 
+    private GdcRESTApiWrapper getRestApi() throws GdcLoginException {
+    	if (_restApi == null) {
+    		if (userName == null || password == null) {
+    			throw new IllegalArgumentException(
+    					"Please specify both GoodData username (-u or --username) and password (-p or --password) command-line options");
+    		}
+            final NamePasswordConfiguration httpConfiguration = new NamePasswordConfiguration(
+            		"https", host,
+                    userName, password);
+            _restApi = new GdcRESTApiWrapper(httpConfiguration);
+            _restApi.login();
+    	}
+    	return _restApi;
+    }
+    
+    private GdcFTPApiWrapper getFtpApi() {
+    	if (_ftpApi == null) {
+	        System.out.println("Using the GoodData FTP host '" + ftpHost + "'.");
+	
+	        NamePasswordConfiguration ftpConfiguration = new NamePasswordConfiguration("ftp",
+	                ftpHost, userName, password);
+	        
+	        _ftpApi = new GdcFTPApiWrapper(ftpConfiguration);
+    	}
+    	return _ftpApi;
+    }
 
     /**
      * The main CLI processor
@@ -114,18 +138,6 @@ public class GdcDI {
         CommandLine line = parser.parse(o, args);
 
         try {
-	        if(line.hasOption("username")) {
-	            userName = line.getOptionValue("username");
-	        }
-	        else
-	            printErrorHelpandExit("Please specify a GoodData username (-u or --username command-line options).\n", o);
-	
-	        if(line.hasOption("password")) {
-	            password = line.getOptionValue("password");
-	        }
-	        else
-	            printErrorHelpandExit("Please specify a GoodData password (-p or --password command-line options).\n", o);
-	
 	        if(line.hasOption("host")) {
 	            host = line.getOptionValue("host");
 	        }
@@ -240,9 +252,9 @@ public class GdcDI {
             String desc = (String)command.getParameters().get("desc");
             if(name != null && name.length() > 0) {
                 if(desc != null && desc.length() > 0)
-                    projectId = restApi.createProject(name, desc);
+                    projectId = getRestApi().createProject(name, desc);
                 else
-                    projectId = restApi.createProject(name, name);
+                    projectId = getRestApi().createProject(name, name);
                 System.out.println("Project id = '"+projectId+"' created.");
             }
             else
@@ -448,7 +460,7 @@ public class GdcDI {
                 if(mf.exists()) {
                     if(projectId != null) {
                         String maql = FileUtil.readStringFromFile(maqlFile);
-                        restApi.executeMAQL(projectId, maql);
+                        getRestApi().executeMAQL(projectId, maql);
                     }
                     else
                     	throw new IllegalArgumentException(
@@ -489,8 +501,8 @@ public class GdcDI {
                     connector.initialize();
 
                 // retrieve the DLI
-                DLI dli = restApi.getDLIById("dataset." + connector.getName().toLowerCase(), projectId);
-                List<DLIPart> parts= restApi.getDLIParts("dataset." + connector.getName().toLowerCase(), projectId);
+                DLI dli = getRestApi().getDLIById("dataset." + connector.getName().toLowerCase(), projectId);
+                List<DLIPart> parts= getRestApi().getDLIParts("dataset." + connector.getName().toLowerCase(), projectId);
                 // target directories and ZIP names
 
                 String incremental = (String)command.getParameters().get("incremental");
@@ -514,9 +526,9 @@ public class GdcDI {
                 // load data from the Derby to the local GoodData data integration package
                 connector.deploy(dli, parts, tmpDir.getAbsolutePath(), archivePath);
                 // transfer the data package to the GoodData server
-                ftpApi.transferDir(archivePath);
+                getFtpApi().transferDir(archivePath);
                 // kick the GooDData server to load the data package to the project
-                restApi.startLoading(projectId, archiveName);
+                getRestApi().startLoading(projectId, archiveName);
             }
             else
             	throw new IllegalArgumentException("TransferData: No data source loaded. Use a 'LoadXXX' to load a data source.");
@@ -553,9 +565,9 @@ public class GdcDI {
                             if(!connector.isInitialized())
                                 connector.initialize();
                             // retrieve the DLI
-                            DLI dli = restApi.getDLIById("dataset." + connector.getName().toLowerCase(),
+                            DLI dli = getRestApi().getDLIById("dataset." + connector.getName().toLowerCase(),
                                     projectId);
-                            List<DLIPart> parts= restApi.getDLIParts("dataset." +
+                            List<DLIPart> parts= getRestApi().getDLIParts("dataset." +
                                     connector.getName().toLowerCase(), projectId);
 
                             String incremental = (String)command.getParameters().get("incremental");
@@ -582,9 +594,9 @@ public class GdcDI {
                             connector.deploySnapshot(dli, parts, tmpDir.getAbsolutePath(), archivePath,
                                     snapshots);
                             // transfer the data package to the GoodData server
-                            ftpApi.transferDir(archivePath);
+                            getFtpApi().transferDir(archivePath);
                             // kick the GooDData server to load the data package to the project
-                            restApi.startLoading(projectId, archiveName);
+                            getRestApi().startLoading(projectId, archiveName);
                         }
                         else
                         	throw new IllegalArgumentException("TransferSnapshots: No data source loaded." +
@@ -607,9 +619,9 @@ public class GdcDI {
                 if(!connector.isInitialized())
                     connector.initialize();
                 // retrieve the DLI
-                DLI dli = restApi.getDLIById("dataset." + connector.getName().toLowerCase(),
+                DLI dli = getRestApi().getDLIById("dataset." + connector.getName().toLowerCase(),
                         projectId);
-                List<DLIPart> parts= restApi.getDLIParts("dataset." +
+                List<DLIPart> parts= getRestApi().getDLIParts("dataset." +
                         connector.getName().toLowerCase(), projectId);
 
                 String incremental = (String)command.getParameters().get("incremental");
@@ -636,9 +648,9 @@ public class GdcDI {
                 connector.deploySnapshot(dli, parts, tmpDir.getAbsolutePath(), archivePath,
                         new int[] {connector.getLastSnapshotId()});
                 // transfer the data package to the GoodData server
-                ftpApi.transferDir(archivePath);
+                getFtpApi().transferDir(archivePath);
                 // kick the GooDData server to load the data package to the project
-                restApi.startLoading(projectId, archiveName);
+                getRestApi().startLoading(projectId, archiveName);
             }
             else
             	throw new IllegalArgumentException("TransferLastSnapshot: No data source loaded." +
