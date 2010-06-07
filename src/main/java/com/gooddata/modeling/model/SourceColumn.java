@@ -13,6 +13,8 @@ public class SourceColumn {
     public final static String LDM_TYPE_FACT = "FACT";
     public final static String LDM_TYPE_LABEL = "LABEL";
     public final static String LDM_TYPE_DATE = "DATE";
+	public static final String LDM_TYPE_CONNECTION_POINT = "CONNECTION_POINT";
+	public static final String LDM_TYPE_REFERENCE = "REFERENCE";
 
     /**
      * Column name
