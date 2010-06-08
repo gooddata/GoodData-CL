@@ -95,9 +95,11 @@ public class GdcDI {
 
     private GdcRESTApiWrapper getRestApi() throws GdcLoginException {
     	if (_restApi == null) {
-    		if (userName == null || password == null) {
-    			throw new IllegalArgumentException(
-    					"Please specify both GoodData username (-u or --username) and password (-p or --password) command-line options");
+    		if (userName == null) {
+    			throw new IllegalArgumentException("Please specify the GoodData username (-u or --username) command-line option.");
+    		}
+    		if (password == null) {
+    			throw new IllegalArgumentException("Please specify the GoodData password (-p or --password) command-line option.");
     		}
             final NamePasswordConfiguration httpConfiguration = new NamePasswordConfiguration(
             		"https", host,
@@ -148,22 +150,6 @@ public class GdcDI {
 	        }
 	        else {
 	            System.out.println("Using the default GoodData REST API host '" + host + "'.");
-	        }
-
-            if(line.hasOption("username")) {
-	            userName = line.getOptionValue("username");
-	        }
-	        else {
-	            throw new IllegalArgumentException(
-    		        "Please specify the GoodData username (-u or --username) command-line option.");
-	        }
-
-            if(line.hasOption("password")) {
-	            password = line.getOptionValue("password");
-	        }
-	        else {
-	            throw new IllegalArgumentException(
-    		        "Please specify the GoodData password (-p or --password) command-line option.");
 	        }
 
 	        GdcDI gdcDi = new GdcDI(host, userName, password);
