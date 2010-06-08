@@ -1,7 +1,9 @@
 package com.gooddata.modeling.generator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
@@ -18,11 +20,11 @@ public class MaqlGenerator {
     private final SourceSchema schema;
     private final String ssn, lsn;
 
-    private List<Attribute> attributes = new ArrayList<Attribute>();
+    private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
     private List<Fact> facts = new ArrayList<Fact>();
     private List<Label> labels = new ArrayList<Label>();
     private List<DateColumn> dates = new ArrayList<DateColumn>();
-    private ConnectionPoint connectionPoint = null;
+    private boolean hasCp = false;
 
     public MaqlGenerator(SourceSchema schema) {
         this.schema = schema;
@@ -46,10 +48,7 @@ public class MaqlGenerator {
             processColumn(column);
         }
 
-        for (final Column c : attributes) {
-            script += c.generateMaqlDdl();
-        }
-        for (final Column c : labels) {
+        for (final Column c : attributes.values()) {
             script += c.generateMaqlDdl();
         }
         for (final Column c : facts) {
@@ -61,14 +60,17 @@ public class MaqlGenerator {
 
 
         // generate the facts of / record id special attribute
-        if (connectionPoint != null) {
-            script += connectionPoint.generateMaqlDdl();
-        } else {
+        if (!hasCp) {
             script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \"" + lsn +
                     " Record ID\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
             script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
         }
 
+        // labels last
+        for (final Column c : labels) {
+            script += c.generateMaqlDdl();
+        }
+        
         // finally synchronize
         script += "SYNCHRONIZE {dataset." + ssn + "};";
         return script;
@@ -115,7 +117,8 @@ public class MaqlGenerator {
 
     private void processColumn(SourceColumn column) {
         if (column.getLdmType().equals(SourceColumn.LDM_TYPE_ATTRIBUTE)) {
-            attributes.add(new Attribute(column));
+        	Attribute attr = new Attribute(column);
+            attributes.put(attr.scn, attr);
         } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
             facts.add(new Fact(column));
         } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
@@ -128,11 +131,12 @@ public class MaqlGenerator {
 
     private void processConnectionPoint(SourceColumn column) {
         if (column.getLdmType().equals(SourceColumn.LDM_TYPE_CONNECTION_POINT)) {
-            if (connectionPoint != null) {
+            if (hasCp) {
                 throw new IllegalStateException("Only one connection point per dataset is allowed. "
                         + "Consider declaring the duplicate connection points as labels of the main connection point.");
             }
-            connectionPoint = new ConnectionPoint(column);
+            ConnectionPoint connectionPoint = new ConnectionPoint(column);
+            attributes.put(connectionPoint.scn, connectionPoint);
         }
     }
 
@@ -215,8 +219,9 @@ public class MaqlGenerator {
         @Override
         public String generateMaqlDdl() {
             String scnPk = StringUtil.formatShortName(column.getPk());
+            Attribute attr = attributes.get(scnPk);
             return "ALTER ATTRIBUTE {attr." + ssn + "." + scnPk + "} ADD LABELS {label." + ssn + "." + scnPk + "."
-                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {d_" + ssn + "_" + scnPk + ".nm_" + scn + "};\n\n";
+                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + ".nm_" + scn + "};\n\n";
         }
     }
 
@@ -244,6 +249,7 @@ public class MaqlGenerator {
     private class ConnectionPoint extends Attribute {
         public ConnectionPoint(SourceColumn column) {
             super(column, "f_" + ssn);
+            hasCp = true;
         }
 
         @Override
