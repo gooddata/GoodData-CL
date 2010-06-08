@@ -2,7 +2,10 @@ This is GoodData data integration toolkit. The toolkit contains data modeling, t
 
 # Getting Started
 
-1. download [the code](http://github.com/gooddata/Java-DI-Tool/archives/master) and unpack
+1. [download](http://github.com/gooddata/Java-DI-Tool/archives/master) the code and unpack or clone the Git repository:
+
+        $ git clone http://github.com/gooddata/Java-DI-Tool.git
+
 2. make sure you have [Apache Maven](http://maven.apache.org/) installed:
 
         $ which mvn
