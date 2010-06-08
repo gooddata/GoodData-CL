@@ -53,7 +53,7 @@ public class GdcDI {
     private AbstractConnector connector = null;
 
 
-    private int defaultConnectorBackend = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
+    private int defaultConnectorBackend = AbstractConnectorBackend.CONNECTOR_BACKEND_MYSQL;
 
 
     private GdcDI(final String host, final String userName, final String password) throws GdcLoginException {
@@ -526,6 +526,7 @@ public class GdcDI {
                 }
 
                 File tmpDir = FileUtil.createTempDir();
+                Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
                 File tmpZipDir = FileUtil.createTempDir();
                 String archiveName = tmpDir.getName();
                 String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +

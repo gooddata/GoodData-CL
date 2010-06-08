@@ -9,4 +9,4 @@ PROJECT_DIR=`dirname \`dirname $SCRIPT_REAL_PATH\``  # base directory
 
 . $PROJECT_DIR/bin/cfg.sh
 
-java -Dderby.system.home=$PROJECT_DIR/db -cp ${CLASSPATH} com.gooddata.processor.GdcDI $*
+java -Dderby.system.home=$PROJECT_DIR/db -Djava.io.tmpdir=$PROJECT_DIR/tmp -cp ${CLASSPATH} com.gooddata.processor.GdcDI $*
