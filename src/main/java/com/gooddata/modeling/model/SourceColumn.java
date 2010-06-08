@@ -45,7 +45,7 @@ public class SourceColumn {
     /**
      * Column's format
      */
-    private String format;    
+    private String format = "yyyy-MM-dd";    
 
 
     /**
@@ -206,6 +206,8 @@ public class SourceColumn {
      * @return column format
      */
     public String getFormat() {
+        if(format == null || format.length() == 0)
+            return "yyyy-MM-dd";
         return format;
     }
 
@@ -214,6 +216,8 @@ public class SourceColumn {
      * @param format column format
      */
     public void setFormat(String format) {
+        if(format == null || format.length() == 0)
+            format = "yyyy-MM-dd";
         this.format = format;
     }
 

@@ -1,7 +1,5 @@
 package com.gooddata.connector.backend;
 
-import com.gooddata.transformation.executor.DerbySqlExecutor;
-import com.gooddata.transformation.executor.DerbySqlExecutorUpdate;
 import com.gooddata.transformation.executor.MySqlExecutor;
 import com.gooddata.transformation.executor.model.PdmSchema;
 import com.gooddata.util.JdbcUtil;

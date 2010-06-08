@@ -71,6 +71,7 @@ public class StringUtil {
      * @return MySQL date format
      */
     public static String convertJavaDateFormatToMySql(String dateFormat) {
+        System.err.println("DATE FORMAT " + dateFormat);
         for(int i=0; i < DATE_FORMAT_CONVERSION.length; i++)
             dateFormat = dateFormat.replace(DATE_FORMAT_CONVERSION[i][0],
                             DATE_FORMAT_CONVERSION[i][1]);

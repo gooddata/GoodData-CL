@@ -599,6 +599,7 @@ public class GdcDI {
 
                             // target directories and ZIP names
                             File tmpDir = FileUtil.createTempDir();
+                            Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
                             File tmpZipDir = FileUtil.createTempDir();
                             String archiveName = tmpDir.getName();
                             String archivePath = tmpZipDir.getAbsolutePath() +
@@ -658,6 +659,7 @@ public class GdcDI {
 
                 // target directories and ZIP names
                 File tmpDir = FileUtil.createTempDir();
+                Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
                 File tmpZipDir = FileUtil.createTempDir();
                 String archiveName = tmpDir.getName();
                 String archivePath = tmpZipDir.getAbsolutePath() +

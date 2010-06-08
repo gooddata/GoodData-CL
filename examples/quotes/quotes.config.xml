@@ -1,5 +1,5 @@
 <schema>
-  <name>quotes</name>
+  <name>Quotes</name>
   <columns>
     <column>
       <name>ID</name>

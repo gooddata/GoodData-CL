@@ -116,17 +116,17 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
      * Executes the data normalization script
      * @param c JDBC connection
      * @param schema the PDM schema
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
+     * @throws com.gooddata.exceptions.ModelException if there is a problem with the PDM schema
+     * (e.g. multiple source or fact tables)
      * @throws SQLException in case of db problems
      */
     public void executeNormalizeSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
 
         //populate REFERENCEs lookups from the referenced lookups
         executeLookupReplicationSql(c, schema);
+
+        List<String> usql = new ArrayList<String>();
         // fact table INSERT statement components
-        String factInsertFromClause = schema.getSourceTable().getName();
-        Set<PdmTable> factInsertFromClauseTables = new HashSet<PdmTable>();
-        String factInsertWhereClause = "";
         PdmTable factTable = schema.getFactTable();
         for(PdmTable lookupTable : schema.getLookupTables()) {
             // INSERT tbl(insertColumns) SELECT nestedSelectColumns FROM nestedSelectFromClause
@@ -136,39 +136,35 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
             String nestedSelectColumns = "";
             // concatenate all representing columns to create a unique hashid
             String concatenatedRepresentingColumns = "";
-
             for(PdmColumn column : lookupTable.getRepresentingColumns()) {
                 insertColumns += "," + column.getName();
                 nestedSelectColumns += "," + column.getSourceColumn();
                 // if there are LABELS, the lookup can't be added twice to the FROM clause
-                if(!factInsertFromClauseTables.contains(lookupTable)) {
-                    factInsertFromClause += "," + lookupTable.getName();
-                    factInsertFromClauseTables.add(lookupTable);
-                }
                 if(concatenatedRepresentingColumns.length() > 0)
                     concatenatedRepresentingColumns += CONCAT_OPERATOR +  column.getSourceColumn();
                 else
                     concatenatedRepresentingColumns = column.getSourceColumn();
+
             }
 
             concatenatedRepresentingColumns =  "CONCAT(" + concatenatedRepresentingColumns + ") ";
-
-            if(factInsertWhereClause.length() > 0)
-                factInsertWhereClause += " AND " + concatenatedRepresentingColumns + "=" + lookupTable.getName() + ".hashid";
-            else
-                factInsertWhereClause += concatenatedRepresentingColumns + "=" + lookupTable.getName() + ".hashid";
 
             // add the concatenated columns that fills the hashid to the beginning
             nestedSelectColumns = concatenatedRepresentingColumns + nestedSelectColumns;
 
             JdbcUtil.executeUpdate(c,
-                    "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
-                      ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
-                      " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
-                       "') AND " + concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " +
-                       lookupTable.getName() + ")"
+                "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
+                ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
+                " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
+                "') AND " + concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " +
+                lookupTable.getName() + ")"
             );
 
+            usql.add("UPDATE " + factTable.getName() + " SET  " + lookupTable.getRepresentedLookupColumn() +
+                          "_id = (SELECT id FROM " + lookupTable.getName() + " d," + schema.getSourceTable().getName() +
+                          " o WHERE " + concatenatedRepresentingColumns + " = d.hashid AND o.o_genid = " +
+                          factTable.getName() + ".id) WHERE id > (SELECT MAX(lastid) FROM snapshots WHERE name = '" +
+                          factTable.getName()+"')");
         }
 
         for(PdmTable lookupTable : schema.getConnectionPointTables()) {
@@ -179,16 +175,16 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
             String nestedSelectColumns = "";
             // concatenate all representing columns to create a unique hashid
             String concatenatedRepresentingColumns = "";
-
             for(PdmColumn column : lookupTable.getRepresentingColumns()) {
                 insertColumns += "," + column.getName();
                 nestedSelectColumns += "," + column.getSourceColumn();
+                // if there are LABELS, the lookup can't be added twice to the FROM clause
                 if(concatenatedRepresentingColumns.length() > 0)
                     concatenatedRepresentingColumns += CONCAT_OPERATOR +  column.getSourceColumn();
                 else
                     concatenatedRepresentingColumns = column.getSourceColumn();
-            }
 
+            }
             concatenatedRepresentingColumns =  "CONCAT(" + concatenatedRepresentingColumns + ") ";
 
             // add the concatenated columns that fills the hashid to the beginning
@@ -203,7 +199,6 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
                 lookupTable.getName() + ")"
             );
             */
-
             // TODO: when snapshotting, there are duplicate CONNECTION POINT VALUES
             // we need to decide if we want to accumultae the connection point lookup or not
             JdbcUtil.executeUpdate(c,
@@ -219,81 +214,75 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
             // concatenate all representing columns to create a unique hashid
             String concatenatedRepresentingColumns = "";
             for(PdmColumn column : lookupTable.getRepresentingColumns()) {
-                // if there are LABELS, the lookup can't be added twice to the FROM clause
-                if(!factInsertFromClauseTables.contains(lookupTable)) {
-                    factInsertFromClause += "," + lookupTable.getName();
-                    factInsertFromClauseTables.add(lookupTable);
-                }
                 if(concatenatedRepresentingColumns.length() > 0)
                     concatenatedRepresentingColumns += CONCAT_OPERATOR +  column.getSourceColumn();
                 else
                     concatenatedRepresentingColumns = column.getSourceColumn();
             }
-
             concatenatedRepresentingColumns =  "CONCAT(" + concatenatedRepresentingColumns + ") ";
 
-            if(factInsertWhereClause.length() > 0)
-                factInsertWhereClause += " AND " + concatenatedRepresentingColumns + "=" + lookupTable.getName() + ".hashid";
-            else
-                factInsertWhereClause += concatenatedRepresentingColumns + "=" + lookupTable.getName() + ".hashid";
+            usql.add("UPDATE " + factTable.getName() + " SET  " + lookupTable.getRepresentedLookupColumn() +
+                          "_id = (SELECT id FROM " + lookupTable.getName() + " d," + schema.getSourceTable().getName() +
+                          " o WHERE " + concatenatedRepresentingColumns + " = d.hashid AND o.o_genid = " +
+                          factTable.getName() + ".id) WHERE id > (SELECT MAX(lastid) FROM snapshots WHERE name = '" +
+                          factTable.getName()+"')");
+
         }
 
         String insertColumns = "";
         String nestedSelectColumns = "";
         for(PdmColumn factTableColumn : factTable.getColumns()) {
-            if(insertColumns.length() > 0) {
+            if(insertColumns.length() >0) {
                 insertColumns += "," + factTableColumn.getName();
-                if(SourceColumn.LDM_TYPE_DATE.equals(factTableColumn.getLdmTypeReference()))
-                    nestedSelectColumns += ",DATEDIFF(" + factTableColumn.getSourceColumn() + ",'" +
-                                           StringUtil.convertJavaDateFormatToMySql(factTableColumn.getFormat())+"'," +
-                                            "'1900-01-01')+1";
-                else
-                    nestedSelectColumns += "," + factTableColumn.getSourceColumn();
+                nestedSelectColumns += "," + factTableColumn.getSourceColumn();
             }
             else {
                 insertColumns += factTableColumn.getName();
-                if(SourceColumn.LDM_TYPE_DATE.equals(factTableColumn.getLdmTypeReference()))
-                    nestedSelectColumns += ",DATEDIFF(" + factTableColumn.getSourceColumn() + ",'" +
-                                           StringUtil.convertJavaDateFormatToMySql(factTableColumn.getFormat())+"'," +
-                                            "'1900-01-01')+1";
-                else
-                    nestedSelectColumns += factTableColumn.getSourceColumn();
+                nestedSelectColumns += factTableColumn.getSourceColumn();
             }
         }
 
-        if (factInsertWhereClause.length() > 0)
-            factInsertWhereClause += " AND " + schema.getSourceTable().getName() +
-                                     ".o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" +
-                                     factTable.getName() + "')";
-        else
-            factInsertWhereClause += schema.getSourceTable().getName() +
-                                     ".o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" +
-                                     factTable.getName() + "')";
+        String factColumns = "";
+        String sourceColumns = "";
+        for(PdmColumn column : factTable.getFactColumns()) {
+            factColumns += "," + column.getName();
+            sourceColumns += "," + column.getSourceColumn();
+        }
+
+        for(PdmColumn column : factTable.getDateColumns()) {
+            factColumns += "," + column.getName();
+            sourceColumns += ",DATEDIFF(STR_TO_DATE(" + column.getSourceColumn() + ",'" +
+                    StringUtil.convertJavaDateFormatToMySql(column.getFormat())+"'),'1900-01-01')+1";
+        }
 
         //script += "DELETE FROM snapshots WHERE name = '" + factTable.getName() + "' AND lastid = 0;\n\n";
         Date dt = new Date();
-
         JdbcUtil.executeUpdate(c,
             "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '" + factTable.getName() + "'," + dt.getTime() +
             ",MAX(id)+1 FROM " + factTable.getName()
         );
+
         JdbcUtil.executeUpdate(c,
-            "UPDATE snapshots SET firstid = 0 WHERE name = '" + factTable.getName() +
-            "' AND firstid IS NULL"
+            "UPDATE snapshots SET firstid = 0 WHERE name = '" + factTable.getName() + "' AND firstid IS NULL"
         );
 
         JdbcUtil.executeUpdate(c,
-            "INSERT INTO " + factTable.getName() + "(" + insertColumns + ") SELECT " + nestedSelectColumns +
-            " FROM " + factInsertFromClause + " WHERE " + factInsertWhereClause
+            "INSERT INTO " + factTable.getName() + "(id" + factColumns + ") SELECT o_genid" + sourceColumns +
+            " FROM " + schema.getSourceTable().getName() +
+            " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='"+factTable.getName()+"')"
         );
+
+        for(String s : usql) {
+            JdbcUtil.executeUpdate(c, s);
+        }
 
         JdbcUtil.executeUpdate(c,
             "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM " + factTable.getName() + ") WHERE name = '" +
             factTable.getName() + "' AND lastid IS NULL"
         );
+
         JdbcUtil.executeUpdate(c,
-            "UPDATE snapshots SET lastid = 0 WHERE name = '" + factTable.getName() +
-            "' AND lastid IS NULL"
+            "UPDATE snapshots SET lastid = 0 WHERE name = '" + factTable.getName() + "' AND lastid IS NULL"
         );
 
     }
@@ -318,7 +307,7 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
 
         JdbcUtil.executeUpdate(c,
             "LOAD DATA INFILE '" + file + "' INTO TABLE " + sourceTable.getName().toUpperCase() + " CHARACTER SET UTF8 "+
-            "COLUMNS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n' (" + cols + ")"
+            "COLUMNS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' (" + cols + ")"
         );
 
     }

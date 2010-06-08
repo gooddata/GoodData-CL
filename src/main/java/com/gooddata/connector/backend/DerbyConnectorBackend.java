@@ -1,7 +1,6 @@
 package com.gooddata.connector.backend;
 
 import com.gooddata.transformation.executor.DerbySqlExecutor;
-import com.gooddata.transformation.executor.DerbySqlExecutorUpdate;
 import com.gooddata.transformation.executor.model.PdmSchema;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 import org.gooddata.connector.backend.ConnectorBackend;
@@ -48,7 +47,7 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
      */
     protected DerbyConnectorBackend(String projectId, String configFileName, PdmSchema pdm) throws IOException {
         super(projectId, configFileName, pdm);
-        sg = new DerbySqlExecutorUpdate();
+        sg = new DerbySqlExecutor();
     }
 
     /**
