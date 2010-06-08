@@ -14,7 +14,7 @@ Script Commands:
   project-name - name of the new project
   description  - (optional) project description
 
- OpenProject(id=<identifier>) - open an existing project for data modeling and data upload
+ OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
   identifier - id of an existing project (takes the form of an MD5 hash)
 
  GenerateCsvConfigTemplate(csvHeaderFile=<headers>, configFile=<config>) - generate example XML config file from the CSV file
@@ -46,3 +46,5 @@ Script Commands:
 
  TransferLastSnapshot - ?
   incremental - incremental transfer (true | false)
+  
+ UploadDir(path=<directory-path>, dataset=<dataset-identifier>) - uploads a directory containing manually prepared CSV files to provided dataset.  Must call OpenProject before.  
