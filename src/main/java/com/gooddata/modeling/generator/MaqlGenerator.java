@@ -8,7 +8,6 @@ import java.util.Map;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.StringUtil;
-import com.sun.tools.javac.util.Name.Table;
 
 /**
  * GoodData MAQL Generator generates the MAQL from the LDM schema object
