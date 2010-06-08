@@ -540,6 +540,11 @@ public class GdcDI {
                 getFtpApi().transferDir(archivePath);
                 // kick the GooDData server to load the data package to the project
                 getRestApi().startLoading(projectId, archiveName);
+
+                //cleanup
+                FileUtil.recursiveDelete(tmpDir);
+                FileUtil.recursiveDelete(tmpZipDir);
+                FileUtil.recursiveDelete(new File(archivePath));                
             }
             else
             	throw new IllegalArgumentException("TransferData: No data source loaded. Use a 'LoadXXX' to load a data source.");
@@ -608,6 +613,11 @@ public class GdcDI {
                             getFtpApi().transferDir(archivePath);
                             // kick the GooDData server to load the data package to the project
                             getRestApi().startLoading(projectId, archiveName);
+
+                            //cleanup
+                            FileUtil.recursiveDelete(tmpDir);
+                            FileUtil.recursiveDelete(tmpZipDir);
+                            FileUtil.recursiveDelete(new File(archivePath));
                         }
                         else
                         	throw new IllegalArgumentException("TransferSnapshots: No data source loaded." +
@@ -662,6 +672,11 @@ public class GdcDI {
                 getFtpApi().transferDir(archivePath);
                 // kick the GooDData server to load the data package to the project
                 getRestApi().startLoading(projectId, archiveName);
+
+                //cleanup
+                FileUtil.recursiveDelete(tmpDir);
+                FileUtil.recursiveDelete(tmpZipDir);
+                FileUtil.recursiveDelete(new File(archivePath));
             }
             else
             	throw new IllegalArgumentException("TransferLastSnapshot: No data source loaded." +
