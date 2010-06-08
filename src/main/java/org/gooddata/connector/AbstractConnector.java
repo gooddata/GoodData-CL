@@ -45,7 +45,7 @@ public abstract class AbstractConnector implements Connector {
      */
     protected AbstractConnector(String projectId, String configFileName, int connectorBackend)
             throws InitializationException,
-            MetadataFormatException, IOException {
+            MetadataFormatException, IOException, ModelException {
         schema = SourceSchema.createSchema(new File(configFileName));
         PdmSchema pdm = PdmSchema.createSchema(schema);
         switch(connectorBackend) {

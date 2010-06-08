@@ -40,7 +40,7 @@ public class PdmSchema {
      * @param schema the SourceSchema
      * @return the new PdmSchema
      */
-    public static PdmSchema createSchema(SourceSchema schema) {
+    public static PdmSchema createSchema(SourceSchema schema) throws ModelException {
         PdmSchema pdm = new PdmSchema(StringUtil.formatShortName(schema.getName()));
 
         PdmTable source = new PdmTable("o_"+pdm.getName(), PdmTable.PDM_TABLE_TYPE_SOURCE);
@@ -53,6 +53,7 @@ public class PdmSchema {
         HashMap<String, List<SourceColumn>> lookups = new HashMap<String, List<SourceColumn>>();
         HashMap<String, List<SourceColumn>> references = new HashMap<String, List<SourceColumn>>();
         HashMap<String, List<SourceColumn>> connectionPoints = new HashMap<String, List<SourceColumn>>();
+        HashMap<String, List<SourceColumn>> labels = new HashMap<String, List<SourceColumn>>();
 
         for (SourceColumn column : schema.getColumns()) {
             String scn = StringUtil.formatShortName(column.getName());
@@ -103,10 +104,10 @@ public class PdmSchema {
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
                 source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
                 String scnPk = StringUtil.formatShortName(column.getReference());
-                if (!lookups.containsKey(scnPk)) {
-                    lookups.put(scnPk, new ArrayList<SourceColumn>());
+                if (!labels.containsKey(scnPk)) {
+                    labels.put(scnPk, new ArrayList<SourceColumn>());
                 }
-                List<SourceColumn> l = lookups.get(scnPk);
+                List<SourceColumn> l = labels.get(scnPk);
                 l.add(column);
             }
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
@@ -169,6 +170,16 @@ public class PdmSchema {
                         SourceColumn.LDM_TYPE_REFERENCE));
             }
             pdm.addTable(lookup);
+        }
+
+        for (String column : labels.keySet()) {
+            PdmTable lookup = pdm.getTableByName("d_" + pdm.getName() + "_" + column);
+            List<SourceColumn> l = labels.get(column);
+            for (SourceColumn c : l) {
+                String scnNm = StringUtil.formatShortName(c.getName());
+                lookup.addColumn(new PdmColumn("nm_" + scnNm, PdmColumn.PDM_COLUMN_TYPE_TEXT, "o_" + scnNm,
+                        SourceColumn.LDM_TYPE_LABEL));
+            }
         }
 
         return pdm;

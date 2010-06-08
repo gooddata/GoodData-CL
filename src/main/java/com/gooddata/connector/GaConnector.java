@@ -55,7 +55,7 @@ public class GaConnector extends AbstractConnector implements Connector {
     protected GaConnector(String projectId, String configFileName, String gUsr, String gPsw, String gId, GaQuery gQuery,
                           int connectorBackend)
             throws InitializationException,
-            MetadataFormatException, IOException {
+            MetadataFormatException, IOException, ModelException {
         super(projectId, configFileName, connectorBackend);
         gQuery.setIds(gId);
         setGoogleAnalyticsUsername(gUsr);
@@ -78,8 +78,8 @@ public class GaConnector extends AbstractConnector implements Connector {
      * @throws IOException
      */
     public static GaConnector createConnector(String projectId, String configFileName, String gUsr, String gPsw,
-                                String gId, GaQuery gQuery, int connectorBackend) throws InitializationException,MetadataFormatException,
-                                IOException {
+                                String gId, GaQuery gQuery, int connectorBackend) throws InitializationException, MetadataFormatException,
+             IOException, ModelException {
         return new GaConnector(projectId, configFileName, gUsr, gPsw, gId, gQuery, connectorBackend);
     }
 

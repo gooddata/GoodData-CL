@@ -37,7 +37,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
      */
     protected CsvConnector(String projectId, String configFileName, String dataFileName, int connectorBackend)
             throws InitializationException,
-            MetadataFormatException, IOException {
+            MetadataFormatException, IOException, ModelException {
         super(projectId, configFileName, connectorBackend);
         this.setDataFile(new File(dataFileName));
     }
@@ -55,7 +55,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
      */
     public static CsvConnector createConnector(String projectId, String configFileName, String dataFileName,
                                                 int connectorBackend) throws InitializationException,
-            MetadataFormatException, IOException {
+            MetadataFormatException, IOException, ModelException {
         return new CsvConnector(projectId, configFileName, dataFileName, connectorBackend);    
     }
 

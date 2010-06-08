@@ -185,7 +185,7 @@ public class DerbySqlExecutor extends AbstractSqlExecutor implements SqlExecutor
             // WHERE nestedSelectWhereClause
             String insertColumns = "id,hashid";
             // fact table cols
-            String nestedSelectColumns = "o_genid,";
+            String nestedSelectColumns = "";
             // concatenate all representing columns to create a unique hashid
             String concatenatedRepresentingColumns = "";
 
@@ -199,14 +199,25 @@ public class DerbySqlExecutor extends AbstractSqlExecutor implements SqlExecutor
             }
 
             // add the concatenated columns that fills the hashid to the beginning
-            nestedSelectColumns = concatenatedRepresentingColumns + nestedSelectColumns;
+            nestedSelectColumns = "o_genid," + concatenatedRepresentingColumns + nestedSelectColumns;
 
+            /*
             JdbcUtil.executeUpdate(c,
-                    "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
-                      ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
-                      " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
-                       "') AND " + concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " +
-                       lookupTable.getName() + ")"
+                "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
+                ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
+                " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
+                "') AND " + concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " +
+                lookupTable.getName() + ")"
+            );
+            */
+            
+            // TODO: when snapshotting, there are duplicate CONNECTION POINT VALUES
+            // we need to decide if we want to accumultae the connection point lookup or not
+            JdbcUtil.executeUpdate(c,
+                "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
+                ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
+                " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
+                "')"
             );
 
         }
