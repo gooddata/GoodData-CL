@@ -4,23 +4,23 @@
     <column>
       <name>id</name>
       <title>ID</title>
-      <ldmType>CONNECTION_POINT</ldmType>
+      <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
       <name>firstname</name>
       <title>First Name</title>
       <ldmType>LABEL</ldmType>
-      <pk>employee id</pk>
+      <pk>id</pk>
     </column>
     <column>
       <name>lastname</name>
       <title>Last Name</title>
       <ldmType>LABEL</ldmType>
-      <pk>employee id</pk>
+      <pk>id</pk>
     </column>
     <column>
-      <name>department_id</name>
-      <title>Department ID</title>
+      <name>department</name>
+      <title>Department</title>
       <ldmType>REFERENCE</ldmType>
       <pk>id</pk>
       <pkSchema>department</pkSchema>  

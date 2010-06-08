@@ -228,7 +228,7 @@ public class MaqlGenerator {
             if (attr == null) {
             	throw new IllegalArgumentException("Label " + scn + " points to non-existing attribute " + scnPk);
             }
-            
+
             return "ALTER ATTRIBUTE {attr." + ssn + "." + scnPk + "} ADD LABELS {label." + ssn + "." + scnPk + "."
                     + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + ".nm_" + scn + "};\n\n";
         }
@@ -249,7 +249,7 @@ public class MaqlGenerator {
                 folderStatement = ", FOLDER {ffld." + sfn + "}";
             }
             return "CREATE FACT {dt." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
-                    + "\"" + folderStatement + ") AS {f_" + ssn + ".dt_" + scn + "};\n"
+                    + "\"" + folderStatement + ") AS {f_" + ssn + ".dt_" + scn + "_id};\n"
                     + "ALTER DATASET {dataset." + ssn + "} ADD {dt." + ssn + "." + scn + "};\n\n";
 
         }

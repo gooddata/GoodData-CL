@@ -31,17 +31,18 @@ public class JdbcUtil {
             s = con.createStatement();
             rc = s.executeUpdate(sql);
             l.trace("Executed Derby SQL: statement='" + sql + "', result='" + rc + "'");
+            System.err.println("Executed Derby SQL: statement='" + sql + "', rows='" + rc + "'");
             return rc;
         }
         catch (SQLException e) {
             l.error("Error executing Derby SQL: statement='" + sql + "', result='" + rc + "'", e);
+            System.err.println("Error executing Derby SQL: statement='" + sql + "', result='" + rc + "'");
             throw e;
         }
         finally {
             if( s!= null )
                 s.close();
         }
-
     }
 
     /**

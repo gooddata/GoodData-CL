@@ -19,7 +19,7 @@ public class PdmTable {
     public final static String PDM_TABLE_TYPE_LOOKUP = "LOOKUP";
     public final static String PDM_TABLE_TYPE_FACT = "FACT";
     public final static String PDM_TABLE_TYPE_SOURCE = "SOURCE";
-    public final static String PDM_TABLE_TYPE_SYSTEM = "SYSTEM";
+    public final static String PDM_TABLE_TYPE_REFERENCE = "REFERENCE";
 
     // PDM columns
     private List<PdmColumn> columns = new ArrayList<PdmColumn>();

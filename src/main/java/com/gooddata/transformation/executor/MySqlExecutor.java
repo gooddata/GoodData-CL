@@ -118,6 +118,10 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
      * @throws java.sql.SQLException in case of db problems
      */
     public void executeNormalizeSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+
+        //populate REFERENCEs lookups from the referenced lookups
+        executeLookupReplicationSql(c, schema);
+
         // fact table INSERT statement components
         String factInsertFromClause = schema.getSourceTable().getName();
         String factInsertWhereClause = "";

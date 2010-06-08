@@ -36,9 +36,11 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
     public void executeLookupReplicationSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
         for (PdmLookupReplication lr : schema.getLookupReplications()) {
             JdbcUtil.executeUpdate(c,
-                "INSERT INTO " + lr.getReferencingLookup() + "(id," + lr.getReferencingColumn() +")" +
-                " SELECT id," + lr.getReferencedColumn() + " FROM " + lr.getReferencedLookup() +
-                " WHERE " + lr.getReferencedLookup() +".id > (SELECT MAX(id) FROM " + lr.getReferencingLookup() + ")"
+                "DELETE FROM " + lr.getReferencingLookup()
+            );
+            JdbcUtil.executeUpdate(c,
+                "INSERT INTO " + lr.getReferencingLookup() + "(id," + lr.getReferencingColumn() +",hashid)" +
+                " SELECT id," + lr.getReferencedColumn() + "," + lr.getReferencedColumn() + " FROM " + lr.getReferencedLookup()
             );
         }
     }
