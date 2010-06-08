@@ -1,0 +1,13 @@
+CREATE DATASET {dataset.department} VISUAL(TITLE "Department");
+
+
+
+CREATE ATTRIBUTE {attr.department.department} VISUAL(TITLE "Department") AS KEYS {d_department_department.id} FULLSET, {f_department.id} WITH LABELS {label.department.department} VISUAL(TITLE "Department") AS {d_department_department.nm_department};
+ALTER DATASET {dataset.department} ADD {attr.department.department};
+
+CREATE ATTRIBUTE {attr.department.factsof} VISUAL(TITLE " Records of Department") AS KEYS {f_department.id} FULLSET;
+ALTER DATASET {dataset.department} ADD {attr.department.factsof};
+
+ALTER ATTRIBUTE {attr.department.department} ADD LABELS {label.department.department.name} VISUAL(TITLE "Name") AS {d_department_department.nm_name};
+
+SYNCHRONIZE {dataset.department};

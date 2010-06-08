@@ -1,0 +1,15 @@
+CREATE DATASET {dataset.employee} VISUAL(TITLE "Employee");
+
+
+
+CREATE ATTRIBUTE {attr.employee.employee} VISUAL(TITLE "Employee") AS KEYS {d_employee_employee.id} FULLSET, {f_employee.id} WITH LABELS {label.employee.employee} VISUAL(TITLE "Employee") AS {d_employee_employee.nm_employee};
+ALTER DATASET {dataset.employee} ADD {attr.employee.employee};
+
+CREATE ATTRIBUTE {attr.employee.factsof} VISUAL(TITLE " Records of Employee") AS KEYS {f_employee.id} FULLSET;
+ALTER DATASET {dataset.employee} ADD {attr.employee.factsof};
+
+ALTER ATTRIBUTE {attr.employee.employee} ADD LABELS {label.employee.employee.firstname} VISUAL(TITLE "First Name") AS {d_employee_employee.nm_firstname};
+
+ALTER ATTRIBUTE {attr.employee.employee} ADD LABELS {label.employee.employee.lastname} VISUAL(TITLE "Last Name") AS {d_employee_employee.nm_lastname};
+
+SYNCHRONIZE {dataset.employee};
