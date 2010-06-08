@@ -30,8 +30,11 @@ public class DerbySqlExecutorUpdate extends DerbySqlExecutor implements SqlExecu
      * @throws SQLException in case of db problems 
      */
     public void executeNormalizeSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
-        List<String> usql = new ArrayList<String>();
 
+        //populate REFERENCEs lookups from the referenced lookups
+        executeLookupReplicationSql(c, schema);
+
+        List<String> usql = new ArrayList<String>();
         // fact table INSERT statement components
         PdmTable factTable = schema.getFactTable();
         for(PdmTable lookupTable : schema.getLookupTables()) {
@@ -75,6 +78,24 @@ public class DerbySqlExecutorUpdate extends DerbySqlExecutor implements SqlExecu
                           factTable.getName()+"')");
         }
 
+        for(PdmTable lookupTable : schema.getReferenceTables()) {
+            // concatenate all representing columns to create a unique hashid
+            String concatenatedRepresentingColumns = "";
+            for(PdmColumn column : lookupTable.getRepresentingColumns()) {
+                if(concatenatedRepresentingColumns.length() > 0)
+                    concatenatedRepresentingColumns += CONCAT_OPERATOR +  column.getSourceColumn();
+                else
+                    concatenatedRepresentingColumns = column.getSourceColumn();
+            }
+
+            usql.add("UPDATE " + factTable.getName() + " SET  " + lookupTable.getRepresentedLookupColumn() +
+                          "_id = (SELECT id FROM " + lookupTable.getName() + " d," + schema.getSourceTable().getName() +
+                          " o WHERE " + concatenatedRepresentingColumns + " = d.hashid AND o.o_genid = " +
+                          factTable.getName() + ".id) WHERE id > (SELECT MAX(lastid) FROM snapshots WHERE name = '" +
+                          factTable.getName()+"')");
+
+        }
+
         String insertColumns = "";
         String nestedSelectColumns = "";
         for(PdmColumn factTableColumn : factTable.getColumns()) {
@@ -91,25 +112,13 @@ public class DerbySqlExecutorUpdate extends DerbySqlExecutor implements SqlExecu
         String factColumns = "";
         String sourceColumns = "";
         for(PdmColumn column : factTable.getFactColumns()) {
-            if(factColumns.length() > 0) {
-                factColumns += "," + column.getName();
-                sourceColumns += "," + column.getSourceColumn();
-            }
-            else {
-                factColumns += column.getName();
-                sourceColumns += column.getSourceColumn();
-            }
+            factColumns += "," + column.getName();
+            sourceColumns += "," + column.getSourceColumn();
         }
 
         for(PdmColumn column : factTable.getDateColumns()) {
-            if(factColumns.length() > 0) {
-                factColumns += "," + column.getName();
-                sourceColumns += ",DTTOI(" + column.getSourceColumn() + ",'"+column.getFormat()+"')";
-            }
-            else {
-                factColumns += column.getName();
-                sourceColumns += "DTTOI(" + column.getSourceColumn() + ",'"+column.getFormat()+"')";
-            }
+            factColumns += "," + column.getName();
+            sourceColumns += ",DTTOI(" + column.getSourceColumn() + ",'"+column.getFormat()+"')";
         }
 
         //script += "DELETE FROM snapshots WHERE name = '" + factTable.getName() + "' AND lastid = 0;\n\n";
@@ -124,7 +133,7 @@ public class DerbySqlExecutorUpdate extends DerbySqlExecutor implements SqlExecu
         );
 
         JdbcUtil.executeUpdate(c,
-            "INSERT INTO " + factTable.getName() + "(id," + factColumns + ") SELECT o_genid," + sourceColumns +
+            "INSERT INTO " + factTable.getName() + "(id" + factColumns + ") SELECT o_genid" + sourceColumns +
             " FROM " + schema.getSourceTable().getName() +
             " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='"+factTable.getName()+"')"
         );

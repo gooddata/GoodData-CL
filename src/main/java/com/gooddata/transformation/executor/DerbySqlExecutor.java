@@ -5,6 +5,7 @@ import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.transformation.executor.model.PdmColumn;
+import com.gooddata.transformation.executor.model.PdmLookupReplication;
 import com.gooddata.transformation.executor.model.PdmSchema;
 import com.gooddata.transformation.executor.model.PdmTable;
 import com.gooddata.util.JdbcUtil;
@@ -130,8 +131,12 @@ public class DerbySqlExecutor extends AbstractSqlExecutor implements SqlExecutor
      * @throws SQLException in case of db problems
      */
     public void executeNormalizeSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+
+        //populate REFERENCEs lookups from the referenced lookups
+        executeLookupReplicationSql(c, schema);
         // fact table INSERT statement components
         String factInsertFromClause = schema.getSourceTable().getName();
+        Set<PdmTable> factInsertFromClauseTables = new HashSet<PdmTable>();
         String factInsertWhereClause = "";
         PdmTable factTable = schema.getFactTable();
         for(PdmTable lookupTable : schema.getLookupTables()) {
@@ -146,14 +151,14 @@ public class DerbySqlExecutor extends AbstractSqlExecutor implements SqlExecutor
             String concatenatedRepresentingColumns = "";
             // new fact table insert's nested select where
             String nestedSelectWhereClause = "";
-            Set<PdmTable> factInsertFromClauseTables = new HashSet<PdmTable>(); 
+
             for(PdmColumn column : lookupTable.getRepresentingColumns()) {
                 insertColumns += "," + column.getName();
                 nestedSelectColumns += "," + column.getSourceColumn();
                 // if there are LABELS, the lookup can't be added twice to the FROM clause
                 if(!factInsertFromClauseTables.contains(lookupTable)) {
                     factInsertFromClause += "," + lookupTable.getName();
-                    factInsertFromClauseTables.add(lookupTable);                    
+                    factInsertFromClauseTables.add(lookupTable);
                 }
                 if(concatenatedRepresentingColumns.length() > 0)
                     concatenatedRepresentingColumns += CONCAT_OPERATOR +  column.getSourceColumn();
@@ -177,6 +182,27 @@ public class DerbySqlExecutor extends AbstractSqlExecutor implements SqlExecutor
                        lookupTable.getName() + ")"
             );
             
+        }
+
+        for(PdmTable lookupTable : schema.getReferenceTables()) {
+            // concatenate all representing columns to create a unique hashid
+            String concatenatedRepresentingColumns = "";
+            for(PdmColumn column : lookupTable.getRepresentingColumns()) {
+                // if there are LABELS, the lookup can't be added twice to the FROM clause
+                if(!factInsertFromClauseTables.contains(lookupTable)) {
+                    factInsertFromClause += "," + lookupTable.getName();
+                    factInsertFromClauseTables.add(lookupTable);
+                }
+                if(concatenatedRepresentingColumns.length() > 0)
+                    concatenatedRepresentingColumns += CONCAT_OPERATOR +  column.getSourceColumn();
+                else
+                    concatenatedRepresentingColumns = column.getSourceColumn();
+            }
+
+            if(factInsertWhereClause.length() > 0)
+                factInsertWhereClause += " AND " + concatenatedRepresentingColumns + "=" + lookupTable.getName() + ".hashid";
+            else
+                factInsertWhereClause += concatenatedRepresentingColumns + "=" + lookupTable.getName() + ".hashid";
         }
 
         String insertColumns = "";

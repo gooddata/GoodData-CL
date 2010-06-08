@@ -30,6 +30,10 @@ public class MySqlExecutorUpdate extends MySqlExecutor implements SqlExecutor {
      * @throws java.sql.SQLException in case of db problems
      */
     public void executeNormalizeSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+
+        //populate REFERENCEs lookups from the referenced lookups
+        executeLookupReplicationSql(c, schema);
+
         List<String> usql = new ArrayList<String>();
 
         // fact table INSERT statement components

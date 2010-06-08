@@ -4,11 +4,11 @@
     <column>
       <name>id</name>
       <title>ID</title>
-      <ldmType>CONNECTION_POINT</ldmType>
+      <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
-      <name>employee_id</name>
-      <title>Employee ID</title>
+      <name>employee</name>
+      <title>Employee</title>
       <ldmType>REFERENCE</ldmType>
       <pk>id</pk>
       <pkSchema>employee</pkSchema>  

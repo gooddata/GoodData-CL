@@ -4,7 +4,7 @@
     <column>
       <name>id</name>
       <title>ID</title>
-      <ldmType>CONNECTION_POINT</ldmType>
+      <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
       <name>name</name>

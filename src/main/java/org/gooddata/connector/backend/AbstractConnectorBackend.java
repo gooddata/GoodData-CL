@@ -193,7 +193,6 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
         Connection con = null;
         try {
             con = connect();
-            sg.executeLookupReplicationSql(con, getPdm());
             sg.executeNormalizeSql(con, getPdm());
         }
         catch (SQLException e) {
