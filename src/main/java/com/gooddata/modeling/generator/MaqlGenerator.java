@@ -60,11 +60,9 @@ public class MaqlGenerator {
 
 
         // generate the facts of / record id special attribute
-        if (!hasCp) {
-            script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \"" + lsn +
-                    " Record ID\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
-            script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
-        }
+        script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \"" + lsn +
+                  " Records of " + lsn + "\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
+        script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
 
         // labels last
         for (final Column c : labels) {
@@ -177,11 +175,17 @@ public class MaqlGenerator {
                 folderStatement = ", FOLDER {dim." + sfn + "}";
             }
 
-            return "CREATE ATTRIBUTE {" + identifier + "} VISUAL(TITLE \"" + lcn
-                    + "\"" + folderStatement + ") AS KEYS {" + table + ".id} FULLSET, {f_" + ssn + "."
-                    + scn + "_id} WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
+            String script = "CREATE ATTRIBUTE {" + identifier + "} VISUAL(TITLE \"" + lcn
+                    + "\"" + folderStatement + ") AS KEYS {" + table + ".id} FULLSET, ";
+            script += createForeignKeyMaqlDdl();
+            script += " WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
                     + lcn + "\") AS {d_" + ssn + "_" + scn + ".nm_" + scn + "};\n"
                     + "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
+            return script;
+        }
+            
+        protected String createForeignKeyMaqlDdl() {
+           	return "{f_" + ssn + "." + scn + "_id}";
         }
 
     }
@@ -248,25 +252,21 @@ public class MaqlGenerator {
 
     private class ConnectionPoint extends Attribute {
         public ConnectionPoint(SourceColumn column) {
-            super(column, "f_" + ssn);
+            super(column);
             hasCp = true;
         }
 
-        @Override
-        public String generateMaqlDdl() {
-            String folderStatement = "";
-            String folder = column.getFolder();
-            if (folder != null && folder.length() > 0) {
-                String sfn = StringUtil.formatShortName(folder);
-                folderStatement = ", FOLDER {dim." + sfn + "}";
-            }
-
-            return "CREATE ATTRIBUTE {" + identifier + "} VISUAL(TITLE \"" + lcn
-                    + "\"" + folderStatement + ") AS KEYS {" + table + ".id} FULLSET "
-                    + "WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
-                    + lcn + "\") AS {" + table + ".nm_" + scn + "};\n"
-                    + "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
-        }
+		 @Override
+		protected String createForeignKeyMaqlDdl() {
+			// The fact table's primary key values are identical with the primary key values
+			// of a Connection Point attribute. This is why the fact table's PK may act as 
+			// the connection point's foreign key as well
+			return "{" + getFactTableName() + ".id}";
+		}
+    }
+    
+    private String getFactTableName() {
+    	return "f_" + ssn;
     }
 }
 
