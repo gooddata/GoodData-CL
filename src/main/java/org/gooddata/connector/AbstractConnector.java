@@ -53,7 +53,7 @@ public abstract class AbstractConnector implements Connector {
                 setConnectorBackend(DerbyConnectorBackend.create(projectId, configFileName, pdm));
                 break;
             case AbstractConnectorBackend.CONNECTOR_BACKEND_MYSQL:
-                setConnectorBackend(MySqlConnectorBackend.create(projectId, configFileName, pdm));
+                setConnectorBackend(MySqlConnectorBackend.create(projectId, configFileName, pdm, "root", ""));
                 break;
             default:
                 throw new InitializationException("Unsupported connector backend specified.");

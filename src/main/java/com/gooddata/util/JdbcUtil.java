@@ -59,10 +59,12 @@ public class JdbcUtil {
             s = con.createStatement();
             rs = s.executeQuery(sql);
             l.trace("Executed Derby SQL: statement='" + sql + "'");
+            System.err.println("Executed Derby SQL: statement='" + sql + "'");
             return rs;
         }
         catch (SQLException e) {
             l.error("Error executing Derby SQL: statement='" + sql + "'", e);
+            System.err.println("Error executing Derby SQL: statement='" + sql + "'");
             throw e;
         }
         finally {

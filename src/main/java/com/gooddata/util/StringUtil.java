@@ -15,6 +15,8 @@ public class StringUtil {
     private static String[] INVALID_CSV_HEADER_CHARS = {"\"", "'", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
             "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
             "[", "]","\\"};
+
+    private static String[][] DATE_FORMAT_CONVERSION = {{"MM","%m"},{"yyyy","%Y"},{"yy","%y"},{"dd","%d"}};
     
     /**
      * Formats a string as identifier
@@ -62,4 +64,17 @@ public class StringUtil {
         }
         return s;
     }
+
+    /**
+     * Converts the Java date format string to the MySQL format
+     * @param dateFormat Java date format
+     * @return MySQL date format
+     */
+    public static String convertJavaDateFormatToMySql(String dateFormat) {
+        for(int i=0; i < DATE_FORMAT_CONVERSION.length; i++)
+            dateFormat = dateFormat.replace(DATE_FORMAT_CONVERSION[i][0],
+                            DATE_FORMAT_CONVERSION[i][1]);
+        return dateFormat;
+    }
+
 }

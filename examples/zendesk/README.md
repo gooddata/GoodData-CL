@@ -4,18 +4,18 @@
 
 2. run `gdi.sh` with the `1-setup.txt` script. This generates a `config.xml` file:
 
-        $ ./bin/gdi.sh -u username -p password -h hostname ./data/zendesk/1-setup.txt
+        $ ./bin/gdi.sh -u username -p password -h hostname ./examples/zendesk/1-setup.txt
 
 3. configure your config.xml file, remove all &lt;folder&gt; and &lt;pk&gt; entries, change all &lt;ldmType&gt; entries to ATTRIBUTE, except entries for "Summation column" and "Resolution time", which should be set FACT:
 
-        $ vi ./data/zendesk/config.xml
+        $ vi ./examples/zendesk/config.xml
 
 4. to **create your project** and set up the **data model**, run `gdi.sh` with the `2-create.txt` script. This uses your `config.xml` file to create a MAQL DDL script with the data model, runs this script in your new project:
 
-        $ ./bin/gdi.sh -u username -p password -h hostname ./data/zendesk/2-create.txt
+        $ ./bin/gdi.sh -u username -p password -h hostname ./examples/zendesk/2-create.txt
 
 5. to **load your data**, run `gdi.sh` with the `3-load.txt` script. Note that you'll have to replace the project ID on the first line of the load script with the ID of your new project. The ID was returned to you on stdout during the run of the create script (see previous step):
 
-        $ ./bin/gdi.sh -u username -p password -h hostname ./data/zendesk/3-load.txt
+        $ ./bin/gdi.sh -u username -p password -h hostname ./examples/zendesk/3-load.txt
 
 In the future, you can reuse the load script (with the saved project ID) to automate repeated data loads into your project.
