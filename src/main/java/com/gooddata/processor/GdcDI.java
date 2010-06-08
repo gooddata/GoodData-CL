@@ -505,6 +505,49 @@ public class GdcDI {
             	throw new IllegalArgumentException("DropSnapshots: No data source loaded. Use a 'LoadXXX' to load a data source.");
 
         }
+        
+        if(command.getCommand().equalsIgnoreCase("UploadDir")) {
+        	String path = command.getParameters().getProperty("path");
+        	String dataset = command.getParameters().getProperty("dataset");
+        	
+        	if (path == null) {
+        		throw new IllegalArgumentException("UploadDir: missing required parameter 'path'.");
+        	}
+        	if (dataset == null) {
+        		throw new IllegalArgumentException("UploadDir: missing required parameter 'dataset'.");
+        	}
+        	
+        	// validate input dir
+        	File dir = new File(path);
+        	if (!dir.exists()) {
+        		throw new IllegalArgumentException("UploadDir: directory " + path + " does not exist.");
+        	}
+        	if (!dir.isDirectory()) {
+        		throw new IllegalArgumentException("UploadDir: " + path + " is not a directory.");
+        	}
+        	if (!(dir.canRead() && dir.canExecute() && dir.canWrite())) {
+        		throw new IllegalArgumentException("UploadDir: directory " + path + " is not r/w accessible.");
+        	}
+        	
+        	// generate manifest
+        	DLI dli = getRestApi().getDLIById(dataset, projectId);
+            List<DLIPart> parts= getRestApi().getDLIParts(dataset, projectId);
+        	FileUtil.writeStringToFile(dli.getDLIManifest(parts), path + System.getProperty("file.separator") +
+                    GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
+        	
+        	// prepare the zip file
+        	File tmpDir = FileUtil.createTempDir();
+            File tmpZipDir = FileUtil.createTempDir();
+            String archiveName = tmpDir.getName();
+            String archivePath = tmpZipDir.getAbsolutePath() +
+                    System.getProperty("file.separator") + archiveName + ".zip";
+            FileUtil.compressDir(path, archivePath);
+        	
+            // ftp upload
+        	getFtpApi().transferDir(archivePath);
+            // kick the GooDData server to load the data package to the project
+            getRestApi().startLoading(projectId, archiveName);
+        }
 
         if(command.getCommand().equalsIgnoreCase("TransferData")) {
             if(connector != null) {
