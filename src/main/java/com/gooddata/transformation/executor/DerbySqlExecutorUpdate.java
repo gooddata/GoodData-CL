@@ -43,12 +43,8 @@ public class DerbySqlExecutorUpdate extends DerbySqlExecutor implements SqlExecu
             String insertColumns = "hashid";
             // fact table cols
             String nestedSelectColumns = "";
-            // new fact table insert's nested select from
-            String nestedSelectFromClause = "";
             // concatenate all representing columns to create a unique hashid
             String concatenatedRepresentingColumns = "";
-            // new fact table insert's nested select where
-            String nestedSelectWhereClause = "";
             for(PdmColumn column : lookupTable.getRepresentingColumns()) {
                 insertColumns += "," + column.getName();
                 nestedSelectColumns += "," + column.getSourceColumn();
@@ -76,6 +72,38 @@ public class DerbySqlExecutorUpdate extends DerbySqlExecutor implements SqlExecu
                           " o WHERE " + concatenatedRepresentingColumns + " = d.hashid AND o.o_genid = " +
                           factTable.getName() + ".id) WHERE id > (SELECT MAX(lastid) FROM snapshots WHERE name = '" +
                           factTable.getName()+"')");
+        }
+
+        for(PdmTable lookupTable : schema.getConnectionPointTables()) {
+            // INSERT tbl(insertColumns) SELECT nestedSelectColumns FROM nestedSelectFromClause
+            // WHERE nestedSelectWhereClause
+            String insertColumns = "id,hashid";
+            // fact table cols
+            String nestedSelectColumns = "o_genid,";
+            // concatenate all representing columns to create a unique hashid
+            String concatenatedRepresentingColumns = "";
+            for(PdmColumn column : lookupTable.getRepresentingColumns()) {
+                insertColumns += "," + column.getName();
+                nestedSelectColumns += "," + column.getSourceColumn();
+                // if there are LABELS, the lookup can't be added twice to the FROM clause
+                if(concatenatedRepresentingColumns.length() > 0)
+                    concatenatedRepresentingColumns += CONCAT_OPERATOR +  column.getSourceColumn();
+                else
+                    concatenatedRepresentingColumns = column.getSourceColumn();
+
+            }
+
+            // add the concatenated columns that fills the hashid to the beginning
+            nestedSelectColumns = concatenatedRepresentingColumns + nestedSelectColumns;
+
+            JdbcUtil.executeUpdate(c,
+                "INSERT INTO " + lookupTable.getName() + "(" + insertColumns +
+                ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + schema.getSourceTable().getName() +
+                " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable.getName() +
+                "') AND " + concatenatedRepresentingColumns + " NOT IN (SELECT hashid FROM " +
+                lookupTable.getName() + ")"
+            );
+            
         }
 
         for(PdmTable lookupTable : schema.getReferenceTables()) {

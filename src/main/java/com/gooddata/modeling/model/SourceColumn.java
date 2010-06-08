@@ -31,12 +31,12 @@ public class SourceColumn {
     /**
      * LABEL's or REFERENCE's primary source column
      */
-    private String pk;
+    private String reference;
 
     /**
      * REFERENCE's primary source schema
      */
-    private String pkSchema;
+    private String schemaReference;
 
     /**
      * Column's folder
@@ -62,8 +62,8 @@ public class SourceColumn {
         this.title = title;
         this.folder = folder;
         this.ldmType = ldmType;
-        this.pk = pk;
-        this.pkSchema = pkSchema;
+        this.reference = pk;
+        this.schemaReference = pkSchema;
     }
 
     /**
@@ -79,7 +79,7 @@ public class SourceColumn {
         this.title = title;
         this.folder = folder;
         this.ldmType = ldmType;
-        this.pk = pk;
+        this.reference = pk;
     }
 
     /**
@@ -141,32 +141,32 @@ public class SourceColumn {
      * LABEL's or REFERENCE's primary source column getter
      * @return LABEL's or REFERENCE's primary source column
      */
-    public String getPk() {
-        return pk;
+    public String getReference() {
+        return reference;
     }
 
     /**
      * LABEL's or REFERENCE's primary source column setter
-     * @param pk LABEL's or REFERENCE's primary source column
+     * @param reference LABEL's or REFERENCE's primary source column
      */
-    public void setPk(String pk) {
-        this.pk = pk;
+    public void setReference(String reference) {
+        this.reference = reference;
     }
 
     /**
      * LABEL's or REFERENCE's primary source schema getter
      * @return LABEL's or REFERENCE's primary source schema
      */
-    public String getPkSchema() {
-        return pkSchema;
+    public String getSchemaReference() {
+        return schemaReference;
     }
 
     /**
      * LABEL's or REFERENCE's primary source schema setter
      * @param pks LABEL's or REFERENCE's primary source schema
      */
-    public void setPkSchema(String pks) {
-        this.pkSchema = pks;
+    public void setSchemaReference(String pks) {
+        this.schemaReference = pks;
     }
 
     /**

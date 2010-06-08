@@ -2,15 +2,15 @@
   <name>Department</name>
   <columns>
     <column>
-      <name>id</name>
-      <title>ID</title>
+      <name>department</name>
+      <title>Department</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
       <name>name</name>
       <title>Name</title>
       <ldmType>LABEL</ldmType>
-      <pk>id</pk>
+      <reference>department</reference>
     </column>
   </columns>
 </schema>

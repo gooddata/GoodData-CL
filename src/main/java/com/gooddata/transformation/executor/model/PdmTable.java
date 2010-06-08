@@ -20,6 +20,7 @@ public class PdmTable {
     public final static String PDM_TABLE_TYPE_FACT = "FACT";
     public final static String PDM_TABLE_TYPE_SOURCE = "SOURCE";
     public final static String PDM_TABLE_TYPE_REFERENCE = "REFERENCE";
+    public final static String PDM_TABLE_TYPE_CONNECTION_POINT = "CONNECTION_POINT";
 
     // PDM columns
     private List<PdmColumn> columns = new ArrayList<PdmColumn>();

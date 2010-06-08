@@ -52,6 +52,7 @@ public class PdmSchema {
 
         HashMap<String, List<SourceColumn>> lookups = new HashMap<String, List<SourceColumn>>();
         HashMap<String, List<SourceColumn>> references = new HashMap<String, List<SourceColumn>>();
+        HashMap<String, List<SourceColumn>> connectionPoints = new HashMap<String, List<SourceColumn>>();
 
         for (SourceColumn column : schema.getColumns()) {
             String scn = StringUtil.formatShortName(column.getName());
@@ -68,6 +69,19 @@ public class PdmSchema {
                 List<SourceColumn> l = lookups.get(scn);
                 l.add(column);
             }
+            // process connection points in a same way as the attributes.
+            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_CONNECTION_POINT)) {
+                source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
+                fact.addColumn(new PdmColumn(scn+"_id", PdmColumn.PDM_COLUMN_TYPE_INT, "d_" + ssn + "_"+scn +
+                        ".id", SourceColumn.LDM_TYPE_CONNECTION_POINT));
+                // add lookup tables
+                if (!connectionPoints.containsKey(scn)) {
+                    connectionPoints.put(scn, new ArrayList<SourceColumn>());
+                }
+                // add column to the lookup
+                List<SourceColumn> l = connectionPoints.get(scn);
+                l.add(column);
+            }
             // process references in a same way as the attributes.
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_REFERENCE)) {
                 source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
@@ -81,14 +95,14 @@ public class PdmSchema {
                 List<SourceColumn> l = references.get(scn);
                 l.add(column);
                 // just copy the referenced lookup rows to the referencing lookup
-                String tcn = StringUtil.formatShortName(column.getPk());
-                String tsn = StringUtil.formatShortName(column.getPkSchema());
+                String tcn = StringUtil.formatShortName(column.getReference());
+                String tsn = StringUtil.formatShortName(column.getSchemaReference());
                 pdm.addLookupReplication(new PdmLookupReplication("d_" + tsn +
                 "_"+tcn, "nm_" + tcn, "d_" + ssn + "_"+scn, "nm_" + scn));
             }
             if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
                 source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                String scnPk = StringUtil.formatShortName(column.getPk());
+                String scnPk = StringUtil.formatShortName(column.getReference());
                 if (!lookups.containsKey(scnPk)) {
                     lookups.put(scnPk, new ArrayList<SourceColumn>());
                 }
@@ -122,6 +136,22 @@ public class PdmSchema {
                 String scnNm = StringUtil.formatShortName(c.getName());
                 lookup.addColumn(new PdmColumn("nm_" + scnNm, PdmColumn.PDM_COLUMN_TYPE_TEXT, "o_" + scnNm,
                         SourceColumn.LDM_TYPE_ATTRIBUTE));
+            }
+            pdm.addTable(lookup);
+        }
+
+        for (String column : connectionPoints.keySet()) {
+            PdmTable lookup = new PdmTable("d_" + pdm.getName() + "_" + column,
+                    PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT, column);
+            lookup.addColumn(new PdmColumn("id", PdmColumn.PDM_COLUMN_TYPE_INT,
+                    new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
+            lookup.addColumn(new PdmColumn("hashid", PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
+                    new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
+            List<SourceColumn> l = connectionPoints.get(column);
+            for (SourceColumn c : l) {
+                String scnNm = StringUtil.formatShortName(c.getName());
+                lookup.addColumn(new PdmColumn("nm_" + scnNm, PdmColumn.PDM_COLUMN_TYPE_TEXT, "o_" + scnNm,
+                        SourceColumn.LDM_TYPE_CONNECTION_POINT));
             }
             pdm.addTable(lookup);
         }
@@ -228,6 +258,14 @@ public class PdmSchema {
      */
     public List<PdmTable> getReferenceTables() {
         return this.getTablesByType(PdmTable.PDM_TABLE_TYPE_REFERENCE);
+    }
+
+    /**
+     * Returns all connection point lookup tables
+     * @return all connection point lookup tables
+     */
+    public List<PdmTable> getConnectionPointTables() {
+        return this.getTablesByType(PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT);
     }
 
     /**

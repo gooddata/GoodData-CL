@@ -2,20 +2,20 @@
   <name>Salary</name>
   <columns>
     <column>
-      <name>id</name>
-      <title>ID</title>
+      <name>salary</name>
+      <title>Salary</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
       <name>employee</name>
       <title>Employee</title>
       <ldmType>REFERENCE</ldmType>
-      <pk>id</pk>
-      <pkSchema>employee</pkSchema>  
+      <reference>employee</reference>
+      <schemaReference>Employee</schemaReference>  
     </column>
     <column>
-      <name>salary</name>
-      <title>Salary</title>
+      <name>payment</name>
+      <title>Payment</title>
       <ldmType>FACT</ldmType>
     </column>
     <column>

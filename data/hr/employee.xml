@@ -2,28 +2,28 @@
   <name>Employee</name>
   <columns>
     <column>
-      <name>id</name>
-      <title>ID</title>
+      <name>employee</name>
+      <title>Employee</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
       <name>firstname</name>
       <title>First Name</title>
       <ldmType>LABEL</ldmType>
-      <pk>id</pk>
+      <reference>employee</reference>
     </column>
     <column>
       <name>lastname</name>
       <title>Last Name</title>
       <ldmType>LABEL</ldmType>
-      <pk>id</pk>
+      <reference>employee</reference>
     </column>
     <column>
       <name>department</name>
       <title>Department</title>
       <ldmType>REFERENCE</ldmType>
-      <pk>id</pk>
-      <pkSchema>department</pkSchema>  
+      <reference>department</reference>
+      <schemaReference>Department</schemaReference>  
     </column>
   </columns>
 </schema>

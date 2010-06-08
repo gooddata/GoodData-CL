@@ -222,7 +222,7 @@ public class MaqlGenerator {
 
         @Override
         public String generateMaqlDdl() {
-            String scnPk = StringUtil.formatShortName(column.getPk());
+            String scnPk = StringUtil.formatShortName(column.getReference());
             Attribute attr = attributes.get(scnPk);
             
             if (attr == null) {

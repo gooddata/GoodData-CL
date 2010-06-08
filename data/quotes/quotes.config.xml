@@ -10,7 +10,7 @@
       <name>COMPANY</name>
       <title>COMPANY</title>
         <ldmType>LABEL</ldmType>
-        <pk>SYMBOL</pk>
+        <reference>SYMBOL</reference>
     </column>
     <column>
       <name>SYMBOL</name>
