@@ -60,8 +60,8 @@ public class MaqlGenerator {
 
 
         // generate the facts of / record id special attribute
-        script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \"" + lsn +
-                  " Records of " + lsn + "\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
+        script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \""
+                  + " Records of " + lsn + "\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
         script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
 
         // labels last
@@ -224,6 +224,11 @@ public class MaqlGenerator {
         public String generateMaqlDdl() {
             String scnPk = StringUtil.formatShortName(column.getPk());
             Attribute attr = attributes.get(scnPk);
+            
+            if (attr == null) {
+            	throw new IllegalArgumentException("Label " + scn + " points to non-existing attribute " + scnPk);
+            }
+            
             return "ALTER ATTRIBUTE {attr." + ssn + "." + scnPk + "} ADD LABELS {label." + ssn + "." + scnPk + "."
                     + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + ".nm_" + scn + "};\n\n";
         }
