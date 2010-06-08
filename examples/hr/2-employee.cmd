@@ -1,5 +1,5 @@
-OpenProject(id=e9xznchz1s4cy0hcs0s2ahlptxdurpyw);
-LoadCsv(csvDataFile=examples/hr/employee.csv, configFile=data/hr/employee.xml);
+OpenProject(id=hxdgs0hzv1objfeyujzmfpvr0qmocewe);
+LoadCsv(csvDataFile=examples/hr/employee.csv, configFile=examples/hr/employee.xml);
 GenerateMaql(maqlFile=examples/hr/employee.maql);
 ExecuteMaql(maqlFile=examples/hr/employee.maql);
 TransferLastSnapshot(incremental=false);

@@ -8,6 +8,7 @@ import java.util.Map;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.StringUtil;
+import com.sun.tools.javac.util.Name.Table;
 
 /**
  * GoodData MAQL Generator generates the MAQL from the LDM schema object
@@ -16,23 +17,30 @@ import com.gooddata.util.StringUtil;
  * @version 1.0
  */
 public class MaqlGenerator {
+	
+	private static final String COL_PK = "id";
+	private static final String COL_SFX_FK = "_id";
+	private static final String TBL_SFX_FACT = "factsof";
 
     private final SourceSchema schema;
     private final String ssn, lsn;
+	private final String factsOfAttrMaqlDdl;
 
     private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
     private List<Fact> facts = new ArrayList<Fact>();
     private List<Label> labels = new ArrayList<Label>();
     private List<DateColumn> dates = new ArrayList<DateColumn>();
+    private List<Reference> references = new ArrayList<Reference>();
     private boolean hasCp = false;
 
     public MaqlGenerator(SourceSchema schema) {
         this.schema = schema;
         this.ssn = StringUtil.formatShortName(schema.getName());
         this.lsn = StringUtil.formatLongName(schema.getName());
+        this.factsOfAttrMaqlDdl = createFactOfMaqlDdl(schema.getName());
     }
 
-    /**
+	/**
      * Generates the MAQL from the schema
      *
      * @return the MAQL as a String
@@ -57,11 +65,14 @@ public class MaqlGenerator {
         for (final Column c : dates) {
             script += c.generateMaqlDdl();
         }
+        for (final Column c : references) {
+        	script += c.generateMaqlDdl();
+        }
 
 
         // generate the facts of / record id special attribute
-        script += "CREATE ATTRIBUTE {attr." + ssn + ".factsof" + "} VISUAL(TITLE \""
-                  + " Records of " + lsn + "\") AS KEYS {f_" + ssn + ".id} FULLSET;\n";
+        script += "CREATE ATTRIBUTE " + factsOfAttrMaqlDdl + " VISUAL(TITLE \""
+                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + ".id} FULLSET;\n";
         script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
 
         // labels last
@@ -123,6 +134,8 @@ public class MaqlGenerator {
             dates.add(new DateColumn(column));
         } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
             labels.add(new Label(column));
+        } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_REFERENCE)) {
+        	references.add(new Reference(column));
         } else
             processConnectionPoint(column);
     }
@@ -137,6 +150,16 @@ public class MaqlGenerator {
             attributes.put(connectionPoint.scn, connectionPoint);
         }
     }
+    
+    private String getFactTableName() {
+    	return "f_" + ssn;
+    }
+    
+    private static String createFactOfMaqlDdl(String schemaName) {
+    	return "{attr." + StringUtil.formatShortName(schemaName) + "." + TBL_SFX_FACT + "}";
+	}
+    
+    // column entities
 
     private abstract class Column {
         protected final SourceColumn column;
@@ -148,6 +171,10 @@ public class MaqlGenerator {
             this.lcn = StringUtil.formatLongName(column.getTitle());
         }
 
+        protected String createForeignKeyMaqlDdl() {
+           	return "{" + getFactTableName() + "." + scn + COL_SFX_FK + "}";
+        }
+        
         public abstract String generateMaqlDdl();
     }
 
@@ -183,20 +210,12 @@ public class MaqlGenerator {
                     + "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
             return script;
         }
-            
-        protected String createForeignKeyMaqlDdl() {
-           	return "{f_" + ssn + "." + scn + "_id}";
-        }
-
     }
 
     private class Fact extends Column {
 
-        private final String table;
-
         Fact(SourceColumn column) {
             super(column);
-            table = "f_" + ssn;
         }
 
         @Override
@@ -209,7 +228,7 @@ public class MaqlGenerator {
             }
 
             return "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
-                    + "\"" + folderStatement + ") AS {" + table + ".f_" + scn + "};\n"
+                    + "\"" + folderStatement + ") AS {" + getFactTableName() + ".f_" + scn + "};\n"
                     + "ALTER DATASET {dataset." + ssn + "} ADD {fact." + ssn + "." + scn + "};\n\n";
         }
     }
@@ -249,7 +268,7 @@ public class MaqlGenerator {
                 folderStatement = ", FOLDER {ffld." + sfn + "}";
             }
             return "CREATE FACT {dt." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
-                    + "\"" + folderStatement + ") AS {f_" + ssn + ".dt_" + scn + "_id};\n"
+                    + "\"" + folderStatement + ") AS {" + getFactTableName() + ".dt_" + scn + "_id};\n"
                     + "ALTER DATASET {dataset." + ssn + "} ADD {dt." + ssn + "." + scn + "};\n\n";
 
         }
@@ -270,8 +289,19 @@ public class MaqlGenerator {
 		}
     }
     
-    private String getFactTableName() {
-    	return "f_" + ssn;
+    private class Reference extends Column {
+    	public Reference(SourceColumn column) {
+			super(column);
+		}
+    	
+    	@Override
+    	public String generateMaqlDdl() {
+    		String foreignAttrId = createFactOfMaqlDdl(column.getSchemaReference());
+    		String script = "ALTER ATTRIBUTE " + foreignAttrId
+    					  + " ADD KEYS " + createForeignKeyMaqlDdl() + ";\n"; 
+    		return script;
+    	}
     }
+    
 }
 
