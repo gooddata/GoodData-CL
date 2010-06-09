@@ -56,7 +56,7 @@ public class GdcDI {
     private AbstractConnector connector = null;
 
 
-    private final int DB_BACKEND = AbstractConnectorBackend.CONNECTOR_BACKEND_MYSQL;
+    private final int DB_BACKEND = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
 
 
     private GdcDI(final String host, final String userName, final String password) throws GdcLoginException {
