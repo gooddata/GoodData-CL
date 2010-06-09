@@ -45,7 +45,7 @@ public class SourceColumn {
     /**
      * Column's format
      */
-    private String format = "yyyy-MM-dd";    
+    private String format;
 
 
     /**
@@ -58,12 +58,8 @@ public class SourceColumn {
      * @param pkSchema LABEL's OR REFERENCE's primary source schema
      */
     public SourceColumn(String name, String ldmType, String title, String folder, String pk, String pkSchema) {
-        this.name = name;
-        this.title = title;
-        this.folder = folder;
-        this.ldmType = ldmType;
-        this.reference = pk;
-        this.schemaReference = pkSchema;
+        this(name, ldmType, title, folder, pk);
+        setSchemaReference(pkSchema);
     }
 
     /**
@@ -75,11 +71,11 @@ public class SourceColumn {
      * @param pk LABELs primary attribute
      */
     public SourceColumn(String name, String ldmType, String title, String folder, String pk) {
-        this.name = name;
-        this.title = title;
-        this.folder = folder;
-        this.ldmType = ldmType;
-        this.reference = pk;
+        setName(name);
+        setTitle(title);
+        setFolder(folder);
+        setLdmType(ldmType);
+        setReference(pk);
     }
 
     /**
@@ -206,8 +202,6 @@ public class SourceColumn {
      * @return column format
      */
     public String getFormat() {
-        if(format == null || format.length() == 0)
-            return "yyyy-MM-dd";
         return format;
     }
 
@@ -216,8 +210,6 @@ public class SourceColumn {
      * @param format column format
      */
     public void setFormat(String format) {
-        if(format == null || format.length() == 0)
-            format = "yyyy-MM-dd";
         this.format = format;
     }
 

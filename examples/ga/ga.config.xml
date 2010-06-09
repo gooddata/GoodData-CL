@@ -24,7 +24,7 @@
     </column>
     <column>
       <name>isMobile</name>
-      <title>Mobile Access</title>
+      <title>Mobile</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>

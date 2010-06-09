@@ -39,12 +39,14 @@ public abstract class AbstractConnector implements Connector {
      * @param projectId project id
      * @param configFileName schema config file name
      * @param connectorBackend connector backend
+     * @param username database backend username
+     * @param password database backend password
      * @throws com.gooddata.exceptions.InitializationException issues with the initialization
      * @throws com.gooddata.exceptions.MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue
      */
-    protected AbstractConnector(String projectId, String configFileName, int connectorBackend)
-            throws InitializationException,
+    protected AbstractConnector(String projectId, String configFileName, int connectorBackend, String username,
+                                String password) throws InitializationException,
             MetadataFormatException, IOException, ModelException {
         schema = SourceSchema.createSchema(new File(configFileName));
         PdmSchema pdm = PdmSchema.createSchema(schema);
@@ -53,7 +55,7 @@ public abstract class AbstractConnector implements Connector {
                 setConnectorBackend(DerbyConnectorBackend.create(projectId, configFileName, pdm));
                 break;
             case AbstractConnectorBackend.CONNECTOR_BACKEND_MYSQL:
-                setConnectorBackend(MySqlConnectorBackend.create(projectId, configFileName, pdm, "root", "test"));
+                setConnectorBackend(MySqlConnectorBackend.create(projectId, configFileName, pdm, username, password));
                 break;
             default:
                 throw new InitializationException("Unsupported connector backend specified.");
