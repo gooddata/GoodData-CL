@@ -1,4 +1,4 @@
-CreateProject(name=Zendesk Test Project);
+CreateProject(name=Zendesk Sample Project);
 LoadCsv(csvDataFile=examples/zendesk/data.csv, configFile=examples/zendesk/config.xml);
 GenerateMaql(maqlFile=examples/zendesk/zendesk.maql);
 ExecuteMaql(maqlFile=examples/zendesk/zendesk.maql);
