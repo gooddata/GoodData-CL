@@ -1,3 +1,0 @@
-OpenProject(id=);
-LoadCsv(csvDataFile=examples/zendesk/data.csv, configFile=examples/zendesk/config.xml);
-TransferData(incremental=false);
