@@ -1,1 +1,0 @@
-GenerateCsvConfigTemplate(csvHeaderFile=examples/zendesk/data.csv,configFile=examples/zendesk/config.xml);
