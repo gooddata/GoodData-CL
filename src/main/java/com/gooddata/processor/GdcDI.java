@@ -46,6 +46,9 @@ public class GdcDI {
 	private final String userName;
 	private final String password;
 
+    private String dbUserName;
+    private String dbPassword;
+
     private GdcRESTApiWrapper _restApi = null;
     private GdcFTPApiWrapper _ftpApi = null;
 
@@ -53,7 +56,7 @@ public class GdcDI {
     private AbstractConnector connector = null;
 
 
-    private int defaultConnectorBackend = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
+    private final int DB_BACKEND = AbstractConnectorBackend.CONNECTOR_BACKEND_MYSQL;
 
 
     private GdcDI(final String host, final String userName, final String password) throws GdcLoginException {
@@ -80,6 +83,14 @@ public class GdcDI {
 
     private void setProject(String projectId) {
     	this.projectId = projectId;
+    }
+
+    private void setDbUserName(String usr) {
+    	this.dbUserName = usr;
+    }
+
+    private void setDbPassword(String psw) {
+    	this.dbPassword = psw;
     }
 
     public void execute(final String commandsStr) throws Exception {
@@ -135,6 +146,8 @@ public class GdcDI {
 
         o.addOption("u", "username", true, "GoodData username");
         o.addOption("p", "password", true, "GoodData password");
+        o.addOption("b", "dbusername", true, "Database backend username");
+        o.addOption("c", "dbpassword", true, "Database backend password");
         o.addOption("h", "host", true, "GoodData host");
         o.addOption("i", "project", true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)");
         o.addOption("e", "execute", true, "Commands and params to execute before the commands in provided files");
@@ -159,6 +172,12 @@ public class GdcDI {
 	        }
 	        if (line.hasOption("execute")) {
 	        	gdcDi.execute(line.getOptionValue("execute"));
+	        }
+            if (line.hasOption("dbusername")) {
+	        	gdcDi.setDbUserName(line.getOptionValue("dbusername"));
+	        }
+            if (line.hasOption("dbpassword")) {
+	        	gdcDi.setDbPassword(line.getOptionValue("dbpassword"));
 	        }
 	    	if (line.getArgs().length == 0 && !line.hasOption("execute")) {
         		printErrorHelpandExit("No command has been given, quitting", o);
@@ -315,7 +334,7 @@ public class GdcDI {
                         if(csvf.exists())  {
                             if(projectId != null) {
                                 connector = CsvConnector.createConnector(projectId, configFile, csvDataFile,
-                                        defaultConnectorBackend);
+                                        DB_BACKEND, dbUserName, dbPassword);
                             }
                             else
                                 throw new IllegalArgumentException(
@@ -418,7 +437,7 @@ public class GdcDI {
                                     if(filters != null && filters.length() > 0)
                                         gq.setFilters(filters);
                                     connector = GaConnector.createConnector(projectId, configFile, usr, psw, id, gq,
-                                            defaultConnectorBackend);
+                                            DB_BACKEND, dbUserName, dbPassword);
                                 }
                                 else
                                     throw new IllegalArgumentException(

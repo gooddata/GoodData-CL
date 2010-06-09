@@ -4,6 +4,7 @@ import com.gooddata.exceptions.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.StringUtil;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,8 @@ import java.util.List;
  * @version 1.0
  */
 public class PdmSchema {
+
+    private static Logger l = Logger.getLogger(PdmSchema.class);
 
     // tables
     private List<PdmTable> tables = new ArrayList<PdmTable>();
@@ -37,154 +40,148 @@ public class PdmSchema {
 
     /**
      * Creates schema from a SourceSchema
-     * @param schema the SourceSchema
+     * @param srcSchema the SourceSchema
      * @return the new PdmSchema
      */
-    public static PdmSchema createSchema(SourceSchema schema) throws ModelException {
-        PdmSchema pdm = new PdmSchema(StringUtil.formatShortName(schema.getName()));
+    public static PdmSchema createSchema(SourceSchema srcSchema) throws ModelException {
+        String schemaName = StringUtil.formatShortName(srcSchema.getName());
+        PdmSchema schema = new PdmSchema(schemaName);
 
-        PdmTable source = new PdmTable("o_"+pdm.getName(), PdmTable.PDM_TABLE_TYPE_SOURCE);
-        source.addColumn(new PdmColumn("o_genid",PdmColumn.PDM_COLUMN_TYPE_INT,
-                new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
-        PdmTable fact = new PdmTable("f_"+pdm.getName(), PdmTable.PDM_TABLE_TYPE_FACT);
-        fact.addColumn(new PdmColumn("id",PdmColumn.PDM_COLUMN_TYPE_INT,
-                new String[] {PdmColumn.PDM_CONSTRAINT_PK}, "o_genid"));
+        PdmTable sourceTable = createSourceTable(schemaName);
+        schema.addTable(sourceTable);
+        PdmTable factTable =   createFactTable(schemaName);
+        schema.addTable(factTable);
 
-        HashMap<String, List<SourceColumn>> lookups = new HashMap<String, List<SourceColumn>>();
-        HashMap<String, List<SourceColumn>> references = new HashMap<String, List<SourceColumn>>();
-        HashMap<String, List<SourceColumn>> connectionPoints = new HashMap<String, List<SourceColumn>>();
-        HashMap<String, List<SourceColumn>> labels = new HashMap<String, List<SourceColumn>>();
+        // we will add all LABELs to this list to process it later
+        List<SourceColumn> labels = new ArrayList<SourceColumn>();
 
-        for (SourceColumn column : schema.getColumns()) {
-            String scn = StringUtil.formatShortName(column.getName());
-            String ssn = StringUtil.formatShortName(pdm.getName());
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_ATTRIBUTE)) {
-                source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                fact.addColumn(new PdmColumn(scn+"_id", PdmColumn.PDM_COLUMN_TYPE_INT, "d_" + ssn + "_"+scn +
-                        ".id", SourceColumn.LDM_TYPE_ATTRIBUTE));
-                // add lookup tables
-                if (!lookups.containsKey(scn)) {
-                    lookups.put(scn, new ArrayList<SourceColumn>());
-                }
-                // add column to the lookup
-                List<SourceColumn> l = lookups.get(scn);
-                l.add(column);
+        // we need to process columns in sequence
+        for (SourceColumn column : srcSchema.getColumns()) {
+            if(SourceColumn.LDM_TYPE_ATTRIBUTE.equals(column.getLdmType())) {
+                sourceTable.addColumn(createSourceColumn(column));
+                factTable.addColumn(createFactColumn(column, schemaName));
+                addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_LOOKUP);
             }
-            // process connection points in a same way as the attributes.
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_CONNECTION_POINT)) {
-                source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                fact.addColumn(new PdmColumn(scn+"_id", PdmColumn.PDM_COLUMN_TYPE_INT, "d_" + ssn + "_"+scn +
-                        ".id", SourceColumn.LDM_TYPE_CONNECTION_POINT));
-                // add lookup tables
-                if (!connectionPoints.containsKey(scn)) {
-                    connectionPoints.put(scn, new ArrayList<SourceColumn>());
-                }
-                // add column to the lookup
-                List<SourceColumn> l = connectionPoints.get(scn);
-                l.add(column);
+            if(SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(column.getLdmType())) {
+                sourceTable.addColumn(createSourceColumn(column));
+                factTable.addColumn(createFactColumn(column, schemaName));
+                addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT);
             }
-            // process references in a same way as the attributes.
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_REFERENCE)) {
-                source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                fact.addColumn(new PdmColumn(scn+"_id", PdmColumn.PDM_COLUMN_TYPE_INT, "d_" + ssn + "_"+scn +
-                        ".id", SourceColumn.LDM_TYPE_REFERENCE));
-                // add lookup tables
-                if (!references.containsKey(scn)) {
-                    references.put(scn, new ArrayList<SourceColumn>());
-                }
-                // add column to the lookup
-                List<SourceColumn> l = references.get(scn);
-                l.add(column);
+
+            if(SourceColumn.LDM_TYPE_REFERENCE.equals(column.getLdmType())) {
+                sourceTable.addColumn(createSourceColumn(column));
+                factTable.addColumn(createFactColumn(column, schemaName));
+                addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_REFERENCE);
                 // just copy the referenced lookup rows to the referencing lookup
-                String tcn = StringUtil.formatShortName(column.getReference());
-                String tsn = StringUtil.formatShortName(column.getSchemaReference());
-                pdm.addLookupReplication(new PdmLookupReplication("d_" + tsn +
-                "_"+tcn, "nm_" + tcn, "d_" + ssn + "_"+scn, "nm_" + scn));
+                createTableReplication(schema, column);
             }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
-                source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                String scnPk = StringUtil.formatShortName(column.getReference());
-                if (!labels.containsKey(scnPk)) {
-                    labels.put(scnPk, new ArrayList<SourceColumn>());
-                }
-                List<SourceColumn> l = labels.get(scnPk);
-                l.add(column);
+            if(SourceColumn.LDM_TYPE_FACT.equals(column.getLdmType())) {
+                sourceTable.addColumn(createSourceColumn(column));
+                factTable.addColumn(createFactColumn(column, schemaName));
             }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
-                source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                fact.addColumn(new PdmColumn("f_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT, "o_" + scn,
-                        SourceColumn.LDM_TYPE_FACT));
+            if(SourceColumn.LDM_TYPE_DATE.equals(column.getLdmType())) {
+                sourceTable.addColumn(createSourceColumn(column));
+                factTable.addColumn(createFactColumn(column, schemaName));
             }
-            if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
-                source.addColumn(new PdmColumn("o_" + scn, PdmColumn.PDM_COLUMN_TYPE_TEXT));
-                fact.addColumn(new PdmColumn("dt_" + scn + "_id", PdmColumn.PDM_COLUMN_TYPE_DATE, "o_" + scn,
-                        SourceColumn.LDM_TYPE_DATE, column.getFormat()));
+
+            if(SourceColumn.LDM_TYPE_LABEL.equals(column.getLdmType())) {
+                sourceTable.addColumn(createSourceColumn(column));
+                labels.add(column);
             }
-            
+
+        }
+        // we need to process LABELs later when all lookups are created
+        // LABEL definition can precede it's primary attribute definition
+        for(SourceColumn column: labels) {
+            String pkName = StringUtil.formatShortName(column.getReference());
+            PdmTable lookup = schema.getTableByName(createLookupTableName(schemaName, pkName));
+            lookup.addColumn(createLookupColumn(column));
         }
 
-        pdm.addTable(source);
-        pdm.addTable(fact);
-
-        for (String column : lookups.keySet()) {
-            PdmTable lookup = new PdmTable("d_" + pdm.getName() + "_" + column, PdmTable.PDM_TABLE_TYPE_LOOKUP, column);
-            lookup.addColumn(new PdmColumn("id", PdmColumn.PDM_COLUMN_TYPE_INT,
-                    new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
-            lookup.addColumn(new PdmColumn("hashid", PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
-                    new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
-            List<SourceColumn> l = lookups.get(column);
-            for (SourceColumn c : l) {
-                String scnNm = StringUtil.formatShortName(c.getName());
-                lookup.addColumn(new PdmColumn("nm_" + scnNm, PdmColumn.PDM_COLUMN_TYPE_TEXT, "o_" + scnNm,
-                        SourceColumn.LDM_TYPE_ATTRIBUTE));
-            }
-            pdm.addTable(lookup);
-        }
-
-        for (String column : connectionPoints.keySet()) {
-            PdmTable lookup = new PdmTable("d_" + pdm.getName() + "_" + column,
-                    PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT, column);
-            lookup.addColumn(new PdmColumn("id", PdmColumn.PDM_COLUMN_TYPE_INT,
-                    new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
-            lookup.addColumn(new PdmColumn("hashid", PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
-                    new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
-            List<SourceColumn> l = connectionPoints.get(column);
-            for (SourceColumn c : l) {
-                String scnNm = StringUtil.formatShortName(c.getName());
-                lookup.addColumn(new PdmColumn("nm_" + scnNm, PdmColumn.PDM_COLUMN_TYPE_TEXT, "o_" + scnNm,
-                        SourceColumn.LDM_TYPE_CONNECTION_POINT));
-            }
-            pdm.addTable(lookup);
-        }
-
-        for (String column : references.keySet()) {
-            PdmTable lookup = new PdmTable("d_" + pdm.getName() + "_" + column, PdmTable.PDM_TABLE_TYPE_REFERENCE, column);
-            lookup.addColumn(new PdmColumn("id", PdmColumn.PDM_COLUMN_TYPE_INT,
-                    new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
-            lookup.addColumn(new PdmColumn("hashid", PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
-                    new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
-            List<SourceColumn> l = references.get(column);
-            for (SourceColumn c : l) {
-                String scnNm = StringUtil.formatShortName(c.getName());
-                lookup.addColumn(new PdmColumn("nm_" + scnNm, PdmColumn.PDM_COLUMN_TYPE_TEXT, "o_" + scnNm,
-                        SourceColumn.LDM_TYPE_REFERENCE));
-            }
-            pdm.addTable(lookup);
-        }
-
-        for (String column : labels.keySet()) {
-            PdmTable lookup = pdm.getTableByName("d_" + pdm.getName() + "_" + column);
-            List<SourceColumn> l = labels.get(column);
-            for (SourceColumn c : l) {
-                String scnNm = StringUtil.formatShortName(c.getName());
-                lookup.addColumn(new PdmColumn("nm_" + scnNm, PdmColumn.PDM_COLUMN_TYPE_TEXT, "o_" + scnNm,
-                        SourceColumn.LDM_TYPE_LABEL));
-            }
-        }
-
-        return pdm;
+        return schema;
     }
 
+    private static void addLookupColumn(PdmSchema s, SourceColumn c, String tblType) {
+        String cName = StringUtil.formatShortName(c.getName());
+        String sName = s.getName();
+        String tableName = createLookupTableName(sName, cName);
+                if(!s.contains(tableName))
+                    s.addTable(createLookupTable(sName, cName, tblType));
+        PdmTable lookup = null;
+        try {
+            lookup = s.getTableByName(tableName);
+        } catch (ModelException e) {
+            l.error("Intenal problem: schema contains a table but it can't find it.");
+        }
+        lookup.addColumn(createLookupColumn(c));
+    }
+
+    private static void createTableReplication(PdmSchema s, SourceColumn c) {
+        String sName = s.getName();
+        String cName = StringUtil.formatShortName(c.getName());
+        String tcn = StringUtil.formatShortName(c.getReference());
+                String tsn = StringUtil.formatShortName(c.getSchemaReference());
+                s.addLookupReplication(new PdmLookupReplication(createLookupTableName(tsn,tcn),
+                        PdmTable.PDM_TABLE_LOOKUP_COLUMN_PREFIX + tcn, createLookupTableName(sName,cName),
+                        PdmTable.PDM_TABLE_LOOKUP_COLUMN_PREFIX + cName));
+    }
+
+    private static PdmColumn createLookupColumn(SourceColumn c) {
+        String name = StringUtil.formatShortName(c.getName());
+        return new PdmColumn(PdmTable.PDM_TABLE_LOOKUP_COLUMN_PREFIX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
+                PdmTable.PDM_TABLE_SOURCE_PREFIX + name, c.getLdmType());
+    }
+
+    private static PdmTable createLookupTable(String schemaName, String columnName, String tableType) {
+        PdmTable lookup = new PdmTable(createLookupTableName(schemaName, columnName),tableType, columnName);
+        lookup.addColumn(new PdmColumn(PdmTable.PDM_TABLE_LOOKUP_PK, PdmColumn.PDM_COLUMN_TYPE_INT,
+            new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
+        lookup.addColumn(new PdmColumn(PdmTable.PDM_TABLE_LOOKUP_HASH, PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
+            new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
+        return lookup;
+    }
+
+    private static String createLookupTableName(String schemaName, String columnName) {
+        return PdmTable.PDM_TABLE_LOOKUP_PREFIX + schemaName + "_" + columnName;
+    }
+
+    private static PdmTable createSourceTable(String schemaName) {
+        PdmTable sourceTable = new PdmTable(PdmTable.PDM_TABLE_SOURCE_PREFIX + schemaName, PdmTable.PDM_TABLE_TYPE_SOURCE);
+        // add the source table PK
+        sourceTable.addColumn(new PdmColumn(PdmTable.PDM_TABLE_SOURCE_PK,PdmColumn.PDM_COLUMN_TYPE_INT,
+                new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
+        return sourceTable;
+    }
+
+    private static PdmTable createFactTable(String schemaName) {
+        PdmTable factTable = new PdmTable(PdmTable.PDM_TABLE_FACT_PREFIX + schemaName, PdmTable.PDM_TABLE_TYPE_FACT);
+        // add the fact table PK
+        factTable.addColumn(new PdmColumn(PdmTable.PDM_TABLE_FACT_PK,PdmColumn.PDM_COLUMN_TYPE_INT,
+                        new String[] {PdmColumn.PDM_CONSTRAINT_PK}, PdmTable.PDM_TABLE_SOURCE_PK));
+        return factTable;
+    }
+
+    private static PdmColumn createSourceColumn(SourceColumn c) {
+        String name = StringUtil.formatShortName(c.getName());
+        return new PdmColumn(PdmTable.PDM_TABLE_SOURCE_PREFIX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT);
+    }
+
+    private static PdmColumn createFactColumn(SourceColumn c, String schemaName) throws ModelException {
+        String name = StringUtil.formatShortName(c.getName());
+        String type = c.getLdmType();
+        if(type.equals(SourceColumn.LDM_TYPE_ATTRIBUTE) || type.equals(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
+                type.equals(SourceColumn.LDM_TYPE_REFERENCE))
+            return new PdmColumn(name+PdmTable.PDM_TABLE_FACT_FK_SUFFIX, PdmColumn.PDM_COLUMN_TYPE_INT,
+                        PdmTable.PDM_TABLE_LOOKUP_PREFIX + schemaName + "_"+name +"." + PdmTable.PDM_TABLE_LOOKUP_PK,
+                        type);
+        else if(type.equals(SourceColumn.LDM_TYPE_FACT))
+            return new PdmColumn(PdmTable.PDM_TABLE_FACT_PREFIX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
+                    PdmTable.PDM_TABLE_SOURCE_PREFIX + name, type);
+        else if(type.equals(SourceColumn.LDM_TYPE_DATE))
+            return new PdmColumn(PdmTable.PDM_TABLE_DATE_PREFIX + name + PdmTable.PDM_TABLE_FACT_FK_SUFFIX,
+                    PdmColumn.PDM_COLUMN_TYPE_TEXT, PdmTable.PDM_TABLE_SOURCE_PREFIX + name, type, c.getFormat());
+        else throw new ModelException("Unknown source column type: "+type);
+    }
 
     /**
      * Tables getter
@@ -253,6 +250,20 @@ public class PdmSchema {
                 return table;
         }
         throw new ModelException("Table '" + name + "' doesn't exist.");    
+    }
+
+    /**
+     * Return true if the schema contains table with the specified name, false otherwise
+     * @param name the PDM table name
+     * @return true if the schema contains table with the specified name, false otherwise
+     * @throws ModelException if the table doesn't exist
+     */
+    public boolean contains(String name){
+        for(PdmTable table : getTables()) {
+            if(table != null && name.equals(table.getName()))
+                return true;
+        }
+        return false;    
     }
 
     /**

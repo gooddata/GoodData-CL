@@ -25,7 +25,7 @@ import java.util.*;
  * @version 1.0
  */
 public class DerbySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
-
+    //TODO: refactor
     private static Logger l = Logger.getLogger(DerbySqlExecutor.class);
 
     // separates the different LABELs when we concatenate them to create an unique identifier out of them
