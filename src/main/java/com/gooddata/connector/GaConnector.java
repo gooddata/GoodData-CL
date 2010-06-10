@@ -47,16 +47,18 @@ public class GaConnector extends AbstractConnector implements Connector {
      * @param gPsw Google Analytics Password
      * @param gId Google Analytics profileId
      * @param gQuery Google Analytics query
-     * @param connectorBackend connector backend 
+     * @param connectorBackend connector backend
+     * @param username database backend username
+     * @param password database backend password
      * @throws InitializationException
      * @throws MetadataFormatException
      * @throws IOException
      */
     protected GaConnector(String projectId, String configFileName, String gUsr, String gPsw, String gId, GaQuery gQuery,
-                          int connectorBackend)
+                          int connectorBackend, String username, String password)
             throws InitializationException,
             MetadataFormatException, IOException, ModelException {
-        super(projectId, configFileName, connectorBackend);
+        super(projectId, configFileName, connectorBackend, username, password);
         gQuery.setIds(gId);
         setGoogleAnalyticsUsername(gUsr);
         setGoogleAnalyticsPassword(gPsw);
@@ -71,16 +73,19 @@ public class GaConnector extends AbstractConnector implements Connector {
      * @param gPsw Google Analytics Password
      * @param gId Google Analytics profileId
      * @param gQuery Google Analytics query
-     * @param connectorBackend connector backend 
+     * @param connectorBackend connector backend
+     * @param username database backend username
+     * @param password database backend password
      * @return new Google Analytics Connector
      * @throws InitializationException
      * @throws MetadataFormatException
      * @throws IOException
      */
     public static GaConnector createConnector(String projectId, String configFileName, String gUsr, String gPsw,
-                                String gId, GaQuery gQuery, int connectorBackend) throws InitializationException, MetadataFormatException,
+                                String gId, GaQuery gQuery, int connectorBackend, String username, String password)
+                                throws InitializationException, MetadataFormatException,
              IOException, ModelException {
-        return new GaConnector(projectId, configFileName, gUsr, gPsw, gId, gQuery, connectorBackend);
+        return new GaConnector(projectId, configFileName, gUsr, gPsw, gId, gQuery, connectorBackend, username, password);
     }
 
     /**

@@ -22,6 +22,7 @@
       <name>payday</name>
       <title>Pay Day</title>
       <ldmType>DATE</ldmType>
+      <format>yyyy-MM-dd</format>  
     </column>
   </columns>
 </schema>

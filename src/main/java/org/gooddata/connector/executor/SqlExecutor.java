@@ -1,8 +1,8 @@
-package org.gooddata.transformation.executor;
+package org.gooddata.connector.executor;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.DLIPart;
-import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.connector.model.PdmSchema;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,11 +18,10 @@ public interface SqlExecutor {
     /**
      * Executes the system DDL initialization
      * @param c JDBC connection
-     * @param schema the PDM schema
      * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
      * @throws SQLException in case of db problems
      */
-    public void executeSystemDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException;
+    public void executeSystemDdlSql(Connection c) throws ModelException, SQLException;
 
     /**
      * Executes the DDL initialization

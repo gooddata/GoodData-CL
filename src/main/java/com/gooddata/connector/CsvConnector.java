@@ -30,15 +30,17 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @param projectId project id
      * @param configFileName schema config file name
      * @param dataFileName primary data file
-     * @param connectorBackend connector backend 
+     * @param connectorBackend connector backend
+     * @param username database backend username
+     * @param password database backend password
      * @throws InitializationException issues with the initialization
      * @throws MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue 
      */
-    protected CsvConnector(String projectId, String configFileName, String dataFileName, int connectorBackend)
-            throws InitializationException,
+    protected CsvConnector(String projectId, String configFileName, String dataFileName, int connectorBackend,
+                           String username, String password) throws InitializationException,
             MetadataFormatException, IOException, ModelException {
-        super(projectId, configFileName, connectorBackend);
+        super(projectId, configFileName, connectorBackend, username, password);
         this.setDataFile(new File(dataFileName));
     }
 
@@ -48,15 +50,18 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @param configFileName schema config file name
      * @param dataFileName primary data file
      * @param connectorBackend connector backend
+     * @param username database backend username
+     * @param password database backend password 
      * @return new CSV Connector 
      * @throws InitializationException issues with the initialization
      * @throws MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue
      */
     public static CsvConnector createConnector(String projectId, String configFileName, String dataFileName,
-                                                int connectorBackend) throws InitializationException,
+                                                int connectorBackend, String username, String password)
+                                                throws InitializationException,
             MetadataFormatException, IOException, ModelException {
-        return new CsvConnector(projectId, configFileName, dataFileName, connectorBackend);    
+        return new CsvConnector(projectId, configFileName, dataFileName, connectorBackend, username, password);    
     }
 
     /**

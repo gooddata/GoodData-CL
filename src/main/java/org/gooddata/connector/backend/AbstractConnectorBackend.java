@@ -6,11 +6,10 @@ import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
-import com.gooddata.transformation.executor.DerbySqlExecutorUpdate;
-import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
-import org.gooddata.transformation.executor.AbstractSqlExecutor;
+import org.gooddata.connector.executor.AbstractSqlExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +47,12 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     protected String projectId;
 
 
+    // MySQL username
+    private String username;
+
+    // MySQL password
+    private String password;
+    
 
     /**
      * The config file name
@@ -65,12 +70,17 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      * @param projectId project id
      * @param configFileName config file name
      * @param pdm PDM schema
+     * @param username database backend username
+     * @param username database backend password 
      * @throws IOException in case of an IO issue 
      */
-    protected AbstractConnectorBackend(String projectId, String configFileName, PdmSchema pdm) throws IOException {
+    protected AbstractConnectorBackend(String projectId, String configFileName, PdmSchema pdm, String username,
+                                       String password) throws IOException {
         this.projectId = projectId;
         this.configFileName = configFileName;
         this.pdm = pdm;
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -162,7 +172,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
         try {
             if(!isInitialized()) {
                 con = connect();
-                sg.executeSystemDdlSql(con, getPdm());
+                sg.executeSystemDdlSql(con);
             }
             if(!exists(getPdm().getSourceTable().getName())) {
                 if(con == null)
@@ -395,5 +405,35 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
         }
     }
 
+    /**
+     * Database backend username getter
+     * @return database backend username
+     */
+    public String getUsername() {
+        return username;
+    }
 
+    /**
+     * Database backend username setter
+     * @param username database backend username
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * Database backend password getter
+     * @return  database backend password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Database backend password setter
+     * @param password database backend password
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

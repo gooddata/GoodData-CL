@@ -1,4 +1,4 @@
-package com.gooddata.transformation.executor.model;
+package com.gooddata.connector.model;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
@@ -22,6 +22,18 @@ public class PdmTable {
     public final static String PDM_TABLE_TYPE_REFERENCE = "REFERENCE";
     public final static String PDM_TABLE_TYPE_CONNECTION_POINT = "CONNECTION_POINT";
 
+    // table generator constants
+    public final static String PDM_TABLE_SOURCE_PREFIX = "o_";
+    public final static String PDM_TABLE_LOOKUP_PREFIX = "d_";
+    public final static String PDM_TABLE_LOOKUP_COLUMN_PREFIX = "nm_";
+    public final static String PDM_TABLE_FACT_PREFIX = "f_";
+    public final static String PDM_TABLE_DATE_PREFIX = "dt_";
+    public final static String PDM_TABLE_SOURCE_PK = "o_genid";
+    public final static String PDM_TABLE_FACT_PK = "id";
+    public final static String PDM_TABLE_LOOKUP_PK = "id";
+    public final static String PDM_TABLE_LOOKUP_HASH = "hashid";
+    public final static String PDM_TABLE_FACT_FK_SUFFIX = "_id";
+
     // PDM columns
     private List<PdmColumn> columns = new ArrayList<PdmColumn>();
 
@@ -32,7 +44,7 @@ public class PdmTable {
     private String name;
 
     // the source column that the lookup represents
-    private String representedLookupColumn;
+    private String associatedSourceColumn;
 
     /**
      * Constructor
@@ -60,7 +72,7 @@ public class PdmTable {
      */
     public PdmTable(String name, String type, String lookupSourceColumn) {
         this(name, type);
-        setRepresentedLookupColumn(lookupSourceColumn);
+        setAssociatedSourceColumn(lookupSourceColumn);
     }
    
     /**
@@ -123,7 +135,7 @@ public class PdmTable {
      * Returns all columns that are represented in the source table
      * @return all columns that are represented in the source table
      */
-    public List<PdmColumn> getRepresentingColumns() {
+    public List<PdmColumn> getAssociatedColumns() {
         List<PdmColumn> cols = new ArrayList<PdmColumn>();
         for(PdmColumn col : getColumns()) {
             if(col != null && col.getSourceColumn() != null) {
@@ -191,15 +203,15 @@ public class PdmTable {
      * Returns source column that the lookup represents
      * @return source column that the lookup represents
      */
-    public String getRepresentedLookupColumn() {
-        return representedLookupColumn;
+    public String getAssociatedSourceColumn() {
+        return associatedSourceColumn;
     }
 
     /**
      * Sets source column that the lookup represents
-     * @param representedLookupColumn source column that the lookup represents
+     * @param associatedSourceColumn source column that the lookup represents
      */
-    public void setRepresentedLookupColumn(String representedLookupColumn) {
-        this.representedLookupColumn = representedLookupColumn;
+    public void setAssociatedSourceColumn(String associatedSourceColumn) {
+        this.associatedSourceColumn = associatedSourceColumn;
     }
 }

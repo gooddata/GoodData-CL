@@ -17,14 +17,18 @@ import java.util.regex.Pattern;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
-import org.gooddata.connector.AbstractConnector;
+import org.apache.log4j.Logger;
+import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 
 import com.gooddata.connector.CsvConnector;
 import com.gooddata.connector.GaConnector;
+import com.gooddata.exceptions.InitializationException;
+import com.gooddata.exceptions.InternalErrorException;
 import com.gooddata.exceptions.InvalidArgumentException;
+import com.gooddata.exceptions.MetadataFormatException;
+import com.gooddata.exceptions.ModelException;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.model.Column;
@@ -33,6 +37,7 @@ import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.integration.rest.exceptions.GdcLoginException;
+import com.gooddata.integration.rest.exceptions.GdcRestApiException;
 import com.gooddata.util.CsvUtil;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
@@ -46,19 +51,23 @@ import com.gooddata.util.StringUtil;
  */
 public class GdcDI {
 
+    private static Logger l = Logger.getLogger(GdcDI.class);
+
 	private final String ftpHost;
 	private final String host;
 	private final String userName;
 	private final String password;
 
+    private String dbUserName;
+    private String dbPassword;
+
     private GdcRESTApiWrapper _restApi = null;
     private GdcFTPApiWrapper _ftpApi = null;
 
     private String projectId = null;
-    private AbstractConnector connector = null;
+    private Connector connector = null;
 
-
-    private int defaultConnectorBackend = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
+    private final int DB_BACKEND = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
 
 
     private GdcDI(final String host, final String userName, final String password) throws GdcLoginException {
@@ -83,8 +92,12 @@ public class GdcDI {
         this.password = password;
     }
 
-    private void setProject(String projectId) {
-    	this.projectId = projectId;
+    private void setDbUserName(String usr) {
+    	this.dbUserName = usr;
+    }
+
+    private void setDbPassword(String psw) {
+    	this.dbPassword = psw;
     }
 
     public void execute(final String commandsStr) throws Exception {
@@ -140,6 +153,8 @@ public class GdcDI {
 
         o.addOption("u", "username", true, "GoodData username");
         o.addOption("p", "password", true, "GoodData password");
+        o.addOption("b", "dbusername", true, "Database backend username");
+        o.addOption("c", "dbpassword", true, "Database backend password");
         o.addOption("h", "host", true, "GoodData host");
         o.addOption("i", "project", true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)");
         o.addOption("e", "execute", true, "Commands and params to execute before the commands in provided files");
@@ -160,19 +175,25 @@ public class GdcDI {
 
 	        GdcDI gdcDi = new GdcDI(host, userName, password);
 	        if (line.hasOption("project")) {
-	        	gdcDi.setProject(line.getOptionValue("project"));
+	        	gdcDi.setProjectId(line.getOptionValue("project"));
 	        }
 	        if (line.hasOption("execute")) {
 	        	gdcDi.execute(line.getOptionValue("execute"));
 	        }
+            if (line.hasOption("dbusername")) {
+	        	gdcDi.setDbUserName(line.getOptionValue("dbusername"));
+	        }
+            if (line.hasOption("dbpassword")) {
+	        	gdcDi.setDbPassword(line.getOptionValue("dbpassword"));
+	        }
 	    	if (line.getArgs().length == 0 && !line.hasOption("execute")) {
-        		printErrorHelpandExit("No command has been given, quitting", o);
+        		printErrorHelpandExit("No command has been given, quitting.");
 	    	}
 	        for (final String arg : line.getArgs()) {
 	        	gdcDi.execute(FileUtil.readStringFromFile(arg));
 	        }
         } catch (final IllegalArgumentException e) {
-        	printErrorHelpandExit(e.getMessage(), o);
+        	printErrorHelpandExit(e.getMessage());
         }
     }
 
@@ -231,512 +252,379 @@ public class GdcDI {
      * Returns the help for commands
      * @return help text
      */
-    protected static String commandsHelp() throws Exception {
+    protected static String commandsHelp() {
         try {
         	final InputStream is = GdcDI.class.getResourceAsStream("/com/gooddata/processor/COMMANDS.txt");
         	if (is == null)
         		throw new IOException();
             return FileUtil.readStringFromStream(is);
         } catch (IOException e) {
-            throw new Exception("Could not read com/gooddata/processor/COMMANDS.txt");
+            l.error("Could not read com/gooddata/processor/COMMANDS.txt");
         }
+        return "";
     }
 
     /**
      * Prints an err message, help and exits with status code 1
      * @param err the err message
-     * @param o options
      */
-    protected static void printErrorHelpandExit(String err, Options o) throws Exception {
-        HelpFormatter formatter = new HelpFormatter();
+    protected static void printErrorHelpandExit(String err) {
         System.out.println("ERROR: " + err);
         System.out.println(commandsHelp());
         System.exit(1);
     }
 
+
+    protected boolean match(Command c, String cms) {
+        if(c.getCommand().equalsIgnoreCase(cms))
+            return true;
+        else
+            return false;
+    }
+    
+    protected String getParam(Command c, String p) {
+        return (String)c.getParameters().get(p);
+    }
+
+    protected void error(Command c, String msg) throws InvalidArgumentException {
+        throw new InvalidArgumentException(c.getCommand()+": "+msg);
+    }
+
+    protected String getParamMandatory(Command c, String p) {
+        String v = (String)c.getParameters().get(p);
+        if(v == null || v.length() == 0) {
+
+        }
+        return v;
+    }
+
+    protected String getProjectId(Command c) throws InvalidArgumentException {
+        if(projectId == null || projectId.length() == 0) {
+            error(c, "Please create or open project by using CreateProject or OpenProject commands.");
+        }
+        return projectId;
+    }
+
+    protected void setProjectId(String pid) {
+        projectId = pid;
+    }
+
+    protected Connector getConnector(Command c) throws InvalidArgumentException {
+        if(connector == null) {
+            error(c, "No connector. Please use a LoadXXX command to create connector first.");
+        }
+        return connector;
+    }
+
+    protected void setConnector(Connector cc) {
+        connector = cc;
+    }
+
+    protected File getFile(Command c, String fileName) throws InvalidArgumentException {
+        File f = new File(fileName);
+        if(!f.exists())
+            error(c, "File '" + fileName + "' doesn't exist.");
+        return f;
+    }
+
     /**
      * Executes the command
-     * @param command to execute
+     * @param c to execute
      * @throws Exception general error
      */
-    private void processCommand(Command command) throws Exception {
-
-        if(command.getCommand().equalsIgnoreCase("CreateProject")) {
-            String name = (String)command.getParameters().get("name");
-            String desc = (String)command.getParameters().get("desc");
-            if(name != null && name.length() > 0) {
-                if(desc != null && desc.length() > 0)
-                    projectId = getRestApi().createProject(name, desc);
-                else
-                    projectId = getRestApi().createProject(name, name);
-                System.out.println("Project id = '"+projectId+"' created.");
-            }
-            else
-                throw new IllegalArgumentException("CreateProject: Command requires the 'name' parameter.");
-
+    private void processCommand(Command c) throws Exception {
+        if(match(c,"CreateProject")) {
+            createProject(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("OpenProject")) {
-            String id = (String)command.getParameters().get("id");
-            if(id != null && id.length() > 0) {
-                projectId = id;
-            }
-            else {
-            	throw new IllegalArgumentException("OpenProject: Command requires the 'id' parameter.");
-            }
+        if(match(c,"OpenProject")) {
+            setProjectId(getParamMandatory(c,"id"));
         }
-
-        if(command.getCommand().equalsIgnoreCase("GenerateCsvConfigTemplate")) {
-            String configFile = (String)command.getParameters().get("configFile");
-            String csvHeaderFile = (String)command.getParameters().get("csvHeaderFile");
-            if(configFile != null && configFile.length() > 0) {
-                File cf = new File(configFile);
-                if(csvHeaderFile != null && csvHeaderFile.length() > 0) {
-                    File csvf = new File(csvHeaderFile);
-                    if(csvf.exists())  {
-                        CsvConnector.saveConfigTemplate(configFile, csvHeaderFile);
-                    }
-                    else
-                    	throw new IllegalArgumentException(
-                            "GenerateCsvConfigTemplate: File '" + csvHeaderFile +
-                            "' doesn't exists.");
-                }
-                else
-                	throw new IllegalArgumentException(
-                            "GenerateCsvConfigTemplate: Command requires the 'csvHeaderFile' parameter.");
-            }
-            else
-            	throw new IllegalArgumentException("GenerateCsvConfigTemplate: Command requires the 'configFile' parameter.");
+        if(match(c,"GenerateCsvConfigTemplate")) {
+            generateCsvConfigTemplate(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("LoadCsv")) {
-            String configFile = (String)command.getParameters().get("configFile");
-            String csvDataFile = (String)command.getParameters().get("csvDataFile");
-            if(configFile != null && configFile.length() > 0) {
-                File conf = new File(configFile);
-                if(conf.exists()) {
-                    if(csvDataFile != null && csvDataFile.length() > 0) {
-                        File csvf = new File(csvDataFile);
-                        if(csvf.exists())  {
-                            if(projectId != null) {
-                                connector = CsvConnector.createConnector(projectId, configFile, csvDataFile,
-                                        defaultConnectorBackend);
-                            }
-                            else
-                                throw new IllegalArgumentException(
-                                "LoadCsv: No active project found. Use command 'CreateProject'" +
-                                " or 'OpenProject' first.");
-                        }
-                        else
-                            throw new IllegalArgumentException(
-                                "LoadCsv: File '" + csvDataFile +
-                                "' doesn't exists.");
-                    }
-                    else
-                        throw new IllegalArgumentException(
-                                "LoadCsv: Command requires the 'csvHeaderFile' parameter.");
-                }
-                else
-                    throw new IllegalArgumentException(
-                                "LoadCsv: File '" + configFile +
-                                "' doesn't exists.");
-            }
-            else
-                throw new IllegalArgumentException(
-                    "LoadCsv: Command requires the 'configFile' parameter.");
+        if(match(c,"LoadCsv")) {
+            loadCsv(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("GenerateGoogleAnalyticsConfigTemplate")) {
-            String configFile = (String)command.getParameters().get("configFile");
-            String name = (String)command.getParameters().get("name");
-            String dimensions = (String)command.getParameters().get("dimensions");
-            String metrics = (String)command.getParameters().get("metrics");
-            if(configFile != null && configFile.length() > 0) {
-                File cf = new File(configFile);
-                if(dimensions != null && dimensions.length() > 0) {
-                    if(metrics != null && metrics.length() > 0) {
-                        if(name != null && name.length() > 0) {
-                            GaQuery gq = null;
-                            try {
-                                gq = new GaQuery();
-                            } catch (MalformedURLException e) {
-                                throw new IllegalArgumentException(e.getMessage());
-                            }
-                            gq.setDimensions(dimensions);
-                            gq.setMetrics(metrics);
-                            GaConnector.saveConfigTemplate(name, configFile, gq);
-                        }
-                        else
-                            throw new IllegalArgumentException(
-                                         "GenerateGoogleAnalyticsConfigTemplate: Please specify a name using the name parameter.");
-                    }
-                    else
-                        throw new IllegalArgumentException(
-                                     "GenerateGoogleAnalyticsConfigTemplate: Please specify a metrics using the metrics parameter.");
-                }
-                else
-                    throw new IllegalArgumentException(
-                                     "GenerateGoogleAnalyticsConfigTemplate: Please specify a dimensions using the dimensions parameter.");
-            }
-            else
-            	throw new IllegalArgumentException(
-                                     "GenerateGoogleAnalyticsConfigTemplate: Please specify a config file using the configFile parameter.");
+        if(match(c,"GenerateGoogleAnalyticsConfigTemplate")) {
+            generateGAConfigTemplate(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("LoadGoogleAnalytics")) {
-            String configFile = (String)command.getParameters().get("configFile");
-            String usr = (String)command.getParameters().get("username");
-            String psw = (String)command.getParameters().get("password");
-            String id = (String)command.getParameters().get("profileId");
-            String dimensions = (String)command.getParameters().get("dimensions");
-            String metrics = (String)command.getParameters().get("metrics");
-            String startDate = (String)command.getParameters().get("startDate");
-            String endDate = (String)command.getParameters().get("endDate");
-            String filters = (String)command.getParameters().get("filters");
-            if(configFile != null && configFile.length() > 0) {
-                File conf = new File(configFile);
-                if(conf.exists()) {
-                    if(projectId != null) {
-                        if(usr != null && usr.length() > 0) {
-                            if(psw != null && psw.length() > 0) {
-                                if(id != null && id.length() > 0) {
-                                    GaQuery gq = null;
-                                    try {
-                                        gq = new GaQuery();
-                                    } catch (MalformedURLException e) {
-                                        throw new IllegalArgumentException(e.getMessage());
-                                    }
-                                    if(dimensions != null && dimensions.length() > 0)
-                                        gq.setDimensions(dimensions.replace("|",","));
-                                    else
-                                        throw new IllegalArgumentException(
-                                     "LoadGoogleAnalytics: Please specify a dimensions using the dimensions parameter.");
-                                    if(metrics != null && metrics.length() > 0)
-                                        gq.setMetrics(metrics.replace("|",","));
-                                    else
-                                        throw new IllegalArgumentException(
-                                     "LoadGoogleAnalytics: Please specify a metrics using the metrics parameter.");
-                                    if(startDate != null && startDate.length() > 0)
-                                        gq.setStartDate(startDate);
-                                    if(endDate != null && endDate.length() > 0)
-                                        gq.setEndDate(endDate);
-                                    if(filters != null && filters.length() > 0)
-                                        gq.setFilters(filters);
-                                    connector = GaConnector.createConnector(projectId, configFile, usr, psw, id, gq,
-                                            defaultConnectorBackend);
-                                }
-                                else
-                                    throw new IllegalArgumentException(
-                                         "LoadGoogleAnalytics: Please specify a Google Profile ID using the profileId parameter.");
-                            }
-                            else
-                                throw new IllegalArgumentException(
-                                     "LoadGoogleAnalytics: Please specify a Google username using the username parameter.");
-                        }
-                        else
-                            throw new IllegalArgumentException(
-                                 "LoadGoogleAnalytics: Please specify a Google password using the password parameter.");
-                    }
-                    else
-                        throw new IllegalArgumentException(
-                        "LoadGoogleAnalytics: No active project found. Use command 'CreateProject'" +
-                        " or 'OpenProject' first.");
-                }
-                else
-                    throw new IllegalArgumentException(
-                                "LoadGoogleAnalytics: File '" + configFile +
-                                "' doesn't exists.");
-            }
-            else
-                throw new IllegalArgumentException(
-                    "LoadGoogleAnalytics: Command requires the 'configFile' parameter.");
+        if(match(c,"LoadGoogleAnalytics")) {
+            LoadGA(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("GenerateMaql")) {
-            String maqlFile = (String)command.getParameters().get("maqlFile");
-            if(maqlFile != null && maqlFile.length() > 0) {
-                if(connector != null) {
-                    String maql = connector.generateMaql();
-                    FileUtil.writeStringToFile(maql, maqlFile);
-                }
-                else
-                	throw new IllegalArgumentException("GenerateMaql: No data source loaded. Use a 'LoadXXX' to load a data source.");
-
-
-            }
-            else
-            	throw new IllegalArgumentException("GenerateMaql: Command requires the 'maqlFile' parameter.");
-
+        if(match(c,"GenerateMaql")) {
+            generateMAQL(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("ExecuteMaql")) {
-            String maqlFile = (String)command.getParameters().get("maqlFile");
-            if(maqlFile != null && maqlFile.length() > 0) {
-                File mf = new File(maqlFile);
-                if(mf.exists()) {
-                    if(projectId != null) {
-                        String maql = FileUtil.readStringFromFile(maqlFile);
-                        getRestApi().executeMAQL(projectId, maql);
-                    }
-                    else
-                    	throw new IllegalArgumentException(
-                                    "ExecuteMaql: No active project found. Use command 'CreateProject'" +
-                                    " or 'OpenProject' first.");
-                }
-                else
-                	throw new IllegalArgumentException(
-                                    "ExecuteMaql: File '" + maqlFile +
-                                    "' doesn't exists.");
-            }
-            else
-            	throw new IllegalArgumentException("ExecuteMaql: Command requires the 'maqlFile' parameter.");
-
+        if(match(c,"ExecuteMaql")) {
+            executeMAQL(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("ListSnapshots")) {
-            if(connector != null) {
-                System.out.println(connector.listSnapshots());
-            }
-            else
-            	throw new IllegalArgumentException("ListSnapshots: No data source loaded. Use a 'LoadXXX' to load a data source.");
-
+        if(match(c,"ListSnapshots")) {
+            listSnapshots(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("DropSnapshots")) {
-            if(connector != null) {
-                connector.dropSnapshots();
-            }
-            else
-            	throw new IllegalArgumentException("DropSnapshots: No data source loaded. Use a 'LoadXXX' to load a data source.");
-
+        if(match(c,"DropSnapshots")) {
+            dropSnapshots(c);
         }
-        
-        if(command.getCommand().equalsIgnoreCase("UploadDir")) {
-        	String path = command.getParameters().getProperty("path");
-        	String dataset = command.getParameters().getProperty("dataset");
-        	
-        	if (path == null) {
-        		throw new IllegalArgumentException("UploadDir: missing required parameter 'path'.");
-        	}
-        	if (dataset == null) {
-        		throw new IllegalArgumentException("UploadDir: missing required parameter 'dataset'.");
-        	}
-        	
-        	// validate input dir
-        	File dir = new File(path);
-        	if (!dir.exists()) {
-        		throw new IllegalArgumentException("UploadDir: directory " + path + " does not exist.");
-        	}
-        	if (!dir.isDirectory()) {
-        		throw new IllegalArgumentException("UploadDir: " + path + " is not a directory.");
-        	}
-        	if (!(dir.canRead() && dir.canExecute() && dir.canWrite())) {
-        		throw new IllegalArgumentException("UploadDir: directory " + path + " is not r/w accessible.");
-        	}
-        	
-        	// generate manifest
-        	DLI dli = getRestApi().getDLIById(dataset, projectId);
-            List<DLIPart> parts= getRestApi().getDLIParts(dataset, projectId);
-        	
-        	// prepare the zip file
-        	File tmpDir = FileUtil.createTempDir();
-        	for (DLIPart part : parts) {
-        		try {
-        			preparePartFile(part, dir, tmpDir);
-        		} catch (Exception e) {
-        			throw new IllegalStateException(part.getFileName(), e);
-        		}
-        	}
-        	FileUtil.writeStringToFile(dli.getDLIManifest(parts), tmpDir + System.getProperty("file.separator") +
-                    GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
-            File tmpZipDir = FileUtil.createTempDir();
-            String archiveName = tmpDir.getName();
-            String archivePath = tmpZipDir.getAbsolutePath() +
-                    System.getProperty("file.separator") + archiveName + ".zip";
-            FileUtil.compressDir(tmpDir.getAbsolutePath(), archivePath);
-        	
-            // ftp upload
-        	getFtpApi().transferDir(archivePath);
-            // kick the GooDData server to load the data package to the project
-            getRestApi().startLoading(projectId, archiveName);
+        if(match(c,"UploadDir")) {
+            uploadDir(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("TransferData")) {
-            if(connector != null) {
-                // connector's schema name
-                String ssn = StringUtil.formatShortName(connector.getSchema().getName());
-                connector.initialize();
-                // retrieve the DLI
-                DLI dli = getRestApi().getDLIById("dataset." + ssn, projectId);
-                List<DLIPart> parts= getRestApi().getDLIParts("dataset." + ssn, projectId);
-                // target directories and ZIP names
-
-                String incremental = (String)command.getParameters().get("incremental");
-                if(incremental != null && incremental.length() > 0 && incremental.equalsIgnoreCase("true")) {
-                    for(DLIPart part : parts) {
-                        if(part.getFileName().startsWith("f_")) {
-                            part.setLoadMode(DLIPart.LM_INCREMENTAL);
-                        }
-                    }
-                }
-
-                File tmpDir = FileUtil.createTempDir();
-                Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
-                File tmpZipDir = FileUtil.createTempDir();
-                String archiveName = tmpDir.getName();
-                String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
-                        archiveName + ".zip";
-                // loads the CSV data to the embedded Derby SQL
-                connector.extract();
-                // normalize the data in the Derby
-                connector.transform();
-                // load data from the Derby to the local GoodData data integration package
-                connector.deploy(dli, parts, tmpDir.getAbsolutePath(), archivePath);
-                // transfer the data package to the GoodData server
-                getFtpApi().transferDir(archivePath);
-                // kick the GooDData server to load the data package to the project
-                getRestApi().startLoading(projectId, archiveName);
-
-                //cleanup
-                FileUtil.recursiveDelete(tmpDir);
-                FileUtil.recursiveDelete(tmpZipDir);
-                FileUtil.recursiveDelete(new File(archivePath));                
-            }
-            else
-            	throw new IllegalArgumentException("TransferData: No data source loaded. Use a 'LoadXXX' to load a data source.");
-
+        if(match(c,"TransferData")) {
+            transferData(c);
         }
-
-        if(command.getCommand().equalsIgnoreCase("TransferSnapshots")) {
-            String firstSnapshot = (String)command.getParameters().get("firstSnapshot");
-            String lastSnapshot = (String)command.getParameters().get("lastSnapshot");
-            if(firstSnapshot != null && firstSnapshot.length() > 0) {
-                if(lastSnapshot != null && lastSnapshot.length() > 0) {
-                    int fs = 0,ls = 0;
-                    try  {
-                        fs = Integer.parseInt(firstSnapshot);
-                    }
-                    catch (NumberFormatException e) {
-                    	throw new IllegalArgumentException("TransferSnapshots: The 'firstSnapshot' (" + firstSnapshot +
-                                ") parameter is not a number.");
-                    }
-                    try {
-                        ls = Integer.parseInt(lastSnapshot);
-                    }
-                    catch (NumberFormatException e) {
-                    	throw new IllegalArgumentException("TransferSnapshots: The 'lastSnapshot' (" + lastSnapshot +
-                                ") parameter is not a number.");
-                    }
-                    int cnt = ls - fs;
-                    if(cnt >= 0) {
-                        int[] snapshots = new int[cnt];
-                        for(int i = 0; i < cnt; i++) {
-                            snapshots[i] = fs + i;
-                        }
-                        if(connector != null) {
-                            // connector's schema name
-                            String ssn = StringUtil.formatShortName(connector.getSchema().getName());
-
-                            connector.initialize();
-                            // retrieve the DLI
-                            DLI dli = getRestApi().getDLIById("dataset." + ssn, projectId);
-                            List<DLIPart> parts= getRestApi().getDLIParts("dataset." +ssn, projectId);
-
-                            String incremental = (String)command.getParameters().get("incremental");
-                            if(incremental != null && incremental.length() > 0 &&
-                                    incremental.equalsIgnoreCase("true")) {
-                                for(DLIPart part : parts) {
-                                    if(part.getFileName().startsWith("f_")) {
-                                        part.setLoadMode(DLIPart.LM_INCREMENTAL);
-                                    }
-                                }
-                            }
-
-                            // target directories and ZIP names
-                            File tmpDir = FileUtil.createTempDir();
-                            File tmpZipDir = FileUtil.createTempDir();
-                            String archiveName = tmpDir.getName();
-                            String archivePath = tmpZipDir.getAbsolutePath() +
-                                    System.getProperty("file.separator") + archiveName + ".zip";
-                            // loads the CSV data to the embedded Derby SQL
-                            connector.extract();
-                            // normalize the data in the Derby
-                            connector.transform();
-                            // load data from the Derby to the local GoodData data integration package
-                            connector.deploySnapshot(dli, parts, tmpDir.getAbsolutePath(), archivePath,
-                                    snapshots);
-                            // transfer the data package to the GoodData server
-                            getFtpApi().transferDir(archivePath);
-                            // kick the GooDData server to load the data package to the project
-                            getRestApi().startLoading(projectId, archiveName);
-
-                            //cleanup
-                            FileUtil.recursiveDelete(tmpDir);
-                            FileUtil.recursiveDelete(tmpZipDir);
-                            FileUtil.recursiveDelete(new File(archivePath));
-                        }
-                        else
-                        	throw new IllegalArgumentException("TransferSnapshots: No data source loaded." +
-                                        "Use a 'LoadXXX' to load a data source.");
-                    }
-                    else
-                    	throw new IllegalArgumentException("TransferSnapshots: The 'lastSnapshot' (" + lastSnapshot +
-                                ") parameter must be higher than the 'firstSnapshot' (" + firstSnapshot +
-                                ") parameter.");
-                }
-                else
-                	throw new IllegalArgumentException("TransferSnapshots: Command requires the 'lastSnapshot' parameter.");
-            }
-            else
-            	throw new IllegalArgumentException("TransferSnapshots: Command requires the 'firstSnapshot' parameter.");
+        if(match(c,"TransferSnapshots")) {
+            transferSnapshots(c);
         }
+        if(match(c,"TransferLastSnapshot")) {
+            transferLastSnapshot(c);
+        }
+    }
 
-        if(command.getCommand().equalsIgnoreCase("TransferLastSnapshot")) {
-            if(connector != null) {
-                // connector's schema name
-                String ssn = StringUtil.formatShortName(connector.getSchema().getName());
+    private void transferLastSnapshot(Command c) throws InvalidArgumentException, ModelException, IOException, InternalErrorException, GdcRestApiException {
+        Connector cc = getConnector(c);
+        String pid = getProjectId(c);
+        // connector's schema name
+        String ssn = StringUtil.formatShortName(cc.getSchema().getName());
 
-                connector.initialize();
-                // retrieve the DLI
-                DLI dli = getRestApi().getDLIById("dataset." + ssn, projectId);
-                List<DLIPart> parts= getRestApi().getDLIParts("dataset." + ssn, projectId);
+        cc.initialize();
+        // retrieve the DLI
+        DLI dli = getRestApi().getDLIById("dataset." + ssn, pid);
+        List<DLIPart> parts= getRestApi().getDLIParts("dataset." + ssn, pid);
 
-                String incremental = (String)command.getParameters().get("incremental");
-                if(incremental != null && incremental.length() > 0 &&
-                        incremental.equalsIgnoreCase("true")) {
-                    for(DLIPart part : parts) {
-                        if(part.getFileName().startsWith("f_")) {
-                            part.setLoadMode(DLIPart.LM_INCREMENTAL);
-                        }
-                    }
-                }
+        String incremental = getParam(c,"incremental");
+        if(incremental != null && incremental.length() > 0 &&
+                incremental.equalsIgnoreCase("true")) {
+            setIncremental(parts);
+        }
+        extractAndTransfer(c, pid, cc, dli, parts, new int[] {cc.getLastSnapshotId()});
+    }
 
-                // target directories and ZIP names
-                File tmpDir = FileUtil.createTempDir();
-                File tmpZipDir = FileUtil.createTempDir();
-                String archiveName = tmpDir.getName();
-                String archivePath = tmpZipDir.getAbsolutePath() +
-                        System.getProperty("file.separator") + archiveName + ".zip";
-                // loads the CSV data to the embedded Derby SQL
-                connector.extract();
-                // normalize the data in the Derby
-                connector.transform();
-                // load data from the Derby to the local GoodData data integration package
-                connector.deploySnapshot(dli, parts, tmpDir.getAbsolutePath(), archivePath,
-                        new int[] {connector.getLastSnapshotId()});
-                // transfer the data package to the GoodData server
-                getFtpApi().transferDir(archivePath);
-                // kick the GooDData server to load the data package to the project
-                getRestApi().startLoading(projectId, archiveName);
-
-                //cleanup
-                FileUtil.recursiveDelete(tmpDir);
-                FileUtil.recursiveDelete(tmpZipDir);
-                FileUtil.recursiveDelete(new File(archivePath));
+    private void transferSnapshots(Command c) throws InvalidArgumentException, ModelException, IOException, GdcRestApiException {
+        Connector cc = getConnector(c);
+        String pid = getProjectId(c);
+        String firstSnapshot = getParamMandatory(c,"firstSnapshot");
+        String lastSnapshot = getParamMandatory(c,"lastSnapshot");
+        int fs = 0,ls = 0;
+        try  {
+            fs = Integer.parseInt(firstSnapshot);
+        }
+        catch (NumberFormatException e) {
+            throw new IllegalArgumentException("TransferSnapshots: The 'firstSnapshot' (" + firstSnapshot +
+                    ") parameter is not a number.");
+        }
+        try {
+            ls = Integer.parseInt(lastSnapshot);
+        }
+        catch (NumberFormatException e) {
+            throw new IllegalArgumentException("TransferSnapshots: The 'lastSnapshot' (" + lastSnapshot +
+                    ") parameter is not a number.");
+        }
+        int cnt = ls - fs;
+        if(cnt >= 0) {
+            int[] snapshots = new int[cnt];
+            for(int i = 0; i < cnt; i++) {
+                snapshots[i] = fs + i;
             }
-            else
-            	throw new IllegalArgumentException("TransferLastSnapshot: No data source loaded." +
-                        "Use a 'LoadXXX' to load a data source.");
+            // connector's schema name
+            String ssn = StringUtil.formatShortName(cc.getSchema().getName());
+
+            cc.initialize();
+            // retrieve the DLI
+            DLI dli = getRestApi().getDLIById("dataset." + ssn, pid);
+            List<DLIPart> parts= getRestApi().getDLIParts("dataset." +ssn, pid);
+
+            String incremental = getParam(c,"incremental");
+            if(incremental != null && incremental.length() > 0 &&
+                    incremental.equalsIgnoreCase("true"))
+                setIncremental(parts);
+
+            extractAndTransfer(c, pid, cc, dli, parts, snapshots);
+        }
+        else
+            error(c,"The firstSnapshot can't be higher than the lastSnapshot.");
+    }
+
+    private void transferData(Command c) throws InvalidArgumentException, ModelException, IOException, GdcRestApiException {
+        Connector cc = getConnector(c);
+        String pid = getProjectId(c);
+        // connector's schema name
+        String ssn = StringUtil.formatShortName(cc.getSchema().getName());
+        cc.initialize();
+        // retrieve the DLI
+        DLI dli = getRestApi().getDLIById("dataset." + ssn, pid);
+        List<DLIPart> parts= getRestApi().getDLIParts("dataset." + ssn, pid);
+        // target directories and ZIP names
+
+        String incremental = getParam(c,"incremental");
+        if(incremental != null && incremental.length() > 0 && incremental.equalsIgnoreCase("true")) {
+            setIncremental(parts);
+        }
+        extractAndTransfer(c, pid, cc, dli, parts, null);
+    }
+
+    private void extractAndTransfer(Command c, String pid, Connector cc, DLI dli, List<DLIPart> parts,
+        int[] snapshots) throws IOException, ModelException, GdcRestApiException, InvalidArgumentException {
+        File tmpDir = FileUtil.createTempDir();
+        makeWritable(tmpDir);
+        File tmpZipDir = FileUtil.createTempDir();
+        String archiveName = tmpDir.getName();
+        String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
+            archiveName + ".zip";
+        // loads the CSV data to the embedded Derby SQL
+        cc.extract();
+        // normalize the data in the Derby
+        cc.transform();
+        // load data from the Derby to the local GoodData data integration package
+        cc.deploySnapshot(dli, parts, tmpDir.getAbsolutePath(), archivePath, snapshots);
+        // transfer the data package to the GoodData server
+        getFtpApi().transferDir(archivePath);
+        // kick the GooDData server to load the data package to the project
+        getRestApi().startLoading(pid, archiveName);
+        //cleanup
+        FileUtil.recursiveDelete(tmpDir);
+        FileUtil.recursiveDelete(tmpZipDir);
+        FileUtil.recursiveDelete(getFile(c,archivePath));
+    }
+
+    private void makeWritable(File tmpDir) {
+        try {
+            Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
+        }
+        catch (IOException e) {
+            l.debug("CHMOD execution failed. No big deal perhaps you are running Windows.", e);
+        }
+    }
+
+    private void uploadDir(Command c) throws InvalidArgumentException, IOException, GdcRestApiException {
+        String pid = getProjectId(c);
+        String path = getParamMandatory(c,"path");
+        String dataset = getParamMandatory(c,"dataset");
+        // validate input dir
+        File dir = getFile(c,path);
+        if (!dir.isDirectory()) {
+            throw new IllegalArgumentException("UploadDir: " + path + " is not a directory.");
+        }
+        if (!(dir.canRead() && dir.canExecute() && dir.canWrite())) {
+            throw new IllegalArgumentException("UploadDir: directory " + path + " is not r/w accessible.");
+        }
+        // generate manifest
+        DLI dli = getRestApi().getDLIById(dataset, pid);
+        List<DLIPart> parts= getRestApi().getDLIParts(dataset, pid);
+        FileUtil.writeStringToFile(dli.getDLIManifest(parts), path + System.getProperty("file.separator") +
+GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
+
+        // prepare the zip file
+        File tmpDir = FileUtil.createTempDir();
+        File tmpZipDir = FileUtil.createTempDir();
+        String archiveName = tmpDir.getName();
+        String archivePath = tmpZipDir.getAbsolutePath() +
+                System.getProperty("file.separator") + archiveName + ".zip";
+        FileUtil.compressDir(path, archivePath);
+        // ftp upload
+        getFtpApi().transferDir(archivePath);
+        // kick the GooDData server to load the data package to the project
+        getRestApi().startLoading(pid, archiveName);
+    }
+
+    private void dropSnapshots(Command c) throws InvalidArgumentException {
+        Connector cc = getConnector(c);
+        cc.dropSnapshots();
+    }
+
+    private void listSnapshots(Command c) throws InvalidArgumentException, InternalErrorException {
+        Connector cc = getConnector(c);
+        System.out.println(cc.listSnapshots());
+    }
+
+    private void executeMAQL(Command c) throws InvalidArgumentException, IOException, GdcRestApiException {
+        String pid = getProjectId(c);
+        String maqlFile = getParamMandatory(c,"maqlFile");
+        File mf = getFile(c,maqlFile);
+        String maql = FileUtil.readStringFromFile(maqlFile);
+        getRestApi().executeMAQL(pid, maql);
+    }
+
+    private void generateMAQL(Command c) throws InvalidArgumentException, IOException {
+        Connector cc = getConnector(c);
+        String maqlFile = getParamMandatory(c,"maqlFile");
+        String maql = cc.generateMaql();
+        FileUtil.writeStringToFile(maql, maqlFile);
+    }
+
+    private void LoadGA(Command c)
+            throws InvalidArgumentException, InitializationException, MetadataFormatException, IOException,
+            ModelException {
+        String pid = getProjectId(c);
+        String configFile = getParamMandatory(c,"configFile");
+        String usr = getParamMandatory(c,"username");
+        String psw = getParamMandatory(c,"password");
+        String id = getParamMandatory(c,"profileId");
+        String dimensions = getParamMandatory(c,"dimensions");
+        String metrics = getParamMandatory(c,"metrics");
+        String startDate = getParamMandatory(c,"startDate");
+        String endDate = getParamMandatory(c,"endDate");
+        String filters = getParamMandatory(c,"filters");
+        GaQuery gq = null;
+        try {
+            gq = new GaQuery();
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+        gq.setDimensions(dimensions.replace("|",","));
+        gq.setMetrics(metrics.replace("|",","));
+        gq.setStartDate(startDate);
+        gq.setEndDate(endDate);
+        gq.setFilters(filters);
+        setConnector(GaConnector.createConnector(pid, configFile, usr, psw, id, gq,
+                DB_BACKEND, dbUserName, dbPassword));
+    }
+
+    private void generateGAConfigTemplate(Command c) throws InvalidArgumentException, IOException {
+        String configFile = getParamMandatory(c,"configFile");
+        String name = getParamMandatory(c,"name");
+        String dimensions = getParamMandatory(c,"dimensions");
+        String metrics = getParamMandatory(c,"metrics");
+        File cf = getFile(c,configFile);
+        GaQuery gq = null;
+        try {
+            gq = new GaQuery();
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+        gq.setDimensions(dimensions);
+        gq.setMetrics(metrics);
+        GaConnector.saveConfigTemplate(name, configFile, gq);
+    }
+
+    private void loadCsv(Command c)
+            throws InvalidArgumentException, InitializationException, MetadataFormatException, IOException,
+            ModelException {
+        String pid = getProjectId(c);
+        String configFile = getParamMandatory(c,"configFile");
+        String csvDataFile = getParamMandatory(c,"csvDataFile");
+        File conf = getFile(c,configFile);
+        File csvf = getFile(c,csvDataFile);
+        setConnector(CsvConnector.createConnector(pid, configFile, csvDataFile, DB_BACKEND, dbUserName,
+                dbPassword));
+    }
+
+    private void generateCsvConfigTemplate(Command c) throws InvalidArgumentException, IOException {
+        String configFile = getParamMandatory(c,"configFile");
+        String csvHeaderFile = getParamMandatory(c,"csvHeaderFile");
+        File cf = getFile(c,configFile);
+        File csvf = getFile(c,csvHeaderFile);
+        CsvConnector.saveConfigTemplate(configFile, csvHeaderFile);
+    }
+
+    private void createProject(Command c) throws GdcRestApiException, InvalidArgumentException {
+        String name = getParamMandatory(c,"name");
+        setProjectId(getRestApi().createProject(name, name));
+        String pid = getProjectId(c);
+        System.out.println("Project id = '"+pid+"' created.");
+    }
+
+    private void setIncremental(List<DLIPart> parts) {
+        for(DLIPart part : parts) {
+            if(part.getFileName().startsWith("f_")) {
+                part.setLoadMode(DLIPart.LM_INCREMENTAL);
+            }
         }
     }
 
@@ -759,5 +647,4 @@ public class GdcDI {
 		}
 		CsvUtil.reshuffle(is, os, fields);
 	}
-
 }

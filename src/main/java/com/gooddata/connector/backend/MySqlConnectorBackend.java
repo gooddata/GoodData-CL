@@ -1,9 +1,7 @@
 package com.gooddata.connector.backend;
 
-import com.gooddata.transformation.executor.DerbySqlExecutor;
-import com.gooddata.transformation.executor.DerbySqlExecutorUpdate;
-import com.gooddata.transformation.executor.MySqlExecutor;
-import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.connector.executor.MySqlExecutor;
+import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.util.JdbcUtil;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
@@ -41,27 +39,18 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         }
     }
 
-    // MySQL username
-    private String username;
-
-    // MySQL password
-    private String password;
-
-
     /**
      * Constructor
      * @param projectId project id
      * @param configFileName config file name
      * @param pdm PDM schema
-     * @param username MySQL username
-     * @param password MySQL password
+     * @param username database backend username
+     * @param username database backend password
      * @throws java.io.IOException in case of an IO issue
      */
     protected MySqlConnectorBackend(String projectId, String configFileName, PdmSchema pdm, String username,
                                     String password) throws IOException {
-        super(projectId, configFileName, pdm);
-        this.username = username;
-        this.password = password;        
+        super(projectId, configFileName, pdm, username, password);
         sg = new MySqlExecutor();
     }
 
@@ -88,15 +77,15 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         String protocol = "jdbc:mysql:";
         Connection con = null;
         try {
-            con = DriverManager.getConnection(protocol + "//localhost/" + projectId, username, password);
+            con = DriverManager.getConnection(protocol + "//localhost/" + projectId, getUsername(), getPassword());
         }
         catch (SQLException e) {
-            con = DriverManager.getConnection(protocol + "//localhost/mysql", username, password);
+            con = DriverManager.getConnection(protocol + "//localhost/mysql", getUsername(), getPassword());
             JdbcUtil.executeUpdate(con,
                 "CREATE DATABASE IF NOT EXISTS " + projectId  + " CHARACTER SET utf8"
             );
             con.close();
-            con = DriverManager.getConnection(protocol + "//localhost/" + projectId, username, password);            
+            con = DriverManager.getConnection(protocol + "//localhost/" + projectId, getUsername(), getPassword());            
         }
         return con;
     }

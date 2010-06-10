@@ -29,14 +29,13 @@ public class JdbcUtil {
         int rc = 0;
         try {
             s = con.createStatement();
+            //System.err.println("Executing SQL: statement='" + sql + "'");
             rc = s.executeUpdate(sql);
-            l.trace("Executed Derby SQL: statement='" + sql + "', result='" + rc + "'");
-            System.err.println("Executed Derby SQL: statement='" + sql + "', rows='" + rc + "'");
+            l.trace("Executed SQL: statement='" + sql + "', result='" + rc + "'");
             return rc;
         }
         catch (SQLException e) {
-            l.error("Error executing Derby SQL: statement='" + sql + "', result='" + rc + "'", e);
-            System.err.println("Error executing Derby SQL: statement='" + sql + "', result='" + rc + "'");
+            l.error("Error executing SQL: statement='" + sql + "', result='" + rc + "'", e);
             throw e;
         }
         finally {
@@ -58,13 +57,11 @@ public class JdbcUtil {
         try {
             s = con.createStatement();
             rs = s.executeQuery(sql);
-            l.trace("Executed Derby SQL: statement='" + sql + "'");
-            System.err.println("Executed Derby SQL: statement='" + sql + "'");
+            l.trace("Executed SQL: statement='" + sql + "'");
             return rs;
         }
         catch (SQLException e) {
-            l.error("Error executing Derby SQL: statement='" + sql + "'", e);
-            System.err.println("Error executing Derby SQL: statement='" + sql + "'");
+            l.error("Error executing SQL: statement='" + sql + "'", e);
             throw e;
         }
         finally {

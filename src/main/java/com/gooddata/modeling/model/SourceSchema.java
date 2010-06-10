@@ -147,4 +147,66 @@ public class SourceSchema {
 
     }
 
+    /**
+     * Returns a column by it's type
+     * @param type type to search for (case sensitive)
+     * @return the matching columns
+     * @throws com.gooddata.exceptions.ModelException thrown if the column doesn't exist
+     */
+    public List<SourceColumn> getColumnByType(String type) {
+        ArrayList<SourceColumn> l = new ArrayList<SourceColumn>();
+        for (SourceColumn c : columns)
+            if (type.equals(c.getLdmType()))
+                l.add(c);
+        return l;
+    }
+
+    /**
+     * Returns all LABEL columns
+     * @return all LABEL columns
+     */
+    public List<SourceColumn> getLabels() {
+        return getColumnByType(SourceColumn.LDM_TYPE_LABEL);
+    }
+
+    /**
+     * Returns all ATTRIBUTE columns
+     * @return all ATTRIBUTE columns
+     */
+    public List<SourceColumn> getAttributes() {
+        return getColumnByType(SourceColumn.LDM_TYPE_ATTRIBUTE);
+    }
+
+    /**
+     * Returns all FACT columns
+     * @return all FACT columns
+     */
+    public List<SourceColumn> getFacts() {
+        return getColumnByType(SourceColumn.LDM_TYPE_FACT);
+    }
+
+    /**
+     * Returns all REFERENCE columns
+     * @return all REFERENCE columns
+     */
+    public List<SourceColumn> getReferences() {
+        return getColumnByType(SourceColumn.LDM_TYPE_REFERENCE);
+    }
+
+    /**
+     * Returns all CONNECTION POINT columns
+     * @return all CONNECTION POINT columns
+     */
+    public List<SourceColumn> getConnectionPoints() {
+        return getColumnByType(SourceColumn.LDM_TYPE_CONNECTION_POINT);
+    }
+
+    /**
+     * Returns all DATE columns
+     * @return all DATE POINT columns
+     */
+    public List<SourceColumn> getDates() {
+        return getColumnByType(SourceColumn.LDM_TYPE_DATE);
+    }
+
 }

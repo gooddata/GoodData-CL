@@ -1,4 +1,4 @@
-package com.gooddata.transformation.executor.model;
+package com.gooddata.connector.model;
 
 /**
  * PdmLookupReplication holds the data for replication of the lookup tables.

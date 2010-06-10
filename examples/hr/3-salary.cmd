@@ -1,4 +1,4 @@
-OpenProject(id=7r8y6aoapuvis6ln2vtfen69075670q9);
+OpenProject(id=02021eod4lv9qpyrzuufbgr8m25k3ths);
 LoadCsv(csvDataFile=examples/hr/salary.csv, configFile=examples/hr/salary.xml);
 GenerateMaql(maqlFile=examples/hr/salary.maql);
 ExecuteMaql(maqlFile=examples/hr/salary.maql);
