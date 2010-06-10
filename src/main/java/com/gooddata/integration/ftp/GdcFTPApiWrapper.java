@@ -55,6 +55,7 @@ public class GdcFTPApiWrapper {
                         if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
                             client.setFileType(FTPClient.BINARY_FILE_TYPE);
                             if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                                // client.enterRemotePassiveMode();
                                 client.storeFile(file.getName(), new FileInputStream(file));
                                 if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
                                     client.rename(file.getName(),DEFAULT_ARCHIVE_NAME);

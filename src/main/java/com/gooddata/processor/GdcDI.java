@@ -509,10 +509,6 @@ public class GdcDI {
         // generate manifest
         DLI dli = getRestApi().getDLIById(dataset, pid);
         List<DLIPart> parts = getRestApi().getDLIParts(dataset, pid);
-        FileUtil.writeStringToFile(
-        		dli.getDLIManifest(parts),
-        		path + System.getProperty("file.separator")
-        			 + GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
 
         // prepare the zip file
         File tmpDir = FileUtil.createTempDir();
@@ -520,10 +516,14 @@ public class GdcDI {
         	preparePartFile(part, dir, tmpDir, reorder);
         }
         File tmpZipDir = FileUtil.createTempDir();
+        FileUtil.writeStringToFile(
+        		dli.getDLIManifest(parts),
+        		tmpDir + System.getProperty("file.separator")
+        			 + GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
         String archiveName = tmpDir.getName();
         String archivePath = tmpZipDir.getAbsolutePath() +
                 System.getProperty("file.separator") + archiveName + ".zip";
-        FileUtil.compressDir(path, archivePath);
+        FileUtil.compressDir(tmpDir.getAbsolutePath(), archivePath);
         
         // ftp upload
         getFtpApi().transferDir(archivePath);
