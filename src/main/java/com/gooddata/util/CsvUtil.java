@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -18,6 +20,8 @@ public class CsvUtil {
 	private static final char SEPARATOR = ',';
 	private static final char QUOTE = '"';
 	private static final char ESCAPE = '"';
+	
+	private static Category LOG = Category.getInstance(CsvUtil.class);
 
 	/**
 	 * Write the selected fields in defined order from the input stream CSV to the output
@@ -28,7 +32,7 @@ public class CsvUtil {
 	 * @throws IllegalStateException if an expected field is missing in the source stream
 	 */
 	public static void reshuffle(final InputStream is, final OutputStream os, final List<String> outputFields) throws IOException {
-		final CSVReader reader = new CSVReader(new InputStreamReader(is), SEPARATOR, QUOTE, ESCAPE);
+		final CSVReader reader = new CSVReader(new InputStreamReader(is), SEPARATOR, QUOTE, ESCAPE, 0);
 		final CSVWriter writer = new CSVWriter(new OutputStreamWriter(os), SEPARATOR, QUOTE, ESCAPE);
 		try {		
 			writer.writeNext(outputFields.toArray(new String[]{}));
@@ -40,18 +44,28 @@ public class CsvUtil {
 	    		key2index.put(header[i], i);
 	    	}
 		    
-		    String[] nextLine;
-		    Integer index;
-		    while ((nextLine = reader.readNext()) != null) {
-		    	List<String> out = new ArrayList<String>();       	
-		        for (final String f : outputFields) {
-		        	index = key2index.get(f);
-		        	if (index == null) {
-		        		throw new IllegalStateException("Expected field " + f + " not found in the source CSV.");
-		        	}
-		        	out.add(nextLine[index]);
-		        }
-		        writer.writeNext(out.toArray(new String[]{}));
+	    	int lineNo = 0;
+		    String[] nextLine = null;
+		    try {
+			    Integer index;
+			    lineNo++;
+			    while ((nextLine = reader.readNext()) != null) {
+			    	if (nextLine.length < outputFields.size()) {
+			    		LOG.warn("Line #" + lineNo + " contains " + nextLine.length + " fields only, " + outputFields.size() + " expected (" + outputFields + ").");
+			    		continue;
+			    	}
+			    	List<String> out = new ArrayList<String>();
+			        for (final String f : outputFields) {
+			        	index = key2index.get(f);
+			        	if (index == null) {
+			        		throw new IllegalStateException("Expected field " + f + " not found in the source CSV.");
+			        	}
+			        	out.add(nextLine[index]);
+			        }
+			        writer.writeNext(out.toArray(new String[]{}));
+			    }
+		    } catch (Exception e) {
+		    	throw new RuntimeException(e); // debug only
 		    }
 		} finally {
 			reader.close();
