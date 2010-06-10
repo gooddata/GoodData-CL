@@ -21,6 +21,8 @@ public class CsvUtil {
 	private static final char QUOTE = '"';
 	private static final char ESCAPE = '"';
 	
+	private static final String ENCODING = "utf-8";
+	
 	private static Category LOG = Category.getInstance(CsvUtil.class);
 
 	/**
@@ -32,8 +34,8 @@ public class CsvUtil {
 	 * @throws IllegalStateException if an expected field is missing in the source stream
 	 */
 	public static void reshuffle(final InputStream is, final OutputStream os, final List<String> outputFields) throws IOException {
-		final CSVReader reader = new CSVReader(new InputStreamReader(is), SEPARATOR, QUOTE, ESCAPE, 0);
-		final CSVWriter writer = new CSVWriter(new OutputStreamWriter(os), SEPARATOR, QUOTE, ESCAPE);
+		final CSVReader reader = new CSVReader(new InputStreamReader(is, ENCODING), SEPARATOR, QUOTE, ESCAPE, 0);
+		final CSVWriter writer = new CSVWriter(new OutputStreamWriter(os, ENCODING), SEPARATOR, QUOTE, ESCAPE);
 		try {		
 			writer.writeNext(outputFields.toArray(new String[]{}));
 		    final String [] header = reader.readNext();
