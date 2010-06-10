@@ -22,17 +22,7 @@ public class PdmTable {
     public final static String PDM_TABLE_TYPE_REFERENCE = "REFERENCE";
     public final static String PDM_TABLE_TYPE_CONNECTION_POINT = "CONNECTION_POINT";
 
-    // table generator constants
-    public final static String PDM_TABLE_SOURCE_PREFIX = "o_";
-    public final static String PDM_TABLE_LOOKUP_PREFIX = "d_";
-    public final static String PDM_TABLE_LOOKUP_COLUMN_PREFIX = "nm_";
-    public final static String PDM_TABLE_FACT_PREFIX = "f_";
-    public final static String PDM_TABLE_DATE_PREFIX = "dt_";
-    public final static String PDM_TABLE_SOURCE_PK = "o_genid";
-    public final static String PDM_TABLE_FACT_PK = "id";
-    public final static String PDM_TABLE_LOOKUP_PK = "id";
-    public final static String PDM_TABLE_LOOKUP_HASH = "hashid";
-    public final static String PDM_TABLE_FACT_FK_SUFFIX = "_id";
+    
 
     // PDM columns
     private List<PdmColumn> columns = new ArrayList<PdmColumn>();

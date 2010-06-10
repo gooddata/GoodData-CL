@@ -162,15 +162,16 @@ public class FileUtil {
     }
 
     /**
-     * Appends the CSV header to the existing file
+     * Appends the CSV header to the file.
+     * Returns new tmp file
      * @param header header without the trailing \n
-     * @param fileName  the CSV file
+     * @param file  the CSV file
      * @throws IOException in case of IO issues
      */
-    public static void appendCsvHeader(String header, String fileName) throws IOException {
+    public static File appendCsvHeader(String header, File file) throws IOException {
         File tmpFile = getTempFile();
         BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
-        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        BufferedReader br = new BufferedReader(new FileReader(file));
         bw.write(header+"\n");
         for(String ln = br.readLine(); ln != null; ln = br.readLine()) {
             bw.write(ln+"\n");
@@ -178,9 +179,42 @@ public class FileUtil {
         br.close();
         bw.flush();
         bw.close();
-        File oldFile = new File(fileName);
-        oldFile.delete();
-        tmpFile.renameTo(oldFile);
+        return tmpFile;
+    }
+
+    /**
+     * Strips the CSV header from the existing file
+     * Copies the CSV without headers to a new tmp file and returns it.
+     * @param file  the CSV file
+     * @throws IOException in case of IO issues
+     */
+    public static File stripCsvHeader(File file) throws IOException {
+        File tmpFile = getTempFile();
+        BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFile));
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        boolean hdrRow = true;
+        for(String ln = br.readLine(); ln != null; ln = br.readLine()) {
+            if(!hdrRow)
+                bw.write(ln+"\n");
+            hdrRow = false;
+        }
+        br.close();
+        bw.flush();
+        bw.close();
+        return tmpFile;
+    }
+
+    /**
+     * Retrieves CSV headers from a file
+     * @param file CSV file
+     * @return the headers as String[]
+     * @throws IOException in case of IO issues
+     */
+    public static String[] getCsvHeader(File file) throws IOException {
+        BufferedReader r = new BufferedReader(new FileReader(file));
+        String headerLine = r.readLine();
+        r.close();
+        return headerLine.split(",");
     }
 
 

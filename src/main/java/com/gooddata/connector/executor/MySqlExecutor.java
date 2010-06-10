@@ -5,6 +5,7 @@ import com.gooddata.integration.model.DLIPart;
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
+import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
@@ -77,7 +78,7 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
 
     protected void insertFactsToFactTable(Connection c, PdmSchema schema) throws ModelException, SQLException {
         PdmTable factTable = schema.getFactTable();
-        PdmTable sourceTable = schema.getFactTable();
+        PdmTable sourceTable = schema.getSourceTable();
         String fact = factTable.getName();
         String source = sourceTable.getName();
         String factColumns = "";
@@ -93,8 +94,8 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
                     StringUtil.convertJavaDateFormatToMySql(column.getFormat())+"'),'1900-01-01')+1";
         }
         JdbcUtil.executeUpdate(c,
-            "INSERT INTO "+fact+"(id"+factColumns+") SELECT o_genid" + sourceColumns +
-            " FROM " + source + " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='"+fact+"')"
+            "INSERT INTO "+fact+"("+N.SRC_ID+factColumns+") SELECT "+ N.SRC_ID + sourceColumns +
+            " FROM " + source + " WHERE "+N.ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='"+fact+"')"
         );
     }
 

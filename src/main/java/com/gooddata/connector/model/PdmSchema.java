@@ -3,6 +3,7 @@ package com.gooddata.connector.model;
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 
@@ -121,48 +122,48 @@ public class PdmSchema {
         String tcn = StringUtil.formatShortName(c.getReference());
                 String tsn = StringUtil.formatShortName(c.getSchemaReference());
                 s.addLookupReplication(new PdmLookupReplication(createLookupTableName(tsn,tcn),
-                        PdmTable.PDM_TABLE_LOOKUP_COLUMN_PREFIX + tcn, createLookupTableName(sName,cName),
-                        PdmTable.PDM_TABLE_LOOKUP_COLUMN_PREFIX + cName));
+                        N.NM_PFX + tcn, createLookupTableName(sName,cName),
+                        N.NM_PFX + cName));
     }
 
     private static PdmColumn createLookupColumn(SourceColumn c) {
         String name = StringUtil.formatShortName(c.getName());
-        return new PdmColumn(PdmTable.PDM_TABLE_LOOKUP_COLUMN_PREFIX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
-                PdmTable.PDM_TABLE_SOURCE_PREFIX + name, c.getLdmType());
+        return new PdmColumn(N.NM_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
+                N.SRC_PFX + name, c.getLdmType());
     }
 
     private static PdmTable createLookupTable(String schemaName, String columnName, String tableType) {
         PdmTable lookup = new PdmTable(createLookupTableName(schemaName, columnName),tableType, columnName);
-        lookup.addColumn(new PdmColumn(PdmTable.PDM_TABLE_LOOKUP_PK, PdmColumn.PDM_COLUMN_TYPE_INT,
+        lookup.addColumn(new PdmColumn(N.ID, PdmColumn.PDM_COLUMN_TYPE_INT,
             new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
-        lookup.addColumn(new PdmColumn(PdmTable.PDM_TABLE_LOOKUP_HASH, PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
+        lookup.addColumn(new PdmColumn(N.HSH, PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
             new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
         return lookup;
     }
 
     private static String createLookupTableName(String schemaName, String columnName) {
-        return PdmTable.PDM_TABLE_LOOKUP_PREFIX + schemaName + "_" + columnName;
+        return N.LKP_PFX + schemaName + "_" + columnName;
     }
 
     private static PdmTable createSourceTable(String schemaName) {
-        PdmTable sourceTable = new PdmTable(PdmTable.PDM_TABLE_SOURCE_PREFIX + schemaName, PdmTable.PDM_TABLE_TYPE_SOURCE);
+        PdmTable sourceTable = new PdmTable(N.SRC_PFX + schemaName, PdmTable.PDM_TABLE_TYPE_SOURCE);
         // add the source table PK
-        sourceTable.addColumn(new PdmColumn(PdmTable.PDM_TABLE_SOURCE_PK,PdmColumn.PDM_COLUMN_TYPE_INT,
+        sourceTable.addColumn(new PdmColumn(N.SRC_ID,PdmColumn.PDM_COLUMN_TYPE_INT,
                 new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
         return sourceTable;
     }
 
     private static PdmTable createFactTable(String schemaName) {
-        PdmTable factTable = new PdmTable(PdmTable.PDM_TABLE_FACT_PREFIX + schemaName, PdmTable.PDM_TABLE_TYPE_FACT);
+        PdmTable factTable = new PdmTable(N.FCT_PFX + schemaName, PdmTable.PDM_TABLE_TYPE_FACT);
         // add the fact table PK
-        factTable.addColumn(new PdmColumn(PdmTable.PDM_TABLE_FACT_PK,PdmColumn.PDM_COLUMN_TYPE_INT,
-                        new String[] {PdmColumn.PDM_CONSTRAINT_PK}, PdmTable.PDM_TABLE_SOURCE_PK));
+        factTable.addColumn(new PdmColumn(N.ID,PdmColumn.PDM_COLUMN_TYPE_INT,
+                        new String[] {PdmColumn.PDM_CONSTRAINT_PK}));
         return factTable;
     }
 
     private static PdmColumn createSourceColumn(SourceColumn c) {
         String name = StringUtil.formatShortName(c.getName());
-        return new PdmColumn(PdmTable.PDM_TABLE_SOURCE_PREFIX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT);
+        return new PdmColumn(N.SRC_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT);
     }
 
     private static PdmColumn createFactColumn(SourceColumn c, String schemaName) throws ModelException {
@@ -170,15 +171,14 @@ public class PdmSchema {
         String type = c.getLdmType();
         if(type.equals(SourceColumn.LDM_TYPE_ATTRIBUTE) || type.equals(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
                 type.equals(SourceColumn.LDM_TYPE_REFERENCE))
-            return new PdmColumn(name+PdmTable.PDM_TABLE_FACT_FK_SUFFIX, PdmColumn.PDM_COLUMN_TYPE_INT,
-                        PdmTable.PDM_TABLE_LOOKUP_PREFIX + schemaName + "_"+name +"." + PdmTable.PDM_TABLE_LOOKUP_PK,
-                        type);
+            return new PdmColumn(name+"_"+N.ID, PdmColumn.PDM_COLUMN_TYPE_INT,
+                        N.LKP_PFX + schemaName + "_"+name +"." + N.ID, type);
         else if(type.equals(SourceColumn.LDM_TYPE_FACT))
-            return new PdmColumn(PdmTable.PDM_TABLE_FACT_PREFIX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
-                    PdmTable.PDM_TABLE_SOURCE_PREFIX + name, type);
+            return new PdmColumn(N.FCT_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
+                    N.SRC_PFX + name, type);
         else if(type.equals(SourceColumn.LDM_TYPE_DATE))
-            return new PdmColumn(PdmTable.PDM_TABLE_DATE_PREFIX + name + PdmTable.PDM_TABLE_FACT_FK_SUFFIX,
-                    PdmColumn.PDM_COLUMN_TYPE_TEXT, PdmTable.PDM_TABLE_SOURCE_PREFIX + name, type, c.getFormat());
+            return new PdmColumn(N.DT_PFX + name + "_"+N.ID,
+                    PdmColumn.PDM_COLUMN_TYPE_INT, N.SRC_PFX + name, type, c.getFormat());
         else throw new ModelException("Unknown source column type: "+type);
     }
 

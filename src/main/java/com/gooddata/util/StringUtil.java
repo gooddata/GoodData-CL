@@ -16,6 +16,8 @@ public class StringUtil {
             "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
             "[", "]","\\"};
 
+    private static String[] WHITESPACE = {"\n","\t"};
+
     private static String[][] DATE_FORMAT_CONVERSION = {{"MM","%m"},{"yyyy","%Y"},{"yy","%y"},{"dd","%d"}};
     
     /**
@@ -29,6 +31,19 @@ public class StringUtil {
             s = s.replace(r,"_");
         }
         return s.toLowerCase();
+    }
+
+    /**
+     * Remove whitespace
+     * Currently only converts to the lowercase and replace spaces
+     * @param s the string to process
+     * @return converted string
+     */
+    public static String removeWhitespace(String s) {
+        for ( String r : WHITESPACE ) {
+            s = s.replace(r," ");
+        }
+        return s;
     }
 
     /**

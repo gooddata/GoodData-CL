@@ -64,7 +64,7 @@ public interface Connector {
      * Extracts the source data CSV to the Derby database where it is going to be transformed
      * @throws ModelException in case of PDM schema issues
      */
-    public void extract() throws ModelException;
+    public void extract() throws ModelException, IOException;
 
     /**
      * Perform the data normalization (generate lookups) in the Derby database. The database must contain the required

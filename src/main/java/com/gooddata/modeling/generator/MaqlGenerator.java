@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
 
 /**
@@ -16,10 +17,6 @@ import com.gooddata.util.StringUtil;
  * @version 1.0
  */
 public class MaqlGenerator {
-	
-	private static final String COL_PK = "id";
-	private static final String COL_SFX_FK = "_id";
-	private static final String TBL_SFX_FACT = "factsof";
 
     private final SourceSchema schema;
     private final String ssn, lsn;
@@ -71,7 +68,7 @@ public class MaqlGenerator {
 
         // generate the facts of / record id special attribute
         script += "CREATE ATTRIBUTE " + factsOfAttrMaqlDdl + " VISUAL(TITLE \""
-                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + ".id} FULLSET;\n";
+                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+N.ID+"} FULLSET;\n";
         script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
 
         // labels last
@@ -151,11 +148,11 @@ public class MaqlGenerator {
     }
     
     private String getFactTableName() {
-    	return "f_" + ssn;
+    	return N.FCT_PFX + ssn;
     }
     
     private static String createFactOfMaqlDdl(String schemaName) {
-    	return "{attr." + StringUtil.formatShortName(schemaName) + "." + TBL_SFX_FACT + "}";
+    	return "{attr." + StringUtil.formatShortName(schemaName) + "." + N.FACTS_OF + "}";
 	}
     
     // column entities
@@ -171,7 +168,7 @@ public class MaqlGenerator {
         }
 
         protected String createForeignKeyMaqlDdl() {
-           	return "{" + getFactTableName() + "." + scn + COL_SFX_FK + "}";
+           	return "{" + getFactTableName() + "." + scn + "_" + N.ID+ "}";
         }
         
         public abstract String generateMaqlDdl();
@@ -202,10 +199,10 @@ public class MaqlGenerator {
             }
 
             String script = "CREATE ATTRIBUTE {" + identifier + "} VISUAL(TITLE \"" + lcn
-                    + "\"" + folderStatement + ") AS KEYS {" + table + ".id} FULLSET, ";
+                    + "\"" + folderStatement + ") AS KEYS {" + table + "."+N.ID+"} FULLSET, ";
             script += createForeignKeyMaqlDdl();
             script += " WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
-                    + lcn + "\") AS {d_" + ssn + "_" + scn + ".nm_" + scn + "};\n"
+                    + lcn + "\") AS {d_" + ssn + "_" + scn + "."+N.NM_PFX + scn + "};\n"
                     + "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
             return script;
         }
@@ -227,7 +224,7 @@ public class MaqlGenerator {
             }
 
             return "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
-                    + "\"" + folderStatement + ") AS {" + getFactTableName() + ".f_" + scn + "};\n"
+                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.FCT_PFX + scn + "};\n"
                     + "ALTER DATASET {dataset." + ssn + "} ADD {fact." + ssn + "." + scn + "};\n\n";
         }
     }
@@ -248,7 +245,7 @@ public class MaqlGenerator {
             }
 
             return "ALTER ATTRIBUTE {attr." + ssn + "." + scnPk + "} ADD LABELS {label." + ssn + "." + scnPk + "."
-                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + ".nm_" + scn + "};\n\n";
+                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + "."+N.NM_PFX + scn + "};\n\n";
         }
     }
 
@@ -266,9 +263,9 @@ public class MaqlGenerator {
                 String sfn = StringUtil.formatShortName(folder);
                 folderStatement = ", FOLDER {ffld." + sfn + "}";
             }
-            return "CREATE FACT {dt." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
-                    + "\"" + folderStatement + ") AS {" + getFactTableName() + ".dt_" + scn + "_id};\n"
-                    + "ALTER DATASET {dataset." + ssn + "} ADD {dt." + ssn + "." + scn + "};\n\n";
+            return "CREATE FACT {"+N.DT+"." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
+                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn + "_"+N.ID+"};\n"
+                    + "ALTER DATASET {dataset." + ssn + "} ADD {"+N.DT+"." + ssn + "." + scn + "};\n\n";
 
         }
     }
@@ -284,7 +281,7 @@ public class MaqlGenerator {
 			// The fact table's primary key values are identical with the primary key values
 			// of a Connection Point attribute. This is why the fact table's PK may act as 
 			// the connection point's foreign key as well
-			return "{" + getFactTableName() + ".id}";
+			return "{" + getFactTableName() + "."+N.ID+"}";
 		}
     }
     

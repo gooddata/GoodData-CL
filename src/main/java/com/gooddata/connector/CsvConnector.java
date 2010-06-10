@@ -5,6 +5,7 @@ import com.gooddata.exceptions.MetadataFormatException;
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
@@ -25,11 +26,14 @@ public class CsvConnector extends AbstractConnector implements Connector {
     // data file
     private File dataFile;
 
+    private boolean hasHeader;
+
     /**
      * GoodData CSV connector. This constructor creates the connector from a config file
      * @param projectId project id
      * @param configFileName schema config file name
      * @param dataFileName primary data file
+     * @param header true if the loaded CSV file has header row
      * @param connectorBackend connector backend
      * @param username database backend username
      * @param password database backend password
@@ -37,11 +41,12 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @throws MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue 
      */
-    protected CsvConnector(String projectId, String configFileName, String dataFileName, int connectorBackend,
-                           String username, String password) throws InitializationException,
+    protected CsvConnector(String projectId, String configFileName, String dataFileName, boolean header,
+               int connectorBackend,String username, String password) throws InitializationException,
             MetadataFormatException, IOException, ModelException {
         super(projectId, configFileName, connectorBackend, username, password);
-        this.setDataFile(new File(dataFileName));
+        setDataFile(new File(dataFileName));
+        setHasHeader(header);
     }
 
     /**
@@ -49,6 +54,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @param projectId project id
      * @param configFileName schema config file name
      * @param dataFileName primary data file
+     * @param header true if the loaded CSV file has header row
      * @param connectorBackend connector backend
      * @param username database backend username
      * @param password database backend password 
@@ -58,10 +64,10 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @throws IOException in case of an IO issue
      */
     public static CsvConnector createConnector(String projectId, String configFileName, String dataFileName,
-                                                int connectorBackend, String username, String password)
-                                                throws InitializationException,
+                   boolean header,int connectorBackend, String username, String password)
+                   throws InitializationException,
             MetadataFormatException, IOException, ModelException {
-        return new CsvConnector(projectId, configFileName, dataFileName, connectorBackend, username, password);    
+        return new CsvConnector(projectId, configFileName, dataFileName, header, connectorBackend, username, password);    
     }
 
     /**
@@ -73,10 +79,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
     public static void saveConfigTemplate(String configFileName, String dataFileName) throws IOException {
         File dataFile = new File(dataFileName);
         String name = dataFile.getName().split("\\.")[0];
-        BufferedReader r = new BufferedReader(new FileReader(dataFile));
-        String headerLine = r.readLine();
-        r.close();
-        String[] headers = headerLine.split(",");
+        String[] headers = FileUtil.getCsvHeader(dataFile);
         int i = 0;
         SourceSchema s = SourceSchema.createSchema(name);
         for(String header : headers) {
@@ -121,8 +124,19 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * Extracts the source data CSV to the Derby database where it is going to be transformed
      * @throws ModelException in case of PDM schema issues
      */
-    public void extract() throws ModelException {
-        getConnectorBackend().extract(getDataFile());
+    public void extract() throws ModelException, IOException {
+        if(getHasHeader()) {
+            File tmp = FileUtil.stripCsvHeader(getDataFile());
+            getConnectorBackend().extract(tmp);
+            tmp.delete();
+        }
     }
-    
+
+    public boolean getHasHeader() {
+        return hasHeader;
+    }
+
+    public void setHasHeader(boolean hasHeader) {
+        this.hasHeader = hasHeader;
+    }
 }

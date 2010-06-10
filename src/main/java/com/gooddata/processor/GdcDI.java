@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import com.gooddata.exceptions.*;
 import com.gooddata.integration.rest.exceptions.GdcRestApiException;
+import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -58,10 +59,10 @@ public class GdcDI {
     private String projectId = null;
     private Connector connector = null;
 
-    private final int DB_BACKEND = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
+    private int backend = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
 
 
-    private GdcDI(final String host, final String userName, final String password) throws GdcLoginException {
+    private GdcDI(final String host, final String userName, final String password) {
     	String ftpHost = null;
         // Create the FTP host automatically
         String[] hcs = host.split("\\.");
@@ -144,8 +145,9 @@ public class GdcDI {
 
         o.addOption("u", "username", true, "GoodData username");
         o.addOption("p", "password", true, "GoodData password");
-        o.addOption("b", "dbusername", true, "Database backend username");
-        o.addOption("c", "dbpassword", true, "Database backend password");
+        o.addOption("b", "backend", true, "Database backend DERBY or MYSQL");
+        o.addOption("d", "dbusername", true, "Database backend username (not required for the local Derby SQL)");
+        o.addOption("c", "dbpassword", true, "Database backend password (not required for the local Derby SQL)");
         o.addOption("h", "host", true, "GoodData host");
         o.addOption("i", "project", true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)");
         o.addOption("e", "execute", true, "Commands and params to execute before the commands in provided files");
@@ -177,6 +179,14 @@ public class GdcDI {
             if (line.hasOption("dbpassword")) {
 	        	gdcDi.setDbPassword(line.getOptionValue("dbpassword"));
 	        }
+            if (line.hasOption("backend")) {
+                if("MYSQL".equalsIgnoreCase(line.getOptionValue("backend")))
+	        	    gdcDi.setBackend(AbstractConnectorBackend.CONNECTOR_BACKEND_MYSQL);
+                else if("DERBY".equalsIgnoreCase(line.getOptionValue("backend")))
+	        	    gdcDi.setBackend(AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL);
+                else
+                    printErrorHelpandExit("Invalid backend parameter. Use MYSQL or DERBY.");                    
+	        }
 	    	if (line.getArgs().length == 0 && !line.hasOption("execute")) {
         		printErrorHelpandExit("No command has been given, quitting.");
 	    	}
@@ -201,11 +211,11 @@ public class GdcDI {
             for( String component : commands) {
                 component = component.trim();
                 if(component != null && component.length() > 0 && !component.startsWith("#")) {
-                    Pattern p = Pattern.compile(".*?\\(.*?\\)");
+                    Pattern p = Pattern.compile("^.*?\\(.*?\\)$");
                     Matcher m = p.matcher(component);
                     if(!m.matches())
                         throw new InvalidArgumentException("Invalid command: "+component);
-                    p = Pattern.compile(".*?\\(");
+                    p = Pattern.compile("^.*?\\(");
                     m = p.matcher(component);
                     String command = "";
                     if(m.find()) {
@@ -215,7 +225,7 @@ public class GdcDI {
                     else {
                         throw new InvalidArgumentException("Can't extract command from: "+component);
                     }
-                    p = Pattern.compile("\\(.*?\\)");
+                    p = Pattern.compile("\\(.*?\\)$");
                     m = p.matcher(component);
                     Properties args = new Properties();
                     if(m.find()) {
@@ -384,7 +394,7 @@ public class GdcDI {
                 incremental.equalsIgnoreCase("true")) {
             setIncremental(parts);
         }
-        extractAndTransfer(c, pid, cc, dli, parts, new int[] {cc.getLastSnapshotId()});
+        extractAndTransfer(c, pid, cc, dli, parts, new int[] {cc.getLastSnapshotId()+1});
     }
 
     private void transferSnapshots(Command c) throws InvalidArgumentException, ModelException, IOException, GdcRestApiException {
@@ -469,9 +479,9 @@ public class GdcDI {
         // kick the GooDData server to load the data package to the project
         getRestApi().startLoading(pid, archiveName);
         //cleanup
-        FileUtil.recursiveDelete(tmpDir);
-        FileUtil.recursiveDelete(tmpZipDir);
-        FileUtil.recursiveDelete(getFile(c,archivePath));
+        //TODO: Do cleanup
+        //FileUtil.recursiveDelete(tmpDir);
+        //FileUtil.recursiveDelete(tmpZipDir);
     }
 
     private void makeWritable(File tmpDir) {
@@ -564,7 +574,7 @@ GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
         gq.setEndDate(endDate);
         gq.setFilters(filters);
         setConnector(GaConnector.createConnector(pid, configFile, usr, psw, id, gq,
-                DB_BACKEND, dbUserName, dbPassword));
+                getBackend(), dbUserName, dbPassword));
     }
 
     private void generateGAConfigTemplate(Command c) throws InvalidArgumentException, IOException {
@@ -590,9 +600,13 @@ GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
         String pid = getProjectId(c);
         String configFile = getParamMandatory(c,"configFile");
         String csvDataFile = getParamMandatory(c,"csvDataFile");
+        String hdr = getParamMandatory(c,"header");
         File conf = getFile(c,configFile);
         File csvf = getFile(c,csvDataFile);
-        setConnector(CsvConnector.createConnector(pid, configFile, csvDataFile, DB_BACKEND, dbUserName,
+        boolean hasHeader = false;
+        if(hdr.equalsIgnoreCase("true"))
+            hasHeader = true;
+        setConnector(CsvConnector.createConnector(pid, configFile, csvDataFile, hasHeader, getBackend(), dbUserName,
                 dbPassword));
     }
 
@@ -613,9 +627,17 @@ GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
 
     private void setIncremental(List<DLIPart> parts) {
         for(DLIPart part : parts) {
-            if(part.getFileName().startsWith("f_")) {
+            if(part.getFileName().startsWith(N.FCT_PFX)) {
                 part.setLoadMode(DLIPart.LM_INCREMENTAL);
             }
         }
+    }
+
+    public int getBackend() {
+        return backend;
+    }
+
+    public void setBackend(int backend) {
+        this.backend = backend;
     }
 }

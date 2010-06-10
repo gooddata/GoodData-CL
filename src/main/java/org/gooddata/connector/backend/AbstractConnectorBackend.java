@@ -124,10 +124,14 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
                     header += col.getName();                    
                 }
             }
-            FileUtil.appendCsvHeader(header, dir + System.getProperty("file.separator") + fn);
+            File original = new File(dir + System.getProperty("file.separator") + fn);
+            File tmpFile = FileUtil.appendCsvHeader(header, original);
+            original.delete();
+            tmpFile.renameTo(original);
         }
     }
 
+    
     /**
      * Create the GoodData data package with the data from specified snapshots
      * @param dli the Data Loading Interface that contains the required data structures

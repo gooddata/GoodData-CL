@@ -187,7 +187,7 @@ public abstract class AbstractConnector implements Connector {
      * Extracts the source data CSV to the Derby database where it is going to be transformed
      * @throws ModelException in case of PDM schema issues
      */
-    public abstract void extract() throws ModelException;
+    public abstract void extract() throws ModelException, IOException;
 
     
 }

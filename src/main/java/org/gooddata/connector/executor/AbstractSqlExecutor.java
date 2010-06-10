@@ -8,6 +8,7 @@ import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmLookupReplication;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
+import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
@@ -107,8 +108,9 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
                 "DELETE FROM " + lr.getReferencingLookup()
             );
             JdbcUtil.executeUpdate(c,
-                "INSERT INTO " + lr.getReferencingLookup() + "(id," + lr.getReferencingColumn() +",hashid)" +
-                " SELECT id," + lr.getReferencedColumn() + "," + lr.getReferencedColumn() + " FROM " + lr.getReferencedLookup()
+                "INSERT INTO " + lr.getReferencingLookup() + "("+N.ID+"," + lr.getReferencingColumn() +","+N.HSH+")" +
+                " SELECT "+ N.ID+"," + lr.getReferencedColumn() + "," + lr.getReferencedColumn() + " FROM " +
+                lr.getReferencedLookup()
             );
         }
     }
@@ -160,7 +162,7 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
         String fact = factTable.getName();
         Date dt = new Date();
         JdbcUtil.executeUpdate(c,
-            "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '"+fact+"',"+dt.getTime()+",MAX(id)+1 FROM " + fact
+            "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '"+fact+"',"+dt.getTime()+",MAX("+N.ID+")+1 FROM " + fact
         );
         // compensate for the fact that MAX returns NULL when there are no rows in the SELECT
         JdbcUtil.executeUpdate(c,
@@ -172,12 +174,12 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
         PdmTable factTable = schema.getFactTable();
         String fact = factTable.getName();
         JdbcUtil.executeUpdate(c,
-            "UPDATE snapshots SET lastid = (SELECT MAX(id) FROM " + factTable.getName() + ") WHERE name = '" +
-            factTable.getName() + "' AND lastid IS NULL"
+            "UPDATE snapshots SET lastid = (SELECT MAX("+N.ID+") FROM " + fact + ") WHERE name = '" +
+            fact + "' AND lastid IS NULL"
         );
         // compensate for the fact that MAX returns NULL when there are no rows in the SELECT
         JdbcUtil.executeUpdate(c,
-            "UPDATE snapshots SET lastid = 0 WHERE name = '" + factTable.getName() + "' AND lastid IS NULL"
+            "UPDATE snapshots SET lastid = 0 WHERE name = '" + fact + "' AND lastid IS NULL"
         );
     }
 
@@ -201,9 +203,9 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
         String source = schema.getSourceTable().getName();
         String associatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
         JdbcUtil.executeUpdate(c,
-              "UPDATE " + fact + " SET  " + lookupTable.getAssociatedSourceColumn() + "_id = (SELECT id FROM " +
-              lookup + " d," + source + " o WHERE " + associatedSourceColumns + " = d.hashid AND o.o_genid = " +
-              fact + ".id) WHERE id > (SELECT MAX(lastid) FROM snapshots WHERE name = '" + fact+"')"
+              "UPDATE " + fact + " SET  " + lookupTable.getAssociatedSourceColumn() + "_"+N.ID+" = (SELECT "+N.ID+" FROM " +
+              lookup + " d," + source + " o WHERE " + associatedSourceColumns + " = d."+N.HSH+" AND o."+N.SRC_ID+"= " +
+              fact + "."+N.ID+") WHERE "+N.ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name = '" + fact+"')"
         );
     }
 
@@ -212,15 +214,15 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
         String lookup = lookupTable.getName();
         String fact = schema.getFactTable().getName();
         String source = schema.getSourceTable().getName();
-        String insertColumns = "hashid," + getInsertColumns(lookupTable);
+        String insertColumns = N.HSH+"," + getInsertColumns(lookupTable);
         String associatedSourceColumns = getAssociatedSourceColumns(lookupTable);
-        // add the concatenated columns that fills the hashid to the beginning
-        String nestedSelectColumns = concatAssociatedSourceColumns(lookupTable) + associatedSourceColumns;
+        String concatAssociatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
+        String nestedSelectColumns = concatAssociatedSourceColumns+","+associatedSourceColumns;
         JdbcUtil.executeUpdate(c,
             "INSERT INTO " + lookup + "(" + insertColumns +
             ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
-            " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
-            "') AND " + associatedSourceColumns + " NOT IN (SELECT hashid FROM " +
+            " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
+            "') AND " + concatAssociatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " +
             lookupTable.getName() + ")"
         );
     }
@@ -230,15 +232,15 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
         String lookup = lookupTable.getName();
         String fact = schema.getFactTable().getName();
         String source = schema.getSourceTable().getName();
-        String insertColumns = "id,hashid," + getInsertColumns(lookupTable);
+        String insertColumns = N.ID+","+N.HSH+"," + getInsertColumns(lookupTable);
         String associatedSourceColumns = getAssociatedSourceColumns(lookupTable);
-        // add the concatenated columns that fills the hashid to the beginning
-        String nestedSelectColumns = "o_genid," + concatAssociatedSourceColumns(lookupTable) + associatedSourceColumns;
+        String concatAssociatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
+        String nestedSelectColumns = N.SRC_ID+","+concatAssociatedSourceColumns+","+associatedSourceColumns;
         /*
         JdbcUtil.executeUpdate(c,
             "INSERT INTO " + lookup + "(" + insertColumns + ") SELECT DISTINCT " + nestedSelectColumns +
-            " FROM " + source + " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
-            "') AND " + associatedSourceColumns + " NOT IN (SELECT hashid FROM " + lookup + ")"
+            " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
+            "') AND " + associatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " + lookup + ")"
         );
         */
         // TODO: when snapshotting, there are duplicate CONNECTION POINT VALUES
@@ -246,14 +248,14 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
         /*
         JdbcUtil.executeUpdate(c,
             "INSERT INTO " + lookup + "(" + insertColumns + ") SELECT DISTINCT " + nestedSelectColumns +
-            " FROM " + source + " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +"')"
+            " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +"')"
         );
         */
         JdbcUtil.executeUpdate(c,
             "INSERT INTO " + lookup + "(" + insertColumns +
             ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
-            " WHERE o_genid > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
-            "') AND " + associatedSourceColumns + " NOT IN (SELECT hashid FROM " +
+            " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
+            "') AND " + concatAssociatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " +
             lookupTable.getName() + ")"
         );
     }
@@ -334,13 +336,13 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
             // fact table fact columns
             if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) &&
                     SourceColumn.LDM_TYPE_FACT.equals(col.getLdmTypeReference()))
-                decorateFactColumnForLoad(cols, cl, dliTable);
+                cols = decorateFactColumnForLoad(cols, cl, dliTable);
             // lookup table name column
             else if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(pdmTable.getType()) &&
                     SourceColumn.LDM_TYPE_ATTRIBUTE.equals(col.getLdmTypeReference()))
-                decorateLookupColumnForLoad(cols, cl, dliTable);
+                cols = decorateLookupColumnForLoad(cols, cl, dliTable);
             else
-                decorateOtherColumnForLoad(cols, cl, dliTable);
+                cols = decorateOtherColumnForLoad(cols, cl, dliTable);
         }
         return cols;
     }
