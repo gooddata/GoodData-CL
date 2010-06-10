@@ -511,7 +511,9 @@ public class GdcDI {
         String path = getParamMandatory(c,"path");
         String dataset = getParamMandatory(c,"dataset");
         String reorderStr = getParam(c, "reorder");
-        boolean reorder = (reorderStr != null) && !"false".equalsIgnoreCase(reorderStr);
+        boolean reorder = (reorderStr != null) 
+        	&& !"".equals(reorderStr) 
+        	&& !"false".equalsIgnoreCase(reorderStr);
         // validate input dir
         File dir = getFile(c,path);
         if (!dir.isDirectory()) {
