@@ -172,7 +172,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
         try {
             if(!isInitialized()) {
                 con = connect();
-                sg.executeSystemDdlSql(con, getPdm());
+                sg.executeSystemDdlSql(con);
             }
             if(!exists(getPdm().getSourceTable().getName())) {
                 if(con == null)
