@@ -1,0 +1,1 @@
+java -Dlog4j.trace -Dlog4j.configuration=log4j.configuration -Dderby.system.home=../db -Djava.io.tmpdir=../tmp -classpath ..;../target/GoodDataDI-0.6-jar-with-dependencies.jar com.gooddata.processor.GdcDI %*
