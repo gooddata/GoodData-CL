@@ -478,8 +478,8 @@ public class GdcDI {
         try {
             Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
         }
-        catch (IOException) {
-            l.debug("CHMOD execution failed. No big deal perhaps you are running Windows.");
+        catch (IOException e) {
+            l.debug("CHMOD execution failed. No big deal perhaps you are running Windows.", e);
         }
     }
 
