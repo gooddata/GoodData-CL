@@ -1,8 +1,12 @@
+<a name="start">
 # Getting Started
+</a>
 
 For initial installation, please refer to the [README](http://github.com/gooddata/Java-DI-Tool#readme).
 
+<a name="basic">
 # Basic Usage
+</a>
 
 1. The utility is invoked using the gdi.sh shell script. In each run, you need to provide your GoodData username and password:
 
@@ -15,16 +19,20 @@ For initial installation, please refer to the [README](http://github.com/gooddat
 
 3. A list of commands and descriptions is displayed when you run `gdi.sh` without parameter. It can also be found [here](http://github.com/gooddata/Java-DI-Tool/blob/master/src/main/resources/com/gooddata/processor/COMMANDS.txt#files)
 
+<a name="workflow">
 # Workflow
+</a>
 
-The utility can help you automate creating projects, created data models and loading data. Follow one of the examples in Examples section below to see the workflow. A typical scenario has following steps:
+The utility can help you automate creating projects, created data models and loading data. Follow one of the examples in [section below](#examples) to see the workflow. A typical scenario has following steps:
 
 1. tell the utility to read the CSV file and generate an example XML configuration file
-2. configure the XML configuration file (see documentation below)
+2. configure the XML configuration file ([see documentation below](#config))
 3. let the utility to create a project, setup a data model according to the XML file and load data into this project
 4. alternatively, repeat the last part (data loading) as desirable
 
+<a name="config">
 # XML Configuration File
+</a>
 
 The XML configuration file is generated using the GenerateCsvConfigTemplate() command. It uses your CSV file to find the names of columns in the first row of the file. The generated XML file is an example and should be modified before being used.
 
@@ -62,6 +70,8 @@ In each &lt;column&gt; entry, following tags can be used:
 6. &lt;reference&gt; - used with LABEL columns for pointing to the primary column; used with CONNECTION_POINT column and &lt;schemaReference&gt;
 7. &lt;schemaReference&gt; - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column
 
+<a name="examples">
 # Examples
+</a>
 
 The examples folder contains typical some typical scenarios. Each example contains it's own [README](http://github.com/gooddata/Java-DI-Tool/blob/master/examples/zendesk/README.md#readme) file describing usage.
