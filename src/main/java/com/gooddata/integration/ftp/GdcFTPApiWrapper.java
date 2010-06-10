@@ -95,6 +95,6 @@ public class GdcFTPApiWrapper {
     }
 
     private String clientReply(FTPClient client) {
-    	return client.getReplyString() + " (code: " + client.getReplyCode();
+    	return client.getReplyString() + " (code: " + client.getReplyCode() + ")";
     }
 }
