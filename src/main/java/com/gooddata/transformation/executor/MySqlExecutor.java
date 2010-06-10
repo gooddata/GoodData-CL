@@ -34,84 +34,14 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
     // Derby SQL concat operator to merge LABEL content
     protected static final String CONCAT_OPERATOR = ",'" + HASH_SEPARATOR + "',";
 
-
     /**
-     * Executes the system DDL initialization
-     * @param c JDBC connection
-     * @param schema the PDM schema
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
-     * @throws SQLException in case of db problems
+     * Default constructor
      */
-    public void executeSystemDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
-        JdbcUtil.executeUpdate(c,
-            "CREATE TABLE snapshots (" +
-                " id INT AUTO_INCREMENT," +
-                " name VARCHAR(255)," +
-                " tmstmp BIGINT," +
-                " firstid INT," +
-                " lastid INT," +
-                " PRIMARY KEY (id)" +
-                ")"
-        );
+    public MySqlExecutor() {
+        // autoincrement syntax
+        SYNTAX_AUTOINCREMENT = "AUTO_INCREMENT";
     }
-
-    /**
-     * Executes the DDL initialization
-     * @param c JDBC connection
-     * @param schema the PDM schema
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
-     * @throws SQLException in case of db problems
-     */
-    public void executeDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
-
-        String sql = "";
-        // indexes creation script
-        for(PdmTable table : schema.getTables()) {
-            List<String> isql = new ArrayList<String>();
-            String pk = "";
-            sql += "CREATE TABLE " + table.getName() + " (\n";
-            for( PdmColumn column : table.getColumns()) {
-                sql += " "+ column.getName() + " " + column.getType();
-                if(column.isUnique())
-                    sql += " UNIQUE";
-                if(column.isAutoIncrement())
-                    sql += " AUTO_INCREMENT";
-                if(column.isPrimaryKey())
-                    if(pk != null && pk.length() > 0)
-                        pk += "," + column.getName();
-                    else
-                        pk += column.getName();
-                sql += ",";
-                if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType())) {
-                    if(!"o_genid".equals(column.getName()))
-                        isql.add("CREATE INDEX idx_" + table.getName() + "_" + column.getName() + " ON " +
-                              table.getName() + "("+column.getName()+")");
-                }
-                /* There is an UNIQUE index on the hashid already
-                if(PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(table.getType())) {
-                    if("hashid".equals(column.getName()))
-                        isql += "CREATE INDEX idx_" + table.getName() + "_" + column.getName() + " ON " +
-                              table.getName() + "("+column.getName()+")";
-                }
-                */
-            }
-            sql += " PRIMARY KEY (" + pk + "))";
-
-            JdbcUtil.executeUpdate(c, sql);
-
-            for(String s : isql) {
-                JdbcUtil.executeUpdate(c, s);
-            }
-            sql = "";
-        }
-
-        JdbcUtil.executeUpdate(c,
-            "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() + "',0,0,0)"
-        );
-
-    }
-
-
+    
     /**
      * Executes the data normalization script
      * @param c JDBC connection
