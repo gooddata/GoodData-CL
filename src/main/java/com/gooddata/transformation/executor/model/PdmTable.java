@@ -44,7 +44,7 @@ public class PdmTable {
     private String name;
 
     // the source column that the lookup represents
-    private String representedLookupColumn;
+    private String associatedSourceColumn;
 
     /**
      * Constructor
@@ -72,7 +72,7 @@ public class PdmTable {
      */
     public PdmTable(String name, String type, String lookupSourceColumn) {
         this(name, type);
-        setRepresentedLookupColumn(lookupSourceColumn);
+        setAssociatedSourceColumn(lookupSourceColumn);
     }
    
     /**
@@ -135,7 +135,7 @@ public class PdmTable {
      * Returns all columns that are represented in the source table
      * @return all columns that are represented in the source table
      */
-    public List<PdmColumn> getRepresentingColumns() {
+    public List<PdmColumn> getAssociatedColumns() {
         List<PdmColumn> cols = new ArrayList<PdmColumn>();
         for(PdmColumn col : getColumns()) {
             if(col != null && col.getSourceColumn() != null) {
@@ -203,15 +203,15 @@ public class PdmTable {
      * Returns source column that the lookup represents
      * @return source column that the lookup represents
      */
-    public String getRepresentedLookupColumn() {
-        return representedLookupColumn;
+    public String getAssociatedSourceColumn() {
+        return associatedSourceColumn;
     }
 
     /**
      * Sets source column that the lookup represents
-     * @param representedLookupColumn source column that the lookup represents
+     * @param associatedSourceColumn source column that the lookup represents
      */
-    public void setRepresentedLookupColumn(String representedLookupColumn) {
-        this.representedLookupColumn = representedLookupColumn;
+    public void setAssociatedSourceColumn(String associatedSourceColumn) {
+        this.associatedSourceColumn = associatedSourceColumn;
     }
 }
