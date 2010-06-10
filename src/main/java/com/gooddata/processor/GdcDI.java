@@ -1,8 +1,11 @@
 package com.gooddata.processor;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 import com.gooddata.exceptions.*;
 import com.gooddata.integration.rest.exceptions.GdcRestApiException;
@@ -19,20 +23,29 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
+import org.apache.log4j.Logger;
+import org.gooddata.connector.Connector;
+import org.gooddata.connector.backend.AbstractConnectorBackend;
 
 import com.gooddata.connector.CsvConnector;
 import com.gooddata.connector.GaConnector;
+import com.gooddata.exceptions.InitializationException;
+import com.gooddata.exceptions.InternalErrorException;
+import com.gooddata.exceptions.InvalidArgumentException;
+import com.gooddata.exceptions.MetadataFormatException;
+import com.gooddata.exceptions.ModelException;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
+import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.integration.rest.exceptions.GdcLoginException;
+import com.gooddata.integration.rest.exceptions.GdcRestApiException;
+import com.gooddata.util.CsvUtil;
 import com.gooddata.util.FileUtil;
-import org.apache.log4j.Logger;
-import org.gooddata.connector.Connector;
-import org.gooddata.connector.backend.AbstractConnectorBackend;
+import com.gooddata.util.StringUtil;
 
 /**
  * The GoodData Data Integration CLI processor.
@@ -497,6 +510,8 @@ public class GdcDI {
         String pid = getProjectId(c);
         String path = getParamMandatory(c,"path");
         String dataset = getParamMandatory(c,"dataset");
+        String reorderStr = getParam(c, "reorder");
+        boolean reorder = (reorderStr != null) && !"false".equalsIgnoreCase(reorderStr);
         // validate input dir
         File dir = getFile(c,path);
         if (!dir.isDirectory()) {
@@ -507,20 +522,27 @@ public class GdcDI {
         }
         // generate manifest
         DLI dli = getRestApi().getDLIById(dataset, pid);
-        List<DLIPart> parts= getRestApi().getDLIParts(dataset, pid);
-        FileUtil.writeStringToFile(dli.getDLIManifest(parts), path + System.getProperty("file.separator") +
-GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
+        List<DLIPart> parts = getRestApi().getDLIParts(dataset, pid);
 
         // prepare the zip file
         File tmpDir = FileUtil.createTempDir();
+        for (final DLIPart part : parts) {
+        	preparePartFile(part, dir, tmpDir, reorder);
+        }
         File tmpZipDir = FileUtil.createTempDir();
+        FileUtil.writeStringToFile(
+        		dli.getDLIManifest(parts),
+        		tmpDir + System.getProperty("file.separator")
+        			 + GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
         String archiveName = tmpDir.getName();
         String archivePath = tmpZipDir.getAbsolutePath() +
                 System.getProperty("file.separator") + archiveName + ".zip";
-        FileUtil.compressDir(path, archivePath);
+        FileUtil.compressDir(tmpDir.getAbsolutePath(), archivePath);
+        
         // ftp upload
         getFtpApi().transferDir(archivePath);
-        // kick the GooDData server to load the data package to the project
+        
+        // kick the GoodData server to load the data package to the project
         getRestApi().startLoading(pid, archiveName);
     }
 
@@ -640,4 +662,30 @@ GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
     public void setBackend(int backend) {
         this.backend = backend;
     }
+
+    /**
+     * attempts to find a file corresponding to given part in the <tt>dir</tt>
+     * directory and creates its upload ready version with properly ordered 
+     * columns in the <tt>targetDir</tt>
+     * 
+     * @param part
+     * @param dir
+     * @param targetDir
+     * @throws IOException 
+     */
+	private void preparePartFile(DLIPart part, File dir, File targetDir, boolean reorder) throws IOException {
+		final InputStream is = new FileInputStream(dir.getAbsoluteFile() + System.getProperty("file.separator") + part.getFileName());
+		final OutputStream os = new FileOutputStream(targetDir.getAbsoluteFile() + System.getProperty("file.separator") + part.getFileName());
+		
+		if (reorder) {
+			final List<String> fields = new ArrayList<String>(part.getColumns().size());
+			for (final Column c : part.getColumns()) {
+				fields.add(c.getName());
+			}
+			CsvUtil.reshuffle(is, os, fields);
+		} else {
+			FileUtil.copy(is, os);
+		}
+	}
+
 }

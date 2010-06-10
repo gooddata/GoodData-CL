@@ -1,6 +1,19 @@
 package com.gooddata.util;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -45,6 +58,28 @@ public class FileUtil {
 
     }
 
+    /**
+     * writes the data from the input stream to the provided output stream
+     * @param is
+     * @param os
+     * @throws IOException
+     */
+    public static void copy(InputStream is, OutputStream os) throws IOException {
+    	if (is == null || os == null) {
+    		throw new IllegalArgumentException("both input and output streams must be non-null");
+    	}
+    	try {
+            byte[] buf = new byte[1024];
+            int i = 0;
+            while ((i = is.read(buf)) != -1) {
+                os.write(buf, 0, i);
+            }
+        } finally {
+            is.close();
+            os.close();
+        }
+    }
+    
     /**
      * Create a new temporary directory. Use something like
      * {@link #recursiveDelete(File)} to clean this directory up since it isn't
