@@ -1,7 +1,6 @@
 package com.gooddata.modeling.model;
 
 import com.gooddata.exceptions.ModelException;
-import com.gooddata.transformation.executor.model.PdmColumn;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.*;

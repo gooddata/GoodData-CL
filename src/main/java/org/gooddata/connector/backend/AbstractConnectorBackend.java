@@ -6,10 +6,10 @@ import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
-import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
-import org.gooddata.transformation.executor.AbstractSqlExecutor;
+import org.gooddata.connector.executor.AbstractSqlExecutor;
 
 import java.io.File;
 import java.io.IOException;

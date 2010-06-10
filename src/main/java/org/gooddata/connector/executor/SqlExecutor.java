@@ -1,8 +1,8 @@
-package org.gooddata.transformation.executor;
+package org.gooddata.connector.executor;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.DLIPart;
-import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.connector.model.PdmSchema;
 
 import java.sql.Connection;
 import java.sql.SQLException;

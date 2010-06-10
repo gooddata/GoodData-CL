@@ -1,4 +1,4 @@
-package com.gooddata.transformation.executor.model;
+package com.gooddata.connector.model;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
@@ -7,7 +7,6 @@ import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**

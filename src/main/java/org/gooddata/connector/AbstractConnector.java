@@ -10,7 +10,7 @@ import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.generator.MaqlGenerator;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.connector.model.PdmSchema;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 import org.gooddata.connector.backend.ConnectorBackend;
 

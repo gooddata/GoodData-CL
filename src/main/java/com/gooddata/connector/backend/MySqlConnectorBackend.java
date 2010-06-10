@@ -1,7 +1,7 @@
 package com.gooddata.connector.backend;
 
-import com.gooddata.transformation.executor.MySqlExecutor;
-import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.connector.executor.MySqlExecutor;
+import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.util.JdbcUtil;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.backend.AbstractConnectorBackend;

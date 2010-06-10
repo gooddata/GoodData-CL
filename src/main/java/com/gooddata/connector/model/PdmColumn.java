@@ -1,4 +1,4 @@
-package com.gooddata.transformation.executor.model;
+package com.gooddata.connector.model;
 
 import java.util.ArrayList;
 import java.util.List;

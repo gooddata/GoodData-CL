@@ -1,21 +1,19 @@
-package com.gooddata.transformation.executor;
+package com.gooddata.connector.executor;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.transformation.executor.model.PdmColumn;
-import com.gooddata.transformation.executor.model.PdmSchema;
-import com.gooddata.transformation.executor.model.PdmTable;
+import com.gooddata.connector.model.PdmColumn;
+import com.gooddata.connector.model.PdmSchema;
+import com.gooddata.connector.model.PdmTable;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
-import org.gooddata.transformation.executor.AbstractSqlExecutor;
-import org.gooddata.transformation.executor.SqlExecutor;
+import org.gooddata.connector.executor.AbstractSqlExecutor;
+import org.gooddata.connector.executor.SqlExecutor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
 
 /**
  * GoodData Derby SQL executor. Generates the DDL (tables and indexes), DML (transformation SQL) and other

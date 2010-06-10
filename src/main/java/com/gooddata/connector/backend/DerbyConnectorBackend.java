@@ -1,7 +1,7 @@
 package com.gooddata.connector.backend;
 
-import com.gooddata.transformation.executor.DerbySqlExecutor;
-import com.gooddata.transformation.executor.model.PdmSchema;
+import com.gooddata.connector.executor.DerbySqlExecutor;
+import com.gooddata.connector.model.PdmSchema;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 import org.gooddata.connector.backend.ConnectorBackend;
 

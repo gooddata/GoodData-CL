@@ -1,4 +1,4 @@
-package com.gooddata.transformation.executor.model;
+package com.gooddata.connector.model;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
