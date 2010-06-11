@@ -24,12 +24,21 @@ public class Command {
 
     /**
      * Constructor
+     *
+     * @param command command name
+     */
+    public Command(String command) {
+        this.command = command;
+    }
+
+    /**
+     * Constructor
      * 
      * @param command command name
      * @param params parameters
      */
     public Command(String command, Properties params) {
-        this.command = command;
+        this(command);
         this.parameters = params;
     }
 
@@ -40,7 +49,7 @@ public class Command {
      * @param params parameters
      */
     public Command(String command, String params) {
-        this.command = command;
+        this(command);
         this.parameters = new Properties();
         try {
             this.parameters.load(new StringReader(params.replace(",","\n")));

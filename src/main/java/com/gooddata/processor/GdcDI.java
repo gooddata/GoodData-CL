@@ -1,19 +1,11 @@
 package com.gooddata.processor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.gooddata.processor.parser.DIScriptParser;
+import com.gooddata.processor.parser.ParseException;
 
 import com.gooddata.connector.TimeDimensionConnector;
 import com.gooddata.exception.*;
@@ -225,48 +217,23 @@ public class GdcDI {
      * @throws InvalidArgumentException in case there is an invalid command
      */
     protected static List<Command> parseCmd(String cmd) throws InvalidArgumentException {
-        if(cmd != null && cmd.length()>0) {
-            List<Command> cmds = new ArrayList<Command>();
-            String[] commands = cmd.split(";");
-            for( String component : commands) {
-                component = component.trim();
-                if(component != null && component.length() > 0 && !component.startsWith("#")) {
-                    Pattern p = Pattern.compile("^.*?\\(.*?\\)$");
-                    Matcher m = p.matcher(component);
-                    if(!m.matches())
-                        throw new InvalidArgumentException("Invalid command: "+component);
-                    p = Pattern.compile("^.*?\\(");
-                    m = p.matcher(component);
-                    String command = "";
-                    if(m.find()) {
-                        command = m.group();
-                        command = command.substring(0, command.length() - 1);
-                    }
-                    else {
-                        throw new InvalidArgumentException("Can't extract command from: "+component);
-                    }
-                    p = Pattern.compile("\\(.*?\\)$");
-                    m = p.matcher(component);
-                    Properties args = new Properties();
-                    if(m.find()) {
-                        String as = m.group();
-                        as = as.substring(1,as.length()-1);
-                        try {
-                            args.load(new StringReader(as.replace(",","\n")));
-                        }
-                        catch (IOException e) {
-                            throw new InvalidArgumentException(e.getMessage());
-                        }
-                    }
-                    else {
-                        throw new InvalidArgumentException("Can't extract command from: "+component);
-                    }
-                    cmds.add(new Command(command, args));
+        try {
+            if(cmd != null && cmd.length()>0) {
+                Reader r = new StringReader(cmd);
+                DIScriptParser parser = new DIScriptParser(r);
+                List<Command> commands = parser.parse();
+                l.debug("Running "+commands.size()+" commands.");
+                for(Command c : commands) {
+                    l.debug("Command="+c.getCommand()+" params="+c.getParameters());
                 }
+                return commands;
             }
-            return cmds;
         }
-        throw new InvalidArgumentException("Can't parse command.");
+        catch(ParseException e) {
+            throw new InvalidArgumentException("Can't parse command.");
+        }
+        throw new InvalidArgumentException("Can't parse command (empty command).");    
+
     }
 
     /**

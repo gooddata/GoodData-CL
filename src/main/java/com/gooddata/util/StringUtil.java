@@ -41,7 +41,7 @@ public class StringUtil {
      */
     public static String removeWhitespace(String s) {
         for ( String r : WHITESPACE ) {
-            s = s.replace(r," ");
+            s = s.replace(r,"");
         }
         return s;
     }
