@@ -28,7 +28,7 @@ public class StringUtil {
      */
     public static String formatShortName(String s) {
         for ( String r : DISCARD_CHARS ) {
-            s = s.replace(r,"_");
+            s = s.replace(r,"");
         }
         return s.toLowerCase();
     }

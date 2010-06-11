@@ -34,6 +34,9 @@ public abstract class AbstractConnector implements Connector {
     // Connector backend
     private ConnectorBackend connectorBackend;
 
+    protected AbstractConnector() {
+    }
+
     /**
      * GoodData CSV connector. This constructor creates the connector from a config file
      * @param projectId project id

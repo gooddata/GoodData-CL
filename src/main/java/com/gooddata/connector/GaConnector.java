@@ -1,5 +1,6 @@
 package com.gooddata.connector;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import com.gooddata.exceptions.InitializationException;
 import com.gooddata.exceptions.InvalidArgumentException;
 import com.gooddata.exceptions.MetadataFormatException;
@@ -153,24 +154,27 @@ public class GaConnector extends AbstractConnector implements Connector {
      * Extracts the source data CSV to the Derby database where it is going to be transformed
      * @throws ModelException in case of PDM schema issues
      */
-    public void extract() throws ModelException {
+    public void extract() throws ModelException, IOException {
         Connection con = null;
         try {
             AnalyticsService as = new AnalyticsService(APP_NAME);
 		    as.setUserCredentials(getGoogleAnalyticsUsername(), getGoogleAnalyticsPassword());
             File dataFile = FileUtil.getTempFile();
-            final DataFeed feed = as.getFeed(getGoogleAnalyticsQuery().getUrl(), DataFeed.class);
-		
-		    FeedDumper fd = new FeedDumper(feed, new FileOutputStream(dataFile));
-            fd.dump();
-            
-            con = getConnectorBackend().connect();
+            GaQuery gaq = getGoogleAnalyticsQuery();
+            gaq.setMaxResults(5000);
+            int cnt = 1;
+            CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
+            for(int startIndex = 1; cnt > 0; startIndex += cnt + 1) {
+                gaq.setStartIndex(startIndex);
+                DataFeed feed = as.getFeed(gaq.getUrl(), DataFeed.class);
+                l.trace("Retrieving GA data from index="+startIndex);
+                cnt = FeedDumper.dump(cw, feed);
+                l.trace("Retrieved "+cnt+" entries.");
+            }
+            cw.flush();
+            cw.close();
             getConnectorBackend().extract(dataFile);
-
             FileUtil.recursiveDelete(dataFile);
-        }
-        catch (SQLException e) {
-            throw new InternalError(e.getMessage());
         }
         catch (IOException e) {
             throw new InternalError(e.getMessage());

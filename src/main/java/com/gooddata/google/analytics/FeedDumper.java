@@ -16,22 +16,23 @@ import java.util.List;
 public class FeedDumper {
 
     
-
-    private final CSVWriter writer;
-    private final List<DataEntry> entries;
-    private DataEntry singleEntry = null;
-    private List<Dimension> dimensions = null;
-    private List<Metric> metrics = null;
-
-    /**
+       /**
      * Dupmps the gdata feed to CSV
      * @throws IOException in case of an IO problem
      */
-    public void dump() throws IOException {
+    public static int dump(CSVWriter cw, DataFeed feed) throws IOException {
 
-        if (entries.isEmpty()) {
-            return;
+        List<DataEntry> entries = feed.getEntries();
+        List<Dimension> dimensions = null;
+        List<Metric> metrics = null;
+           
+        if (!entries.isEmpty()) {
+            DataEntry singleEntry = entries.get(0);
+            dimensions = singleEntry.getDimensions();
+            metrics = singleEntry.getMetrics();
         }
+        else
+            return 0;
 
         final List<String> headers = new ArrayList<String>();
         for (Dimension dimension : dimensions) {
@@ -56,25 +57,9 @@ public class FeedDumper {
                 }
                 row.add(valueOut);
             }
-            writer.writeNext(row.toArray(new String[]{}));
+            cw.writeNext(row.toArray(new String[]{}));
         }
-        writer.close();
-    }
-
-
-    /**
-     * Dumps a gdata feed to CSV
-     * @param feed gdata feed
-     * @param os CSV OutputStream
-     */
-    public FeedDumper(final DataFeed feed, final OutputStream os) {
-        this.writer = new CSVWriter(new OutputStreamWriter(os));
-        entries = feed.getEntries();
-        if (!entries.isEmpty()) {
-            singleEntry = entries.get(0);
-            dimensions = singleEntry.getDimensions();
-            metrics = singleEntry.getMetrics();
-        }
+        return entries.size() - 1;   
     }
 
 }

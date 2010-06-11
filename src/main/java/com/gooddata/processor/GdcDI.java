@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+import com.gooddata.connector.TimeDimensionConnector;
 import com.gooddata.integration.rest.exceptions.GdcRestApiException;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
@@ -55,10 +56,11 @@ public class GdcDI {
 
     private static Logger l = Logger.getLogger(GdcDI.class);
 
-	private final String ftpHost;
-	private final String host;
-	private final String userName;
-	private final String password;
+	private String ftpHost;
+	private String host;
+	private String userName;
+	private String password;
+    private String httpProtocol = "http";    
 
     private String dbUserName;
     private String dbPassword;
@@ -122,7 +124,7 @@ public class GdcDI {
     			throw new IllegalArgumentException("Please specify the GoodData password (-p or --password) command-line option.");
     		}
             final NamePasswordConfiguration httpConfiguration = new NamePasswordConfiguration(
-            		"https", host,
+            		getHttpProtocol(), host,
                     userName, password);
             _restApi = new GdcRESTApiWrapper(httpConfiguration);
             _restApi.login();
@@ -149,7 +151,7 @@ public class GdcDI {
      */
     public static void main(String[] args) throws Exception {
 
-        String host = "preprod.gooddata.com";      
+        String host = "dli.getgooddata.com";      
 
         Options o = new Options();
 
@@ -159,6 +161,7 @@ public class GdcDI {
         o.addOption("d", "dbusername", true, "Database backend username (not required for the local Derby SQL)");
         o.addOption("c", "dbpassword", true, "Database backend password (not required for the local Derby SQL)");
         o.addOption("h", "host", true, "GoodData host");
+        o.addOption("t", "proto", true, "HTTP or HTTPS");
         o.addOption("i", "project", true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)");
         o.addOption("e", "execute", true, "Commands and params to execute before the commands in provided files");
 
@@ -188,6 +191,14 @@ public class GdcDI {
 	        }
             if (line.hasOption("dbpassword")) {
 	        	gdcDi.setDbPassword(line.getOptionValue("dbpassword"));
+	        }
+            if (line.hasOption("proto")) {
+                if("HTTP".equalsIgnoreCase(line.getOptionValue("proto")))
+	        	    gdcDi.setHttpProtocol("http");
+                else if("HTTPS".equalsIgnoreCase(line.getOptionValue("proto")))
+	        	    gdcDi.setHttpProtocol("https");
+                else
+                    printErrorHelpandExit("Invalid protocol parameter. Use HTTP or HTTPS.");
 	        }
             if (line.hasOption("backend")) {
                 if("MYSQL".equalsIgnoreCase(line.getOptionValue("backend")))
@@ -370,6 +381,9 @@ public class GdcDI {
         if(match(c,"LoadGoogleAnalytics")) {
             loadGA(c);
         }
+        if(match(c,"LoadTimeDimension")) {
+            loadTD(c);
+        }
         if(match(c,"GenerateMaql")) {
             generateMAQL(c);
         }
@@ -497,9 +511,8 @@ public class GdcDI {
         // kick the GooDData server to load the data package to the project
         getRestApi().startLoading(pid, archiveName);
         //cleanup
-        //TODO: Do cleanup
-        //FileUtil.recursiveDelete(tmpDir);
-        //FileUtil.recursiveDelete(tmpZipDir);
+        FileUtil.recursiveDelete(tmpDir);
+        FileUtil.recursiveDelete(tmpZipDir);
     }
 
     private void makeWritable(File tmpDir) {
@@ -603,6 +616,16 @@ public class GdcDI {
                 getBackend(), dbUserName, dbPassword));
     }
 
+    private void loadTD(Command c)
+            throws InvalidArgumentException, InitializationException, MetadataFormatException, IOException,
+            ModelException {
+
+        String ctx = "";
+        if(checkParam(c,"context"))
+            ctx = getParam(c, "context");
+        setConnector(TimeDimensionConnector.createConnector(ctx));
+    }
+
     private void generateGAConfigTemplate(Command c) throws InvalidArgumentException, IOException {
         String configFile = getParamMandatory(c,"configFile");
         String name = getParamMandatory(c,"name");
@@ -692,4 +715,11 @@ public class GdcDI {
 		}
 	}
 
+    public String getHttpProtocol() {
+        return httpProtocol;
+    }
+
+    public void setHttpProtocol(String httpProtocol) {
+        this.httpProtocol = httpProtocol;
+    }
 }

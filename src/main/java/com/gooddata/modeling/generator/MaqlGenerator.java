@@ -259,13 +259,19 @@ public class MaqlGenerator {
         public String generateMaqlDdl() {
             String folderStatement = "";
             String folder = column.getFolder();
+            String reference = column.getReference();
             if (folder != null && folder.length() > 0) {
                 String sfn = StringUtil.formatShortName(folder);
                 folderStatement = ", FOLDER {ffld." + sfn + "}";
             }
-            return "CREATE FACT {"+N.DT+"." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
+            String stat = "CREATE FACT {"+N.DT+"." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
                     + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn + "_"+N.ID+"};\n"
                     + "ALTER DATASET {dataset." + ssn + "} ADD {"+N.DT+"." + ssn + "." + scn + "};\n\n";
+            if(reference != null && reference.length() > 0) {
+                stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() + 
+                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
+            }
+            return stat;
 
         }
     }
