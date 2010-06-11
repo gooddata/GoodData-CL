@@ -13,7 +13,7 @@ import java.sql.SQLException;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public interface SqlExecutor {
+public interface SqlDriver {
 
     /**
      * Executes the system DDL initialization

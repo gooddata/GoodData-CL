@@ -9,7 +9,7 @@ import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
-import org.gooddata.connector.executor.AbstractSqlExecutor;
+import org.gooddata.connector.executor.AbstractSqlDriver;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     /**
      * The SQL executor
      */
-    protected AbstractSqlExecutor sg;
+    protected AbstractSqlDriver sg;
 
 
     /**

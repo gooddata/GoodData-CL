@@ -23,9 +23,9 @@ import java.util.*;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public abstract class AbstractSqlExecutor implements SqlExecutor {
+public abstract class AbstractSqlDriver implements SqlDriver {
 
-    private static Logger l = Logger.getLogger(AbstractSqlExecutor.class);
+    private static Logger l = Logger.getLogger(AbstractSqlDriver.class);
 
     // autoincrement syntax
     protected String SYNTAX_AUTOINCREMENT = "";

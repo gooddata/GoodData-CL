@@ -9,8 +9,8 @@ import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.executor.AbstractSqlExecutor;
-import org.gooddata.connector.executor.SqlExecutor;
+import org.gooddata.connector.executor.AbstractSqlDriver;
+import org.gooddata.connector.executor.SqlDriver;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -22,14 +22,14 @@ import java.sql.SQLException;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
+public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
     //TODO: refactor
-    private static Logger l = Logger.getLogger(MySqlExecutor.class);
+    private static Logger l = Logger.getLogger(MySqlDriver.class);
 
  /**
      * Default constructor
      */
-    public MySqlExecutor() {
+    public MySqlDriver() {
         // autoincrement syntax
         SYNTAX_AUTOINCREMENT = "AUTO_INCREMENT";
         SYNTAX_CONCAT_FUNCTION_PREFIX = "CONCAT(";

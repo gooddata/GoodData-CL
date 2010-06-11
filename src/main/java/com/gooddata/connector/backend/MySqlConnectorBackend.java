@@ -1,6 +1,6 @@
 package com.gooddata.connector.backend;
 
-import com.gooddata.connector.executor.MySqlExecutor;
+import com.gooddata.connector.executor.MySqlDriver;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.util.JdbcUtil;
 import org.apache.log4j.Logger;
@@ -51,7 +51,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
     protected MySqlConnectorBackend(String projectId, String configFileName, PdmSchema pdm, String username,
                                     String password) throws IOException {
         super(projectId, configFileName, pdm, username, password);
-        sg = new MySqlExecutor();
+        sg = new MySqlDriver();
     }
 
     /**
