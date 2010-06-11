@@ -1,6 +1,6 @@
 package com.gooddata.connector.model;
 
-import com.gooddata.exceptions.ModelException;
+import com.gooddata.exception.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;

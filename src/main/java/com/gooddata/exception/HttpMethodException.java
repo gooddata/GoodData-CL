@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package com.gooddata.exceptions;
+package com.gooddata.exception;
 
 /**
  * @author jiri.zaloudek

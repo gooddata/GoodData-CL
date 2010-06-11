@@ -1,6 +1,6 @@
 package com.gooddata.connector.driver;
 
-import com.gooddata.exceptions.ModelException;
+import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.connector.model.PdmColumn;

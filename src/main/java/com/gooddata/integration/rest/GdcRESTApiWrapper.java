@@ -4,10 +4,10 @@ import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.exceptions.GdcLoginException;
-import com.gooddata.exceptions.GdcProjectAccessException;
-import com.gooddata.exceptions.GdcRestApiException;
-import com.gooddata.exceptions.HttpMethodException;
+import com.gooddata.exception.GdcLoginException;
+import com.gooddata.exception.GdcProjectAccessException;
+import com.gooddata.exception.GdcRestApiException;
+import com.gooddata.exception.HttpMethodException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -186,7 +186,7 @@ public class GdcRESTApiWrapper {
      * Returns the existing projects links
      *
      * @return accessible projects links
-     * @throws com.gooddata.exceptions.HttpMethodException
+     * @throws com.gooddata.exception.HttpMethodException
      */
     @SuppressWarnings("unchecked")
     private Iterator<JSONObject> getProjectsLinks() throws HttpMethodException {

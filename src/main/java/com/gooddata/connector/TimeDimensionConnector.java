@@ -1,30 +1,12 @@
 package com.gooddata.connector;
 
-import au.com.bytecode.opencsv.CSVWriter;
-import com.gooddata.exceptions.InitializationException;
-import com.gooddata.exceptions.InvalidArgumentException;
-import com.gooddata.exceptions.MetadataFormatException;
-import com.gooddata.exceptions.ModelException;
-import com.gooddata.google.analytics.FeedDumper;
-import com.gooddata.google.analytics.GaQuery;
-import com.gooddata.modeling.generator.MaqlGenerator;
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.util.FileUtil;
+import com.gooddata.exception.ModelException;
 import com.gooddata.util.StringUtil;
-import com.google.gdata.client.analytics.AnalyticsService;
-import com.google.gdata.data.analytics.DataFeed;
-import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.ServiceException;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * GoodData Google Analytics Connector

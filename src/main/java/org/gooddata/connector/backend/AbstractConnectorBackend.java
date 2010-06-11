@@ -1,7 +1,7 @@
 package org.gooddata.connector.backend;
 
-import com.gooddata.exceptions.InternalErrorException;
-import com.gooddata.exceptions.ModelException;
+import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
@@ -226,7 +226,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     /**
      * Lists the current snapshots
      * @return list of snapshots as String
-     * @throws com.gooddata.exceptions.InternalErrorException in case of internal issues (e.g. uninitialized schema)
+     * @throws com.gooddata.exception.InternalErrorException in case of internal issues (e.g. uninitialized schema)
      */
     public String listSnapshots() throws InternalErrorException {
         String result = "ID        FROM ROWID        TO ROWID        TIME\n";

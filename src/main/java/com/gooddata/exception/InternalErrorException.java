@@ -1,4 +1,4 @@
-package com.gooddata.exceptions;
+package com.gooddata.exception;
 
 /**
  * GoodData internal error

@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
 
 
 import com.gooddata.connector.TimeDimensionConnector;
-import com.gooddata.exceptions.*;
-import com.gooddata.exceptions.GdcRestApiException;
+import com.gooddata.exception.*;
+import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.CommandLine;
@@ -37,7 +37,7 @@ import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.exceptions.GdcLoginException;
+import com.gooddata.exception.GdcLoginException;
 import com.gooddata.util.CsvUtil;
 import com.gooddata.util.FileUtil;
 

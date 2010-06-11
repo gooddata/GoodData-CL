@@ -1,7 +1,7 @@
 package org.gooddata.connector.backend;
 
-import com.gooddata.exceptions.InternalErrorException;
-import com.gooddata.exceptions.ModelException;
+import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 
@@ -41,7 +41,7 @@ public interface ConnectorBackend {
     /**
      * Lists the current snapshots
      * @return list of snapshots as String
-     * @throws com.gooddata.exceptions.InternalErrorException in case of internal issues (e.g. uninitialized schema)
+     * @throws com.gooddata.exception.InternalErrorException in case of internal issues (e.g. uninitialized schema)
      */
     public String listSnapshots() throws InternalErrorException;
 
@@ -54,7 +54,7 @@ public interface ConnectorBackend {
 
     /**
      * Initializes the Derby database schema that is going to be used for the data normalization
-     * @throws com.gooddata.exceptions.ModelException imn case of PDM schema issues
+     * @throws com.gooddata.exception.ModelException imn case of PDM schema issues
      */
     public void initialize() throws ModelException;
     

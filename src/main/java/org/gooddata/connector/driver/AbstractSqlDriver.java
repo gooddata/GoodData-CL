@@ -1,6 +1,6 @@
 package org.gooddata.connector.driver;
 
-import com.gooddata.exceptions.ModelException;
+import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
@@ -71,7 +71,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      * Executes the data normalization script
      * @param c JDBC connection
      * @param schema the PDM schema
-     * @throws com.gooddata.exceptions.ModelException if there is a problem with the PDM schema
+     * @throws com.gooddata.exception.ModelException if there is a problem with the PDM schema
      * (e.g. multiple source or fact tables)
      * @throws SQLException in case of db problems
      */
@@ -99,7 +99,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      * Executes the copying of the referenced lookup tables
      * @param c JDBC connection
      * @param schema the PDM schema
-     * @throws com.gooddata.exceptions.ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
+     * @throws com.gooddata.exception.ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
      * @throws java.sql.SQLException in case of db problems
      */
     public void executeLookupReplicationSql(Connection c, PdmSchema schema) throws ModelException, SQLException {

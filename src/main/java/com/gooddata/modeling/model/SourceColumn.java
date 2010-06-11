@@ -84,7 +84,7 @@ public class SourceColumn {
      * @param ldmType LDM type
      * @param title title
      * @param folder enclosing folder
-     * @throws com.gooddata.exceptions.ModelException issue with a model consistency
+     * @throws com.gooddata.exception.ModelException issue with a model consistency
      */
     public SourceColumn(String name, String ldmType, String title, String folder) {
         this(name, ldmType, title, folder, null);
@@ -95,7 +95,7 @@ public class SourceColumn {
      * @param name column name
      * @param ldmType LDM type
      * @param title title
-     * @throws com.gooddata.exceptions.ModelException issue with a model consistency
+     * @throws com.gooddata.exception.ModelException issue with a model consistency
      */
     public SourceColumn(String name, String ldmType, String title) {
         this(name, ldmType, title, null, null);

@@ -1,8 +1,8 @@
 package com.gooddata.connector;
 
-import com.gooddata.exceptions.InitializationException;
-import com.gooddata.exceptions.MetadataFormatException;
-import com.gooddata.exceptions.ModelException;
+import com.gooddata.exception.InitializationException;
+import com.gooddata.exception.MetadataFormatException;
+import com.gooddata.exception.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.FileUtil;

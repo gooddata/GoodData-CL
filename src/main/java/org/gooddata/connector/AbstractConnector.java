@@ -2,10 +2,10 @@ package org.gooddata.connector;
 
 import com.gooddata.connector.backend.DerbyConnectorBackend;
 import com.gooddata.connector.backend.MySqlConnectorBackend;
-import com.gooddata.exceptions.InitializationException;
-import com.gooddata.exceptions.InternalErrorException;
-import com.gooddata.exceptions.MetadataFormatException;
-import com.gooddata.exceptions.ModelException;
+import com.gooddata.exception.InitializationException;
+import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.MetadataFormatException;
+import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.generator.MaqlGenerator;
@@ -44,8 +44,8 @@ public abstract class AbstractConnector implements Connector {
      * @param connectorBackend connector backend
      * @param username database backend username
      * @param password database backend password
-     * @throws com.gooddata.exceptions.InitializationException issues with the initialization
-     * @throws com.gooddata.exceptions.MetadataFormatException issues with the metadata definitions
+     * @throws com.gooddata.exception.InitializationException issues with the initialization
+     * @throws com.gooddata.exception.MetadataFormatException issues with the metadata definitions
      * @throws IOException in case of an IO issue
      */
     protected AbstractConnector(String projectId, String configFileName, int connectorBackend, String username,
@@ -116,7 +116,7 @@ public abstract class AbstractConnector implements Connector {
     /**
      * Lists the current snapshots
      * @return list of snapshots as String
-     * @throws com.gooddata.exceptions.InternalErrorException in case of internal issues (e.g. uninitialized schema)
+     * @throws com.gooddata.exception.InternalErrorException in case of internal issues (e.g. uninitialized schema)
      */
     public String listSnapshots() throws InternalErrorException {
         return getConnectorBackend().listSnapshots();
@@ -147,7 +147,7 @@ public abstract class AbstractConnector implements Connector {
      * @param dir target directory where the data package will be stored
      * @param archiveName the name of the target ZIP archive
      * @throws IOException IO issues
-     * @throws com.gooddata.exceptions.ModelException in case of PDM schema issues
+     * @throws com.gooddata.exception.ModelException in case of PDM schema issues
      */
     public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName)
             throws IOException, ModelException {
@@ -171,7 +171,7 @@ public abstract class AbstractConnector implements Connector {
 
     /**
      * Initializes the Derby database schema that is going to be used for the data normalization
-     * @throws com.gooddata.exceptions.ModelException imn case of PDM schema issues
+     * @throws com.gooddata.exception.ModelException imn case of PDM schema issues
      */
     public void initialize() throws ModelException {
         getConnectorBackend().initialize();

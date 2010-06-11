@@ -1,10 +1,10 @@
 package com.gooddata.connector;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import com.gooddata.exceptions.InitializationException;
-import com.gooddata.exceptions.InvalidArgumentException;
-import com.gooddata.exceptions.MetadataFormatException;
-import com.gooddata.exceptions.ModelException;
+import com.gooddata.exception.InitializationException;
+import com.gooddata.exception.InvalidArgumentException;
+import com.gooddata.exception.MetadataFormatException;
+import com.gooddata.exception.ModelException;
 import com.gooddata.google.analytics.FeedDumper;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.modeling.model.SourceColumn;
@@ -94,7 +94,7 @@ public class GaConnector extends AbstractConnector implements Connector {
      * @param name the new config file name 
      * @param configFileName the new config file name
      * @param gQuery the Google Analytics query
-     * @throws com.gooddata.exceptions.InvalidArgumentException if there is a problem with arguments
+     * @throws com.gooddata.exception.InvalidArgumentException if there is a problem with arguments
      * @throws IOException if there is a problem with writing the config file
      */
     public static void saveConfigTemplate(String name, String configFileName, GaQuery gQuery)
