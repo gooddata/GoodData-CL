@@ -1,20 +1,15 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-package com.gooddata.integration.rest.exceptions;
+package com.gooddata.exceptions;
 
 /**
  * @author jiri.zaloudek
  */
-public class GdcLoginException extends GdcProjectAccessException {
+public class GdcSSTokenException extends GdcProjectAccessException {
 
 
     /**
      * Creates a new instance of <code>GdcProjectAccessException</code> without detail message.
      */
-    public GdcLoginException() {
+    public GdcSSTokenException() {
     }
 
 
@@ -23,7 +18,7 @@ public class GdcLoginException extends GdcProjectAccessException {
      *
      * @param msg the detail message.
      */
-    public GdcLoginException(String msg) {
+    public GdcSSTokenException(String msg) {
         super(msg);
     }
 }

@@ -1,7 +1,7 @@
 package com.gooddata.integration.ftp;
 
+import com.gooddata.exceptions.GdcUploadErrorException;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.integration.rest.exceptions.GdcUploadErrorException;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 

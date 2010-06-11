@@ -3,18 +3,18 @@
  * and open the template in the editor.
  */
 
-package com.gooddata.integration.rest.exceptions;
-
+package com.gooddata.exceptions;
 
 /**
  * @author jiri.zaloudek
  */
-public class GdcProjectAccessException extends GdcRestApiException {
+public class GdcLoginException extends GdcProjectAccessException {
+
 
     /**
      * Creates a new instance of <code>GdcProjectAccessException</code> without detail message.
      */
-    public GdcProjectAccessException() {
+    public GdcLoginException() {
     }
 
 
@@ -23,7 +23,7 @@ public class GdcProjectAccessException extends GdcRestApiException {
      *
      * @param msg the detail message.
      */
-    public GdcProjectAccessException(String msg) {
+    public GdcLoginException(String msg) {
         super(msg);
     }
 }

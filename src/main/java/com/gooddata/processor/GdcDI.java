@@ -16,7 +16,8 @@ import java.util.regex.Pattern;
 
 
 import com.gooddata.connector.TimeDimensionConnector;
-import com.gooddata.integration.rest.exceptions.GdcRestApiException;
+import com.gooddata.exceptions.*;
+import com.gooddata.exceptions.GdcRestApiException;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.CommandLine;
@@ -29,11 +30,6 @@ import org.gooddata.connector.backend.AbstractConnectorBackend;
 
 import com.gooddata.connector.CsvConnector;
 import com.gooddata.connector.GaConnector;
-import com.gooddata.exceptions.InitializationException;
-import com.gooddata.exceptions.InternalErrorException;
-import com.gooddata.exceptions.InvalidArgumentException;
-import com.gooddata.exceptions.MetadataFormatException;
-import com.gooddata.exceptions.ModelException;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.model.Column;
@@ -41,7 +37,7 @@ import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.integration.rest.exceptions.GdcLoginException;
+import com.gooddata.exceptions.GdcLoginException;
 import com.gooddata.util.CsvUtil;
 import com.gooddata.util.FileUtil;
 

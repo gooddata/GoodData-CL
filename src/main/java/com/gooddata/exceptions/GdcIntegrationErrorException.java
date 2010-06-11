@@ -3,18 +3,18 @@
  * and open the template in the editor.
  */
 
-package com.gooddata.integration.rest.exceptions;
+package com.gooddata.exceptions;
 
 /**
  * @author jiri.zaloudek
  */
-public class GdcUploadErrorException extends GdcRestApiException {
+public class GdcIntegrationErrorException extends GdcRestApiException {
 
 
     /**
      * Creates a new instance of <code>GdcIntegrationErrorException</code> without detail message.
      */
-    public GdcUploadErrorException() {
+    public GdcIntegrationErrorException() {
     }
 
 
@@ -23,7 +23,7 @@ public class GdcUploadErrorException extends GdcRestApiException {
      *
      * @param msg the detail message.
      */
-    public GdcUploadErrorException(String msg) {
+    public GdcIntegrationErrorException(String msg) {
         super(msg);
     }
 }
