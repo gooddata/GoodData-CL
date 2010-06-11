@@ -94,8 +94,8 @@ public class MySqlExecutor extends AbstractSqlExecutor implements SqlExecutor {
                     StringUtil.convertJavaDateFormatToMySql(column.getFormat())+"'),'1900-01-01')+1";
         }
         JdbcUtil.executeUpdate(c,
-            "INSERT INTO "+fact+"("+N.SRC_ID+factColumns+") SELECT "+ N.SRC_ID + sourceColumns +
-            " FROM " + source + " WHERE "+N.ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='"+fact+"')"
+            "INSERT INTO "+fact+"("+N.ID+factColumns+") SELECT "+ N.SRC_ID + sourceColumns +
+            " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='"+fact+"')"
         );
     }
 

@@ -29,7 +29,7 @@ public class JdbcUtil {
         int rc = 0;
         try {
             s = con.createStatement();
-            //System.err.println("Executing SQL: statement='" + sql + "'");
+            System.err.println("Executing SQL: statement='" + sql + "'");
             rc = s.executeUpdate(sql);
             System.err.println("Executed SQL: statement='" + sql + "' rows="+rc);
             l.trace("Executed SQL: statement='" + sql + "', result='" + rc + "'");

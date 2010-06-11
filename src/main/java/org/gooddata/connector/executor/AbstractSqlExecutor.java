@@ -261,7 +261,7 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
     }
 
     protected String concatAssociatedSourceColumns(PdmTable lookupTable) {
-        String associatedColumns = SYNTAX_CONCAT_FUNCTION_PREFIX;
+        String associatedColumns = "";
         for(PdmColumn column : lookupTable.getAssociatedColumns()) {
             // if there are LABELS, the lookup can't be added twice to the FROM clause
             if(associatedColumns.length() > 0)
@@ -269,7 +269,7 @@ public abstract class AbstractSqlExecutor implements SqlExecutor {
             else
                 associatedColumns = column.getSourceColumn();
         }
-        associatedColumns += SYNTAX_CONCAT_FUNCTION_SUFFIX;
+        associatedColumns = SYNTAX_CONCAT_FUNCTION_PREFIX + associatedColumns + SYNTAX_CONCAT_FUNCTION_SUFFIX;
         return associatedColumns;
     }
 

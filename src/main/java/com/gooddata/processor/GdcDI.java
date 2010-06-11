@@ -15,7 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-import com.gooddata.exceptions.*;
 import com.gooddata.integration.rest.exceptions.GdcRestApiException;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
@@ -42,10 +41,8 @@ import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.integration.rest.exceptions.GdcLoginException;
-import com.gooddata.integration.rest.exceptions.GdcRestApiException;
 import com.gooddata.util.CsvUtil;
 import com.gooddata.util.FileUtil;
-import com.gooddata.util.StringUtil;
 
 /**
  * The GoodData Data Integration CLI processor.
@@ -300,14 +297,22 @@ public class GdcDI {
         return (String)c.getParameters().get(p);
     }
 
+    protected boolean checkParam(Command c, String p) {
+        String v = (String)c.getParameters().get(p);
+        if(v == null || v.length() == 0) {
+            return false;
+        }
+        return true;
+    }
+
     protected void error(Command c, String msg) throws InvalidArgumentException {
         throw new InvalidArgumentException(c.getCommand()+": "+msg);
     }
 
-    protected String getParamMandatory(Command c, String p) {
+    protected String getParamMandatory(Command c, String p) throws InvalidArgumentException {
         String v = (String)c.getParameters().get(p);
         if(v == null || v.length() == 0) {
-
+            error(c, "Command parameter '"+c.getCommand()+"' is required.");
         }
         return v;
     }
@@ -363,7 +368,7 @@ public class GdcDI {
             generateGAConfigTemplate(c);
         }
         if(match(c,"LoadGoogleAnalytics")) {
-            LoadGA(c);
+            loadGA(c);
         }
         if(match(c,"GenerateMaql")) {
             generateMAQL(c);
@@ -573,30 +578,27 @@ public class GdcDI {
         FileUtil.writeStringToFile(maql, maqlFile);
     }
 
-    private void LoadGA(Command c)
+    private void loadGA(Command c)
             throws InvalidArgumentException, InitializationException, MetadataFormatException, IOException,
             ModelException {
-        String pid = getProjectId(c);
-        String configFile = getParamMandatory(c,"configFile");
-        String usr = getParamMandatory(c,"username");
-        String psw = getParamMandatory(c,"password");
-        String id = getParamMandatory(c,"profileId");
-        String dimensions = getParamMandatory(c,"dimensions");
-        String metrics = getParamMandatory(c,"metrics");
-        String startDate = getParamMandatory(c,"startDate");
-        String endDate = getParamMandatory(c,"endDate");
-        String filters = getParamMandatory(c,"filters");
+
         GaQuery gq = null;
         try {
             gq = new GaQuery();
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
-        gq.setDimensions(dimensions.replace("|",","));
-        gq.setMetrics(metrics.replace("|",","));
-        gq.setStartDate(startDate);
-        gq.setEndDate(endDate);
-        gq.setFilters(filters);
+        String pid = getProjectId(c);
+        String configFile = getParamMandatory(c,"configFile");
+        String usr = getParamMandatory(c,"username");
+        String psw = getParamMandatory(c,"password");
+        String id = getParamMandatory(c,"profileId");
+        gq.setDimensions(getParamMandatory(c,"dimensions").replace("|",","));
+        gq.setMetrics(getParamMandatory(c,"metrics").replace("|",","));
+        gq.setStartDate(getParamMandatory(c,"startDate"));
+        gq.setEndDate(getParamMandatory(c,"endDate"));
+        if(checkParam(c,"filters"))
+            gq.setFilters(getParam(c,"filters"));
         setConnector(GaConnector.createConnector(pid, configFile, usr, psw, id, gq,
                 getBackend(), dbUserName, dbPassword));
     }
