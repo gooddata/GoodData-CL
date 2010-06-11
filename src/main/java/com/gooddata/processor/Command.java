@@ -1,5 +1,7 @@
 package com.gooddata.processor;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
@@ -11,6 +13,8 @@ import java.util.Properties;
  * @version 1.0
  */
 public class Command {
+
+    private static Logger l = Logger.getLogger(Command.class);
 
     // Command
     private String command;
@@ -42,7 +46,7 @@ public class Command {
             this.parameters.load(new StringReader(params.replace(",","\n")));
         }
         catch (IOException e) {
-            e.printStackTrace();
+            l.error("Error extracting command parameters.",e);
         }
     }
 

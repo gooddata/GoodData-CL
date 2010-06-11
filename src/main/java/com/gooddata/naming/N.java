@@ -19,8 +19,12 @@ public class N {
     public final static String ID = "id";
     public final static String HSH = "hashid";
     public final static String SRC_ID = SRC_PFX+"_"+ID;
-    public final static String DT_ATTR_NAME = "acI4GbBRfH6g";
+    public final static String DT_ATTR_NAME = "date";
 
 
     public static final String FACTS_OF = "factsof";
+
+
+    //public final static String FTP_SRV_SUFFIX = "-upload";
+    public final static String FTP_SRV_SUFFIX = "";
 }

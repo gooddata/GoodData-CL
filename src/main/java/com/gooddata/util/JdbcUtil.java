@@ -29,10 +29,10 @@ public class JdbcUtil {
         int rc = 0;
         try {
             s = con.createStatement();
-            //System.err.println("Executing SQL: statement='" + sql + "'");
+            l.debug("Executing SQL: statement='" + sql + "'");
             rc = s.executeUpdate(sql);
-           // System.err.println("Executed SQL: statement='" + sql + "' rows="+rc);
-            l.trace("Executed SQL: statement='" + sql + "', result='" + rc + "'");
+            l.debug("Executed SQL: statement='" + sql + "' rows="+rc);
+            l.debug("Executed SQL: statement='" + sql + "', result='" + rc + "'");
             return rc;
         }
         catch (SQLException e) {
@@ -57,8 +57,9 @@ public class JdbcUtil {
         ResultSet rs = null;
         try {
             s = con.createStatement();
+            l.debug("Executing SQL: statement='" + sql + "'");
             rs = s.executeQuery(sql);
-            l.trace("Executed SQL: statement='" + sql + "'");
+            l.debug("Executed SQL: statement='" + sql + "'");
             return rs;
         }
         catch (SQLException e) {

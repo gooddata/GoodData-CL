@@ -2,6 +2,7 @@ package com.gooddata.connector.backend;
 
 import com.gooddata.connector.driver.DerbySqlDriver;
 import com.gooddata.connector.model.PdmSchema;
+import org.apache.log4j.Logger;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 import org.gooddata.connector.backend.ConnectorBackend;
 
@@ -21,6 +22,8 @@ import static org.apache.derby.tools.ij.runScript;
  */
 public class DerbyConnectorBackend extends AbstractConnectorBackend implements ConnectorBackend {
 
+    private static Logger l = Logger.getLogger(DerbyConnectorBackend.class);
+
     /**
      * static initializer of the Derby SQL JDBC driver
      */
@@ -29,11 +32,11 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
         try {
             Class.forName(driver).newInstance();
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            l.error("Error loading Derby SQL JDBC driver.", e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            l.error("Error loading Derby SQL JDBC driver.", e);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            l.error("Error loading Derby SQL JDBC driver.", e);
         }
     }
 

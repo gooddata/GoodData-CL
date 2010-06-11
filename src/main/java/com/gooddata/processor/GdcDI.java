@@ -25,6 +25,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 
@@ -79,7 +80,7 @@ public class GdcDI {
                 if(ftpHost != null && ftpHost.length()>0)
                     ftpHost += "." + hc;
                 else
-                    ftpHost = hc + "-upload";
+                    ftpHost = hc + N.FTP_SRV_SUFFIX;
             }
         }
         else {
@@ -130,7 +131,7 @@ public class GdcDI {
 
     private GdcFTPApiWrapper getFtpApi() {
     	if (_ftpApi == null) {
-	        System.out.println("Using the GoodData FTP host '" + ftpHost + "'.");
+	        l.debug("Using the GoodData FTP host '" + ftpHost + "'.");
 
 	        NamePasswordConfiguration ftpConfiguration = new NamePasswordConfiguration("ftp",
 	                ftpHost, userName, password);
@@ -145,73 +146,75 @@ public class GdcDI {
      * @param args command line argument
      * @throws Exception any issue
      */
-    public static void main(String[] args) throws Exception {
-
-        String host = "dli.getgooddata.com";      
-
-        Options o = new Options();
-
-        o.addOption("u", "username", true, "GoodData username");
-        o.addOption("p", "password", true, "GoodData password");
-        o.addOption("b", "backend", true, "Database backend DERBY or MYSQL");
-        o.addOption("d", "dbusername", true, "Database backend username (not required for the local Derby SQL)");
-        o.addOption("c", "dbpassword", true, "Database backend password (not required for the local Derby SQL)");
-        o.addOption("h", "host", true, "GoodData host");
-        o.addOption("t", "proto", true, "HTTP or HTTPS");
-        o.addOption("i", "project", true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)");
-        o.addOption("e", "execute", true, "Commands and params to execute before the commands in provided files");
-
-        CommandLineParser parser = new GnuParser();
-        CommandLine line = parser.parse(o, args);
+    public static void main(String[] args) {
 
         try {
-	        if(line.hasOption("host")) {
-	            host = line.getOptionValue("host");
-	        }
-	        else {
-	            System.out.println("Using the default GoodData REST API host '" + host + "'.");
-	        }
-	        
-	        String userName = line.getOptionValue("username");
-	        String password = line.getOptionValue("password");
+            PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
 
-	        GdcDI gdcDi = new GdcDI(host, userName, password);
-	        if (line.hasOption("project")) {
-	        	gdcDi.setProjectId(line.getOptionValue("project"));
-	        }
-	        if (line.hasOption("execute")) {
-	        	gdcDi.execute(line.getOptionValue("execute"));
-	        }
+            String host = "dli.getgooddata.com";
+
+            Options o = new Options();
+
+            o.addOption("u", "username", true, "GoodData username");
+            o.addOption("p", "password", true, "GoodData password");
+            o.addOption("b", "backend", true, "Database backend DERBY or MYSQL");
+            o.addOption("d", "dbusername", true, "Database backend username (not required for the local Derby SQL)");
+            o.addOption("c", "dbpassword", true, "Database backend password (not required for the local Derby SQL)");
+            o.addOption("h", "host", true, "GoodData host");
+            o.addOption("t", "proto", true, "HTTP or HTTPS");
+            o.addOption("i", "project", true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)");
+            o.addOption("e", "execute", true, "Commands and params to execute before the commands in provided files");
+
+            CommandLineParser parser = new GnuParser();
+            CommandLine line = parser.parse(o, args);
+
+            if(line.hasOption("host")) {
+                host = line.getOptionValue("host");
+            }
+            else {
+                l.debug("Using the default GoodData REST API host '" + host + "'.");
+            }
+
+            String userName = line.getOptionValue("username");
+            String password = line.getOptionValue("password");
+
+            GdcDI gdcDi = new GdcDI(host, userName, password);
+            if (line.hasOption("project")) {
+                gdcDi.setProjectId(line.getOptionValue("project"));
+            }
+            if (line.hasOption("execute")) {
+                gdcDi.execute(line.getOptionValue("execute"));
+            }
             if (line.hasOption("dbusername")) {
-	        	gdcDi.setDbUserName(line.getOptionValue("dbusername"));
-	        }
+                gdcDi.setDbUserName(line.getOptionValue("dbusername"));
+            }
             if (line.hasOption("dbpassword")) {
-	        	gdcDi.setDbPassword(line.getOptionValue("dbpassword"));
-	        }
+                gdcDi.setDbPassword(line.getOptionValue("dbpassword"));
+            }
             if (line.hasOption("proto")) {
                 if("HTTP".equalsIgnoreCase(line.getOptionValue("proto")))
-	        	    gdcDi.setHttpProtocol("http");
+                    gdcDi.setHttpProtocol("http");
                 else if("HTTPS".equalsIgnoreCase(line.getOptionValue("proto")))
-	        	    gdcDi.setHttpProtocol("https");
+                    gdcDi.setHttpProtocol("https");
                 else
                     printErrorHelpandExit("Invalid protocol parameter. Use HTTP or HTTPS.");
-	        }
+            }
             if (line.hasOption("backend")) {
                 if("MYSQL".equalsIgnoreCase(line.getOptionValue("backend")))
-	        	    gdcDi.setBackend(AbstractConnectorBackend.CONNECTOR_BACKEND_MYSQL);
+                    gdcDi.setBackend(AbstractConnectorBackend.CONNECTOR_BACKEND_MYSQL);
                 else if("DERBY".equalsIgnoreCase(line.getOptionValue("backend")))
-	        	    gdcDi.setBackend(AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL);
+                    gdcDi.setBackend(AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL);
                 else
-                    printErrorHelpandExit("Invalid backend parameter. Use MYSQL or DERBY.");                    
-	        }
-	    	if (line.getArgs().length == 0 && !line.hasOption("execute")) {
-        		printErrorHelpandExit("No command has been given, quitting.");
-	    	}
-	        for (final String arg : line.getArgs()) {
-	        	gdcDi.execute(FileUtil.readStringFromFile(arg));
-	        }
-        } catch (final IllegalArgumentException e) {
-        	printErrorHelpandExit(e.getMessage());
+                    printErrorHelpandExit("Invalid backend parameter. Use MYSQL or DERBY.");
+            }
+            if (line.getArgs().length == 0 && !line.hasOption("execute")) {
+                printErrorHelpandExit("No command has been given, quitting.");
+            }
+            for (final String arg : line.getArgs()) {
+                gdcDi.execute(FileUtil.readStringFromFile(arg));
+            }
+        } catch (final Exception e) {
+            printErrorHelpandExit(e.getMessage());
         }
     }
 
@@ -287,8 +290,8 @@ public class GdcDI {
      * @param err the err message
      */
     protected static void printErrorHelpandExit(String err) {
-        System.out.println("ERROR: " + err);
-        System.out.println(commandsHelp());
+        l.error("ERROR: " + err);
+        l.info("\n\n"+commandsHelp());
         System.exit(1);
     }
 
@@ -313,7 +316,7 @@ public class GdcDI {
     }
 
     protected void error(Command c, String msg) throws InvalidArgumentException {
-        throw new InvalidArgumentException(c.getCommand()+": "+msg);
+        printErrorHelpandExit(c.getCommand()+": "+msg);
     }
 
     protected String getParamMandatory(Command c, String p) throws InvalidArgumentException {
@@ -406,7 +409,7 @@ public class GdcDI {
         }
     }
 
-    private void transferLastSnapshot(Command c) throws InvalidArgumentException, ModelException, IOException, InternalErrorException, GdcRestApiException {
+    private void transferLastSnapshot(Command c) throws InvalidArgumentException, ModelException, IOException, InternalErrorException, GdcRestApiException, InterruptedException {
         Connector cc = getConnector(c);
         String pid = getProjectId(c);
         // connector's schema name
@@ -425,7 +428,7 @@ public class GdcDI {
         extractAndTransfer(c, pid, cc, dli, parts, new int[] {cc.getLastSnapshotId()+1});
     }
 
-    private void transferSnapshots(Command c) throws InvalidArgumentException, ModelException, IOException, GdcRestApiException {
+    private void transferSnapshots(Command c) throws InvalidArgumentException, ModelException, IOException, GdcRestApiException, InterruptedException {
         Connector cc = getConnector(c);
         String pid = getProjectId(c);
         String firstSnapshot = getParamMandatory(c,"firstSnapshot");
@@ -470,7 +473,7 @@ public class GdcDI {
             error(c,"The firstSnapshot can't be higher than the lastSnapshot.");
     }
 
-    private void transferData(Command c) throws InvalidArgumentException, ModelException, IOException, GdcRestApiException {
+    private void transferData(Command c) throws InvalidArgumentException, ModelException, IOException, GdcRestApiException, InterruptedException {
         Connector cc = getConnector(c);
         String pid = getProjectId(c);
         // connector's schema name
@@ -489,7 +492,7 @@ public class GdcDI {
     }
 
     private void extractAndTransfer(Command c, String pid, Connector cc, DLI dli, List<DLIPart> parts,
-        int[] snapshots) throws IOException, ModelException, GdcRestApiException, InvalidArgumentException {
+        int[] snapshots) throws IOException, ModelException, GdcRestApiException, InvalidArgumentException, InterruptedException {
         File tmpDir = FileUtil.createTempDir();
         makeWritable(tmpDir);
         File tmpZipDir = FileUtil.createTempDir();
@@ -505,10 +508,25 @@ public class GdcDI {
         // transfer the data package to the GoodData server
         getFtpApi().transferDir(archivePath);
         // kick the GooDData server to load the data package to the project
-        getRestApi().startLoading(pid, archiveName);
+        String taskUri = getRestApi().startLoading(pid, archiveName);
+        checkLoadingStatus(taskUri, tmpDir.getName());
         //cleanup
         FileUtil.recursiveDelete(tmpDir);
         FileUtil.recursiveDelete(tmpZipDir);
+    }
+
+    private void checkLoadingStatus(String taskUri, String tmpDir) throws HttpMethodException, GdcLoginException, InterruptedException {
+        String status = "";
+        while(!status.equalsIgnoreCase("OK") && !status.equalsIgnoreCase("ERROR") && !status.equalsIgnoreCase("WARNING")) {
+            status = getRestApi().getLoadingStatus(taskUri);
+            l.debug("Loading status = "+status);
+            Thread.sleep(500);
+        }
+        if(!status.equalsIgnoreCase("OK")) {
+            l.info("Data loading failed. Please check the log files at 'ftp://" + ftpHost + "/" + tmpDir + "/'. " +
+                    "Please use your GoodData username and password to access this FTP server.");
+        }
+        l.info("Data successfully loaded.");
     }
 
     private void makeWritable(File tmpDir) {
@@ -520,7 +538,7 @@ public class GdcDI {
         }
     }
 
-    private void uploadDir(Command c) throws InvalidArgumentException, IOException, GdcRestApiException {
+    private void uploadDir(Command c) throws InvalidArgumentException, IOException, GdcRestApiException, InterruptedException {
         String pid = getProjectId(c);
         String path = getParamMandatory(c,"path");
         String dataset = getParamMandatory(c,"dataset");
@@ -559,7 +577,8 @@ public class GdcDI {
         getFtpApi().transferDir(archivePath);
         
         // kick the GoodData server to load the data package to the project
-        getRestApi().startLoading(pid, archiveName);
+        String taskUri = getRestApi().startLoading(pid, archiveName);
+        checkLoadingStatus(taskUri, tmpDir.getName());
     }
 
     private void dropSnapshots(Command c) throws InvalidArgumentException {
@@ -569,7 +588,7 @@ public class GdcDI {
 
     private void listSnapshots(Command c) throws InvalidArgumentException, InternalErrorException {
         Connector cc = getConnector(c);
-        System.out.println(cc.listSnapshots());
+        l.info((cc.listSnapshots()));
     }
 
     private void executeMAQL(Command c) throws InvalidArgumentException, IOException, GdcRestApiException {
@@ -664,10 +683,16 @@ public class GdcDI {
     }
 
     private void createProject(Command c) throws GdcRestApiException, InvalidArgumentException {
-        String name = getParamMandatory(c,"name");
-        setProjectId(getRestApi().createProject(name, name));
-        String pid = getProjectId(c);
-        System.out.println("Project id = '"+pid+"' created.");
+        try {
+            String name = getParamMandatory(c,"name");
+            setProjectId(getRestApi().createProject(name, name));
+            String pid = getProjectId(c);
+            l.info("Project id = '"+pid+"' created.");
+        }
+        catch (GdcRestApiException e) {
+            l.error("Can't create project. You are most probably over the project count quota. " +
+                    "Please try deleting few projects.");            
+        }
     }
 
     private void setIncremental(List<DLIPart> parts) {

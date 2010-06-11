@@ -1,5 +1,6 @@
 package org.gooddata.connector.backend;
 
+import com.gooddata.connector.backend.DerbyConnectorBackend;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.Column;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * GoodData abstract connector.
@@ -25,6 +27,8 @@ import java.util.List;
  * @version 1.0
  */
 public abstract class AbstractConnectorBackend implements ConnectorBackend {
+
+    private static Logger l = Logger.getLogger("org.gooddata.connector.backend");
 
     // Connector backends
     public static final int CONNECTOR_BACKEND_DERBY_SQL = 1;
@@ -193,7 +197,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
                     con.close();
             }
             catch (SQLException e) {
-                throw new InternalError(e.getMessage());
+                e.printStackTrace();
             }
         }
     }
@@ -218,7 +222,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
                     con.close();
             }
             catch (SQLException e) {
-                throw new InternalError(e.getMessage());
+                e.printStackTrace();
             }
         }
     }
@@ -256,7 +260,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
                     con.close();
             }
             catch (SQLException ee) {
-                ee.printStackTrace();
+               ee.printStackTrace();
             }
         }
         return result;
@@ -361,7 +365,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
                     con.close();
             }
             catch (SQLException e) {
-                throw new InternalError(e.getMessage());
+                e.printStackTrace();
             }
         }
     }
@@ -404,7 +408,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
                     con.close();
             }
             catch (SQLException e) {
-                throw new InternalError(e.getMessage());
+                e.printStackTrace();
             }
         }
     }

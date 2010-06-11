@@ -15,6 +15,7 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ import java.util.List;
  * @version 1.0
  */
 public class GdcRESTApiWrapper {
+
+    private static Logger l = Logger.getLogger(GdcRESTApiWrapper.class);
 
     /**
      * GDC URIs
@@ -85,7 +88,7 @@ public class GdcRESTApiWrapper {
             }
             throw new GdcLoginException("GDCAuthSST was not found in cookies after login.");
         } catch (HttpMethodException ex) {
-            ex.printStackTrace();
+            l.error("Error logging to GoodData.",ex);
             throw new GdcLoginException("Login to GDC failed: " + ex.getMessage());
         } finally {
             loginPost.releaseConnection();
@@ -344,7 +347,7 @@ public class GdcRESTApiWrapper {
         try {
             String response = executeMethodOk(pullPost);
             JSONObject responseObject = JSONObject.fromObject(response);
-            taskLink = responseObject.getString("pullTask");
+            taskLink = responseObject.getJSONObject("pullTask").getString("uri");
         } catch (HttpMethodException ex) {
             throw new GdcRestApiException("Loading fails: " + ex.getMessage());
         } finally {
@@ -365,6 +368,23 @@ public class GdcRESTApiWrapper {
         pullStructure.put("pullIntegration", directory);
         return pullStructure;
     }
+
+
+    /**
+     * Checks if the loading is finished
+     *
+     * @param link the link returned from the start loading
+     * @return the loading status
+     */
+    public String getLoadingStatus(String link) throws HttpMethodException {
+        HttpMethod ptm = new GetMethod(config.getUrl() + link);
+        setJsonHeaders(ptm);
+        String response = executeMethodOk(ptm);
+        JSONObject task = JSONObject.fromObject(response);
+        return task.getString("taskStatus");
+    }
+
+    
 
     /**
      * Kicks the GDC platform to inform it that the FTP transfer is finished.
@@ -522,7 +542,7 @@ public class GdcRESTApiWrapper {
         } catch (HttpException e) {
             throw new HttpMethodException("HttpException: " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            l.error("Error invoking GoodData API.",e);
             throw new HttpMethodException("IOException: " + e.getMessage());
         }
     }

@@ -167,9 +167,9 @@ public class GaConnector extends AbstractConnector implements Connector {
             for(int startIndex = 1; cnt > 0; startIndex += cnt + 1) {
                 gaq.setStartIndex(startIndex);
                 DataFeed feed = as.getFeed(gaq.getUrl(), DataFeed.class);
-                l.trace("Retrieving GA data from index="+startIndex);
+                l.debug("Retrieving GA data from index="+startIndex);
                 cnt = FeedDumper.dump(cw, feed);
-                l.trace("Retrieved "+cnt+" entries.");
+                l.debug("Retrieved "+cnt+" entries.");
             }
             cw.flush();
             cw.close();
