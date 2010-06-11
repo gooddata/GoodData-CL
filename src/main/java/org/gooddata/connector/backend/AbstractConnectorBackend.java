@@ -9,7 +9,7 @@ import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
-import org.gooddata.connector.executor.AbstractSqlDriver;
+import org.gooddata.connector.driver.AbstractSqlDriver;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     public static final int CONNECTOR_BACKEND_MYSQL = 2;
 
     /**
-     * The SQL executor
+     * The SQL driver
      */
     protected AbstractSqlDriver sg;
 

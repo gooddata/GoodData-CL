@@ -1,6 +1,6 @@
 package com.gooddata.connector.backend;
 
-import com.gooddata.connector.executor.DerbySqlDriver;
+import com.gooddata.connector.driver.DerbySqlDriver;
 import com.gooddata.connector.model.PdmSchema;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 import org.gooddata.connector.backend.ConnectorBackend;

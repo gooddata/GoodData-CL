@@ -1,4 +1,4 @@
-package org.gooddata.connector.executor;
+package org.gooddata.connector.driver;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.DLIPart;

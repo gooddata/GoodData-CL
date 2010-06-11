@@ -1,4 +1,4 @@
-package org.gooddata.connector.executor;
+package org.gooddata.connector.driver;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.Column;
@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * GoodData abstract SQL executor. Generates the DDL (tables and indexes), DML (transformation SQL) and other
+ * GoodData abstract SQL driver. Generates the DDL (tables and indexes), DML (transformation SQL) and other
  * SQL statements necessary for the data normalization (lookup generation)
  * @author zd <zd@gooddata.com>
  * @version 1.0

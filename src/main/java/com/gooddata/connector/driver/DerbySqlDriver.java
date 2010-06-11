@@ -1,4 +1,4 @@
-package com.gooddata.connector.executor;
+package com.gooddata.connector.driver;
 
 import com.gooddata.exceptions.ModelException;
 import com.gooddata.integration.model.Column;
@@ -10,14 +10,14 @@ import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.executor.AbstractSqlDriver;
-import org.gooddata.connector.executor.SqlDriver;
+import org.gooddata.connector.driver.AbstractSqlDriver;
+import org.gooddata.connector.driver.SqlDriver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * GoodData Derby SQL executor. Generates the DDL (tables and indexes), DML (transformation SQL) and other
+ * GoodData Derby SQL driver. Generates the DDL (tables and indexes), DML (transformation SQL) and other
  * SQL statements necessary for the data normalization (lookup generation)
  * @author zd <zd@gooddata.com>
  * @version 1.0
