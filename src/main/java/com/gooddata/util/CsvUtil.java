@@ -14,6 +14,7 @@ import org.apache.log4j.Category;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import org.apache.log4j.Logger;
 
 public class CsvUtil {
 	
@@ -22,8 +23,8 @@ public class CsvUtil {
 	private static final char ESCAPE = '"';
 	
 	private static final String ENCODING = "utf-8";
-	
-	private static Category LOG = Category.getInstance(CsvUtil.class);
+
+    private static Logger l = Logger.getLogger(CsvUtil.class);
 
 	/**
 	 * Write the selected fields in defined order from the input stream CSV to the output
@@ -53,7 +54,7 @@ public class CsvUtil {
 			    lineNo++;
 			    while ((nextLine = reader.readNext()) != null) {
 			    	if (nextLine.length < outputFields.size()) {
-			    		LOG.warn("Line #" + lineNo + " contains " + nextLine.length + " fields only, " + outputFields.size() + " expected (" + outputFields + ").");
+			    		l.warn("Line #" + lineNo + " contains " + nextLine.length + " fields only, " + outputFields.size() + " expected (" + outputFields + ").");
 			    		continue;
 			    	}
 			    	List<String> out = new ArrayList<String>();
