@@ -4,7 +4,7 @@
 CreateProject(name="GA");
 
 # GENERATE CONFIG FILE. THIS COMMAND IS COMMENTED OUT AS WE HAVE DONE THAT ALREADY.
-# IF YOU CHANGE THE GA METRICS AND DIMENSIONS< YOU NEED TO RE-RUN THE CONFIG FILE GENERATION
+# IF YOU CHANGE THE GA METRICS AND DIMENSIONS YOU NEED TO RE-RUN THE CONFIG FILE GENERATION
 #GenerateGoogleAnalyticsConfigTemplate(name="GA",configFile="examples/ga/ga.config.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits");
 
 # LOADS A NEW TIME DIMENSION TO THE PROJECT
