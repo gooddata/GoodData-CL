@@ -374,6 +374,12 @@ public class GdcDI {
         if(match(c,"TransferLastSnapshot")) {
             transferLastSnapshot(c);
         }
+        if(match(c,"StoreProject")) {
+            storeProject(c);
+        }
+        if(match(c,"RetrieveProject")) {
+            retrieveProject(c);
+        }
     }
 
     private void transferLastSnapshot(Command c) throws InvalidArgumentException, ModelException, IOException, InternalErrorException, GdcRestApiException, InterruptedException {
@@ -660,6 +666,17 @@ public class GdcDI {
             l.error("Can't create project. You are most probably over the project count quota. " +
                     "Please try deleting few projects.");            
         }
+    }
+
+     private void storeProject(Command c) throws GdcRestApiException, InvalidArgumentException, IOException {
+        String fileName = getParamMandatory(c,"fileName");
+        String pid = getProjectId(c);
+        FileUtil.writeStringToFile(pid, fileName);
+    }
+
+    private void retrieveProject(Command c) throws GdcRestApiException, InvalidArgumentException, IOException {
+        String fileName = getParamMandatory(c,"fileName");
+        setProjectId(FileUtil.readStringFromFile(fileName).trim());
     }
 
     private void setIncremental(List<DLIPart> parts) {
