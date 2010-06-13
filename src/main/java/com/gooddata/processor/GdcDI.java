@@ -4,12 +4,13 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
 
 import com.gooddata.connector.TimeDimensionConnector;
 import com.gooddata.exception.*;
-import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.CommandLine;
@@ -62,7 +63,8 @@ public class GdcDI {
 
     private int backend = AbstractConnectorBackend.CONNECTOR_BACKEND_DERBY_SQL;
 
-
+    private static long  LOCK_EXPIRATION_TIME = 1000 * 3600; // 1 hour
+    
     private GdcDI(final String host, final String userName, final String password) {
     	String ftpHost = null;
         // Create the FTP host automatically
@@ -332,53 +334,56 @@ public class GdcDI {
         if(match(c,"CreateProject")) {
             createProject(c);
         }
-        if(match(c,"OpenProject")) {
+        else if(match(c,"OpenProject")) {
             setProjectId(getParamMandatory(c,"id"));
         }
-        if(match(c,"GenerateCsvConfigTemplate")) {
+        else if(match(c,"GenerateCsvConfigTemplate")) {
             generateCsvConfigTemplate(c);
         }
-        if(match(c,"LoadCsv")) {
+        else if(match(c,"LoadCsv")) {
             loadCsv(c);
         }
-        if(match(c,"GenerateGoogleAnalyticsConfigTemplate")) {
+        else if(match(c,"GenerateGoogleAnalyticsConfigTemplate")) {
             generateGAConfigTemplate(c);
         }
-        if(match(c,"LoadGoogleAnalytics")) {
+        else if(match(c,"LoadGoogleAnalytics")) {
             loadGA(c);
         }
-        if(match(c,"LoadTimeDimension")) {
+        else if(match(c,"LoadTimeDimension")) {
             loadTD(c);
         }
-        if(match(c,"GenerateMaql")) {
+        else if(match(c,"GenerateMaql")) {
             generateMAQL(c);
         }
-        if(match(c,"ExecuteMaql")) {
+        else if(match(c,"ExecuteMaql")) {
             executeMAQL(c);
         }
-        if(match(c,"ListSnapshots")) {
+        else if(match(c,"ListSnapshots")) {
             listSnapshots(c);
         }
-        if(match(c,"DropSnapshots")) {
+        else if(match(c,"DropSnapshots")) {
             dropSnapshots(c);
         }
-        if(match(c,"UploadDir")) {
+        else if(match(c,"UploadDir")) {
             uploadDir(c);
         }
-        if(match(c,"TransferData")) {
+        else if(match(c,"TransferData")) {
             transferData(c);
         }
-        if(match(c,"TransferSnapshots")) {
+        else if(match(c,"TransferSnapshots")) {
             transferSnapshots(c);
         }
-        if(match(c,"TransferLastSnapshot")) {
+        else if(match(c,"TransferLastSnapshot")) {
             transferLastSnapshot(c);
         }
-        if(match(c,"StoreProject")) {
+        else if(match(c,"StoreProject")) {
             storeProject(c);
         }
-        if(match(c,"RetrieveProject")) {
+        else if(match(c,"RetrieveProject")) {
             retrieveProject(c);
+        }
+        else if(match(c, "Lock")) {
+        	lock(c);
         }
     }
 
@@ -677,6 +682,21 @@ public class GdcDI {
     private void retrieveProject(Command c) throws GdcRestApiException, InvalidArgumentException, IOException {
         String fileName = getParamMandatory(c,"fileName");
         setProjectId(FileUtil.readStringFromFile(fileName).trim());
+    }
+    
+    private void lock(Command c) throws IOException, InvalidArgumentException {
+    	final String path = getParamMandatory(c, "path");
+    	final File lock = new File(path);
+    	if (!lock.createNewFile()) {
+    		if (System.currentTimeMillis() - lock.lastModified() > LOCK_EXPIRATION_TIME) {
+    			lock.delete();
+    			if (!lock.exists()) {
+    				lock(c); // retry
+    			}
+    		}
+    		printErrorHelpandExit("A concurrent process found using the " + path + " lock file.");	
+    	}
+    	lock.deleteOnExit();
     }
 
     private void setIncremental(List<DLIPart> parts) {

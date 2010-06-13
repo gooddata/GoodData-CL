@@ -25,6 +25,8 @@ Script Commands:
   dataset - dataset name (must be identical to the dataset name in XML config)
   data    - path to CSV datafile (data only, no header row)
   config  - path to XML configuration file
+  
+ Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded. 
 
  GenerateMaql(maqlFile=<maql>) - generate MAQL DDL script describing data model from the local config file, must call OpenProject and LoadCsv before
   maql    - path to MAQL file (will be overwritten)
