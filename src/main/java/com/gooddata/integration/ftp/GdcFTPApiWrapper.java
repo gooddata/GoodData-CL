@@ -2,13 +2,15 @@ package com.gooddata.integration.ftp;
 
 import com.gooddata.exception.GdcUploadErrorException;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import com.gooddata.util.FileUtil;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * GoodData FTP API Java wrapper
@@ -92,6 +94,65 @@ public class GdcFTPApiWrapper {
                 }
             }
         }
+    }
+
+    /**
+     * GET the transfer logs from the FTP server
+     * @param remoteDir the primary transfer directory that contains the logs
+     * @return Map with the log name and content
+     * @throws SocketException
+     * @throws IOException
+     * @throws GdcUploadErrorException
+     */
+    public Map<String, String> getTransferLogs(String remoteDir) throws SocketException, IOException, GdcUploadErrorException {
+        Map<String,String> result = new HashMap<String,String>();
+        try {
+            client.connect(config.getGdcHost());
+            if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                client.login(config.getUsername(), config.getPassword());
+                if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                    client.changeWorkingDirectory(remoteDir);
+                    if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                        client.setFileType(FTPClient.ASCII_FILE_TYPE);
+                        if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                            client.enterLocalPassiveMode();
+                            String[] files = client.listNames();
+                            for(String file : files) {
+                                if(file.endsWith(".log")) {
+                                    ByteArrayOutputStream logContent = new ByteArrayOutputStream();
+                                    InputStream in = client.retrieveFileStream(file);
+                                    FileUtil.copy(in, logContent);
+                                    boolean st = client.completePendingCommand();
+                                    if (!st || !FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                                        throw new GdcUploadErrorException("Can't retrieve log file: server="
+                                            + config.getGdcHost() + ", file=" + file + ", " + clientReply(client));
+                                    }
+                                    result.put(file,new String(logContent.toByteArray()));                                    
+                                }
+                            }
+                        }
+                        else
+                        throw new GdcUploadErrorException("Can't set the ASCII file transfer: server="
+                                + config.getGdcHost()  + ", " + clientReply(client));
+                    }
+                    else
+                        throw new GdcUploadErrorException("Can't cd to the '"+remoteDir+"' directory: server="
+                                + config.getGdcHost()  + ", " + clientReply(client));
+                    client.logout();
+                } else
+                    throw new GdcUploadErrorException("Can't FTP login: server=" + config.getGdcHost()
+                            + ", username=" + config.getUsername()  + ", " + clientReply(client));
+            } else throw new GdcUploadErrorException("Can't FTP connect: server=" + config.getGdcHost()  + ", " + clientReply(client));
+        } finally {
+            if (client.isConnected()) {
+                try {
+                    client.disconnect();
+                } catch (IOException ioe) {
+                    // do nothing
+                }
+            }
+        }
+        return result;
     }
 
     private String clientReply(FTPClient client) {
