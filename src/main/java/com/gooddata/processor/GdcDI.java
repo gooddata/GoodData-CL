@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
@@ -403,7 +403,13 @@ public class GdcDI {
                 incremental.equalsIgnoreCase("true")) {
             setIncremental(parts);
         }
-        extractAndTransfer(c, pid, cc, dli, parts, new int[] {cc.getLastSnapshotId()+1});
+        boolean waitForFinish = true;
+        if(checkParam(c,"waitForFinish")) {
+            String w = getParam(c, "waitForFinish");
+            if(w != null && w.equalsIgnoreCase("false"))
+                waitForFinish = false;
+        }
+        extractAndTransfer(c, pid, cc, dli, parts, new int[] {cc.getLastSnapshotId()+1}, waitForFinish);
     }
 
     private void transferSnapshots(Command c) throws InvalidArgumentException, ModelException, IOException, GdcRestApiException, InterruptedException {
@@ -444,8 +450,13 @@ public class GdcDI {
             if(incremental != null && incremental.length() > 0 &&
                     incremental.equalsIgnoreCase("true"))
                 setIncremental(parts);
-
-            extractAndTransfer(c, pid, cc, dli, parts, snapshots);
+            boolean waitForFinish = true;
+            if(checkParam(c,"waitForFinish")) {
+                String w = getParam(c, "waitForFinish");
+                if(w != null && w.equalsIgnoreCase("false"))
+                    waitForFinish = false;
+            }
+            extractAndTransfer(c, pid, cc, dli, parts, snapshots, waitForFinish);
         }
         else
             error(c,"The firstSnapshot can't be higher than the lastSnapshot.");
@@ -466,11 +477,17 @@ public class GdcDI {
         if(incremental != null && incremental.length() > 0 && incremental.equalsIgnoreCase("true")) {
             setIncremental(parts);
         }
-        extractAndTransfer(c, pid, cc, dli, parts, null);
+        boolean waitForFinish = true;
+        if(checkParam(c,"waitForFinish")) {
+            String w = getParam(c, "waitForFinish");
+            if(w != null && w.equalsIgnoreCase("false"))
+                waitForFinish = false;
+        }
+        extractAndTransfer(c, pid, cc, dli, parts, null, waitForFinish);
     }
 
     private void extractAndTransfer(Command c, String pid, Connector cc, DLI dli, List<DLIPart> parts,
-        int[] snapshots) throws IOException, ModelException, GdcRestApiException, InvalidArgumentException, InterruptedException {
+        int[] snapshots, boolean waitForFinish) throws IOException, ModelException, GdcRestApiException, InvalidArgumentException, InterruptedException {
         File tmpDir = FileUtil.createTempDir();
         makeWritable(tmpDir);
         File tmpZipDir = FileUtil.createTempDir();
@@ -487,13 +504,15 @@ public class GdcDI {
         getFtpApi().transferDir(archivePath);
         // kick the GooDData server to load the data package to the project
         String taskUri = getRestApi().startLoading(pid, archiveName);
-        checkLoadingStatus(taskUri, tmpDir.getName());
+        if(waitForFinish) {
+            checkLoadingStatus(taskUri, tmpDir.getName());
+        }
         //cleanup
         FileUtil.recursiveDelete(tmpDir);
         FileUtil.recursiveDelete(tmpZipDir);
     }
 
-    private void checkLoadingStatus(String taskUri, String tmpDir) throws HttpMethodException, GdcLoginException, InterruptedException {
+    private void checkLoadingStatus(String taskUri, String tmpDir) throws HttpMethodException, GdcLoginException, InterruptedException, GdcUploadErrorException, IOException {
         String status = "";
         while(!status.equalsIgnoreCase("OK") && !status.equalsIgnoreCase("ERROR") && !status.equalsIgnoreCase("WARNING")) {
             status = getRestApi().getLoadingStatus(taskUri);
@@ -501,10 +520,14 @@ public class GdcDI {
             Thread.sleep(500);
         }
         if(!status.equalsIgnoreCase("OK")) {
-            l.info("Data loading failed. Please check the log files at 'ftp://" + ftpHost + "/" + tmpDir + "/'. " +
-                    "Please use your GoodData username and password to access this FTP server.");
+            l.info("Data loading failed. Status: "+status);
+            Map<String,String> result = getFtpApi().getTransferLogs(tmpDir);
+            for(String file : result.keySet()) {
+                l.info(file+":\n"+result.get(file));
+            }
         }
-        l.info("Data successfully loaded.");
+        else
+            l.info("Data successfully loaded.");
     }
 
     private void makeWritable(File tmpDir) {
