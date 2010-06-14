@@ -120,6 +120,12 @@
             <artifactId>javacc-maven-plugin</artifactId>
             <version>2.6</version>
         </dependency>
+          <dependency>
+              <groupId>axis</groupId>
+              <artifactId>axis</artifactId>
+              <version>1.4</version>
+          </dependency>
+
           
       </dependencies>
     <build>
