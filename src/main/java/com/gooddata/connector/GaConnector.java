@@ -176,9 +176,6 @@ public class GaConnector extends AbstractConnector implements Connector {
             getConnectorBackend().extract(dataFile);
             FileUtil.recursiveDelete(dataFile);
         }
-        catch (IOException e) {
-            throw new InternalError(e.getMessage());
-        }
         catch (AuthenticationException e) {
             throw new InternalError(e.getMessage());
         } catch (ServiceException e) {

@@ -15,6 +15,7 @@ import org.gooddata.connector.driver.SqlDriver;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * GoodData Derby SQL driver. Generates the DDL (tables and indexes), DML (transformation SQL) and other
@@ -68,12 +69,22 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
         String cols = getLoadColumns(part, schema);
         String whereClause = getLoadWhereClause(part, schema, snapshotIds);
         String dliTable = getTableNameFromPart(part);
-        ResultSet rs = JdbcUtil.executeQuery(c,
+        Statement s = null;
+        ResultSet rs = null;
+        try {
+            s = c.createStatement();
+            rs = JdbcUtil.executeQuery(s,
             "SELECT " + cols + " INTO OUTFILE '" + file +
             "' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' FROM " +
             dliTable.toUpperCase() + whereClause
-        );
-        rs.close();
+            );
+        }
+        finally {
+            if (rs != null && !rs.isClosed())
+                rs.close();
+            if (s != null && !s.isClosed())
+                s.close();
+        }
     }
 
     protected void insertFactsToFactTable(Connection c, PdmSchema schema) throws ModelException, SQLException {

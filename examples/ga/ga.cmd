@@ -1,11 +1,11 @@
-# THIS EXAMPLE SHOWS HOW TO LOAD THE GOOGLE ANALYTICS DATA TO THE GOOD DATA PROJECT
+# THIS EXAMPLE SHOWS HOW TO LOAD THE GOOGLE ANALYTICS DATA TO THE GOODDATA PROJECT
 
 # CREATE A NEW PROJECT
 CreateProject(name="GA");
 
 # GENERATE CONFIG FILE. THIS COMMAND IS COMMENTED OUT AS WE HAVE DONE THAT ALREADY.
 # IF YOU CHANGE THE GA METRICS AND DIMENSIONS YOU NEED TO RE-RUN THE CONFIG FILE GENERATION
-#GenerateGoogleAnalyticsConfigTemplate(name="GA",configFile="examples/ga/ga.config.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits");
+#GenerateGaConfig(name="GA",configFile="examples/ga/ga.config.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits");
 
 # LOADS A NEW TIME DIMENSION TO THE PROJECT
 LoadTimeDimension(context="ga");

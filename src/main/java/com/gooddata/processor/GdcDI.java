@@ -2,12 +2,14 @@ package com.gooddata.processor;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.gooddata.connector.JdbcConnector;
 import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
 
@@ -214,6 +216,7 @@ public class GdcDI {
                 gdcDi.execute(FileUtil.readStringFromFile(arg));
             }
         } catch (final Exception e) {
+            e.printStackTrace();
             printErrorHelpandExit(e.getMessage());
         }
     }
@@ -297,7 +300,7 @@ public class GdcDI {
     protected String getParamMandatory(Command c, String p) throws InvalidArgumentException {
         String v = (String)c.getParameters().get(p);
         if(v == null || v.length() == 0) {
-            error(c, "Parameter '" + p + "' is required for command '"+c.getCommand()+"'.");
+            error(c, "Command parameter '"+p+"' is required.");
         }
         return v;
     }
@@ -343,16 +346,16 @@ public class GdcDI {
         else if(match(c,"OpenProject")) {
             setProjectId(getParamMandatory(c,"id"));
         }
-        else if(match(c,"GenerateCsvConfigTemplate")) {
-            generateCsvConfigTemplate(c);
+        else if(match(c,"GenerateCsvConfig")) {
+            generateCsvConfig(c);
         }
         else if(match(c,"LoadCsv")) {
             loadCsv(c);
         }
-        else if(match(c,"GenerateGoogleAnalyticsConfigTemplate")) {
-            generateGAConfigTemplate(c);
+        else if(match(c,"GenerateGaConfig")) {
+            generateGAConfig(c);
         }
-        else if(match(c,"LoadGoogleAnalytics")) {
+        else if(match(c,"LoadGa")) {
             loadGA(c);
         }
         else if(match(c,"LoadTimeDimension")) {
@@ -393,6 +396,12 @@ public class GdcDI {
         }
         else if (match(c, "ProcessNewColumns")) {
         	processNewColumns(c);
+        }
+        else if(match(c,"GenerateJdbcConfig")) {
+            generateJdbcConfig(c);
+        }
+        else if(match(c,"LoadJdbc")) {
+            loadJdbc(c);
         }
     }
 
@@ -651,12 +660,12 @@ public class GdcDI {
         setConnector(TimeDimensionConnector.createConnector(ctx));
     }
 
-    private void generateGAConfigTemplate(Command c) throws InvalidArgumentException, IOException {
+    private void generateGAConfig(Command c) throws InvalidArgumentException, IOException {
         String configFile = getParamMandatory(c,"configFile");
         String name = getParamMandatory(c,"name");
         String dimensions = getParamMandatory(c,"dimensions");
         String metrics = getParamMandatory(c,"metrics");
-        File cf = getFile(c,configFile);
+        File cf = new File(configFile);
         GaQuery gq = null;
         try {
             gq = new GaQuery();
@@ -666,6 +675,40 @@ public class GdcDI {
         gq.setDimensions(dimensions);
         gq.setMetrics(metrics);
         GaConnector.saveConfigTemplate(name, configFile, gq);
+    }
+
+    private void generateJdbcConfig(Command c) throws InvalidArgumentException, IOException, SQLException {
+        String configFile = getParamMandatory(c,"configFile");
+        String name = getParamMandatory(c,"name");
+        String usr = null;
+        if(checkParam(c,"username"))
+            usr = getParam(c,"username");
+        String psw = null;
+        if(checkParam(c,"password"))
+            psw = getParam(c,"password");
+        String drv = getParamMandatory(c,"driver");
+        String url = getParamMandatory(c,"url");
+        String query = getParamMandatory(c,"query");
+        File cf = new File(configFile);
+
+        JdbcConnector.saveConfigTemplate(name, configFile, usr, psw, drv, url, query);
+    }
+
+    private void loadJdbc(Command c) throws InvalidArgumentException, IOException, SQLException, ModelException,
+            InitializationException, MetadataFormatException {
+        String pid = getProjectId(c);
+        String configFile = getParamMandatory(c,"configFile");
+        String usr = null;
+        if(checkParam(c,"username"))
+            usr = getParam(c,"username");
+        String psw = null;
+        if(checkParam(c,"password"))
+            psw = getParam(c,"password");
+        String drv = getParamMandatory(c,"driver");
+        String url = getParamMandatory(c,"url");
+        String query = getParamMandatory(c,"query");
+        setConnector(JdbcConnector.createConnector(pid, configFile, usr, psw, drv, url, query, getBackend(),
+                dbUserName, dbPassword));
     }
 
     private void loadCsv(Command c)
@@ -684,9 +727,11 @@ public class GdcDI {
                 dbPassword));
     }
 
-    private void generateCsvConfigTemplate(Command c) throws InvalidArgumentException, IOException, ModelException, AssertionError {
+    private void generateCsvConfig(Command c) throws InvalidArgumentException, IOException {
         String configFile = getParamMandatory(c,"configFile");
         String csvHeaderFile = getParamMandatory(c,"csvHeaderFile");
+        File cf = new File(configFile);
+        File csvf = getFile(c,csvHeaderFile);
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile);
     }
 

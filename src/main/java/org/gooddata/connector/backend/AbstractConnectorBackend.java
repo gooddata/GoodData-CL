@@ -236,10 +236,12 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
         String result = "ID        FROM ROWID        TO ROWID        TIME\n";
               result += "------------------------------------------------\n";
         Connection con = null;
+        Statement s = null;
         ResultSet r = null;
         try {
             con = connect();
-            r = JdbcUtil.executeQuery(con, "SELECT id,firstid,lastid,tmstmp FROM snapshots");
+            s = con.createStatement();
+            r = JdbcUtil.executeQuery(s, "SELECT id,firstid,lastid,tmstmp FROM snapshots");
             for(boolean rc = r.next(); rc; rc = r.next()) {
                 int id = r.getInt(1);
                 int firstid = r.getInt(2);
@@ -256,6 +258,8 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
             try {
                 if(r != null && !r.isClosed())
                     r.close();
+                if (s != null && !s.isClosed())
+                    s.close();
                 if(con != null && !con.isClosed())
                     con.close();
             }

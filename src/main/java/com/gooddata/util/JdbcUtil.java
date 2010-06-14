@@ -47,16 +47,14 @@ public class JdbcUtil {
 
     /**
      * Execute query
-     * @param con connection
+     * @param s JDBC statement
      * @param sql sql statement
      * @return Jdbc ResultSet
      * @throws SQLException in case of a db issue 
      */
-    public static ResultSet executeQuery(Connection con, String sql) throws SQLException {
-        Statement s = null;
+    public static ResultSet executeQuery(Statement s, String sql) throws SQLException {
         ResultSet rs = null;
         try {
-            s = con.createStatement();
             l.debug("Executing SQL: statement='" + sql + "'");
             rs = s.executeQuery(sql);
             l.debug("Executed SQL: statement='" + sql + "'");
@@ -66,11 +64,6 @@ public class JdbcUtil {
             l.error("Error executing SQL: statement='" + sql + "'", e);
             throw e;
         }
-        finally {
-            if( s!= null )
-                s.close();
-        }
-
     }
 
 
