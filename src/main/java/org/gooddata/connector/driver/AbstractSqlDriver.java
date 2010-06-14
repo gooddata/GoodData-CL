@@ -1,21 +1,24 @@
 package org.gooddata.connector.driver;
 
-import com.gooddata.exception.ModelException;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.DLIPart;
-import com.gooddata.modeling.model.SourceColumn;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmLookupReplication;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
+import com.gooddata.exception.ModelException;
+import com.gooddata.integration.model.Column;
+import com.gooddata.integration.model.DLIPart;
+import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.log4j.Logger;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.*;
+import com.gooddata.util.JdbcUtil.DummyResultSetHandler;
 
 /**
  * GoodData abstract SQL driver. Generates the DDL (tables and indexes), DML (transformation SQL) and other
@@ -58,9 +61,19 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      */
     public void executeDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
         for(PdmTable table : schema.getTables()) {
-            createTable(c, table);
-            if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
-                indexAllTableColumns(c, table);
+        	if (!exists(c, table.getName())) {
+        		createTable(c, table);
+	            if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
+	                indexAllTableColumns(c, table);
+        	} else {
+        		for (PdmColumn column : table.getColumns()) {
+        			if (!exists(c, table.getName(), column.getName())) {
+        				addColumn(c, table, column);
+        				if (PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
+        					indexTableColumn(c, table, column);
+        			}
+        		}
+        	}
         }
         JdbcUtil.executeUpdate(c,
             "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() + "',0,0,0)"
@@ -114,13 +127,55 @@ public abstract class AbstractSqlDriver implements SqlDriver {
             );
         }
     }
+    
+    /**
+     * Returns true if the specified table exists in the DB
+     * @param tbl table name
+     * @return true if the table exists, false otherwise
+     * @throws SQLException 
+     */
+    public boolean exists(Connection c, String tbl) {
+    	String sql = "SELECT * FROM " + tbl + " WHERE 1=0";
+    	try {
+	    	JdbcUtil.executeQuery(c, sql, new DummyResultSetHandler());
+	    	return true;
+    	} catch (SQLException e) {
+    		return false;
+    	}
+    }
+
+    /**
+     * Returns true if the specified column of the specified table exists in the DB
+     * @param tbl table name
+     * @param col column name
+     * @return true if the table exists, false otherwise
+     * @throws java.lang.IllegalArgumentException if the provided table does not exist
+     */
+    public boolean exists(Connection c, String tbl, String col) {
+    	String sql = "SELECT " + col + " FROM " + tbl + " WHERE 1=0";
+    	try {
+	    	JdbcUtil.executeQuery(c, sql, new DummyResultSetHandler());
+	    	return true;
+    	} catch (SQLException e) {
+    		if (exists(c, tbl))
+    			return false;
+    		else
+    			throw new IllegalArgumentException(e);
+    	}
+    }
 
     protected void indexAllTableColumns(Connection c, PdmTable table) throws SQLException {
         for( PdmColumn column : table.getColumns()) {
-            if(!column.isPrimaryKey() && !column.isUnique())
-                JdbcUtil.executeUpdate(c,"CREATE INDEX idx_" + table.getName() + "_" + column.getName() + " ON " +
-                              table.getName() + "("+column.getName()+")");
+            indexTableColumn(c, table, column);
         }
+    }
+    
+    private void indexTableColumn(Connection c, PdmTable table, PdmColumn column) throws SQLException {
+    	if(!column.isPrimaryKey() && !column.isUnique()) {
+            JdbcUtil.executeUpdate(c,"CREATE INDEX idx_" + table.getName()
+            		+ "_" + column.getName()
+            		+ " ON " + table.getName() + "("+column.getName()+")");
+    	}
     }
 
     protected void createTable(Connection c, PdmTable table) throws SQLException {
@@ -142,6 +197,14 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         sql += " PRIMARY KEY (" + pk + "))";
 
         JdbcUtil.executeUpdate(c, sql);
+    }
+    
+    private void addColumn(Connection c, PdmTable table, PdmColumn column) throws SQLException {
+    	String sql = "ALTER TABLE " + table.getName() + " ADD COLUMN "
+    			   + column.getName() + " " + column.getType();
+    	if (column.isUnique())
+    		sql += " UNIQUE";
+    	JdbcUtil.executeUpdate(c, sql);
     }
 
     protected void createSnapshotTable(Connection c) throws SQLException {

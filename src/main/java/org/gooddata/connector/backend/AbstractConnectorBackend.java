@@ -1,22 +1,26 @@
 package org.gooddata.connector.backend;
 
-import com.gooddata.connector.backend.DerbyConnectorBackend;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.gooddata.connector.driver.AbstractSqlDriver;
+
+import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
-import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
-import org.gooddata.connector.driver.AbstractSqlDriver;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.*;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * GoodData abstract connector.
@@ -178,15 +182,11 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     public void initialize() throws ModelException {
         Connection con = null;
         try {
+        	con = connect();
             if(!isInitialized()) {
-                con = connect();
                 sg.executeSystemDdlSql(con);
             }
-            if(!exists(getPdm().getSourceTable().getName())) {
-                if(con == null)
-                    con = connect();
-                sg.executeDdlSql(con, getPdm());    
-            }
+            sg.executeDdlSql(con, getPdm());    
         }
         catch (SQLException e) {
             throw new InternalError(e.getMessage());
@@ -310,6 +310,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     /**
      * Figures out if the connector is initialized
      * @return the initialization status
+     * @throws InternalErrorException 
      */
     public boolean isInitialized() {
         return exists("snapshots");
@@ -319,26 +320,19 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      * Returns true if the specified table exists in the DB
      * @param tbl table name
      * @return true if the table exists, false otherwise
+     * @throws InternalErrorException 
      */
     public boolean exists(String tbl) {
         Connection con = null;
-        Statement s = null;
-        ResultSet r = null;
         try {
             con = connect();
-            s = con.createStatement();
-            r = s.executeQuery("SELECT * FROM " + tbl + " WHERE 1=0");
-            r.next();
+            return sg.exists(con, tbl);
         }
         catch (SQLException e) {
-            return false;
-        }
+        	throw new InternalError(e.getMessage());
+		}
         finally {
             try {
-                if(r != null && !r.isClosed())
-                    r.close();
-                if(s != null && !s.isClosed())
-                    s.close();
                 if(con != null && !con.isClosed())
                     con.close();
             }
@@ -346,7 +340,6 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
                 ee.printStackTrace();
             }
         }
-        return true;
     }
 
     /**

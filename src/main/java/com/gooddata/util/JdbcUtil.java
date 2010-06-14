@@ -66,5 +66,44 @@ public class JdbcUtil {
         }
     }
 
+    /**
+     * Execute query an passes the ResultSet to the given handler on each record
+     * @param c JDBC connection
+     * @param sql sql statement
+     * @param Jdbc ResultSet handler
+     * @throws SQLException in case of a db issue 
+     */
+    public static void executeQuery(Connection c, String sql, ResultSetHandler handler) throws SQLException {
+    	Statement st = null;
+    	ResultSet rs = null;
+    	try {
+    		st = c.createStatement();
+    		rs = executeQuery(st, sql);
+    		while (rs.next()) {
+    			handler.handle(rs);
+    		}
+    	} finally {
+    		if (rs != null)
+    			rs.close();
+    		if (st != null)
+    			st.close();
+    	}
+    }
+    
+    /**
+     * Result set handler callback interface for {@link JdbcUtil#executeQuery(Connection, String, ResultSetHandler)}
+     */
+    public static interface ResultSetHandler {
+    	public void handle(ResultSet rs) throws SQLException;
+    }
+    
+    /**
+     * Dummy resultset handler callback; literally does nothing
+     */
+    public static class DummyResultSetHandler implements ResultSetHandler {
+    	public void handle(ResultSet rs) throws SQLException {
+    		; // intentionally does nothing
+    	}
+    }
 
 }
