@@ -1,1 +1,2 @@
-java -Dlog4j.trace -Dlog4j.configuration=log4j.configuration -Dderby.system.home=../db -Djava.io.tmpdir=../tmp -classpath ..;../target/GoodDataDI-0.6-jar-with-dependencies.jar com.gooddata.processor.GdcDI %*
+PRJ_BIN=%~dp0 
+%JAVA_HOME%/bin/java.exe  -Dlog4j.configuration=%PRJ_BIN%/../log4j.configuration -Dderby.system.home=%PRJ_BIN%/../db -Djava.io.tmpdir=%PRJ_BIN%/../tmp -classpath %PRJ_BIN%/..;%PRJ_BIN%/../target/GoodDataDI-0.6-jar-with-dependencies.jar com.gooddata.processor.GdcDI %*
