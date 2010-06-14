@@ -774,7 +774,7 @@ public class GdcDI {
     	lock.deleteOnExit();
     }
     
-    private void processNewColumns(Command c) throws InvalidArgumentException, IOException, GdcRestApiException, ModelException, AssertionError {
+    private void processNewColumns(Command c) throws InvalidArgumentException, IOException, GdcRestApiException {
     	final String csvHeaderFile = getParamMandatory(c, "csvHeaderFile");
     	final String configFile = getParamMandatory(c, "configFile");
     	final String defaultLdmType = getParamMandatory(c, "defaultLdmType");

@@ -78,11 +78,11 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @throws AssertionError 
      * @throws ModelException 
      */
-    public static void saveConfigTemplate(String configFileName, String dataFileName) throws IOException, ModelException, AssertionError {
+    public static void saveConfigTemplate(String configFileName, String dataFileName) throws IOException {
     	saveConfigTemplate(configFileName, dataFileName, null, null);
     }
     
-    public static void saveConfigTemplate(String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException, ModelException, AssertionError {
+    public static void saveConfigTemplate(String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
         File dataFile = new File(dataFileName);
         String name = dataFile.getName().split("\\.")[0];
         String[] headers = FileUtil.getCsvHeader(dataFile);
@@ -114,7 +114,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
 	                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_LABEL, title, "folder", "existing-attribute-name");
 	                    break;
 	                default:
-	                	throw new AssertionError("i % 3 outside {0, 1, 2} - this cannot happen");
+	                	throw new RuntimeException("i % 3 outside {0, 1, 2} - this cannot happen");
 	            }
             }
             s.addColumn(sc);
