@@ -218,5 +218,10 @@ public class SourceSchema {
     public List<SourceColumn> getDates() {
         return getColumnByType(SourceColumn.LDM_TYPE_DATE);
     }
+    
+    @Override
+    public String toString() {
+    	return new StringBuffer(getName()).append(" [").append(getColumns()).append("]").toString();
+    }
 
 }

@@ -213,4 +213,8 @@ public class SourceColumn {
         this.format = format;
     }
 
+	@Override
+	public String toString() {
+		return new StringBuffer(getName()).append("(").append(getLdmType()).append(")").toString();
+	}
 }
