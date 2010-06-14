@@ -3,20 +3,26 @@ package com.gooddata.processor;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
 
 import com.gooddata.connector.TimeDimensionConnector;
 import com.gooddata.exception.*;
+import com.gooddata.modeling.generator.MaqlGenerator;
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.gooddata.connector.Connector;
@@ -232,7 +238,7 @@ public class GdcDI {
             }
         }
         catch(ParseException e) {
-            throw new InvalidArgumentException("Can't parse command.");
+            throw new InvalidArgumentException("Can't parse command '" + cmd + "'");
         }
         throw new InvalidArgumentException("Can't parse command (empty command).");    
 
@@ -291,7 +297,7 @@ public class GdcDI {
     protected String getParamMandatory(Command c, String p) throws InvalidArgumentException {
         String v = (String)c.getParameters().get(p);
         if(v == null || v.length() == 0) {
-            error(c, "Command parameter '"+c.getCommand()+"' is required.");
+            error(c, "Parameter '" + p + "' is required for command '"+c.getCommand()+"'.");
         }
         return v;
     }
@@ -384,6 +390,9 @@ public class GdcDI {
         }
         else if(match(c, "Lock")) {
         	lock(c);
+        }
+        else if (match(c, "ProcessNewColumns")) {
+        	processNewColumns(c);
         }
     }
 
@@ -675,11 +684,9 @@ public class GdcDI {
                 dbPassword));
     }
 
-    private void generateCsvConfigTemplate(Command c) throws InvalidArgumentException, IOException {
+    private void generateCsvConfigTemplate(Command c) throws InvalidArgumentException, IOException, ModelException, AssertionError {
         String configFile = getParamMandatory(c,"configFile");
         String csvHeaderFile = getParamMandatory(c,"csvHeaderFile");
-        File cf = getFile(c,configFile);
-        File csvf = getFile(c,csvHeaderFile);
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile);
     }
 
@@ -720,6 +727,54 @@ public class GdcDI {
     		printErrorHelpandExit("A concurrent process found using the " + path + " lock file.");	
     	}
     	lock.deleteOnExit();
+    }
+    
+    private void processNewColumns(Command c) throws InvalidArgumentException, IOException, GdcRestApiException, ModelException, AssertionError {
+    	final String csvHeaderFile = getParamMandatory(c, "csvHeaderFile");
+    	final String configFile = getParamMandatory(c, "configFile");
+    	final String defaultLdmType = getParamMandatory(c, "defaultLdmType");
+    	final String folder = getParam(c, "defaultFolder");
+    	final String pid = getProjectId(c);
+    	final SourceSchema schemaOld = SourceSchema.createSchema(new File(configFile));
+    	final String dataset = schemaOld.getDatasetName();
+    	
+    	CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
+    	final SourceSchema schemaNew = SourceSchema.createSchema(new File(configFile));
+
+    	final MaqlGenerator mg = new MaqlGenerator(schemaNew);
+        List<DLIPart> parts = getRestApi().getDLIParts(dataset, pid);
+
+        final List<SourceColumn> newColumns = findNewAttributes(parts, schemaNew);
+         
+        if (!newColumns.isEmpty()) {
+        	final String maql = mg.generateMaql(newColumns);
+        	getRestApi().executeMAQL(pid, maql);
+        }
+    }
+    
+    /**
+     * Finds the attributes with no appropriate part.
+     * TODO: a generic detector of new facts, labels etc could be added too
+     * @param parts
+     * @param schema
+     * @return
+     */
+    private List<SourceColumn> findNewAttributes(List<DLIPart> parts, SourceSchema schema) {
+    	Set<String> fileNames = new HashSet<String>();
+    	for (final DLIPart part : parts) {
+    		fileNames.add(part.getFileName());
+    	}
+    	
+    	final List<SourceColumn> result = new ArrayList<SourceColumn>();
+    	for (final SourceColumn sc : schema.getColumns()) {
+    		if (SourceColumn.LDM_TYPE_ATTRIBUTE.equals(sc.getLdmType())) {
+    			final String filename = MaqlGenerator.createAttributeTableName(schema, sc) + ".csv";
+    			if (!fileNames.contains(filename)) {
+    				result.add(sc);
+    			}
+    		}
+    	}
+    	return result;
     }
 
     private void setIncremental(List<DLIPart> parts) {

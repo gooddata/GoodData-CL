@@ -45,15 +45,31 @@ public class MaqlGenerator {
         String script = "# THIS IS MAQL SCRIPT THAT GENERATES PROJECT LOGICAL MODEL.\n# SEE THE MAQL DOCUMENTATION " +
                 "AT http://developer.gooddata.com/api/maql-ddl.html FOR MORE DETAILS\n\n";
         script += "# CREATE DATASET. DATASET GROUPS ALL FOLLOWING LOGICAL MODEL ELEMENTS TOGETHER.\n";
-        script += "CREATE DATASET {dataset." + ssn + "} VISUAL(TITLE \"" + lsn + "\");\n\n";
+        script += "CREATE DATASET {" + schema.getDatasetName() + "} VISUAL(TITLE \"" + lsn + "\");\n\n";
         script += generateFoldersMaqlDdl(schema.getColumns());
+        
+        script += generateMaql(schema.getColumns(), true);
+        
+        return script;
+    }
+    
+    public String generateMaql(List<SourceColumn> columns) {
+    	return generateMaql(columns, false);
+    }
+    
+	public static String createAttributeTableName(SourceSchema schema, SourceColumn sc) {
+		final String ssn = StringUtil.formatShortName(schema.getName());
+		return "d_" + ssn + "_" + StringUtil.formatShortName(sc.getName()); 
+	}
+    
+    private String generateMaql(List<SourceColumn> columns, boolean createFactsOf) {
 
         // generate attributes and facts
-        for (SourceColumn column : schema.getColumns()) {
+        for (SourceColumn column : columns) {
             processColumn(column);
         }
 
-        script += "# CREATE ATTRIBUTES.\n# ATTRIBUTES ARE CATEGORIES THAT ARE USED FOR SLICING AND DICING THE " +
+        String script = "# CREATE ATTRIBUTES.\n# ATTRIBUTES ARE CATEGORIES THAT ARE USED FOR SLICING AND DICING THE " +
                     "NUMBERS (FACTS)\n";
         for (final Column c : attributes.values()) {
             script += c.generateMaqlDdl();
@@ -72,13 +88,14 @@ public class MaqlGenerator {
         	script += c.generateMaqlDdl();
         }
 
-
-        script += "# THE FACTS OF ATTRIBUTE IS SORT OF DATASET IDENTIFIER\n";
-        script += "# IT IS USED FOR COUNT AGGREGATIONS\n";
-        // generate the facts of / record id special attribute
-        script += "CREATE ATTRIBUTE " + factsOfAttrMaqlDdl + " VISUAL(TITLE \""
-                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+N.ID+"} FULLSET;\n";
-        script += "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + ".factsof};\n\n";
+        if (createFactsOf) {
+	        script += "# THE FACTS OF ATTRIBUTE IS SORT OF DATASET IDENTIFIER\n";
+	        script += "# IT IS USED FOR COUNT AGGREGATIONS\n";
+	        // generate the facts of / record id special attribute
+	        script += "CREATE ATTRIBUTE " + factsOfAttrMaqlDdl + " VISUAL(TITLE \""
+	                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+N.ID+"} FULLSET;\n";
+	        script += "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + ".factsof};\n\n";
+        }
 
         // labels last
         for (final Column c : labels) {
@@ -87,7 +104,7 @@ public class MaqlGenerator {
         
         // finally synchronize
         script += "# SYNCHRONIZE THE STORAGE AND DATA LOADING INTERFACES WITH THE NEW LOGICAL MODEL\n";
-        script += "SYNCHRONIZE {dataset." + ssn + "};";
+        script += "SYNCHRONIZE {" + schema.getDatasetName() + "};";
         return script;
     }
 
@@ -194,7 +211,7 @@ public class MaqlGenerator {
         Attribute(SourceColumn column, String table) {
             super(column);
             this.identifier = "attr." + ssn + "." + scn;
-            this.table = (table == null) ? "d_" + ssn + "_" + scn : table;
+            this.table = (table == null) ? createAttributeTableName(schema, column) : table;
         }
 
         Attribute(SourceColumn column) {
@@ -215,7 +232,7 @@ public class MaqlGenerator {
             script += createForeignKeyMaqlDdl();
             script += " WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
                     + lcn + "\") AS {d_" + ssn + "_" + scn + "."+N.NM_PFX + scn + "};\n"
-                    + "ALTER DATASET {dataset." + ssn + "} ADD {attr." + ssn + "." + scn + "};\n\n";
+                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + "." + scn + "};\n\n";
             return script;
         }
     }
@@ -237,7 +254,7 @@ public class MaqlGenerator {
 
             return "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
                     + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.FCT_PFX + scn + "};\n"
-                    + "ALTER DATASET {dataset." + ssn + "} ADD {fact." + ssn + "." + scn + "};\n\n";
+                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {fact." + ssn + "." + scn + "};\n\n";
         }
     }
 
@@ -279,7 +296,7 @@ public class MaqlGenerator {
             }
             String stat = "CREATE FACT {"+N.DT+"." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
                     + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn + "_"+N.ID+"};\n"
-                    + "ALTER DATASET {dataset." + ssn + "} ADD {"+N.DT+"." + ssn + "." + scn + "};\n\n";
+                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+N.DT+"." + ssn + "." + scn + "};\n\n";
             if(reference != null && reference.length() > 0) {
                 stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
                 stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() + 
@@ -318,7 +335,6 @@ public class MaqlGenerator {
     					  + " ADD KEYS " + createForeignKeyMaqlDdl() + ";\n\n"; 
     		return script;
     	}
-    }
-    
+    }   
 }
 

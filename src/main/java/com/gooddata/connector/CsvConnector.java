@@ -75,28 +75,47 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @param configFileName the new config file name
      * @param dataFileName the data file
      * @throws IOException
+     * @throws AssertionError 
+     * @throws ModelException 
      */
-    public static void saveConfigTemplate(String configFileName, String dataFileName) throws IOException {
+    public static void saveConfigTemplate(String configFileName, String dataFileName) throws IOException, ModelException, AssertionError {
+    	saveConfigTemplate(configFileName, dataFileName, null, null);
+    }
+    
+    public static void saveConfigTemplate(String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException, ModelException, AssertionError {
         File dataFile = new File(dataFileName);
         String name = dataFile.getName().split("\\.")[0];
         String[] headers = FileUtil.getCsvHeader(dataFile);
         int i = 0;
-        SourceSchema s = SourceSchema.createSchema(name);
-        for(String header : headers) {
-            SourceColumn sc = null;
-            switch (i %3) {
-                case 0:
-                    sc = new SourceColumn(StringUtil.csvHeaderToIdentifier(header),SourceColumn.LDM_TYPE_ATTRIBUTE,
-                            StringUtil.csvHeaderToTitle(header), "folder");
-                    break;
-                case 1:
-                    sc = new SourceColumn(StringUtil.csvHeaderToIdentifier(header),SourceColumn.LDM_TYPE_FACT,
-                            StringUtil.csvHeaderToTitle(header), "folder");
-                    break;
-                case 2:
-                    sc = new SourceColumn(StringUtil.csvHeaderToIdentifier(header),SourceColumn.LDM_TYPE_LABEL,
-                            StringUtil.csvHeaderToTitle(header), "folder", "existing-attribute-name");
-                    break;
+        final SourceSchema s;
+        File configFile = new File(configFileName);
+        if (configFile.exists()) {
+        	s = SourceSchema.createSchema(configFile);
+        } else {
+        	s = SourceSchema.createSchema(name);
+        }
+        final int knownColumns = s.getColumns().size();
+        for(int j = knownColumns; j < headers.length; j++) {
+        	final String header = headers[j];
+            final SourceColumn sc;
+            final String identifier = StringUtil.csvHeaderToIdentifier(header);
+            final String title = StringUtil.csvHeaderToTitle(header);
+            if (defaultLdmType != null) {
+            	sc = new SourceColumn(identifier, defaultLdmType, title, folder);
+            } else {
+	            switch (i %3) {
+	                case 0:
+	                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_ATTRIBUTE, title, "folder");
+	                    break;
+	                case 1:
+	                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_FACT, title, "folder");
+	                    break;
+	                case 2:
+	                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_LABEL, title, "folder", "existing-attribute-name");
+	                    break;
+	                default:
+	                	throw new AssertionError("i % 3 outside {0, 1, 2} - this cannot happen");
+	            }
             }
             s.addColumn(sc);
             i++;

@@ -1,6 +1,7 @@
 package com.gooddata.modeling.model;
 
 import com.gooddata.exception.ModelException;
+import com.gooddata.util.StringUtil;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.*;
@@ -52,6 +53,15 @@ public class SourceSchema {
      */
     public static SourceSchema createSchema(File configFile) throws IOException {
         return fromXml(configFile);
+    }
+    
+    /**
+     * Get a dataset name that should be used for a server-side dataset corresponding
+     * to this schema
+     * @return
+     */
+    public String getDatasetName() {
+    	return "dataset." + StringUtil.formatShortName(getName());
     }
 
     /**
