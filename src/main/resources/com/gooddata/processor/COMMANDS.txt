@@ -17,7 +17,7 @@ Script Commands:
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
   identifier - id of an existing project (takes the form of an MD5 hash)
 
- GenerateCsvConfigTemplate(csvHeaderFile=<headers>, configFile=<config>) - generate a sample XML config file based on the fields from your CSV file
+ GenerateCsvConfigTemplate(csvHeaderFile=<headers>, configFile=<config> [, defaultLdmType=<type>] [, folder=<folder>]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. 
   headers - path to CSV header file (only the first header row will be used)
   config  - path to configuration file (will be overwritten)
 
@@ -38,11 +38,13 @@ Script Commands:
 
  DropSnapshots() - list data snapshots from internal local DB, must call OpenProject before
  
- ProcessNewColumns(csvHeaderFile=<headers>, configFile=<config>, defaultLdmType=<type>, defaultFolder=<folder>) - adds new columns in the CSV headers file into the configFile and data model.
+ UpdateConfig(csvHeaderFile=<headers>, configFile=<config>, defaultLdmType=<type>, defaultFolder=<folder>) - adds new columns in the CSV headers file into the configFile
   headers - path to CSV header file (only the first header row will be used)
   config  - path to configuration file (will be overwritten with a version extended with new columns)
   type - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
   folder - folder where to place new attributes
+  
+ UpdateMaql(maqlFile=<maql>) - generate MAQL DDL snippet describing the columns available in the local configuration but missing in the remote GoodData project
 
  TransferData(incremental=<true|false>) - upload data to the server, must call OpenProject and LoadCsv before
   incremental - incremental transfer (true | false)

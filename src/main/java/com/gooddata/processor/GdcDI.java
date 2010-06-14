@@ -394,8 +394,11 @@ public class GdcDI {
         else if(match(c, "Lock")) {
         	lock(c);
         }
-        else if (match(c, "ProcessNewColumns")) {
-        	processNewColumns(c);
+        else if (match(c, "UpdateConfig")) {
+        	updateConfig(c);
+        }
+        else if (match(c, "UpdateMaql")) {
+        	updateMaql(c);
         }
         else if(match(c,"GenerateJdbcConfig")) {
             generateJdbcConfig(c);
@@ -774,26 +777,30 @@ public class GdcDI {
     	lock.deleteOnExit();
     }
     
-    private void processNewColumns(Command c) throws InvalidArgumentException, IOException, GdcRestApiException {
+    private void updateConfig(Command c) throws InvalidArgumentException, IOException {
     	final String csvHeaderFile = getParamMandatory(c, "csvHeaderFile");
     	final String configFile = getParamMandatory(c, "configFile");
     	final String defaultLdmType = getParamMandatory(c, "defaultLdmType");
     	final String folder = getParam(c, "defaultFolder");
-    	final String pid = getProjectId(c);
-    	final SourceSchema schemaOld = SourceSchema.createSchema(new File(configFile));
-    	final String dataset = schemaOld.getDatasetName();
     	
     	CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
-    	final SourceSchema schemaNew = SourceSchema.createSchema(new File(configFile));
+    }
+    
+    private void updateMaql(Command c) throws InvalidArgumentException, IOException, GdcLoginException, HttpMethodException {
+    	final String configFile = getParamMandatory(c, "configFile");
+    	final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
 
-    	final MaqlGenerator mg = new MaqlGenerator(schemaNew);
+    	final String pid = getProjectId(c);
+    	final String maqlFile = getParamMandatory(c, "maqlFile");
+    	final String dataset = schema.getDatasetName();
+
+    	Connector cc = getConnector(c);
         List<DLIPart> parts = getRestApi().getDLIParts(dataset, pid);
 
-        final List<SourceColumn> newColumns = findNewAttributes(parts, schemaNew);
-         
-        if (!newColumns.isEmpty()) {
-        	final String maql = mg.generateMaql(newColumns);
-        	getRestApi().executeMAQL(pid, maql);
+        final List<SourceColumn> newColumns = findNewAttributes(parts, schema);
+        if (!newColumns.isEmpty()) { 
+        	final String maql = cc.generateMaql(newColumns);
+        	FileUtil.writeStringToFile(maql, maqlFile);
         }
     }
     

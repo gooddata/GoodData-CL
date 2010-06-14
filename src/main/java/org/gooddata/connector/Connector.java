@@ -4,6 +4,7 @@ import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
+import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 
 import java.io.IOException;
@@ -22,6 +23,13 @@ public interface Connector {
      * @return the MAQL in string format
      */
     public String generateMaql();
+    
+    /**
+     * Generates the MAQL for the specified columns
+     * of the datasource
+     * @return the MAQL in string format
+     */
+    public String generateMaql(List<SourceColumn> columns);
 
     /**
      * LDM schema getter

@@ -9,6 +9,7 @@ import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.generator.MaqlGenerator;
+import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.connector.model.PdmSchema;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
@@ -72,6 +73,15 @@ public abstract class AbstractConnector implements Connector {
     public String generateMaql() {
         MaqlGenerator mg = new MaqlGenerator(schema);
         return mg.generateMaql();
+    }
+    
+    /**
+     * Generates the MAQL for the specified columns of the data source
+     * @return the MAQL in string format
+     */
+    public String generateMaql(List<SourceColumn> columns) {
+        MaqlGenerator mg = new MaqlGenerator(schema);
+        return mg.generateMaql(columns);
     }
 
     /**
