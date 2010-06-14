@@ -1,1 +1,1 @@
-mvn assembly:assembly
+maven\bin\mvn.bat assembly:assembly
