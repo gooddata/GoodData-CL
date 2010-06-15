@@ -33,7 +33,10 @@ Script Commands:
  Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded. 
 
  GenerateMaql(maqlFile=<maql>) - generate MAQL DDL script describing data model from the local config file, must call OpenProject and LoadCsv before
-  maql    - path to MAQL file (will be overwritten)
+  maqlFile - path to MAQL file (will be overwritten)
+  
+ GenerateUpdateMaql(maqlFile=<maql>) - generate MAQL DDL snippet describing the columns available in the local configuration but missing in the remote GoodData project
+  maqlFile - path to MAQL file (will be overwritten)
 
  ExecuteMaql(maqlFile=<maql> [, ifExists=<boolean>]) - run MAQL DDL script on server to generate data model, must call OpenProject and LoadCsv before
   maql     - path to the MAQL file (relative to PWD)
@@ -49,8 +52,6 @@ Script Commands:
   type - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
   folder - folder where to place new attributes
   
- UpdateMaql(maqlFile=<maql>) - generate MAQL DDL snippet describing the columns available in the local configuration but missing in the remote GoodData project
-
  TransferData(incremental=<true|false>) - upload data to the server, must call OpenProject and LoadCsv before
   incremental - incremental transfer (true | false)
 

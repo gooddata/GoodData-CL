@@ -405,8 +405,8 @@ public class GdcDI {
         else if (match(c, "UpdateConfig")) {
         	updateConfig(c);
         }
-        else if (match(c, "UpdateMaql")) {
-        	updateMaql(c);
+        else if (match(c, "GenerateUpdateMaql")) {
+        	generateUpdateMaql(c);
         }
         else if(match(c,"GenerateJdbcConfig")) {
             generateJdbcConfig(c);
@@ -798,7 +798,7 @@ public class GdcDI {
     	CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
     }
     
-    private void updateMaql(Command c) throws InvalidArgumentException, IOException, GdcLoginException, HttpMethodException {
+    private void generateUpdateMaql(Command c) throws InvalidArgumentException, IOException, GdcLoginException, HttpMethodException {
     	final String configFile = getParamMandatory(c, "configFile");
     	final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
 
