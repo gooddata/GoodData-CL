@@ -1,9 +1,11 @@
 package com.gooddata.util;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import org.apache.log4j.Logger;
 
 
@@ -43,6 +45,41 @@ public class JdbcUtil {
             if( s!= null )
                 s.close();
         }
+    }
+    
+    /**
+     * Executes an update using a prepared statement.
+     * <p>
+     * Example:
+     * <pre> final int myid = 42;
+     * JdbcUtil.executeUpdate(con, "select * from table where id = ?", new StatementHandler() {
+     *     public void prepare(PreparedStatement stmt) throws SQLException {
+     *         stmt.setInt(1, myid);
+     *     }
+     * });
+     * </pre>
+     * 
+     * @param con connection
+     * @param sql sql prepared statement (i.e. may contain the "?" placeholders to be populated by the <tt>sh</tt> handler
+     * @param sh {@link StatementHandler} instance to setup the prepared statement
+     * @return number of affected rows
+     * @throws SQLException in case of a db issue
+     */
+    public static int executeUpdate(Connection con, String sql, StatementHandler sh) throws SQLException {
+    	PreparedStatement s = null;
+    	int rc = 0;
+    	try {
+    		s = con.prepareStatement(sql);
+    		sh.prepare(s);
+    		rc = s.executeUpdate();
+    		return rc;
+    	} catch (SQLException e) {
+    		l.error("Error executing SQL: statement='" + sql + "', result='" + rc + "'", e);
+            throw e;
+    	} finally {
+    		if (s != null)
+    			s.close();
+    	}
     }
 
     /**
@@ -104,6 +141,13 @@ public class JdbcUtil {
     	public void handle(ResultSet rs) throws SQLException {
     		; // intentionally does nothing
     	}
+    }
+    
+    /**
+     * Statement handler callback interface for {@link JdbcUtil#executeUpdate(Connection, String, StatementHandler)}
+     */
+    public static interface StatementHandler {
+    	public void prepare(PreparedStatement stmt) throws SQLException;
     }
 
 }
