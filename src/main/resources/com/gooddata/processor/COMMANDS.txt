@@ -1,9 +1,13 @@
 Usage: gdi.sh -u username -p password [ -h hostname ] [ -i project_id ] [-e commands] [<file1>, ...]
  -h,--host <arg>       GoodData host (secure.gooddata.com by default)
+ -t, --proto <arg>     URL Protocol (HTTP or HTTPS, HTTPS by default)
  -p,--password <arg>   GoodData password
  -u,--username <arg>   GoodData username
  -i,--project <arg>    GoodData project identifier (takes the form of an MD5 hash)
- -e,--execute <arg>    commands to execute
+ -e,--execute <arg>    Lommands to execute
+ -b,--backend <arg>    Local database backend (DERBY or MYSQL, DERBY by default)
+ -d,--dbusername <arg> Database backend username (not required for the local Derby SQL)
+ -c,--dbpassword <arg> Database backend password (not required for the local Derby SQL) 
  file                  path to script file with commands to execute
  
 Either -e or file(s) must be specified.
