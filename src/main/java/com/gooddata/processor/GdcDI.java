@@ -327,11 +327,19 @@ public class GdcDI {
         connector = cc;
     }
 
-    protected File getFile(Command c, String fileName) throws InvalidArgumentException {
+    protected File getFile(Command c, String fileName, boolean ignoreMissingFile) throws InvalidArgumentException {
         File f = new File(fileName);
-        if(!f.exists())
-            error(c, "File '" + fileName + "' doesn't exist.");
+        if(!f.exists()) {
+        	if (!ignoreMissingFile)
+        		error(c, "File '" + fileName + "' doesn't exist.");
+        	else
+        		return null;
+        }
         return f;
+    }
+    
+    protected File getFile(Command c, String fileName) throws InvalidArgumentException {
+        return getFile(c, fileName, false);
     }
 
     /**
@@ -614,11 +622,15 @@ public class GdcDI {
     }
 
     private void executeMAQL(Command c) throws InvalidArgumentException, IOException, GdcRestApiException {
-        String pid = getProjectId(c);
-        String maqlFile = getParamMandatory(c,"maqlFile");
-        File mf = getFile(c,maqlFile);
-        String maql = FileUtil.readStringFromFile(maqlFile);
-        getRestApi().executeMAQL(pid, maql);
+        final String pid = getProjectId(c);
+        final String maqlFile = getParamMandatory(c,"maqlFile");
+        final String ifExistsStr = getParam(c,"ifExists");
+        final boolean ifExists = (ifExistsStr != null && "true".equalsIgnoreCase(ifExistsStr));
+        final File mf = getFile(c, maqlFile, ifExists);
+        if (mf != null) {
+	        final String maql = FileUtil.readStringFromFile(maqlFile);
+	        getRestApi().executeMAQL(pid, maql);
+        }
     }
 
     private void generateMAQL(Command c) throws InvalidArgumentException, IOException {

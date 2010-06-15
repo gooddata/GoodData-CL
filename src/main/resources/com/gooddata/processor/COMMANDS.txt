@@ -35,8 +35,9 @@ Script Commands:
  GenerateMaql(maqlFile=<maql>) - generate MAQL DDL script describing data model from the local config file, must call OpenProject and LoadCsv before
   maql    - path to MAQL file (will be overwritten)
 
- ExecuteMaql(maqlFile=<maql>) - run MAQL DDL script on server to generate data model, must call OpenProject and LoadCsv before
-  maql    - path to the MAQL file (relative to PWD)
+ ExecuteMaql(maqlFile=<maql> [, ifExists=<boolean>]) - run MAQL DDL script on server to generate data model, must call OpenProject and LoadCsv before
+  maql     - path to the MAQL file (relative to PWD)
+  ifExists - if set to true the command quits silently if the maqlFile does not exist (default = false)
 
  ListSnapshots() - list all data snapshots from internal local DB, must call OpenProject before
 
