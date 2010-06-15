@@ -9,4 +9,6 @@ PROJECT_DIR=`dirname \`dirname $SCRIPT_REAL_PATH\``  # base directory
 
 . $PROJECT_DIR/bin/cfg.sh
 
-java -Xmx512M -Dlog4j.configuration=$PROJECT_DIR/log4j.configuration -Dderby.system.home=$PROJECT_DIR/db -Djava.io.tmpdir=$PROJECT_DIR/tmp -cp ${CLASSPATH} com.gooddata.processor.GdcDI $*
+DI_TMPDIR=${DI_TMPDIR:-$PROJECT_DIR/tmp}
+
+java -Xmx512M -Dlog4j.configuration=$PROJECT_DIR/log4j.configuration -Dderby.system.home=$PROJECT_DIR/db -Djava.io.tmpdir=$DI_TMPDIR -cp ${CLASSPATH} com.gooddata.processor.GdcDI $*
