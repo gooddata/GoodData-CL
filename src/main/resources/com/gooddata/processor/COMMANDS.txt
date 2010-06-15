@@ -39,7 +39,7 @@ Script Commands:
   maqlFile - path to MAQL file (will be overwritten)
 
  ExecuteMaql(maqlFile=<maql> [, ifExists=<boolean>]) - run MAQL DDL script on server to generate data model, must call OpenProject and LoadCsv before
-  maql     - path to the MAQL file (relative to PWD)
+  maqlFile - path to the MAQL file (relative to PWD)
   ifExists - if set to true the command quits silently if the maqlFile does not exist (default = false)
 
  ListSnapshots() - list all data snapshots from internal local DB, must call OpenProject before
@@ -55,7 +55,7 @@ Script Commands:
  StoreProject(fileName=<file>) - saves the current project identifier into the specified file
   fileName - file to save the project identifier
   
- RestoreProject(fileName=<file>) - loads the current project identifier from the specified file
+ RetrieveProject(fileName=<file>) - loads the current project identifier from the specified file
   fileName - file to load the project identifier from
   
  TransferData(incremental=<true|false>) - upload data to the server, must call OpenProject and LoadCsv before
