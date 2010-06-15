@@ -4,6 +4,7 @@ import com.gooddata.exception.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;
+import com.gooddata.util.CsvUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 
@@ -62,31 +63,35 @@ public class PdmSchema {
                 factTable.addColumn(createFactColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_LOOKUP);
             }
-            if(SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 //factTable.addColumn(createFactColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT);
             }
-
-            if(SourceColumn.LDM_TYPE_REFERENCE.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_REFERENCE.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 factTable.addColumn(createFactColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_REFERENCE);
                 // just copy the referenced lookup rows to the referencing lookup
                 createTableReplication(schema, column);
             }
-            if(SourceColumn.LDM_TYPE_FACT.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_FACT.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 factTable.addColumn(createFactColumn(column, schemaName));
             }
-            if(SourceColumn.LDM_TYPE_DATE.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_DATE.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 factTable.addColumn(createFactColumn(column, schemaName));
             }
-
-            if(SourceColumn.LDM_TYPE_LABEL.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_LABEL.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 labels.add(column);
+            }
+            else if(SourceColumn.LDM_TYPE_IGNORE.equals(column.getLdmType())) {
+            	; // intentionally do nothing
+            }
+            else {
+            	throw new IllegalArgumentException("Unsupported ldm type '" + column.getLdmType() + "'.");
             }
 
         }
@@ -105,8 +110,8 @@ public class PdmSchema {
         String cName = StringUtil.formatShortName(c.getName());
         String sName = s.getName();
         String tableName = createLookupTableName(sName, cName);
-                if(!s.contains(tableName))
-                    s.addTable(createLookupTable(sName, cName, tblType));
+        if(!s.contains(tableName))
+            s.addTable(createLookupTable(sName, cName, tblType, CsvUtil.parseLine(c.getElements())));
         PdmTable lookup = null;
         try {
             lookup = s.getTableByName(tableName);
@@ -132,12 +137,13 @@ public class PdmSchema {
                 N.SRC_PFX + name, c.getLdmType());
     }
 
-    private static PdmTable createLookupTable(String schemaName, String columnName, String tableType) {
+    private static PdmTable createLookupTable(String schemaName, String columnName, String tableType, List<String> elements) {
         PdmTable lookup = new PdmTable(createLookupTableName(schemaName, columnName),tableType, columnName);
         lookup.addColumn(new PdmColumn(N.ID, PdmColumn.PDM_COLUMN_TYPE_INT,
             new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
         lookup.addColumn(new PdmColumn(N.HSH, PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
             new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
+        lookup.setElements(elements);
         return lookup;
     }
 

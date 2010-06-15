@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,15 @@ public class CsvUtil {
 			reader.close();
 			writer.close();
 		}
+	}
+
+	public static List<String> parseLine(String elements) {
+		if (elements == null) {
+			return new ArrayList<String>();
+		}
+		// TODO proper CSV parsing
+		String[] result = elements.trim().split("\\s*,\\s*");
+		return Arrays.asList(result);
 	}
 	
 }

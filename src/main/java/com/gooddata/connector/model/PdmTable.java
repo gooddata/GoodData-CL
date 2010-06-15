@@ -14,15 +14,12 @@ import java.util.List;
  */
 public class PdmTable {
 
-
     // schema types
     public final static String PDM_TABLE_TYPE_LOOKUP = "LOOKUP";
     public final static String PDM_TABLE_TYPE_FACT = "FACT";
     public final static String PDM_TABLE_TYPE_SOURCE = "SOURCE";
     public final static String PDM_TABLE_TYPE_REFERENCE = "REFERENCE";
     public final static String PDM_TABLE_TYPE_CONNECTION_POINT = "CONNECTION_POINT";
-
-    
 
     // PDM columns
     private List<PdmColumn> columns = new ArrayList<PdmColumn>();
@@ -35,6 +32,9 @@ public class PdmTable {
 
     // the source column that the lookup represents
     private String associatedSourceColumn;
+    
+    // list of elements to be inserted into the table upon creation
+    private List<String> elements;
 
     /**
      * Constructor
@@ -204,4 +204,20 @@ public class PdmTable {
     public void setAssociatedSourceColumn(String associatedSourceColumn) {
         this.associatedSourceColumn = associatedSourceColumn;
     }
+
+    /**
+     * Return list of default elements to be inserted
+     * @return
+     */
+	public List<String> getElements() {
+		return elements;
+	}
+
+    /**
+     * Sets the list of default elements to be inserted
+     * @return
+     */
+	public void setElements(List<String> elements) {
+		this.elements = elements;
+	}
 }
