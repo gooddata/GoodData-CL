@@ -52,6 +52,12 @@ Script Commands:
   type - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
   folder - folder where to place new attributes
   
+ StoreProject(fileName=<file>) - saves the current project identifier into the specified file
+  fileName - file to save the project identifier
+  
+ RestoreProject(fileName=<file>) - loads the current project identifier from the specified file
+  fileName - file to load the project identifier from
+  
  TransferData(incremental=<true|false>) - upload data to the server, must call OpenProject and LoadCsv before
   incremental - incremental transfer (true | false)
 
