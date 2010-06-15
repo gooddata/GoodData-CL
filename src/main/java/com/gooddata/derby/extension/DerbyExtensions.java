@@ -23,6 +23,7 @@ public class DerbyExtensions {
     private final static String[] DISCARD_CHARS = {"$", "%", ",", "(", ")", "Û", "£", "´"};
     private final static DateTimeFormatter baseFmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 
+    private final static int EMPTY_DATE_ID = 2147483647;
 
     /**
      * Aggresivelly converts string to a numeric type.
@@ -55,13 +56,18 @@ public class DerbyExtensions {
      * @return
      */
     public static int dttoi(String dt, String fmt) {
-        if(fmt == null || fmt.length() <= 0 || fmt.equals("null"))
-            fmt = "yyyy-MM-dd";
-        DateTime base = baseFmt.parseDateTime("1900-01-01");
-        DateTimeFormatter dtFmt = DateTimeFormat.forPattern(fmt);
-        DateTime d = dtFmt.parseDateTime(dt);
-        Days ds = Days.daysBetween(base, d);
-        return ds.getDays() + 1;
+        try {
+            if(fmt == null || fmt.length() <= 0 || fmt.equals("null"))
+                fmt = "yyyy-MM-dd";
+            DateTime base = baseFmt.parseDateTime("1900-01-01");
+            DateTimeFormatter dtFmt = DateTimeFormat.forPattern(fmt);
+            DateTime d = dtFmt.parseDateTime(dt);
+            Days ds = Days.daysBetween(base, d);
+            return ds.getDays() + 1;
+        }
+        catch (IllegalArgumentException e) {
+            return EMPTY_DATE_ID;
+        }
     }
 
 }

@@ -101,8 +101,8 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
 
         for(PdmColumn column : factTable.getDateColumns()) {
             factColumns += "," + column.getName();
-            sourceColumns += ",DATEDIFF(STR_TO_DATE(" + column.getSourceColumn() + ",'" +
-                    StringUtil.convertJavaDateFormatToMySql(column.getFormat())+"'),'1900-01-01')+1";
+            sourceColumns += ",IFNULL(DATEDIFF(STR_TO_DATE(" + column.getSourceColumn() + ",'" +
+                    StringUtil.convertJavaDateFormatToMySql(column.getFormat())+"'),'1900-01-01'),2147483646)+1";
         }
         JdbcUtil.executeUpdate(c,
             "INSERT INTO "+fact+"("+N.ID+factColumns+") SELECT "+ N.SRC_ID + sourceColumns +
