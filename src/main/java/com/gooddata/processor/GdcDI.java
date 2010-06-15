@@ -414,6 +414,7 @@ public class GdcDI {
         else if(match(c,"LoadJdbc")) {
             loadJdbc(c);
         }
+        else printErrorHelpandExit("Unknown command '" + c.getCommand() + "'.");
     }
 
     private void transferLastSnapshot(Command c) throws InvalidArgumentException, ModelException, IOException, InternalErrorException, GdcRestApiException, InterruptedException {
