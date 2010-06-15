@@ -64,7 +64,7 @@ public class PdmSchema {
             }
             if(SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
-                factTable.addColumn(createFactColumn(column, schemaName));
+                //factTable.addColumn(createFactColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT);
             }
 

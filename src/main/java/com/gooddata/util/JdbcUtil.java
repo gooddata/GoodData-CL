@@ -32,7 +32,6 @@ public class JdbcUtil {
             l.debug("Executing SQL: statement='" + sql + "'");
             rc = s.executeUpdate(sql);
             l.debug("Executed SQL: statement='" + sql + "' rows="+rc);
-            l.debug("Executed SQL: statement='" + sql + "', result='" + rc + "'");
             return rc;
         }
         catch (SQLException e) {

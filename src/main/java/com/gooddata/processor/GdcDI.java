@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.gooddata.connector.JdbcConnector;
+import com.gooddata.connector.*;
 import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
 
-import com.gooddata.connector.TimeDimensionConnector;
 import com.gooddata.exception.*;
 import com.gooddata.modeling.generator.MaqlGenerator;
 import com.gooddata.modeling.model.SourceColumn;
@@ -30,8 +29,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 
-import com.gooddata.connector.CsvConnector;
-import com.gooddata.connector.GaConnector;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.model.Column;
@@ -414,6 +411,12 @@ public class GdcDI {
         else if(match(c,"LoadJdbc")) {
             loadJdbc(c);
         }
+        else if(match(c,"GenerateSfdcConfig")) {
+            generateSfdcConfig(c);
+        }
+        else if(match(c,"LoadSfdc")) {
+            loadSfdc(c);
+        }
     }
 
     private void transferLastSnapshot(Command c) throws InvalidArgumentException, ModelException, IOException, InternalErrorException, GdcRestApiException, InterruptedException {
@@ -709,6 +712,7 @@ public class GdcDI {
         JdbcConnector.saveConfigTemplate(name, configFile, usr, psw, drv, url, query);
     }
 
+
     private void loadJdbc(Command c) throws InvalidArgumentException, IOException, SQLException, ModelException,
             InitializationException, MetadataFormatException {
         String pid = getProjectId(c);
@@ -723,6 +727,29 @@ public class GdcDI {
         String url = getParamMandatory(c,"url");
         String query = getParamMandatory(c,"query");
         setConnector(JdbcConnector.createConnector(pid, configFile, usr, psw, drv, url, query, getBackend(),
+                dbUserName, dbPassword));
+    }
+
+    private void generateSfdcConfig(Command c) throws InvalidArgumentException, IOException, SfdcException {
+        String configFile = getParamMandatory(c,"configFile");
+        String name = getParamMandatory(c,"name");
+        String usr = getParamMandatory(c, "username");
+        String psw = getParamMandatory(c, "password");
+        String query = getParamMandatory(c,"query");
+        File cf = new File(configFile);
+
+        SfdcConnector.saveConfigTemplate(name, configFile, usr, psw, query);
+    }
+
+
+    private void loadSfdc(Command c) throws InvalidArgumentException, IOException, SQLException, ModelException,
+            InitializationException, MetadataFormatException {
+        String pid = getProjectId(c);
+        String configFile = getParamMandatory(c,"configFile");
+        String usr = getParamMandatory(c, "username");
+        String psw = getParamMandatory(c, "password");
+        String query = getParamMandatory(c,"query");
+        setConnector(SfdcConnector.createConnector(pid, configFile, usr, psw, query, getBackend(),
                 dbUserName, dbPassword));
     }
 

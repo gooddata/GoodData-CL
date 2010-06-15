@@ -1,15 +1,11 @@
 package com.gooddata.connector;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import com.gooddata.exception.InitializationException;
-import com.gooddata.exception.InvalidArgumentException;
-import com.gooddata.exception.MetadataFormatException;
-import com.gooddata.exception.ModelException;
+import com.gooddata.exception.*;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.sfdc.SfdcException;
+import com.gooddata.exception.SfdcException;
 import com.gooddata.util.FileUtil;
-import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import com.sforce.soap.partner.*;
 import com.sforce.soap.partner.fault.*;
@@ -18,17 +14,13 @@ import org.apache.axis.message.MessageElement;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
-import org.w3c.dom.NodeList;
 
 import javax.xml.rpc.ServiceException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * GoodData SFDC Connector
@@ -48,8 +40,8 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * Creates a new SFDC connector
      * @param projectId project id
      * @param configFileName configuration file
-     * @param sfdcUsr JDBC user
-     * @param sfdcPsw JDBC password
+     * @param sfdcUsr SFDC user
+     * @param sfdcPsw SFDC password
      * @param query SFDC query
      * @param connectorBackend connector backend
      * @param username database backend username
@@ -72,8 +64,8 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * Creates a new SFDC connector
      * @param projectId project id
      * @param configFileName configuration file
-     * @param sfdcUsr JDBC user
-     * @param sfdcPsw JDBC password
+     * @param sfdcUsr SFDC user
+     * @param sfdcPsw SFDC password
      * @param query SFDC query
      * @param connectorBackend connector backend
      * @param username database backend username
@@ -91,40 +83,85 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     }
 
 
-    private static List<SObject> executeQuery(SoapBindingStub binding, String sfdcQuery, int records) throws SfdcException {
+    private static List<SObject> executeQuery(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
         List<SObject> result = new ArrayList<SObject>();
         QueryOptions qo = new QueryOptions();
-        if(records < 500)
-            qo.setBatchSize(records);
+        qo.setBatchSize(500);
         binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),
              "QueryOptions", qo);
         try {
-            int cnt = 0;
             QueryResult qr = binding.query(sfdcQuery);
-            while (qr.getSize()>0 && cnt < records) {
+            do {
                 SObject[] sObjects = qr.getRecords();
                 result.addAll(Arrays.asList(sObjects));
-                cnt += sObjects.length;
-                qr = binding.queryMore(qr.getQueryLocator());
-            }
+                if(!qr.isDone()) {
+                    qr = binding.queryMore(qr.getQueryLocator());
+                }
+            } while(!qr.isDone());
         }
         catch (ApiQueryFault ex) {
-         throw new SfdcException("Failed to execute SFDC query: " + ex.getMessage());
+         throw new SfdcException("Failed to execute SFDC query: " + ex.getExceptionMessage());
         }
         catch (UnexpectedErrorFault e) {
-    	 throw new SfdcException("Failed to execute SFDC query: " + e.getMessage());
+    	 throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
 	    }
         catch (InvalidIdFault e) {
-	        throw new SfdcException("Failed to execute SFDC query: " + e.getMessage());
+	        throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
 	    }
         catch (InvalidQueryLocatorFault e) {
-		    throw new SfdcException("Failed to execute SFDC query: " + e.getMessage());
+		    throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
 	    }
         catch (RemoteException e) {
 		    throw new SfdcException("Failed to execute SFDC query: " + e.getMessage());
 	    }
         return result;
     }
+
+    private static SObject executeQueryFirstRow(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
+        List<SObject> result = new ArrayList<SObject>();
+        QueryOptions qo = new QueryOptions();
+        qo.setBatchSize(1);
+        binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),
+             "QueryOptions", qo);
+        try {
+            QueryResult qr = binding.query(sfdcQuery);
+            while (qr.getSize()>0) {
+                SObject[] sObjects = qr.getRecords();
+                result.addAll(Arrays.asList(sObjects));
+            }
+        }
+        catch (ApiQueryFault ex) {
+         throw new SfdcException("Failed to execute SFDC query: " + ex.getExceptionMessage());
+        }
+        catch (UnexpectedErrorFault e) {
+    	 throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
+	    }
+        catch (InvalidIdFault e) {
+	        throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
+	    }
+        catch (InvalidQueryLocatorFault e) {
+		    throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
+	    }
+        catch (RemoteException e) {
+		    throw new SfdcException("Failed to execute SFDC query: " + e.getMessage());
+	    }
+        return result.get(0);
+    }
+
+    private static Map<String, Field> describeObject(SoapBindingStub c, String name) throws RemoteException, UnexpectedErrorFault {
+        Map<String,Field> result = new HashMap<String,Field>();
+        DescribeSObjectResult describeSObjectResult = c.describeSObject(name);
+        if (! (describeSObjectResult == null)) {
+            Field[] fields = describeSObjectResult.getFields();
+            if (fields != null) {
+                for(Field field: fields) {
+                    result.put(field.getName(), field);
+                }
+            }
+        }
+        return result;
+    }
+
 
     /**
      * Saves a template of the config file
@@ -135,58 +172,55 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      */
     public static void saveConfigTemplate(String name, String configFileName, String sfdcUsr, String sfdcPsw,
                                   String query)
-            throws InvalidArgumentException, IOException, ServiceException, SfdcException {
+            throws InvalidArgumentException, IOException, SfdcException {
         SourceSchema s = SourceSchema.createSchema(name);
-        SoapBindingStub c = connect(sfdcUsr, sfdcPsw);
-        List<SObject> result = executeQuery(c, query, 1);
-        for( SObject row : result) {
-            //            
+        SoapBindingStub c = null;
+        try {
+            c = connect(sfdcUsr, sfdcPsw);
+        } catch (ServiceException e) {
+            throw new SfdcException("Connection to SFDC failed: "+e.getMessage());
         }
+        SObject result = executeQueryFirstRow(c, query);
+        if(result != null) {
+            Map<String,Field> fields = describeObject(c, result.getType());
+            for(MessageElement column : result.get_any()) {
+                String nm = column.getName();
+                String tp = getColumnType(fields, nm);
+                if(tp.equals(SourceColumn.LDM_TYPE_DATE)) {
+                    SourceColumn sc = new SourceColumn(StringUtil.formatShortName(nm), tp, nm, name);
+                    sc.setFormat("yyyy-MM-dd");
+                    s.addColumn(sc);
+                }
+                else {
+                    SourceColumn sc = new SourceColumn(StringUtil.formatShortName(nm), tp, nm, name);
+                    s.addColumn(sc);
+                }
+            }
+        }
+        else
+            throw new InvalidArgumentException("The SFDC query hasn't returned any row.");
         s.writeConfig(new File(configFileName));
     }
 
-    private static String getColumnType(int jct) {
-        String type;
-        switch (jct) {
-            case Types.CHAR:
+    private static String getColumnType(Map<String,Field> fields, String fieldName) {
+        String type = SourceColumn.LDM_TYPE_ATTRIBUTE;
+        Field f = fields.get(fieldName);
+        if(f != null) {
+            FieldType t = f.getType();
+            if(t.getValue().equalsIgnoreCase("id"))
+                type = SourceColumn.LDM_TYPE_CONNECTION_POINT;
+            else if(t.getValue().equalsIgnoreCase("string"))
                 type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-                break;
-            case Types.VARCHAR:
-                type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-                break;
-            case Types.NCHAR:
-                type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-                break;
-            case Types.NVARCHAR:
-                type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-                break;
-            case Types.INTEGER:
-                type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-                break;
-            case Types.BIGINT:
-                type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-                break;
-            case Types.FLOAT:
+            else if(t.getValue().equalsIgnoreCase("currency"))
                 type = SourceColumn.LDM_TYPE_FACT;
-                break;
-            case Types.DOUBLE:
-                type = SourceColumn.LDM_TYPE_FACT;
-                break;
-            case Types.DECIMAL:
-                type = SourceColumn.LDM_TYPE_FACT;
-                break;
-            case Types.NUMERIC:
-                type = SourceColumn.LDM_TYPE_FACT;
-                break;
-            case Types.DATE:
+            else if(t.getValue().equalsIgnoreCase("boolean"))
+                type = SourceColumn.LDM_TYPE_ATTRIBUTE;
+            else if(t.getValue().equalsIgnoreCase("reference"))
+                type = SourceColumn.LDM_TYPE_REFERENCE;
+            else if(t.getValue().equalsIgnoreCase("date"))
                 type = SourceColumn.LDM_TYPE_DATE;
-                break;
-            case Types.TIMESTAMP:
+            else if(t.getValue().equalsIgnoreCase("datetime"))
                 type = SourceColumn.LDM_TYPE_DATE;
-                break;
-            default:
-                type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-                break;
         }
         return type;
     }
@@ -198,11 +232,38 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     public void extract() throws ModelException, IOException {
         SoapBindingStub con = null;
         try {
-            con = connect(sfdcUsername, sfdcPassword);
             File dataFile = FileUtil.getTempFile();
             CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
-            l.debug("Started retrieving JDBC data.");
-            l.debug("Finished retrieving JDBC data.");
+            SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword());
+            List<SObject> result = null;
+            try {
+                result = executeQuery(c, getSfdcQuery());
+            } catch (SfdcException e) {
+                throw new IOException("SFDC query execution failed: "+ e.getMessage());
+            }
+            if(result != null && result.size() > 0) {
+                l.debug("Started retrieving SFDC data.");
+                SObject firstRow = result.get(0);
+                Map<String,Field> fields = describeObject(c, firstRow.getType());
+                MessageElement[] frCols = firstRow.get_any();
+                String[] colTypes = new String[frCols.length];
+                for(int i=0; i< frCols. length; i++) {
+                    String nm = frCols[i].getName();
+                    colTypes[i] = getColumnType(fields, nm);
+                }
+                for( SObject row : result) {
+                    MessageElement[] cols = row.get_any();
+                    String[] vals = new String[cols.length];
+                    for(int i=0; i<vals.length; i++) {
+                        if(colTypes[i].equals(SourceColumn.LDM_TYPE_DATE))
+                            vals[i] = cols[i].getValue().substring(0,10);
+                        else
+                            vals[i] = cols[i].getValue();
+                    }
+                    cw.writeNext(vals);
+                }
+                l.debug("Retrieved " + result.size() + " rows of SFDC data.");
+            }
             cw.flush();
             cw.close();
             getConnectorBackend().extract(dataFile);
@@ -210,8 +271,6 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         }
         catch (ServiceException e) {
             l.error("Error retrieving data from the SFDC source.", e);
-        } finally {
-            
         }
     }
 
@@ -305,48 +364,48 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * JDBC username getter
-     * @return JDBC username
+     * SFDC username getter
+     * @return SFDC username
      */
     public String getSfdcUsername() {
         return sfdcUsername;
     }
 
     /**
-     * JDBC username setter
-     * @param sfdcUsername JDBC username
+     * SFDC username setter
+     * @param sfdcUsername SFDC username
      */
     public void setSfdcUsername(String sfdcUsername) {
         this.sfdcUsername = sfdcUsername;
     }
 
     /**
-     * JDBC password getter
-     * @return JDBC password
+     * SFDC password getter
+     * @return SFDC password
      */
     public String getSfdcPassword() {
         return sfdcPassword;
     }
 
     /**
-     * JDBC password setter
-     * @param sfdcPassword JDBC password
+     * SFDC password setter
+     * @param sfdcPassword SFDC password
      */
     public void setSfdcPassword(String sfdcPassword) {
         this.sfdcPassword = sfdcPassword;
     }
 
     /**
-     * JDBC query getter
-     * @return JDBC query
+     * SFDC query getter
+     * @return SFDC query
      */
     public String getSfdcQuery() {
         return sfdcQuery;
     }
 
     /**
-     * JDBC query setter
-     * @param sfdcQuery JDBC query
+     * SFDC query setter
+     * @param sfdcQuery SFDC query
      */
     public void setSfdcQuery(String sfdcQuery) {
         this.sfdcQuery = sfdcQuery;
