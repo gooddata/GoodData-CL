@@ -62,31 +62,35 @@ public class PdmSchema {
                 factTable.addColumn(createFactColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_LOOKUP);
             }
-            if(SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 factTable.addColumn(createFactColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT);
             }
-
-            if(SourceColumn.LDM_TYPE_REFERENCE.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_REFERENCE.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 factTable.addColumn(createFactColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_REFERENCE);
                 // just copy the referenced lookup rows to the referencing lookup
                 createTableReplication(schema, column);
             }
-            if(SourceColumn.LDM_TYPE_FACT.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_FACT.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 factTable.addColumn(createFactColumn(column, schemaName));
             }
-            if(SourceColumn.LDM_TYPE_DATE.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_DATE.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 factTable.addColumn(createFactColumn(column, schemaName));
             }
-
-            if(SourceColumn.LDM_TYPE_LABEL.equals(column.getLdmType())) {
+            else if(SourceColumn.LDM_TYPE_LABEL.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
                 labels.add(column);
+            }
+            else if(SourceColumn.LDM_TYPE_IGNORE.equals(column.getLdmType())) {
+            	; // intentionally do nothing
+            }
+            else {
+            	throw new IllegalArgumentException("Unsupported ldm type '" + column.getLdmType() + "'.");
             }
 
         }

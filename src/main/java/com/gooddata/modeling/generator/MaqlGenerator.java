@@ -161,8 +161,13 @@ public class MaqlGenerator {
             labels.add(new Label(column));
         } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_REFERENCE)) {
         	references.add(new Reference(column));
-        } else
+        } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_IGNORE)) {
+        	; // intentionally do nothing
+        } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_CONNECTION_POINT)) {
             processConnectionPoint(column);
+        } else {
+        	throw new IllegalArgumentException("Unsupported ldm type '" + column.getLdmType() + "'.");
+        }
     }
 
     private void processConnectionPoint(SourceColumn column) {

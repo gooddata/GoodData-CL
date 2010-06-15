@@ -15,6 +15,8 @@ public class SourceColumn {
     public final static String LDM_TYPE_DATE = "DATE";
 	public static final String LDM_TYPE_CONNECTION_POINT = "CONNECTION_POINT";
 	public static final String LDM_TYPE_REFERENCE = "REFERENCE";
+	
+	public static final String LDM_TYPE_IGNORE = "IGNORE";
 
     /**
      * Column name
