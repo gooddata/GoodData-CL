@@ -33,9 +33,6 @@ public class PdmTable {
     // the source column that the lookup represents
     private String associatedSourceColumn;
     
-    // list of elements to be inserted into the table upon creation
-    private List<String> elements;
-
     /**
      * Constructor
      * @param name column name
@@ -120,7 +117,7 @@ public class PdmTable {
     public void addColumn(PdmColumn col) {
         this.columns.add(col);
     }
-
+    
     /**
      * Returns all columns that are represented in the source table
      * @return all columns that are represented in the source table
@@ -205,19 +202,8 @@ public class PdmTable {
         this.associatedSourceColumn = associatedSourceColumn;
     }
 
-    /**
-     * Return list of default elements to be inserted
-     * @return
-     */
-	public List<String> getElements() {
-		return elements;
-	}
-
-    /**
-     * Sets the list of default elements to be inserted
-     * @return
-     */
-	public void setElements(List<String> elements) {
-		this.elements = elements;
+    @Override
+	public String toString() {
+		return name + "(" + type + ")";
 	}
 }

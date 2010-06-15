@@ -214,7 +214,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
             sg.executeNormalizeSql(con, getPdm());
         }
         catch (SQLException e) {
-            throw new InternalError(e.getMessage());
+            throw new RuntimeException(e);
         }
         finally {
             try {

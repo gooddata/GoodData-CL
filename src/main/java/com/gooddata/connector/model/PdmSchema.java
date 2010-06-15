@@ -118,7 +118,7 @@ public class PdmSchema {
         } catch (ModelException e) {
             l.error("Intenal problem: schema contains a table but it can't find it.");
         }
-        lookup.addColumn(createLookupColumn(c));
+       	lookup.addColumn(createLookupColumn(c));
     }
 
     private static void createTableReplication(PdmSchema s, SourceColumn c) {
@@ -133,8 +133,12 @@ public class PdmSchema {
 
     private static PdmColumn createLookupColumn(SourceColumn c) {
         String name = StringUtil.formatShortName(c.getName());
-        return new PdmColumn(N.NM_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
+        PdmColumn pc = new PdmColumn(N.NM_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
                 N.SRC_PFX + name, c.getLdmType());
+        if (c.getElements() != null) {
+        	pc.setElements(CsvUtil.parseLine(c.getElements()));
+        }
+        return pc;
     }
 
     private static PdmTable createLookupTable(String schemaName, String columnName, String tableType, List<String> elements) {
@@ -143,7 +147,6 @@ public class PdmSchema {
             new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
         lookup.addColumn(new PdmColumn(N.HSH, PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
             new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
-        lookup.setElements(elements);
         return lookup;
     }
 

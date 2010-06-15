@@ -43,6 +43,9 @@ public class PdmColumn {
 
     //data format
     private String format;
+    
+    // initial values
+    private List<String> elements = null;
 
     /**
      * Constructor
@@ -275,4 +278,25 @@ public class PdmColumn {
     public void setFormat(String format) {
         this.format = format;
     }
+    
+    /**
+     * initial elements setter
+     * @return initial elements
+     */
+    public List<String> getElements() {
+		return elements;
+	}
+    
+    /**
+     * initial elements getter
+     * @param elements initial elements
+     */
+	public void setElements(List<String> elements) {
+		this.elements = elements;
+	}
+
+	@Override
+	public String toString() {
+		return name + "(" + type + ")";
+	}
 }

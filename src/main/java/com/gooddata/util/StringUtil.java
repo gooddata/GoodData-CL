@@ -1,5 +1,7 @@
 package com.gooddata.util;
 
+import java.util.Collection;
+
 /**
  * GoodData
  *
@@ -91,5 +93,38 @@ public class StringUtil {
                             DATE_FORMAT_CONVERSION[i][1]);
         return dateFormat;
     }
+    
+    /**
+     * Converts a {@link Collection} to a <tt>separator<tt> separated string
+     * 
+     * @param separator
+     * @param list
+     * @return <tt>separator<tt> separated string version of the given list
+     */
+    public static String join(String separator, Collection<String> list) {
+    	return join(separator, list, null);
+    }
 
+    /**
+     * Converts a {@link Collection} to a <tt>separator<tt> separated string.
+     * If the <tt>replacement</tt> parameter is not null, it is used to populate
+     * the result string instead of list elements.
+     * 
+     * @param separator
+     * @param list
+     * @param replacement
+     * @return <tt>separator<tt> separated string version of the given list
+     */
+    public static String join(String separator, Collection<String> list, String replacement) {
+    	StringBuffer sb = new StringBuffer();
+    	boolean first = true;
+    	for (final String s : list) {
+    		if (first)
+    			first = false;
+    		else
+    			sb.append(separator);
+			sb.append(replacement == null ? s : replacement);
+		}
+    	return sb.toString();
+    }
 }

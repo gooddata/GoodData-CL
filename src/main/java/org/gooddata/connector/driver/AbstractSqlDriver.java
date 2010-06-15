@@ -3,8 +3,11 @@ package org.gooddata.connector.driver;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -67,6 +70,11 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         		createTable(c, table);
         		if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(table.getType())) {
         			prepopulateLookupTable(c, table);
+        		} else if (PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT.equals(table.getType())) {
+        			final List<Map<String,String>> rows = prepareInitialTableLoad(c, table);
+        			if (!rows.isEmpty()) {
+        				l.warn("Prepopulating of connection point tables is not suppported (table = " + table.getName() + ")");
+        			}
         		}
 	            if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
 	                indexAllTableColumns(c, table);
@@ -205,18 +213,66 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     }
     
     private void prepopulateLookupTable(Connection c, PdmTable table) throws SQLException {
-    	/*
-    	String sql = "INSERT INTO " + table.getName() + "(" + table.getDefaultLookupColumn() + ")"
-    			   + " VALUES (?)";
-    	for (final String el : table.getElements()) {
+    	final List<Map<String,String>> rows = prepareInitialTableLoad(c, table);
+    	if (rows.isEmpty())
+    		return;
+    	
+    	// create the list to make sure consistent keys order in the following loop
+		final List<String> columns = new ArrayList<String>(rows.get(0).keySet());
+    	final String placeholders = StringUtil.join(", ", columns, "?");
+
+    	for (final Map<String,String> row : rows) {
+    		
+    		final String sql = "INSERT INTO " + table.getName() + " ("
+    						 + N.HSH + ", " + StringUtil.join(", ", columns)
+    						 + ") VALUES (?, " + placeholders + ")";
+    		
     		JdbcUtil.executeUpdate(c, sql, new StatementHandler() {
 				@Override
 				public void prepare(PreparedStatement stmt) throws SQLException {
-					stmt.setString(1, el);
+					boolean first = true;
+					final StringBuffer hashbf = new StringBuffer();
+					int index = 2;
+					for (final String col : columns) {
+						if (first)
+							first = false;
+						else
+							hashbf.append(HASH_SEPARATOR);
+						hashbf.append(row.get(col));
+						stmt.setString(index++, row.get(col));
+					}
+					stmt.setString(1, hashbf.toString());
 				}
 			});
     	}
-    	*/
+    }
+    
+    private List<Map<String,String>> prepareInitialTableLoad(Connection c, PdmTable table) {
+    	final List<Map<String,String>> result = new ArrayList<Map<String,String>>();
+    	final List<PdmColumn> toLoad = new ArrayList<PdmColumn>();
+    	int max = 0;
+    	for (final PdmColumn col : table.getColumns()) {
+    		if (col.getElements() != null && !col.getElements().isEmpty()) {
+    			int size = col.getElements().size();
+    			if (max == 0)
+    				max = size;
+    			else if (size != max)
+    				throw new IllegalStateException(
+    						"Column " + col.getName() + " of table " + table.getName()
+    						+ " has a different number of elements than: " + toLoad.toString());
+    			toLoad.add(col);
+    		}
+    	}
+    	if (!toLoad.isEmpty()) {    	
+	    	for (int i = 0; i < toLoad.get(0).getElements().size(); i++) {
+	    		final Map<String,String> row = new HashMap<String, String>();
+	    		for (final PdmColumn col : toLoad) {
+	    			row.put(col.getName(), col.getElements().get(i));
+	    		}
+	    		result.add(row);
+	    	}
+    	}
+    	return result;
     }
     
     private void addColumn(Connection c, PdmTable table, PdmColumn column) throws SQLException {
@@ -334,13 +390,12 @@ public abstract class AbstractSqlDriver implements SqlDriver {
             " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +"')"
         );
         */
-        JdbcUtil.executeUpdate(c,
-            "INSERT INTO " + lookup + "(" + insertColumns +
-            ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
-            " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
-            "') AND " + concatAssociatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " +
-            lookupTable.getName() + ")"
-        );
+        String sql = "INSERT INTO " + lookup + "(" + insertColumns +
+	        ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
+	        " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
+	        "') AND " + concatAssociatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " +
+	        lookupTable.getName() + ")";
+        JdbcUtil.executeUpdate(c, sql);
     }
 
     protected String concatAssociatedSourceColumns(PdmTable lookupTable) {
