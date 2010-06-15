@@ -88,7 +88,9 @@ public class PdmSchema {
                 labels.add(column);
             }
             else if(SourceColumn.LDM_TYPE_IGNORE.equals(column.getLdmType())) {
-            	; // intentionally do nothing
+            	// only add column to the source table to ensure the CSV
+            	// will load properly. 
+            	sourceTable.addColumn(createSourceColumn(column));
             }
             else {
             	throw new IllegalArgumentException("Unsupported ldm type '" + column.getLdmType() + "'.");
