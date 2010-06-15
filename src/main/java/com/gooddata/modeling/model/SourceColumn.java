@@ -22,14 +22,17 @@ public class SourceColumn {
      * Column name
      */
     private String name;
+    
     /**
      * Column title
      */
     private String title;
+    
     /**
      * Column LDM type (ATTRIBUTE | LABEL | FACT)
      */
     private String ldmType;
+    
     /**
      * LABEL's or REFERENCE's primary source column
      */
@@ -44,12 +47,17 @@ public class SourceColumn {
      * Column's folder
      */
     private String folder;
+    
     /**
      * Column's format
      */
     private String format;
 
-
+    /**
+     * Ordered list of elements to be preloaded into an attribute upon table creation
+     */
+    private String elements;
+    
     /**
      * SourceColumn constructor
      * @param name columna name
@@ -214,6 +222,22 @@ public class SourceColumn {
     public void setFormat(String format) {
         this.format = format;
     }
+
+    /**
+     * Elements getter
+     * @return elements string
+     */
+	public String getElements() {
+		return elements;
+	}
+
+	/**
+	 * Elements setter
+	 * @param elements
+	 */
+	public void setElements(String elements) {
+		this.elements = elements;
+	}
 
 	@Override
 	public String toString() {

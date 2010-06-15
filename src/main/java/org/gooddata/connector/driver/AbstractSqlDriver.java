@@ -1,6 +1,7 @@
 package org.gooddata.connector.driver;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import com.gooddata.util.JdbcUtil.DummyResultSetHandler;
+import com.gooddata.util.JdbcUtil.StatementHandler;
 
 /**
  * GoodData abstract SQL driver. Generates the DDL (tables and indexes), DML (transformation SQL) and other
@@ -63,6 +65,9 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         for(PdmTable table : schema.getTables()) {
         	if (!exists(c, table.getName())) {
         		createTable(c, table);
+        		if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(table.getType())) {
+        			prepopulateLookupTable(c, table);
+        		}
 	            if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
 	                indexAllTableColumns(c, table);
         	} else {
@@ -197,6 +202,21 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         sql += " PRIMARY KEY (" + pk + "))";
 
         JdbcUtil.executeUpdate(c, sql);
+    }
+    
+    private void prepopulateLookupTable(Connection c, PdmTable table) throws SQLException {
+    	/*
+    	String sql = "INSERT INTO " + table.getName() + "(" + table.getDefaultLookupColumn() + ")"
+    			   + " VALUES (?)";
+    	for (final String el : table.getElements()) {
+    		JdbcUtil.executeUpdate(c, sql, new StatementHandler() {
+				@Override
+				public void prepare(PreparedStatement stmt) throws SQLException {
+					stmt.setString(1, el);
+				}
+			});
+    	}
+    	*/
     }
     
     private void addColumn(Connection c, PdmTable table, PdmColumn column) throws SQLException {

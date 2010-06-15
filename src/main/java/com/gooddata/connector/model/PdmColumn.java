@@ -44,8 +44,6 @@ public class PdmColumn {
     //data format
     private String format;
 
-
-
     /**
      * Constructor
      * @param name column name

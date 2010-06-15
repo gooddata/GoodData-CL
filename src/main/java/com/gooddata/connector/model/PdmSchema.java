@@ -4,6 +4,7 @@ import com.gooddata.exception.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;
+import com.gooddata.util.CsvUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 
@@ -109,8 +110,8 @@ public class PdmSchema {
         String cName = StringUtil.formatShortName(c.getName());
         String sName = s.getName();
         String tableName = createLookupTableName(sName, cName);
-                if(!s.contains(tableName))
-                    s.addTable(createLookupTable(sName, cName, tblType));
+        if(!s.contains(tableName))
+            s.addTable(createLookupTable(sName, cName, tblType, CsvUtil.parseLine(c.getElements())));
         PdmTable lookup = null;
         try {
             lookup = s.getTableByName(tableName);
@@ -136,12 +137,13 @@ public class PdmSchema {
                 N.SRC_PFX + name, c.getLdmType());
     }
 
-    private static PdmTable createLookupTable(String schemaName, String columnName, String tableType) {
+    private static PdmTable createLookupTable(String schemaName, String columnName, String tableType, List<String> elements) {
         PdmTable lookup = new PdmTable(createLookupTableName(schemaName, columnName),tableType, columnName);
         lookup.addColumn(new PdmColumn(N.ID, PdmColumn.PDM_COLUMN_TYPE_INT,
             new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
         lookup.addColumn(new PdmColumn(N.HSH, PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
             new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
+        lookup.setElements(elements);
         return lookup;
     }
 
