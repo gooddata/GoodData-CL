@@ -214,7 +214,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
             sg.executeNormalizeSql(con, getPdm());
         }
         catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error normalizing PDM Schema " + getPdm().getName() + " " + getPdm().getTables(), e);
         }
         finally {
             try {
