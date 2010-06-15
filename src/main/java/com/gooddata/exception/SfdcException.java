@@ -1,4 +1,4 @@
-package com.gooddata.sfdc;
+package com.gooddata.exception;
 
 public class SfdcException extends Exception {
 	
