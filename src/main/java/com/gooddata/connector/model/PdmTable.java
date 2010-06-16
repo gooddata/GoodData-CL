@@ -183,7 +183,7 @@ public class PdmTable {
             if(c.getName().equals(name))
                 return c;
         }
-        throw new ModelException("Column with name '" + name + "' doesn't exist.");
+        throw new ModelException("Column with name '" + name + "' doesn't exist in table '" + getName() + "'.");
     }
 
     /**
