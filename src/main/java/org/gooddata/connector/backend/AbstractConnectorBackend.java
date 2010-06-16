@@ -372,7 +372,6 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
         Connection con = null;
         try {
             con = connect();
-            String sql = "";
             // generate SELECT INTO CSV Derby SQL
             // the required data structures are taken for each DLI part
             for (DLIPart p : parts) {

@@ -228,7 +228,6 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     						 + ") VALUES (?, " + placeholders + ")";
     		
     		JdbcUtil.executeUpdate(c, sql, new StatementHandler() {
-
 				public void prepare(PreparedStatement stmt) throws SQLException {
 					boolean first = true;
 					final StringBuffer hashbf = new StringBuffer();

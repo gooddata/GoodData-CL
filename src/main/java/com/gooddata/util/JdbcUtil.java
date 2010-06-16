@@ -70,6 +70,7 @@ public class JdbcUtil {
     	try {
     		s = con.prepareStatement(sql);
     		sh.prepare(s);
+            l.debug("Executing SQL: statement='" + sh.toString() + "'");
     		rc = s.executeUpdate();
     		return rc;
     	} catch (SQLException e) {
@@ -114,6 +115,7 @@ public class JdbcUtil {
     	ResultSet rs = null;
     	try {
     		st = c.createStatement();
+            l.debug("Executing SQL: statement='" + st.toString() + "'");
     		rs = executeQuery(st, sql);
     		while (rs.next()) {
     			handler.handle(rs);
