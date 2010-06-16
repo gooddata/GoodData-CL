@@ -6,17 +6,18 @@ import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.processor.Executor;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * GoodData
+ * GoodData Connector interface
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public interface Connector {
+public interface Connector extends Executor {
 
     /**
      * Generates the MAQL for the data source
@@ -50,7 +51,7 @@ public interface Connector {
     public boolean isInitialized();
 
     /**
-     * Initializes the Derby database schema that is going to be used for the data normalization
+     * Initializes the database schema that is going to be used for the data normalization
      * @throws com.gooddata.exception.ModelException imn case of PDM schema issues
      */
     public void initialize() throws ModelException;

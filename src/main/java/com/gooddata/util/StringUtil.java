@@ -1,6 +1,9 @@
 package com.gooddata.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * GoodData
@@ -126,5 +129,14 @@ public class StringUtil {
 			sb.append(replacement == null ? s : replacement);
 		}
     	return sb.toString();
+    }
+
+    public static List<String> parseLine(String elements) {
+        if (elements == null) {
+            return new ArrayList<String>();
+        }
+        // TODO proper CSV parsing
+        String[] result = elements.trim().split("\\s*,\\s*");
+        return Arrays.asList(result);
     }
 }

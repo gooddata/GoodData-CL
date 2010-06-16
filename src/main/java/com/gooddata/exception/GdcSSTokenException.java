@@ -5,14 +5,6 @@ package com.gooddata.exception;
  */
 public class GdcSSTokenException extends GdcProjectAccessException {
 
-
-    /**
-     * Creates a new instance of <code>GdcProjectAccessException</code> without detail message.
-     */
-    public GdcSSTokenException() {
-    }
-
-
     /**
      * Constructs an instance of <code>GdcProjectAccessException</code> with the specified detail message.
      *

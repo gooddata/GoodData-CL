@@ -1,16 +1,10 @@
 package com.gooddata.exception;
 
-public class SfdcException extends Exception {
+public class SfdcException extends GdcException {
 	
-	String message;
-	
-	public SfdcException(String message) {
-		this.message = message;
-	}
 
-	@Override
-	public String getMessage() {
-		return message;
+	public SfdcException(String message) {
+		super(message);
 	}
 
 }

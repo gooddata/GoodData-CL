@@ -1,24 +1,19 @@
 package com.gooddata.connector;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import com.gooddata.exception.InitializationException;
-import com.gooddata.exception.InvalidArgumentException;
-import com.gooddata.exception.MetadataFormatException;
-import com.gooddata.exception.ModelException;
-import com.gooddata.google.analytics.FeedDumper;
-import com.gooddata.google.analytics.GaQuery;
+import com.gooddata.exception.*;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
-import com.google.gdata.client.analytics.AnalyticsService;
-import com.google.gdata.data.analytics.DataFeed;
-import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.ServiceException;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
+import org.gooddata.connector.backend.ConnectorBackend;
+import com.gooddata.processor.ProcessingContext;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -42,62 +37,18 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * Creates a new JDBC connector
-     * @param projectId project id
-     * @param configFileName configuration file
-     * @param jdbcUsr JDBC user
-     * @param jdbcPsw JDBC password
-     * @param jdbcDriver JDBC driver
-     * @param jdbcUrl JDBC user
-     * @param query SQL query
      * @param connectorBackend connector backend
-     * @param username database backend username
-     * @param password database backend password
-     * @throws com.gooddata.exception.InitializationException
-     * @throws com.gooddata.exception.MetadataFormatException
-     * @throws java.io.IOException
      */
-    protected JdbcConnector(String projectId, String configFileName, String jdbcUsr, String jdbcPsw, String jdbcDriver,
-                            String jdbcUrl, String query, int connectorBackend, String username, String password)
-            throws InitializationException,
-            MetadataFormatException, IOException, ModelException {
-        super(projectId, configFileName, connectorBackend, username, password);
-        try {
-            Class.forName(jdbcDriver).newInstance();
-        } catch (InstantiationException e) {
-            l.error("Can't load JDBC driver.", e);
-        } catch (IllegalAccessException e) {
-            l.error("Can't load JDBC driver.", e);
-        } catch (ClassNotFoundException e) {
-            l.error("Can't load JDBC driver.", e);
-        }
-        setJdbcUsername(jdbcUsr);
-        setJdbcPassword(jdbcPsw);
-        setJdbcUrl(jdbcUrl);
-        setSqlQuery(query);
+    protected JdbcConnector(ConnectorBackend connectorBackend) {
+        super(connectorBackend);
     }
 
     /**
      * Creates a new JDBC connector
-     * @param projectId project id
-     * @param configFileName configuration file
-     * @param jdbcUsr JDBC user
-     * @param jdbcPsw JDBC password
-     * @param jdbcDriver JDBC driver
-     * @param jdbcUrl JDBC user
-     * @param query SQL query
      * @param connectorBackend connector backend
-     * @param username database backend username
-     * @param password database backend password
-     * @throws com.gooddata.exception.InitializationException
-     * @throws com.gooddata.exception.MetadataFormatException
-     * @throws java.io.IOException
      */
-    public static JdbcConnector createConnector(String projectId, String configFileName, String jdbcUsr, String jdbcPsw,
-                                  String jdbcDriver, String jdbcUrl,String query, int connectorBackend, String username, String password)
-                                throws InitializationException, MetadataFormatException,
-             IOException, ModelException {
-        return new JdbcConnector(projectId, configFileName, jdbcUsr, jdbcPsw, jdbcDriver, jdbcUrl, query, connectorBackend,
-                username, password);
+    public static JdbcConnector createConnector(ConnectorBackend connectorBackend) {
+        return new JdbcConnector(connectorBackend);
     }
 
     /**
@@ -319,4 +270,91 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     public void setJdbcUrl(String jdbcUrl) {
         this.jdbcUrl = jdbcUrl;
     }
+
+    /**
+     * Processes single command
+     * @param c command to be processed
+     * @param cli parameters (commandline params)
+     * @param ctx processing context
+     * @return true if the command has been processed, false otherwise
+     */
+    public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        try {
+            if(c.match("GenerateJdbcConfig")) {
+                generateJdbcConfig(c, cli, ctx);
+            }
+            else if(c.match("LoadJdbc")) {
+                loadJdbc(c, cli, ctx);
+            }
+            else
+                return super.processCommand(c, cli, ctx);
+        }
+        catch (SQLException e) {
+            throw new ProcessingException(e);
+        }
+        catch (IOException e) {
+            throw new ProcessingException(e);
+        }
+        return true;
+    }
+
+
+    private void loadDriver(String drv) {
+        try {
+            Class.forName(drv).newInstance();
+        } catch (InstantiationException e) {
+            l.error("Can't load JDBC driver.", e);
+        } catch (IllegalAccessException e) {
+            l.error("Can't load JDBC driver.", e);
+        } catch (ClassNotFoundException e) {
+            l.error("Can't load JDBC driver.", e);
+        }
+    }
+
+    private void loadJdbc(Command c, CliParams p, ProcessingContext ctx) throws IOException, SQLException {
+        String configFile = c.getParamMandatory("configFile");
+        String usr = null;
+        if(c.checkParam("username"))
+            usr = c.getParam("username");
+        String psw = null;
+        if(c.checkParam("password"))
+            psw = c.getParam("password");
+        String drv = c.getParamMandatory("driver");
+        String url = c.getParamMandatory("url");
+        String q = c.getParamMandatory("query");
+        loadDriver(drv);
+        File conf = FileUtil.getFile(configFile);
+        initSchema(conf.getAbsolutePath());
+        setJdbcUsername(usr);
+        setJdbcPassword(psw);
+        setJdbcUrl(url);
+        setSqlQuery(q);
+        // sets the current connector
+        ctx.setConnector(this);
+        try {
+            this.checkProjectId();
+        }
+        catch(InvalidParameterException e) {
+            this.getConnectorBackend().setProjectId(ctx.getProjectId());
+        }
+    }
+
+    private void generateJdbcConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException, SQLException {
+        String configFile = c.getParamMandatory("configFile");
+        String name = c.getParamMandatory("name");
+        String usr = null;
+        if(c.checkParam("username"))
+            usr = c.getParam("username");
+        String psw = null;
+        if(c.checkParam("password"))
+            psw = c.getParam("password");
+        String drv = c.getParamMandatory("driver");
+        String url = c.getParamMandatory("url");
+        String query = c.getParamMandatory("query");
+        loadDriver(drv);
+        File cf = new File(configFile);
+        JdbcConnector.saveConfigTemplate(name, cf.getAbsolutePath(), usr, psw, drv, url, query);
+    }
+
+
 }

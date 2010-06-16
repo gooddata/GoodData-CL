@@ -6,7 +6,7 @@ package com.gooddata.exception;
  * @author Zdenek Svoboda <zd@gooddata.org>
  * @version 1.0
  */
-public class InvalidArgumentException extends Exception {
+public class InvalidArgumentException extends GdcException {
     /**
      * Constructor
      * @param s exception message

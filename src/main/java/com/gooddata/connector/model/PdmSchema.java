@@ -4,7 +4,6 @@ import com.gooddata.exception.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;
-import com.gooddata.util.CsvUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 
@@ -113,7 +112,7 @@ public class PdmSchema {
         String sName = s.getName();
         String tableName = createLookupTableName(sName, cName);
         if(!s.contains(tableName))
-            s.addTable(createLookupTable(sName, cName, tblType, CsvUtil.parseLine(c.getElements())));
+            s.addTable(createLookupTable(sName, cName, tblType, StringUtil.parseLine(c.getElements())));
         PdmTable lookup = null;
         try {
             lookup = s.getTableByName(tableName);
@@ -138,7 +137,7 @@ public class PdmSchema {
         PdmColumn pc = new PdmColumn(N.NM_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
                 N.SRC_PFX + name, c.getLdmType());
         if (c.getElements() != null) {
-        	pc.setElements(CsvUtil.parseLine(c.getElements()));
+        	pc.setElements(StringUtil.parseLine(c.getElements()));
         }
         return pc;
     }

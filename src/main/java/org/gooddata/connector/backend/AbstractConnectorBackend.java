@@ -44,15 +44,9 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     protected AbstractSqlDriver sg;
 
 
-    /**
-     * PDM schema
-     */
     private PdmSchema pdm;
 
-    /**
-     * The project id
-     */
-    protected String projectId;
+    private String projectId;
 
 
     // MySQL username
@@ -61,12 +55,6 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     // MySQL password
     private String password;
     
-
-    /**
-     * The config file name
-     */
-    protected String configFileName;
-
     /**
      * The ZIP archive suffix
      */
@@ -75,20 +63,13 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
 
     /**
      * Constructor
-     * @param projectId project id
-     * @param configFileName config file name
-     * @param pdm PDM schema
      * @param username database backend username
      * @param username database backend password 
      * @throws IOException in case of an IO issue 
      */
-    protected AbstractConnectorBackend(String projectId, String configFileName, PdmSchema pdm, String username,
-                                       String password) throws IOException {
-        this.projectId = projectId;
-        this.configFileName = configFileName;
-        this.pdm = pdm;
-        this.username = username;
-        this.password = password;
+    protected AbstractConnectorBackend(String username, String password) throws IOException {
+        setUsername(username);
+        setPassword(password);
     }
 
     /**
@@ -160,6 +141,8 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     }
 
     /**
+     * PDM schema
+     */ /**
      * PDM schema getter
      * @return pdm schema
      */
@@ -440,5 +423,16 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * The project id
+     */
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 }

@@ -6,7 +6,7 @@ package com.gooddata.exception;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class InitializationException extends Exception {
+public class InitializationException extends GdcException {
 
     /**
      * Exception constructor

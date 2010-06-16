@@ -6,7 +6,7 @@ package com.gooddata.exception;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class ModelException extends Exception {
+public class ModelException extends GdcException {
 
     /**
      * Constructor

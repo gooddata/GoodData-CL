@@ -1,7 +1,6 @@
 package com.gooddata.connector.backend;
 
 import com.gooddata.connector.driver.MySqlDriver;
-import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.util.JdbcUtil;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
@@ -41,31 +40,23 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
 
     /**
      * Constructor
-     * @param projectId project id
-     * @param configFileName config file name
-     * @param pdm PDM schema
      * @param username database backend username
      * @param username database backend password
      * @throws java.io.IOException in case of an IO issue
      */
-    protected MySqlConnectorBackend(String projectId, String configFileName, PdmSchema pdm, String username,
-                                    String password) throws IOException {
-        super(projectId, configFileName, pdm, username, password);
+    protected MySqlConnectorBackend(String username, String password) throws IOException {
+        super(username, password);
         sg = new MySqlDriver();
     }
 
     /**
      * Create
-     * @param projectId project id
-     * @param configFileName config file name
-     * @param pdm PDM schema
      * @param username MySQL username
      * @param password MySQL password 
      * @throws java.io.IOException in case of an IO issue
      */
-    public static MySqlConnectorBackend create(String projectId, String configFileName, PdmSchema pdm, String username,
-                                    String password) throws IOException {
-        return new MySqlConnectorBackend(projectId, configFileName, pdm, username, password);
+    public static MySqlConnectorBackend create(String username, String password) throws IOException {
+        return new MySqlConnectorBackend(username, password);
     }
 
     /**
@@ -77,15 +68,15 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         String protocol = "jdbc:mysql:";
         Connection con = null;
         try {
-            con = DriverManager.getConnection(protocol + "//localhost/" + projectId, getUsername(), getPassword());
+            con = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
         }
         catch (SQLException e) {
             con = DriverManager.getConnection(protocol + "//localhost/mysql", getUsername(), getPassword());
             JdbcUtil.executeUpdate(con,
-                "CREATE DATABASE IF NOT EXISTS " + projectId  + " CHARACTER SET utf8"
+                "CREATE DATABASE IF NOT EXISTS " + getProjectId() + " CHARACTER SET utf8"
             );
             con.close();
-            con = DriverManager.getConnection(protocol + "//localhost/" + projectId, getUsername(), getPassword());            
+            con = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
         }
         return con;
     }
@@ -100,7 +91,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         try {
             con = connect();
             s = con.createStatement();
-            s.execute("DROP DATABASE IF EXISTS " + projectId);
+            s.execute("DROP DATABASE IF EXISTS " + getProjectId());
 
         } catch (SQLException e) {
             l.error("Can't drop MySQL database.", e);

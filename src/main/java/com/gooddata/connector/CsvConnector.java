@@ -1,14 +1,16 @@
 package com.gooddata.connector;
 
-import com.gooddata.exception.InitializationException;
-import com.gooddata.exception.MetadataFormatException;
-import com.gooddata.exception.ModelException;
+import com.gooddata.exception.*;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
+import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
+import org.gooddata.connector.backend.ConnectorBackend;
 
 import java.io.*;
 
@@ -29,45 +31,20 @@ public class CsvConnector extends AbstractConnector implements Connector {
     private boolean hasHeader;
 
     /**
-     * GoodData CSV connector. This constructor creates the connector from a config file
-     * @param projectId project id
-     * @param configFileName schema config file name
-     * @param dataFileName primary data file
-     * @param header true if the loaded CSV file has header row
-     * @param connectorBackend connector backend
-     * @param username database backend username
-     * @param password database backend password
-     * @throws InitializationException issues with the initialization
-     * @throws MetadataFormatException issues with the metadata definitions
-     * @throws IOException in case of an IO issue 
+     * Creates GoodData CSV connector
+     * @param backend connector backend
      */
-    protected CsvConnector(String projectId, String configFileName, String dataFileName, boolean header,
-               int connectorBackend,String username, String password) throws InitializationException,
-            MetadataFormatException, IOException, ModelException {
-        super(projectId, configFileName, connectorBackend, username, password);
-        setDataFile(new File(dataFileName));
-        setHasHeader(header);
+    protected CsvConnector(ConnectorBackend backend) {
+        super(backend);
     }
 
     /**
      * Create a new GoodData CSV connector. This constructor creates the connector from a config file
-     * @param projectId project id
-     * @param configFileName schema config file name
-     * @param dataFileName primary data file
-     * @param header true if the loaded CSV file has header row
-     * @param connectorBackend connector backend
-     * @param username database backend username
-     * @param password database backend password 
-     * @return new CSV Connector 
-     * @throws InitializationException issues with the initialization
-     * @throws MetadataFormatException issues with the metadata definitions
-     * @throws IOException in case of an IO issue
+     * @param backend connector backend
+     * @return new CSV Connector
      */
-    public static CsvConnector createConnector(String projectId, String configFileName, String dataFileName,
-                   boolean header,int connectorBackend, String username, String password)
-                   throws InitializationException,
-            MetadataFormatException, IOException, ModelException {
-        return new CsvConnector(projectId, configFileName, dataFileName, header, connectorBackend, username, password);    
+    public static CsvConnector createConnector(ConnectorBackend backend) {
+        return new CsvConnector(backend);    
     }
 
     /**
@@ -157,5 +134,60 @@ public class CsvConnector extends AbstractConnector implements Connector {
 
     public void setHasHeader(boolean hasHeader) {
         this.hasHeader = hasHeader;
+    }
+
+    /**
+     * Processes single command
+     * @param c command to be processed
+     * @param cli parameters (commandline params)
+     * @param ctx processing context
+     * @return true if the command has been processed, false otherwise
+     */
+    public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        try {
+            if(c.match("GenerateCsvConfig")) {
+                generateCsvConfig(c, cli, ctx);
+            }
+            else if(c.match("LoadCsv")) {
+                loadCsv(c, cli, ctx);
+            }
+            else
+                return super.processCommand(c, cli, ctx);
+        }
+        catch (IOException e) {
+            throw new ProcessingException(e);
+        }
+        return true;
+    }
+
+    private void loadCsv(Command c, CliParams p, ProcessingContext ctx) throws IOException,
+            ModelException {
+        String configFile = c.getParamMandatory("configFile");
+        String csvDataFile = c.getParamMandatory("csvDataFile");
+        String hdr = c.getParamMandatory("header");
+        File conf = FileUtil.getFile(configFile);
+        File csvf = FileUtil.getFile(csvDataFile);
+        boolean hasHeader = false;
+        if(hdr.equalsIgnoreCase("true"))
+            hasHeader = true;
+        initSchema(conf.getAbsolutePath());
+        setDataFile(new File(csvf.getAbsolutePath()));
+        setHasHeader(hasHeader);
+        // sets the current connector
+        ctx.setConnector(this);
+        try {
+            this.checkProjectId();
+        }
+        catch(InvalidParameterException e) {
+            this.getConnectorBackend().setProjectId(ctx.getProjectId());   
+        }
+    }
+
+    private void generateCsvConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String configFile = c.getParamMandatory("configFile");
+        String csvHeaderFile = c.getParamMandatory("csvHeaderFile");
+        File cf = new File(configFile);
+        File csvf = FileUtil.getFile(csvHeaderFile);
+        CsvConnector.saveConfigTemplate(configFile, csvHeaderFile);
     }
 }

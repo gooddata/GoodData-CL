@@ -6,7 +6,7 @@ package com.gooddata.exception;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class MetadataFormatException extends Exception {
+public class MetadataFormatException extends GdcException {
 
     /**
      * Exception constructor

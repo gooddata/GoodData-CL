@@ -8,14 +8,7 @@ package com.gooddata.exception;
 /**
  * @author jiri.zaloudek
  */
-public class GdcRestApiException extends Exception {
-
-
-    /**
-     * Creates a new instance of <code>GdcRestApiExecption</code> without detail message.
-     */
-    public GdcRestApiException() {
-    }
+public class GdcRestApiException extends GdcException {
 
 
     /**

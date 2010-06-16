@@ -1,10 +1,13 @@
 package com.gooddata.connector;
 
-import com.gooddata.exception.ModelException;
+import com.gooddata.exception.*;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
+import com.gooddata.processor.ProcessingContext;
 
 import java.io.IOException;
 
@@ -22,19 +25,16 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
 
     /**
      * Creates a new Time Dimension Connector
-     * @param context time dimension context
      */
-    protected TimeDimensionConnector(String context) {
-        ctx = context;
+    protected TimeDimensionConnector() {
     }
 
     /**
      * Creates a new Time Dimension Connector
-     * @param context time dimension context
      * @return new Time Dimension Connector
      */
-    public static TimeDimensionConnector createConnector(String context) {
-        return new TimeDimensionConnector(context);
+    public static TimeDimensionConnector createConnector() {
+        return new TimeDimensionConnector();
     }
 
     @Override
@@ -55,5 +55,35 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
         else {
             return "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\"";            
         }
+    }
+
+    /**
+     * Processes single command
+     * @param c command to be processed
+     * @param cli parameters (commandline params)
+     * @param ctx processing context
+     * @return true if the command has been processed, false otherwise
+     */
+    public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        try {
+            if(c.match("LoadTimeDimension")) {
+                loadTD(c, cli, ctx);
+            }
+            else
+                return super.processCommand(c, cli, ctx);
+        }
+        catch (IOException e) {
+            throw new ProcessingException(e);
+        }
+        return true;
+    }
+
+    private void loadTD(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String ct = "";
+        if(c.checkParam("context"))
+            ct = c.getParam( "context");
+        this.ctx = ct;
+        // sets the current connector
+        ctx.setConnector(this);
     }
 }

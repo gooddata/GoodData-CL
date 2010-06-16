@@ -1,5 +1,8 @@
 package com.gooddata.util;
 
+import com.gooddata.exception.InvalidArgumentException;
+import com.gooddata.processor.Command;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -250,6 +253,35 @@ public class FileUtil {
         String headerLine = r.readLine();
         r.close();
         return headerLine.split(",");
+    }
+
+
+    /**
+     * Constructs a new File and optionally checks if it exists 
+     * @param fileName file name
+     * @param ignoreMissingFile flag that ignores the fact that the file doesn't exists
+     * @return the File
+     * @throws IOException if the file doesn't exists and the ignoreMissingFile is false
+     */
+    public static  File getFile(String fileName, boolean ignoreMissingFile) throws IOException {
+        File f = new File(fileName);
+        if(!f.exists()) {
+        	if (!ignoreMissingFile)
+        		throw new IOException("File '" + fileName + "' doesn't exist.");
+        	else
+        		return null;
+        }
+        return f;
+    }
+
+    /**
+     * Constructs a new File and checks if it exists
+     * @param fileName file name
+     * @return the File
+     * @throws IOException if the file doesn't exists
+     */
+    public static File getFile(String fileName) throws IOException {
+        return getFile(fileName, false);
     }
 
 }

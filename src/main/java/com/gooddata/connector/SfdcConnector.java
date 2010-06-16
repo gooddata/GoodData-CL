@@ -5,6 +5,9 @@ import com.gooddata.exception.*;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.exception.SfdcException;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
+import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
 import com.sforce.soap.partner.*;
@@ -14,6 +17,7 @@ import org.apache.axis.message.MessageElement;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
+import org.gooddata.connector.backend.ConnectorBackend;
 
 import javax.xml.rpc.ServiceException;
 import java.io.File;
@@ -38,48 +42,18 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * Creates a new SFDC connector
-     * @param projectId project id
-     * @param configFileName configuration file
-     * @param sfdcUsr SFDC user
-     * @param sfdcPsw SFDC password
-     * @param query SFDC query
      * @param connectorBackend connector backend
-     * @param username database backend username
-     * @param password database backend password
-     * @throws com.gooddata.exception.InitializationException
-     * @throws com.gooddata.exception.MetadataFormatException
-     * @throws java.io.IOException
      */
-    protected SfdcConnector(String projectId, String configFileName, String sfdcUsr, String sfdcPsw, String query,
-                            int connectorBackend, String username, String password)
-            throws InitializationException,
-            MetadataFormatException, IOException, ModelException {
-        super(projectId, configFileName, connectorBackend, username, password);
-        setSfdcUsername(sfdcUsr);
-        setSfdcPassword(sfdcPsw);
-        setSfdcQuery(query);
+    protected SfdcConnector(ConnectorBackend connectorBackend) {
+        super(connectorBackend);
     }
 
    /**
      * Creates a new SFDC connector
-     * @param projectId project id
-     * @param configFileName configuration file
-     * @param sfdcUsr SFDC user
-     * @param sfdcPsw SFDC password
-     * @param query SFDC query
      * @param connectorBackend connector backend
-     * @param username database backend username
-     * @param password database backend password
-     * @throws com.gooddata.exception.InitializationException
-     * @throws com.gooddata.exception.MetadataFormatException
-     * @throws java.io.IOException
      */
-    public static SfdcConnector createConnector(String projectId, String configFileName, String sfdcUsr, String sfdcPsw, String query,
-                            int connectorBackend, String username, String password)
-                                throws InitializationException, MetadataFormatException,
-             IOException, ModelException {
-        return new SfdcConnector(projectId, configFileName, sfdcUsr, sfdcPsw, query, connectorBackend,
-                username, password);
+    public static SfdcConnector createConnector(ConnectorBackend connectorBackend) {
+        return new SfdcConnector(connectorBackend);
     }
 
 
@@ -409,6 +383,61 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      */
     public void setSfdcQuery(String sfdcQuery) {
         this.sfdcQuery = sfdcQuery;
+    }
+
+    /**
+     * Processes single command
+     * @param c command to be processed
+     * @param cli parameters (commandline params)
+     * @param ctx processing context
+     * @return true if the command has been processed, false otherwise
+     */
+    public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        try {
+            if(c.match("GenerateSfdcConfig")) {
+                generateSfdcConfig(c, cli, ctx);
+            }
+            else if(c.match("LoadSfdc")) {
+                loadSfdc(c, cli, ctx);
+            }
+            else
+                return super.processCommand(c, cli, ctx);
+        }
+        catch (IOException e) {
+            throw new ProcessingException(e);
+        }
+        return true;
+    }
+
+    private void loadSfdc(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String configFile = c.getParamMandatory("configFile");
+        String usr = c.getParamMandatory( "username");
+        String psw = c.getParamMandatory( "password");
+        String q = c.getParamMandatory("query");
+        File conf = FileUtil.getFile(configFile);
+        initSchema(conf.getAbsolutePath());
+        setSfdcUsername(usr);
+        setSfdcPassword(psw);
+        setSfdcQuery(q);
+        // sets the current connector
+        ctx.setConnector(this);
+        try {
+            this.checkProjectId();
+        }
+        catch(InvalidParameterException e) {
+            this.getConnectorBackend().setProjectId(ctx.getProjectId());
+        }
+    }    
+
+    private void generateSfdcConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String configFile = c.getParamMandatory("configFile");
+        String name = c.getParamMandatory("name");
+        String usr = c.getParamMandatory( "username");
+        String psw = c.getParamMandatory( "password");
+        String query = c.getParamMandatory("query");
+        File cf = new File(configFile);
+
+        SfdcConnector.saveConfigTemplate(name, configFile, usr, psw, query);
     }
 
 }

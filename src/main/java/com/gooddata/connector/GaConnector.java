@@ -1,14 +1,13 @@
 package com.gooddata.connector;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import com.gooddata.exception.InitializationException;
-import com.gooddata.exception.InvalidArgumentException;
-import com.gooddata.exception.MetadataFormatException;
-import com.gooddata.exception.ModelException;
+import com.gooddata.exception.*;
 import com.gooddata.google.analytics.FeedDumper;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
 import com.gooddata.util.FileUtil;
 import com.google.gdata.client.analytics.AnalyticsService;
 import com.google.gdata.data.analytics.DataFeed;
@@ -17,8 +16,11 @@ import com.google.gdata.util.ServiceException;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
+import org.gooddata.connector.backend.ConnectorBackend;
+import com.gooddata.processor.ProcessingContext;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -42,51 +44,18 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Creates a new Google Analytics Connector
-     * @param projectId project id
-     * @param configFileName configuration file 
-     * @param gUsr Google Analytics User
-     * @param gPsw Google Analytics Password
-     * @param gId Google Analytics profileId
-     * @param gQuery Google Analytics query
      * @param connectorBackend connector backend
-     * @param username database backend username
-     * @param password database backend password
-     * @throws InitializationException
-     * @throws MetadataFormatException
-     * @throws IOException
      */
-    protected GaConnector(String projectId, String configFileName, String gUsr, String gPsw, String gId, GaQuery gQuery,
-                          int connectorBackend, String username, String password)
-            throws InitializationException,
-            MetadataFormatException, IOException, ModelException {
-        super(projectId, configFileName, connectorBackend, username, password);
-        gQuery.setIds(gId);
-        setGoogleAnalyticsUsername(gUsr);
-        setGoogleAnalyticsPassword(gPsw);
-        setGoogleAnalyticsQuery(gQuery);
+    protected GaConnector(ConnectorBackend connectorBackend) {
+        super(connectorBackend);
     }
 
      /**
      * Creates a new Google Analytics Connector
-     * @param projectId project id
-     * @param configFileName configuration file
-     * @param gUsr Google Analytics User
-     * @param gPsw Google Analytics Password
-     * @param gId Google Analytics profileId
-     * @param gQuery Google Analytics query
      * @param connectorBackend connector backend
-     * @param username database backend username
-     * @param password database backend password
-     * @return new Google Analytics Connector
-     * @throws InitializationException
-     * @throws MetadataFormatException
-     * @throws IOException
      */
-    public static GaConnector createConnector(String projectId, String configFileName, String gUsr, String gPsw,
-                                String gId, GaQuery gQuery, int connectorBackend, String username, String password)
-                                throws InitializationException, MetadataFormatException,
-             IOException, ModelException {
-        return new GaConnector(projectId, configFileName, gUsr, gPsw, gId, gQuery, connectorBackend, username, password);
+    public static GaConnector createConnector(ConnectorBackend connectorBackend) {
+        return new GaConnector(connectorBackend);
     }
 
     /**
@@ -238,4 +207,81 @@ public class GaConnector extends AbstractConnector implements Connector {
     public void setGoogleAnalyticsQuery(GaQuery googleAnalyticsQuery) {
         this.googleAnalyticsQuery = googleAnalyticsQuery;
     }
+
+    /**
+     * Processes single command
+     * @param c command to be processed
+     * @param cli parameters (commandline params)
+     * @param ctx processing context
+     * @return true if the command has been processed, false otherwise
+     */
+    public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        try {
+            if(c.match("GenerateGaConfig")) {
+                generateGAConfig(c, cli, ctx);
+            }
+            else if(c.match("LoadGa")) {
+                loadGA(c, cli, ctx);
+            }
+            else
+                return super.processCommand(c, cli, ctx);
+        }
+        catch (IOException e) {
+            throw new ProcessingException(e);
+        }
+        return true;
+    }
+
+    private void loadGA(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+
+        GaQuery gq = null;
+        try {
+            gq = new GaQuery();
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+        String configFile = c.getParamMandatory("configFile");
+        String usr = c.getParamMandatory("username");
+        String psw = c.getParamMandatory("password");
+        String id = c.getParamMandatory("profileId");
+        File conf = FileUtil.getFile(configFile);
+        initSchema(conf.getAbsolutePath());
+        gq.setIds(id);
+        setGoogleAnalyticsUsername(usr);
+        setGoogleAnalyticsPassword(psw);
+        setGoogleAnalyticsQuery(gq);
+        gq.setDimensions(c.getParamMandatory("dimensions").replace("|",","));
+        gq.setMetrics(c.getParamMandatory("metrics").replace("|",","));
+        gq.setStartDate(c.getParamMandatory("startDate"));
+        gq.setEndDate(c.getParamMandatory("endDate"));
+        if(c.checkParam("filters"))
+            gq.setFilters(c.getParam("filters"));
+        // sets the current connector
+        ctx.setConnector(this);
+        try {
+            this.checkProjectId();
+        }
+        catch(InvalidParameterException e) {
+            this.getConnectorBackend().setProjectId(ctx.getProjectId());
+        }
+    }
+
+
+    private void generateGAConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String configFile = c.getParamMandatory("configFile");
+        String name = c.getParamMandatory("name");
+        String dimensions = c.getParamMandatory("dimensions");
+        String metrics = c.getParamMandatory("metrics");
+        File cf = new File(configFile);
+        GaQuery gq = null;
+        try {
+            gq = new GaQuery();
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+        gq.setDimensions(dimensions);
+        gq.setMetrics(metrics);
+        GaConnector.saveConfigTemplate(name, configFile, gq);
+    }
+
 }

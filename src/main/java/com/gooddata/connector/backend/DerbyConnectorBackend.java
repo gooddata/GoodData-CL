@@ -1,7 +1,6 @@
 package com.gooddata.connector.backend;
 
 import com.gooddata.connector.driver.DerbySqlDriver;
-import com.gooddata.connector.model.PdmSchema;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 import org.gooddata.connector.backend.ConnectorBackend;
@@ -43,25 +42,19 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
 
     /**
      * Constructor
-     * @param projectId project id
-     * @param configFileName config file name
-     * @param pdm PDM schema
      * @throws java.io.IOException in case of an IO issue
      */
-    protected DerbyConnectorBackend(String projectId, String configFileName, PdmSchema pdm) throws IOException {
-        super(projectId, configFileName, pdm, null, null);
+    protected DerbyConnectorBackend() throws IOException {
+        super(null, null);
         sg = new DerbySqlDriver();
     }
 
     /**
-     * Create 
-     * @param projectId project id
-     * @param configFileName config file name
-     * @param pdm PDM schema
+     * Create
      * @throws java.io.IOException in case of an IO issue
      */
-    public static DerbyConnectorBackend create(String projectId, String configFileName, PdmSchema pdm) throws IOException {
-        return new DerbyConnectorBackend(projectId, configFileName, pdm);
+    public static DerbyConnectorBackend create() throws IOException {
+        return new DerbyConnectorBackend();
     }
 
 
@@ -72,7 +65,7 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
      */
     public Connection connect() throws SQLException {
         String protocol = "jdbc:derby:";
-        return DriverManager.getConnection(protocol + projectId + ";create=true");
+        return DriverManager.getConnection(protocol + getProjectId() + ";create=true");
     }
 
     /**
@@ -80,7 +73,7 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
      */
     public void dropSnapshots() {
         File derbyDir = new File (System.getProperty("derby.system.home") +
-                System.getProperty("file.separator") + projectId);
+                System.getProperty("file.separator") + getProjectId());
         derbyDir.delete();
     }
 

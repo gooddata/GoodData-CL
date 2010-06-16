@@ -1,5 +1,6 @@
 package org.gooddata.connector.backend;
 
+import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.DLI;
@@ -121,5 +122,19 @@ public interface ConnectorBackend {
      * @return true if the table exists, false otherwise
      */
     public boolean exists(String tbl);
+
+    /**
+     * The project id
+     */
+    public String getProjectId();
+
+    public void setProjectId(String projectId);
+
+    /**
+     * The PDM schema
+     */
+    public PdmSchema getPdm();
+
+    public void setPdm(PdmSchema schema);
 
 }
