@@ -1,6 +1,7 @@
 package com.gooddata.connector.driver;
 
 import com.gooddata.exception.ModelException;
+import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
@@ -37,7 +38,19 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
         SYNTAX_CONCAT_FUNCTION_SUFFIX = ")";
         SYNTAX_CONCAT_OPERATOR = ",'" + HASH_SEPARATOR + "',";
     }
-
+    
+    /**
+     * Executes the system DDL initialization
+     * @param c JDBC connection
+     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
+     * @throws SQLException in case of db problems
+     */
+    @Override
+    public void executeSystemDdlSql(Connection c) throws ModelException, SQLException {
+    	super.executeSystemDdlSql(c);
+    	createFunctions(c);
+    }
+    
     /**
      * Executes the Derby SQL that extracts the data from a CSV file to the normalization database
      * @param c JDBC connection
@@ -73,11 +86,10 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
         ResultSet rs = null;
         try {
             s = c.createStatement();
-            rs = JdbcUtil.executeQuery(s,
-            "SELECT " + cols + " INTO OUTFILE '" + file +
-            "' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' FROM " +
-            dliTable.toUpperCase() + whereClause
-            );
+            String sql = "SELECT " + cols + " INTO OUTFILE '" + file +
+	            "' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' FROM " +
+	            dliTable.toUpperCase() + whereClause;
+            rs = JdbcUtil.executeQuery(s, sql);
         }
         finally {
             if (rs != null && !rs.isClosed())
@@ -85,6 +97,16 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
             if (s != null && !s.isClosed())
                 s.close();
         }
+    }
+    
+    protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
+        if (cols.length() > 0)
+            cols += ",ATOD(" + table.toUpperCase() + "." +
+                    StringUtil.formatShortName(cl.getName())+")";
+        else
+            cols +=  "ATOD(" + table.toUpperCase() + "." +
+                    StringUtil.formatShortName(cl.getName())+")";
+        return cols;
     }
 
     protected void insertFactsToFactTable(Connection c, PdmSchema schema) throws ModelException, SQLException {
@@ -109,5 +131,23 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
             " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='"+fact+"')"
         );
     }
+    
+    private void createFunctions(Connection c) throws SQLException {
+    	String sql = "CREATE FUNCTION ATOD(str varchar(255)) RETURNS DECIMAL(15,4) "
+			    + "RETURN CASE "
+			    + "      WHEN str = '' THEN NULL "
+			    + "      ELSE CAST( ";
+    	for (final String s : Constants.DISCARD_CHARS) {
+    		sql += "REPLACE(";
+    	}
+    	sql += "str";
+    	for (final String s : Constants.DISCARD_CHARS) {
+    		sql += ", '" + s + "', '')";
+    	}
+		sql +=  "           AS DECIMAL(15,4)) "
+			  + "   END";
 
+        JdbcUtil.executeUpdate(c, sql);
+
+    }
 }

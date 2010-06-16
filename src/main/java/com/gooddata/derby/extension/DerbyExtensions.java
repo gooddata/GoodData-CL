@@ -5,6 +5,8 @@ import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.gooddata.connector.driver.Constants;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,7 +22,6 @@ import java.util.GregorianCalendar;
  */
 public class DerbyExtensions {
 
-    private final static String[] DISCARD_CHARS = {"$", "%", ",", "(", ")", "Û", "£", "´"};
     private final static DateTimeFormatter baseFmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 
     private final static int EMPTY_DATE_ID = 2147483647;
@@ -37,7 +38,7 @@ public class DerbyExtensions {
         }
         catch (NumberFormatException e) {
             try {
-                for ( String r : DISCARD_CHARS ) {
+                for ( String r : Constants.DISCARD_CHARS ) {
                     str = str.replace(r,"");
                 }
                 Double.parseDouble(str);
