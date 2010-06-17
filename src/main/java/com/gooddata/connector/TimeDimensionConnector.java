@@ -1,13 +1,13 @@
 package com.gooddata.connector;
 
 import com.gooddata.exception.*;
-import org.gooddata.connector.processor.CliParams;
-import org.gooddata.connector.processor.Command;
+import org.gooddata.processor.CliParams;
+import org.gooddata.processor.Command;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
-import org.gooddata.connector.processor.ProcessingContext;
+import org.gooddata.processor.ProcessingContext;
 
 import java.io.IOException;
 

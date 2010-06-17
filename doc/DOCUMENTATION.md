@@ -34,7 +34,7 @@ The utility can help you automate creating projects, created data models and loa
 # XML Configuration File
 </a>
 
-The XML configuration file is generated using the GenerateCsvConfigTemplate() command. It uses your CSV file to find the names of columns in the first row of the file. The generated XML file is an example and should be modified before being used.
+The XML configuration file is generated using the GenerateCsvConfig() command. It uses your CSV file to find the names of columns in the first row of the file. The generated XML file is an example and should be modified before being used.
 
 ### Basic Structure
 The file contains a name of the schema and entries for all your data columns:
@@ -74,4 +74,4 @@ In each &lt;column&gt; entry, following tags can be used:
 # Examples
 </a>
 
-The examples folder contains typical some typical scenarios. Each example contains it's own [README](http://github.com/gooddata/Java-DI-Tool/blob/master/examples/zendesk/README.md#readme) file describing usage.
+The examples folder contains typical some typical scenarios. Each example contains it's own [README](../examples/zendesk/README.md#readme) file describing usage.

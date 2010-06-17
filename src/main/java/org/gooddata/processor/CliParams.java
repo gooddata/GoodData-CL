@@ -1,4 +1,4 @@
-package org.gooddata.connector.processor;
+package org.gooddata.processor;
 
 import com.gooddata.exception.InvalidArgumentException;
 import com.gooddata.naming.N;

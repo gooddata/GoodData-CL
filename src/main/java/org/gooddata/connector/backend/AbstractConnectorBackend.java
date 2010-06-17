@@ -158,7 +158,7 @@ import org.gooddata.connector.driver.SqlDriver;
             l.debug("Schema initialized.");
         }
         catch (SQLException e) {
-            throw new InternalError(e.getMessage());
+            throw new InternalErrorException("Error initializing pdm schema '" + getPdm().getName() + "'", e);
         }
         finally {
             try {

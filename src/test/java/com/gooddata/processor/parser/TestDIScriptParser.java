@@ -1,6 +1,6 @@
 package com.gooddata.processor.parser;
 
-import org.gooddata.connector.processor.Command;
+import org.gooddata.processor.Command;
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 

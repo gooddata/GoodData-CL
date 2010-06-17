@@ -20,10 +20,10 @@ import org.gooddata.connector.Connector;
 
 import com.gooddata.util.FileUtil;
 import org.gooddata.connector.backend.ConnectorBackend;
-import org.gooddata.connector.processor.CliParams;
-import org.gooddata.connector.processor.Command;
-import org.gooddata.connector.processor.Executor;
-import org.gooddata.connector.processor.ProcessingContext;
+import org.gooddata.processor.CliParams;
+import org.gooddata.processor.Command;
+import org.gooddata.processor.Executor;
+import org.gooddata.processor.ProcessingContext;
 
 /**
  * The GoodData Data Integration CLI processor.

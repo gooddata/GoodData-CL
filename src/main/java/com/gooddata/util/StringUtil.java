@@ -14,7 +14,7 @@ import java.util.List;
 public class StringUtil {
 
     private static String[] DISCARD_CHARS = {"\"", " ", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
-            "$", "%", ",", "(", ")", "Û", "£", "´","@", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "{" ,"}",
+            "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
             "[", "]","\\"};
 
     private static String[] INVALID_CSV_HEADER_CHARS = {"\"", "'", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
@@ -35,7 +35,8 @@ public class StringUtil {
         for ( String r : DISCARD_CHARS ) {
             s = s.replace(r,"");
         }
-        return s.toLowerCase();
+        s.replaceAll("^[0-9]*", "");
+        return s.toLowerCase().trim();
     }
 
     /**
@@ -58,7 +59,7 @@ public class StringUtil {
      * @return converted string
      */
     public static String formatLongName(String s) {
-        return s;
+        return s.trim();
     }
 
     /**
@@ -70,7 +71,7 @@ public class StringUtil {
         for ( String r : INVALID_CSV_HEADER_CHARS ) {
             s = s.replace(r,"");
         }
-        return s.toLowerCase();
+        return s.toLowerCase().trim();
     }
 
     /**
@@ -82,7 +83,7 @@ public class StringUtil {
         for ( String r : INVALID_CSV_HEADER_CHARS ) {
             s = s.replace(r,"");
         }
-        return s;
+        return s.trim();
     }
 
     /**

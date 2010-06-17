@@ -8,9 +8,7 @@ See separate [Windows](#win) and [Unix](#unix) instructions.
 ## UNIX/Mac installation
 </a>
 
-1. [download](http://github.com/gooddata/Java-DI-Tool/archives/master) the code and unpack or clone the Git repository:
-
-        $ git clone http://github.com/gooddata/Java-DI-Tool.git
+1. [download](http://github.com/gooddata/Java-DI-Tool/archives/master) the code and unpack *(or git clone this repository)*:
 
 2. make sure you have [Apache Maven](http://maven.apache.org/) installed:
 
@@ -36,10 +34,6 @@ See separate [Windows](#win) and [Unix](#unix) instructions.
          -p,--password <arg>   GoodData password
          -u,--username <arg>   GoodData username
         [...]
-
-5. _(optional)_ symlink gdi.sh into your executable path, for example:
-
-        $ sudo ln -s /<path-to-source-dir>/bin/gdi.sh /usr/local/bin/gdi
 
 <a name="win">
 ## Windows installation

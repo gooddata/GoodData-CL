@@ -4,7 +4,7 @@ import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import org.gooddata.connector.processor.Executor;
+import org.gooddata.processor.Executor;
 
 import java.io.IOException;
 import java.util.List;
