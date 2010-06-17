@@ -47,6 +47,7 @@ public class GdcDI implements Executor {
             connectors = instantiateConnectors();
             String execute = cliParams.get(CliParams.CLI_PARAM_EXECUTE[0]);
             String scripts = cliParams.get(CliParams.CLI_PARAM_SCRIPT);
+            
             if(execute!= null && scripts != null && execute.length()>0 && scripts.length()>0) {
                 l.error("You can't execute a script and use the -e command line parameter at the same time.");
             }
@@ -161,6 +162,10 @@ public class GdcDI implements Executor {
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
+        	// take project id from command line, may be override in the script
+        	if (cliParams.get(CliParams.CLI_PARAM_PROJECT[0]) != null) {
+            	ctx.setProjectId(cliParams.get(CliParams.CLI_PARAM_PROJECT[0]));
+            }
             if(c.match("CreateProject")) {
                 createProject(c, cli, ctx);
             }
