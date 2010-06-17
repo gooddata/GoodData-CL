@@ -537,7 +537,7 @@ public class GdcRESTApiWrapper {
                         msg += body;
                     }
                 }
-                throw new HttpMethodException(msg);
+                throw new HttpMethodException("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
             }
         } catch (HttpException e) {
             throw new HttpMethodException("HttpException: " + e.getMessage());
