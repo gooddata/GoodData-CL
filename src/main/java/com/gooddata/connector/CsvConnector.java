@@ -3,11 +3,12 @@ package com.gooddata.connector;
 import com.gooddata.exception.*;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.processor.CliParams;
-import com.gooddata.processor.Command;
-import com.gooddata.processor.ProcessingContext;
+import org.gooddata.connector.processor.CliParams;
+import org.gooddata.connector.processor.Command;
+import org.gooddata.connector.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
+import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.ConnectorBackend;
@@ -24,6 +25,7 @@ import static org.apache.derby.tools.ij.runScript;
  */
 public class CsvConnector extends AbstractConnector implements Connector {
 
+    private static Logger l = Logger.getLogger(CsvConnector.class);
     
     // data file
     private File dataFile;
@@ -66,6 +68,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @throws IOException in case of an IO issue
      */
     public static void saveConfigTemplate(String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
+        l.debug("Saving CSV config template.");
         File dataFile = new File(dataFileName);
         String name = dataFile.getName().split("\\.")[0];
         String[] headers = FileUtil.getCsvHeader(dataFile);
@@ -104,6 +107,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
             i++;
         }
         s.writeConfig(new File(configFileName));
+        l.debug("Saved CSV config template.");
     }
 
     /**
@@ -123,10 +127,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Extracts the source data CSV to the Derby database where it is going to be transformed
-     * @throws ModelException in case of PDM schema issues
+     * {@inheritDoc}
      */
-    public void extract() throws ModelException, IOException {
+    public void extract() throws IOException {
         if(getHasHeader()) {
             File tmp = FileUtil.stripCsvHeader(getDataFile());
             getConnectorBackend().extract(tmp);
@@ -154,6 +157,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        l.debug("Processing command "+c.getCommand());
         try {
             if(c.match("GenerateCsvConfig")) {
                 generateCsvConfig(c, cli, ctx);
@@ -161,12 +165,15 @@ public class CsvConnector extends AbstractConnector implements Connector {
             else if(c.match("LoadCsv")) {
                 loadCsv(c, cli, ctx);
             }
-            else
+            else {
+                l.debug("No match passing the command "+c.getCommand()+" further.");
                 return super.processCommand(c, cli, ctx);
+            }
         }
         catch (IOException e) {
             throw new ProcessingException(e);
         }
+        l.debug("Processed command "+c.getCommand());
         return true;
     }
 

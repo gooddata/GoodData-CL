@@ -1,12 +1,10 @@
 package org.gooddata.connector;
 
-import com.gooddata.exception.InternalErrorException;
-import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.processor.Executor;
+import org.gooddata.connector.processor.Executor;
 
 import java.io.IOException;
 import java.util.List;

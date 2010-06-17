@@ -20,6 +20,10 @@ import org.gooddata.connector.Connector;
 
 import com.gooddata.util.FileUtil;
 import org.gooddata.connector.backend.ConnectorBackend;
+import org.gooddata.connector.processor.CliParams;
+import org.gooddata.connector.processor.Command;
+import org.gooddata.connector.processor.Executor;
+import org.gooddata.connector.processor.ProcessingContext;
 
 /**
  * The GoodData Data Integration CLI processor.
@@ -52,12 +56,15 @@ public class GdcDI implements Executor {
                 l.error("You can't execute a script and use the -e command line parameter at the same time.");
             }
             if(execute!= null && execute.length() > 0) {
+                l.debug("Executing arg="+execute);
                 execute(execute);
             }
             if(scripts!= null && scripts.length() > 0) {
                 String[] sas = scripts.split(",");
-                for(String script : sas)
+                for(String script : sas) {
+                    l.debug("Executing file="+script);
                     execute(new File(script));
+                }
             }
         }
         catch (InvalidArgumentException e) {
@@ -138,6 +145,7 @@ public class GdcDI implements Executor {
      * @throws InvalidArgumentException in case there is an invalid command
      */
     protected static List<Command> parseCmd(String cmd) throws InvalidArgumentException {
+        l.debug("Parsing comands: "+cmd);
         try {
             if(cmd != null && cmd.length()>0) {
                 Reader r = new StringReader(cmd);
@@ -151,8 +159,10 @@ public class GdcDI implements Executor {
             }
         }
         catch(ParseException e) {
+            l.error("Can't parse command '" + cmd + "'");
             throw new InvalidCommandException("Can't parse command '" + cmd + "'");
         }
+        l.error("Can't parse command (empty command).");
         throw new InvalidCommandException("Can't parse command (empty command).");
     }
 
@@ -161,6 +171,7 @@ public class GdcDI implements Executor {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        l.debug("Processing command "+c.getCommand());
         try {
         	// take project id from command line, may be override in the script
         	if (cliParams.get(CliParams.CLI_PARAM_PROJECT[0]) != null) {
@@ -171,6 +182,7 @@ public class GdcDI implements Executor {
             }
             else if(c.match("OpenProject")) {
                 ctx.setProjectId(c.getParamMandatory("id"));
+                l.debug("Opened project id="+ctx.getProjectId());
             }
             else if(c.match("StoreProject")) {
                 storeProject(c, cli, ctx);
@@ -181,12 +193,16 @@ public class GdcDI implements Executor {
             else if(c.match( "Lock")) {
                 lock(c, cli, ctx);
             }
-            else
+            else {
+                l.debug("No match command "+c.getCommand());
                 return false;
+            }
         }
         catch (IOException e) {
+            l.debug("Processing command "+c.getCommand()+" failed",e);
             throw new ProcessingException(e);
         }
+        l.debug("Processed command "+c.getCommand());
         return true;
     }
 
@@ -220,6 +236,7 @@ public class GdcDI implements Executor {
         String fileName = c.getParamMandatory("fileName");
         String pid = ctx.getProjectId();
         FileUtil.writeStringToFile(pid, fileName);
+        l.debug("Stored project id="+pid+" to "+fileName);
     }
 
     /**
@@ -231,6 +248,7 @@ public class GdcDI implements Executor {
     private void retrieveProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String fileName = c.getParamMandatory("fileName");
         ctx.setProjectId(FileUtil.readStringFromFile(fileName).trim());
+        l.debug("Retrieved project id="+ctx.getProjectId()+" from "+fileName);
     }
 
     /**

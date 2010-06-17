@@ -4,7 +4,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.gooddata.exception.*;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.processor.CliParams;
+import org.gooddata.connector.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
@@ -13,7 +13,8 @@ import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.ConnectorBackend;
-import com.gooddata.processor.ProcessingContext;
+import org.gooddata.connector.processor.Command;
+import org.gooddata.connector.processor.ProcessingContext;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -53,14 +54,15 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * Saves a template of the config file
-     * @throws com.gooddata.exception.InvalidArgumentException if there is a problem with arguments
      * @throws java.io.IOException if there is a problem with writing the config file
      * @throws SQLException if there is a problem with the db
      * @throws InvalidArgumentException  
      */
     public static void saveConfigTemplate(String name, String configFileName, String jdbcUsr, String jdbcPsw,
                                   String jdbcDriver, String jdbcUrl,String query)
-            throws InvalidArgumentException, IOException, SQLException {
+            throws IOException, SQLException {
+        l.debug("Saving JDBC config template.");
+        l.debug("Loading JDBC driver "+jdbcDriver);
         try {
             Class.forName(jdbcDriver).newInstance();
         } catch (InstantiationException e) {
@@ -70,6 +72,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         } catch (ClassNotFoundException e) {
             l.error("Can't load JDBC driver.", e);
         }
+        l.debug("JDBC driver "+jdbcDriver+" loaded.");
         SourceSchema s = SourceSchema.createSchema(name);
         Connection con = null;
         Statement st = null;
@@ -98,6 +101,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             if(con != null && !con.isClosed())
                 con.close();
         }
+        l.debug("Saved JDBC config template.");
     }
 
     /**
@@ -278,6 +282,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        l.debug("Processing command "+c.getCommand());
         try {
             if(c.match("GenerateJdbcConfig")) {
                 generateJdbcConfig(c, cli, ctx);
@@ -285,8 +290,10 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             else if(c.match("LoadJdbc")) {
                 loadJdbc(c, cli, ctx);
             }
-            else
+            else {
+                l.debug("No match passing the command "+c.getCommand()+" further.");
                 return super.processCommand(c, cli, ctx);
+            }
         }
         catch (SQLException e) {
             throw new ProcessingException(e);
@@ -294,6 +301,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         catch (IOException e) {
             throw new ProcessingException(e);
         }
+        l.debug("Processed command "+c.getCommand());
         return true;
     }
 

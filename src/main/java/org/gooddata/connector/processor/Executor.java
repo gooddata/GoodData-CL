@@ -1,4 +1,4 @@
-package com.gooddata.processor;
+package org.gooddata.connector.processor;
 
 import com.gooddata.exception.ProcessingException;
 

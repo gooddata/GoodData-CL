@@ -25,7 +25,7 @@ import java.sql.Statement;
  * @version 1.0
  */
 public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
-    //TODO: refactor
+
     private static Logger l = Logger.getLogger(MySqlDriver.class);
 
  /**
@@ -44,6 +44,7 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
      * {@inheritDoc}
      */
     public void executeExtractSql(Connection c, PdmSchema schema, String file) throws ModelException, SQLException {
+        l.debug("Extracting data.");
         PdmTable sourceTable = schema.getSourceTable();
         String source = sourceTable.getName();
         String cols = getNonAutoincrementColumns(sourceTable);
@@ -51,6 +52,7 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
             "LOAD DATA INFILE '" + file + "' INTO TABLE " + source.toUpperCase() + " CHARACTER SET UTF8 "+
             "COLUMNS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' (" + cols + ")"
         );
+        l.debug("Finished extracting data.");
     }
 
     /**
@@ -58,6 +60,7 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
      */
     public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
             throws ModelException, SQLException {
+        l.debug("Unloading data.");
         String file = dir + System.getProperty("file.separator") + part.getFileName();
         String cols = getLoadColumns(part, schema);
         String whereClause = getLoadWhereClause(part, schema, snapshotIds);
@@ -77,6 +80,7 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
             if (s != null && !s.isClosed())
                 s.close();
         }
+        l.debug("Data unloading finished.");
     }
 
     /**
@@ -122,6 +126,7 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
      * {@inheritDoc}
      */
     protected void createFunctions(Connection c) throws SQLException {
+        l.debug("Creating system functions.");
     	String sql = "CREATE FUNCTION ATOD(str varchar(255)) RETURNS DECIMAL(15,4) "
 			    + "RETURN CASE "
 			    + "      WHEN str = '' THEN NULL "
@@ -137,6 +142,6 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
 			  + "   END";
 
         JdbcUtil.executeUpdate(c, sql);
-
+        l.debug("System functions creation finished.");
     }
 }

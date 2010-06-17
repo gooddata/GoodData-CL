@@ -6,6 +6,7 @@ import com.google.gdata.data.analytics.DataEntry;
 import com.google.gdata.data.analytics.DataFeed;
 import com.google.gdata.data.analytics.Dimension;
 import com.google.gdata.data.analytics.Metric;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,6 +22,7 @@ import java.util.List;
  */
 public class FeedDumper {
 
+    private static Logger l = Logger.getLogger(FeedDumper.class);
     
     /**
      * Dupmps the gdata feed to CSV
@@ -29,7 +31,7 @@ public class FeedDumper {
      * @throws IOException in case of an IO problem
      */
     public static int dump(CSVWriter cw, DataFeed feed) throws IOException {
-
+        l.debug("Dumping GA feed.");
         List<DataEntry> entries = feed.getEntries();
         List<Dimension> dimensions = null;
         List<Metric> metrics = null;
@@ -67,6 +69,7 @@ public class FeedDumper {
             }
             cw.writeNext(row.toArray(new String[]{}));
         }
+        l.debug("Dumped "+entries.size()+" rows from GA feed.");
         return entries.size() - 1;   
     }
 

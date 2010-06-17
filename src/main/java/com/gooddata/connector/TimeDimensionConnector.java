@@ -1,13 +1,13 @@
 package com.gooddata.connector;
 
 import com.gooddata.exception.*;
-import com.gooddata.processor.CliParams;
-import com.gooddata.processor.Command;
+import org.gooddata.connector.processor.CliParams;
+import org.gooddata.connector.processor.Command;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
-import com.gooddata.processor.ProcessingContext;
+import org.gooddata.connector.processor.ProcessingContext;
 
 import java.io.IOException;
 
@@ -50,30 +50,38 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
      * {@inheritDoc}
      */
     public String generateMaql() {
+        l.debug("Generating time dimension MAQL with context "+ctx);
         if(ctx != null && ctx.trim().length()>0) {
             String idp = StringUtil.formatShortName(ctx);
             String ts = StringUtil.formatLongName(ctx);
+            l.debug("Generated time dimension MAQL with context "+ctx);
             return "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\" MODIFY (IDENTIFIER \""+idp+"\", TITLE \""+ts+"\");";
         }
         else {
+            l.debug("Generated time dimension MAQL with no context ");
             return "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\"";            
         }
+
     }
 
     /**
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        l.debug("Processing command "+c.getCommand());
         try {
             if(c.match("LoadTimeDimension")) {
                 loadTD(c, cli, ctx);
             }
-            else
+            else {
+                l.debug("No match passing the command "+c.getCommand()+" further.");
                 return super.processCommand(c, cli, ctx);
+            }
         }
         catch (IOException e) {
             throw new ProcessingException(e);
         }
+        l.debug("Processed command "+c.getCommand());
         return true;
     }
 

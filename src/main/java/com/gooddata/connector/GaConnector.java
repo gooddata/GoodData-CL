@@ -6,8 +6,8 @@ import com.gooddata.google.analytics.FeedDumper;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.processor.CliParams;
-import com.gooddata.processor.Command;
+import org.gooddata.connector.processor.CliParams;
+import org.gooddata.connector.processor.Command;
 import com.gooddata.util.FileUtil;
 import com.google.gdata.client.analytics.AnalyticsService;
 import com.google.gdata.data.analytics.DataFeed;
@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.ConnectorBackend;
-import com.gooddata.processor.ProcessingContext;
+import org.gooddata.connector.processor.ProcessingContext;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -67,7 +67,8 @@ public class GaConnector extends AbstractConnector implements Connector {
      * @throws IOException if there is a problem with writing the config file
      */
     public static void saveConfigTemplate(String name, String configFileName, GaQuery gQuery)
-            throws InvalidArgumentException, IOException {
+            throws IOException {
+        l.debug("Saving GA config template.");
         String dims = gQuery.getDimensions();
         String mtrs = gQuery.getMetrics();
         SourceSchema s = SourceSchema.createSchema(name);
@@ -117,6 +118,7 @@ public class GaConnector extends AbstractConnector implements Connector {
             throw new InvalidArgumentException("Please specify Google Analytics metrics separated by comma.");
         }
         s.writeConfig(new File(configFileName));
+        l.debug("Saved GA config template.");
     }
 
     /**
@@ -211,6 +213,7 @@ public class GaConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        l.debug("Processing command "+c.getCommand());
         try {
             if(c.match("GenerateGoogleAnalyticsConfig")) {
                 generateGAConfig(c, cli, ctx);
@@ -218,12 +221,15 @@ public class GaConnector extends AbstractConnector implements Connector {
             else if(c.match("LoadGoogleAnalytics")) {
                 loadGA(c, cli, ctx);
             }
-            else
+            else {
+                l.debug("No match passing the command "+c.getCommand()+" further.");
                 return super.processCommand(c, cli, ctx);
+            }
         }
         catch (IOException e) {
             throw new ProcessingException(e);
         }
+        l.debug("Processed command "+c.getCommand());
         return true;
     }
 

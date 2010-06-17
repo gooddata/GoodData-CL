@@ -1,6 +1,5 @@
-package com.gooddata.processor;
+package org.gooddata.connector.processor;
 
-import com.gooddata.exception.InvalidArgumentException;
 import com.gooddata.exception.InvalidParameterException;
 import org.apache.log4j.Logger;
 

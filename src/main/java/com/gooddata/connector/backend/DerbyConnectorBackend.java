@@ -27,6 +27,7 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
      * static initializer of the Derby SQL JDBC driver
      */
     static {
+        l.debug("Loading Derby SQL driver.");
         String driver = "org.apache.derby.jdbc.EmbeddedDriver";
         try {
             Class.forName(driver).newInstance();
@@ -37,6 +38,7 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
         } catch (ClassNotFoundException e) {
             l.error("Error loading Derby SQL JDBC driver.", e);
         }
+        l.debug("Derby SQL driver loaded.");
     }
 
 
@@ -70,9 +72,11 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
      * {@inheritDoc}
      */
     public void dropSnapshots() {
+        l.debug("Dropping derby snapshots "+getProjectId());
         File derbyDir = new File (System.getProperty("derby.system.home") +
                 System.getProperty("file.separator") + getProjectId());
         derbyDir.delete();
+        l.debug("Finished dropping derby snapshots "+getProjectId());
     }
 
 }

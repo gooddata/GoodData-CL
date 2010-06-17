@@ -41,6 +41,7 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
      * {@inheritDoc}
      */
     public void executeExtractSql(Connection c, PdmSchema schema, String file) throws ModelException, SQLException {
+        l.debug("Extracting data.");
         PdmTable sourceTable = schema.getSourceTable();
         String source = sourceTable.getName();
         String cols = getNonAutoincrementColumns(sourceTable);
@@ -49,7 +50,7 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
             "(NULL, '" + source.toUpperCase() + "', '" + cols.toUpperCase() +
             "', null, '" + file + "', null, null, 'utf-8',0)"
         );
-        
+        l.debug("Finished extracting data.");
     }
 
     /**
@@ -57,6 +58,7 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
      */
     public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
             throws ModelException, SQLException {
+        l.debug("Unloading data.");
         String file = dir + System.getProperty("file.separator") + part.getFileName();
         String cols = getLoadColumns(part, schema);
         String whereClause = getLoadWhereClause(part, schema, snapshotIds);
@@ -66,12 +68,14 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
             "('SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause + "', '" + file +
             "', null, null, 'utf-8')"
         );
+        l.debug("Finished unloading data.");
     }
 
     /**
      * {@inheritDoc}
      */
     protected void createFunctions(Connection c) throws SQLException {
+        l.debug("Creating system functions.");
         JdbcUtil.executeUpdate(c,
             "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS DOUBLE\n" +
             " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
@@ -83,6 +87,7 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
             " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
             " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.dttoi'"
         );
+        l.debug("System functions creation finished.");
     }
 
     /**

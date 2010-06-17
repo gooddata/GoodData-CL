@@ -1,8 +1,5 @@
 package com.gooddata.util;
 
-import com.gooddata.exception.InvalidArgumentException;
-import com.gooddata.processor.Command;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

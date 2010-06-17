@@ -8,11 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-import java.util.logging.Logger;
 
-import org.gooddata.connector.driver.AbstractSqlDriver;
 
 import com.gooddata.connector.model.PdmSchema;
+import com.gooddata.exception.GdcIntegrationErrorException;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.Column;
@@ -21,6 +20,7 @@ import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
+import org.apache.log4j.Logger;
 import org.gooddata.connector.driver.SqlDriver;
 
 /**
@@ -33,7 +33,7 @@ import org.gooddata.connector.driver.SqlDriver;
  * @version 1.0
  */public abstract class AbstractConnectorBackend implements ConnectorBackend {
 
-    private static Logger l = Logger.getLogger("org.gooddata.connector.backend");
+    private static Logger l = Logger.getLogger(AbstractConnectorBackend.class);
 
     // SQL driver for executing DBMS specific SQL
     protected SqlDriver sg;
@@ -114,12 +114,17 @@ import org.gooddata.connector.driver.SqlDriver;
      * {@inheritDoc}
      */
     public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
-            throws IOException, ModelException {
+            throws IOException {
+        l.debug("Deploying snapshots ids "+snapshotIds);
         loadSnapshot(parts, dir, snapshotIds);
-        FileUtil.writeStringToFile(dli.getDLIManifest(parts), dir + System.getProperty("file.separator") +
-                GdcRESTApiWrapper.DLI_MANIFEST_FILENAME);
+        String fn = dir + System.getProperty("file.separator") +
+                GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
+        String cn = dli.getDLIManifest(parts);
+        FileUtil.writeStringToFile(cn, fn);
+        l.debug("Manifest file written to file '"+fn+"'. Content: "+cn);
         addHeaders(parts, dir);
         FileUtil.compressDir(dir, archiveName);
+        l.debug("Snapshots ids "+snapshotIds+" deployed.");
     }
 
     /**
@@ -139,14 +144,18 @@ import org.gooddata.connector.driver.SqlDriver;
     /**
      * {@inheritDoc}
      */
-    public void initialize() throws ModelException {
+    public void initialize() {
         Connection con = null;
         try {
+            l.debug("Initializing schema.");
         	con = connect();
             if(!isInitialized()) {
+                l.debug("Initializing system schema.");
                 sg.executeSystemDdlSql(con);
+                l.debug("System schema initialized.");
             }
-            sg.executeDdlSql(con, getPdm());    
+            sg.executeDdlSql(con, getPdm());
+            l.debug("Schema initialized.");
         }
         catch (SQLException e) {
             throw new InternalError(e.getMessage());
@@ -165,14 +174,14 @@ import org.gooddata.connector.driver.SqlDriver;
     /**
      * {@inheritDoc}
      */
-    public void transform() throws ModelException {
+    public void transform() {
         Connection con = null;
         try {
             con = connect();
             sg.executeNormalizeSql(con, getPdm());
         }
         catch (SQLException e) {
-            throw new RuntimeException("Error normalizing PDM Schema " + getPdm().getName() + " " + getPdm().getTables(), e);
+            throw new GdcIntegrationErrorException("Error normalizing PDM Schema " + getPdm().getName() + " " + getPdm().getTables(), e);
         }
         finally {
             try {
@@ -188,7 +197,7 @@ import org.gooddata.connector.driver.SqlDriver;
     /**
      * {@inheritDoc}
      */
-    public String listSnapshots() throws InternalErrorException {
+    public String listSnapshots() {
         String result = "ID        FROM ROWID        TO ROWID        TIME\n";
               result += "------------------------------------------------\n";
         Connection con = null;
@@ -223,13 +232,14 @@ import org.gooddata.connector.driver.SqlDriver;
                ee.printStackTrace();
             }
         }
+        l.debug("Current snapshots: \n"+result);
         return result;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getLastSnapshotId() throws InternalErrorException {
+    public int getLastSnapshotId() {
         Connection con = null;
         Statement s = null;
         ResultSet r = null;
@@ -239,6 +249,7 @@ import org.gooddata.connector.driver.SqlDriver;
             r = s.executeQuery("SELECT MAX(id) FROM snapshots");
             for(boolean rc = r.next(); rc; rc = r.next()) {
                 int id = r.getInt(1);
+                l.debug("Last snapshot is "+id);
                 return id;
             }
         }
@@ -294,7 +305,7 @@ import org.gooddata.connector.driver.SqlDriver;
     /**
      * {@inheritDoc}
      */
-    public void extract(File dataFile) throws ModelException {
+    public void extract(File dataFile) {
         Connection con = null;
         try {
             con = connect();
@@ -317,14 +328,14 @@ import org.gooddata.connector.driver.SqlDriver;
     /**
      * {@inheritDoc}
      */
-    public void load(List<DLIPart> parts, String dir) throws ModelException {
+    public void load(List<DLIPart> parts, String dir) {
         loadSnapshot(parts, dir, null);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds) throws ModelException {
+    public void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds) {
         Connection con = null;
         try {
             con = connect();

@@ -5,8 +5,8 @@ import com.gooddata.exception.*;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.exception.SfdcException;
-import com.gooddata.processor.CliParams;
-import com.gooddata.processor.Command;
+import org.gooddata.connector.processor.CliParams;
+import org.gooddata.connector.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.ConnectorBackend;
+import org.gooddata.connector.processor.ProcessingContext;
 
 import javax.xml.rpc.ServiceException;
 import java.io.File;
@@ -64,6 +65,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @throws SfdcException in case of SFDC communication errors
      */
     private static List<SObject> executeQuery(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
+        l.debug("Executing SFDC query "+sfdcQuery);
         List<SObject> result = new ArrayList<SObject>();
         QueryOptions qo = new QueryOptions();
         qo.setBatchSize(500);
@@ -80,20 +82,26 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             } while(!qr.isDone());
         }
         catch (ApiQueryFault ex) {
-         throw new SfdcException("Failed to execute SFDC query: " + ex.getExceptionMessage());
+            l.error("Executing SFDC query failed",ex);
+            throw new SfdcException("Failed to execute SFDC query.",ex);
         }
         catch (UnexpectedErrorFault e) {
-    	 throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
+            l.error("Executing SFDC query failed",e);
+    	    throw new SfdcException("Failed to execute SFDC query.",e);
 	    }
         catch (InvalidIdFault e) {
-	        throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
+            l.error("Executing SFDC query failed",e);
+	        throw new SfdcException("Failed to execute SFDC query.",e);
 	    }
         catch (InvalidQueryLocatorFault e) {
-		    throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
+            l.error("Executing SFDC query failed",e);
+		    throw new SfdcException("Failed to execute SFDC query.",e);
 	    }
         catch (RemoteException e) {
-		    throw new SfdcException("Failed to execute SFDC query: " + e.getMessage());
+            l.error("Executing SFDC query failed",e);
+		    throw new SfdcException("Failed to execute SFDC query.",e);
 	    }
+        l.debug("Finihed SFDC query execution.");
         return result;
     }
 
@@ -105,6 +113,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @throws SfdcException in case of SFDC communication errors
      */
     private static SObject executeQueryFirstRow(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
+        l.debug("Executing SFDC query "+sfdcQuery);
         List<SObject> result = new ArrayList<SObject>();
         QueryOptions qo = new QueryOptions();
         qo.setBatchSize(1);
@@ -118,20 +127,26 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             }
         }
         catch (ApiQueryFault ex) {
-         throw new SfdcException("Failed to execute SFDC query: " + ex.getExceptionMessage());
+            l.error("Executing SFDC query failed",ex);
+            throw new SfdcException("Failed to execute SFDC query.",ex);
         }
         catch (UnexpectedErrorFault e) {
-    	 throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
+            l.error("Executing SFDC query failed",e);
+    	    throw new SfdcException("Failed to execute SFDC query.",e);
 	    }
         catch (InvalidIdFault e) {
-	        throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
+            l.error("Executing SFDC query failed",e);
+	        throw new SfdcException("Failed to execute SFDC query.",e);
 	    }
         catch (InvalidQueryLocatorFault e) {
-		    throw new SfdcException("Failed to execute SFDC query: " + e.getExceptionMessage());
+            l.error("Executing SFDC query failed",e);
+		    throw new SfdcException("Failed to execute SFDC query.",e);
 	    }
         catch (RemoteException e) {
-		    throw new SfdcException("Failed to execute SFDC query: " + e.getMessage());
+            l.error("Executing SFDC query failed",e);
+		    throw new SfdcException("Failed to execute SFDC query.",e);
 	    }
+        l.debug("Finihed SFDC query execution.");
         return result.get(0);
     }
 
@@ -141,9 +156,9 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @param name SFDC object name
      * @return Map of fields
      * @throws RemoteException communication error
-     * @throws UnexpectedErrorFault general error
      */
-    private static Map<String, Field> describeObject(SoapBindingStub c, String name) throws RemoteException, UnexpectedErrorFault {
+    private static Map<String, Field> describeObject(SoapBindingStub c, String name) throws RemoteException {
+        l.debug("Retrieving SFDC object "+name+" metadata.");
         Map<String,Field> result = new HashMap<String,Field>();
         DescribeSObjectResult describeSObjectResult = c.describeSObject(name);
         if (! (describeSObjectResult == null)) {
@@ -154,6 +169,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 }
             }
         }
+        l.debug("SFDC object \"+name+\" metadata retrieved.");
         return result;
     }
 
@@ -168,6 +184,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     public static void saveConfigTemplate(String name, String configFileName, String sfdcUsr, String sfdcPsw,
                                   String query)
             throws InvalidArgumentException, IOException, SfdcException {
+        l.debug("Saving SFDC config template.");
         SourceSchema s = SourceSchema.createSchema(name);
         SoapBindingStub c = null;
         try {
@@ -192,9 +209,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 }
             }
         }
-        else
+        else {
+            l.error("The SFDC query hasn't returned any row.");
             throw new InvalidArgumentException("The SFDC query hasn't returned any row.");
+        }
         s.writeConfig(new File(configFileName));
+        l.debug("Saved SFDC config template.");
     }
 
     /**
@@ -230,6 +250,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public void extract() throws IOException {
+        l.debug("Extracting SFDC data.");
         SoapBindingStub con = null;
         try {
             File dataFile = FileUtil.getTempFile();
@@ -239,7 +260,8 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             try {
                 result = executeQuery(c, getSfdcQuery());
             } catch (SfdcException e) {
-                throw new IOException("SFDC query execution failed: "+ e.getMessage());
+                l.error("SFDC query execution failed.",e);
+                throw new IOException("SFDC query execution failed: ",e);
             }
             if(result != null && result.size() > 0) {
                 l.debug("Started retrieving SFDC data.");
@@ -271,7 +293,9 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         }
         catch (ServiceException e) {
             l.error("Error retrieving data from the SFDC source.", e);
+            throw new IOException("Error retrieving data from the SFDC source.", e);
         }
+        l.debug("Extracted SFDC data.");
     }
 
     /**
@@ -283,7 +307,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      */
     private static SoapBindingStub connect(String usr, String psw) throws ServiceException {
         SoapBindingStub binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
-
+        l.debug("Connecting to SFDC.");
         // Time out after a minute
         binding.setTimeout(60000);
         // Test operation
@@ -294,28 +318,52 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         catch (LoginFault ex) {
             // The LoginFault derives from AxisFault
             ExceptionCode exCode = ex.getExceptionCode();
-            if(exCode == ExceptionCode.FUNCTIONALITY_NOT_ENABLED)
+            if(exCode == ExceptionCode.FUNCTIONALITY_NOT_ENABLED) {
+                l.error("Error logging into the SFDC. Functionality not enabled.", ex);
                 throw new ServiceException("Error logging into the SFDC. Functionality not enabled.", ex);
-            if(exCode == ExceptionCode.INVALID_CLIENT)
+            }
+            else if(exCode == ExceptionCode.INVALID_CLIENT) {
+                l.error("Error logging into the SFDC. Invalid client.", ex);
                 throw new ServiceException("Error logging into the SFDC. Invalid client.", ex);
-            if(exCode == ExceptionCode.INVALID_LOGIN)
+            }
+            else if(exCode == ExceptionCode.INVALID_LOGIN) {
+                l.error("Error logging into the SFDC. Invalid login.", ex);
                 throw new ServiceException("Error logging into the SFDC. Invalid login.", ex);
-            if(exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_DOMAIN)
+            }
+            else if(exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_DOMAIN) {
+                l.error("Error logging into the SFDC. Restricred domain.", ex);
                 throw new ServiceException("Error logging into the SFDC. Restricred domain.", ex);
-            if(exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_TIME)
+            }
+            else if(exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_TIME) {
+                l.error("Error logging into the SFDC. Restricred during time.", ex);
                 throw new ServiceException("Error logging into the SFDC. Restricred during time.", ex);
-            if(exCode == ExceptionCode.ORG_LOCKED)
+            }
+            else if(exCode == ExceptionCode.ORG_LOCKED) {
+                l.error("Error logging into the SFDC. Organization locked.", ex);
                 throw new ServiceException("Error logging into the SFDC. Organization locked.", ex);
-            if(exCode == ExceptionCode.PASSWORD_LOCKOUT)
+            }
+            else if(exCode == ExceptionCode.PASSWORD_LOCKOUT) {
+                l.error("Error logging into the SFDC. Password lock-out.", ex);
                 throw new ServiceException("Error logging into the SFDC. Password lock-out.", ex);
-            if(exCode == ExceptionCode.SERVER_UNAVAILABLE)
+            }
+            else if(exCode == ExceptionCode.SERVER_UNAVAILABLE) {
+                l.error("Error logging into the SFDC. Server not available.", ex);
                 throw new ServiceException("Error logging into the SFDC. Server not available.", ex);
-            if(exCode == ExceptionCode.TRIAL_EXPIRED)
+            }
+            else if(exCode == ExceptionCode.TRIAL_EXPIRED) {
+                l.error("Error logging into the SFDC. Trial expired.", ex);
                 throw new ServiceException("Error logging into the SFDC. Trial expired.", ex);
-            if(exCode == ExceptionCode.UNSUPPORTED_CLIENT)
+            }
+            else if(exCode == ExceptionCode.UNSUPPORTED_CLIENT) {
+                l.error("Error logging into the SFDC. Unsupported client.", ex);
                 throw new ServiceException("Error logging into the SFDC. Unsupported client.", ex);
-            throw new ServiceException("Error logging into the SFDC.", ex);
+            }
+            else {
+                l.error("Error logging into the SFDC.", ex);
+                throw new ServiceException("Error logging into the SFDC.", ex);
+            }
         } catch (Exception ex) {
+            l.error("Error logging into the SFDC.", ex);
             throw new ServiceException("Error logging into the SFDC.", ex);
         }
         // Check if the password has expired
@@ -351,6 +399,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         // set the session header for subsequent call authentication
         binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),
                           "SessionHeader", sh);
+        l.debug("Connected to SFDC.");
         return binding;
     }
 
@@ -415,6 +464,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        l.debug("Processing command "+c.getCommand());
         try {
             if(c.match("GenerateSfdcConfig")) {
                 generateSfdcConfig(c, cli, ctx);
@@ -422,12 +472,15 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             else if(c.match("LoadSfdc")) {
                 loadSfdc(c, cli, ctx);
             }
-            else
+            else {
+                l.debug("No match passing the command "+c.getCommand()+" further.");
                 return super.processCommand(c, cli, ctx);
+            }
         }
         catch (IOException e) {
             throw new ProcessingException(e);
         }
+        l.debug("Processed command "+c.getCommand());
         return true;
     }
 

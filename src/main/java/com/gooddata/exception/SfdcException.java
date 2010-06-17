@@ -7,4 +7,12 @@ public class SfdcException extends GdcException {
 		super(message);
 	}
 
+    public SfdcException(String message, Throwable e) {
+		super(message,e);
+	}
+
+    public SfdcException(Throwable e) {
+		super(e);
+	}
+
 }

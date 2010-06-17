@@ -1,14 +1,12 @@
 package com.gooddata.processor.parser;
 
-import com.gooddata.processor.Command;
+import org.gooddata.connector.processor.Command;
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.List;
-
-import com.gooddata.processor.parser.DIScriptParser;
 
 /**
  * GoodData

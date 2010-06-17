@@ -28,6 +28,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
      * static initializer of the Derby SQL JDBC driver
      */
     static {
+        l.debug("Loading MySQL driver.");
         String driver = "com.mysql.jdbc.Driver";
         try {
             Class.forName(driver).newInstance();
@@ -38,6 +39,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        l.debug("Finished loading MySQL driver.");
     }
 
     /**
@@ -86,6 +88,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
      * {@inheritDoc}
      */
     public void dropSnapshots() {
+        l.debug("Dropping MySQL snapshots "+getProjectId());
         Connection con = null;
         Statement s = null;
         try {
@@ -107,6 +110,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
                 l.error("Can't close MySQL connection.", e);    
             }
         }
+        l.debug("Finished dropping MySQL snapshots "+getProjectId());
     }
 
 }

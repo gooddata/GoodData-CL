@@ -20,6 +20,13 @@ public class GdcRestApiException extends GdcException {
         super(msg);
     }
 
+    public GdcRestApiException(Throwable cause) {
+        super(cause);
+    }
+
+    public GdcRestApiException(String msg, Throwable cause) {
+    	super(msg, cause);
+    }
 
     @Override
     public String getLocalizedMessage() {

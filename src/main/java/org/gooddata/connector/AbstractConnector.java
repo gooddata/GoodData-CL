@@ -9,9 +9,9 @@ import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.naming.N;
-import com.gooddata.processor.CliParams;
-import com.gooddata.processor.Command;
-import com.gooddata.processor.ProcessingContext;
+import org.gooddata.connector.processor.CliParams;
+import org.gooddata.connector.processor.Command;
+import org.gooddata.connector.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
@@ -57,16 +57,22 @@ public abstract class AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public String generateMaql() {
+        l.debug("Executing maql generation.");
         MaqlGenerator mg = new MaqlGenerator(schema);
-        return mg.generateMaql();
+        String maql = mg.generateMaql();
+        l.debug("Finished maql generation maql:\n"+maql);
+        return maql;
     }
     
     /**
      * {@inheritDoc}
      */
     public String generateMaql(List<SourceColumn> columns) {
+        l.debug("Executing maql generation for columns "+columns);
         MaqlGenerator mg = new MaqlGenerator(schema);
-        return mg.generateMaql(columns);
+        String maql = mg.generateMaql(columns);
+        l.debug("Finished maql generation maql:\n"+maql);
+        return maql;
     }
 
     /**
@@ -176,6 +182,7 @@ public abstract class AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
+        l.debug("Processing command "+c.getCommand());
         try {
             if(c.match("GenerateMaql")) {
                 generateMAQL(c, cli, ctx);
@@ -204,8 +211,11 @@ public abstract class AbstractConnector implements Connector {
             else if (c.match( "GenerateUpdateMaql")) {
                 generateUpdateMaql(c, cli, ctx);
             }
-            else
+            else {
+                l.debug("No match for command "+c.getCommand());
                 return false;
+            }
+            l.debug("Command "+c.getCommand()+" processed.");
             return true;
         }
         catch (IOException e) {
@@ -238,6 +248,7 @@ public abstract class AbstractConnector implements Connector {
      * @throws IOException IO issues
      */
     private void executeMAQL(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        l.debug("Executing MAQL.");
         String pid = ctx.getProjectId();
         final String maqlFile = c.getParamMandatory("maqlFile");
         final String ifExistsStr = c.getParam("ifExists");
@@ -247,6 +258,7 @@ public abstract class AbstractConnector implements Connector {
 	        final String maql = FileUtil.readStringFromFile(maqlFile);
 	        ctx.getRestApi(p).executeMAQL(pid, maql);
         }
+        l.debug("Finished MAQL execution.");
     }
 
     /**
@@ -258,6 +270,7 @@ public abstract class AbstractConnector implements Connector {
      * @throws InterruptedException internal problem with making file writable
      */
     private void transferData(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
+        l.debug("Transferring data.");
         Connector cc = ctx.getConnector();
         String pid = ctx.getProjectId();
         // connector's schema name
@@ -271,6 +284,7 @@ public abstract class AbstractConnector implements Connector {
         String incremental = c.getParam("incremental");
         if(incremental != null && incremental.length() > 0 && incremental.equalsIgnoreCase("true")) {
             setIncremental(parts);
+            l.debug("Using incremental mode.");
         }
         boolean waitForFinish = true;
         if(c.checkParam("waitForFinish")) {
@@ -279,6 +293,7 @@ public abstract class AbstractConnector implements Connector {
                 waitForFinish = false;
         }
         extractAndTransfer(c, pid, cc, dli, parts, null, waitForFinish, p, ctx);
+        l.debug("Data transfer finished.");
     }
 
     /**
@@ -295,6 +310,7 @@ public abstract class AbstractConnector implements Connector {
      */
     private void extractAndTransfer(Command c, String pid, Connector cc, DLI dli, List<DLIPart> parts,
         int[] snapshots, boolean waitForFinish, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
+        l.debug("Extracting data.");
         File tmpDir = FileUtil.createTempDir();
         makeWritable(tmpDir);
         File tmpZipDir = FileUtil.createTempDir();
@@ -315,8 +331,10 @@ public abstract class AbstractConnector implements Connector {
             checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
         }
         //cleanup
+        l.debug("Cleaning the temporary files.");
         FileUtil.recursiveDelete(tmpDir);
         FileUtil.recursiveDelete(tmpZipDir);
+        l.debug("Data extract finished.");
     }
 
     /**
@@ -329,12 +347,14 @@ public abstract class AbstractConnector implements Connector {
      * @throws InterruptedException internal problem with making file writable
      */
     private void checkLoadingStatus(String taskUri, String tmpDir, CliParams p, ProcessingContext ctx) throws InterruptedException,IOException {
+        l.debug("Checking data transfer status.");
         String status = "";
         while(!status.equalsIgnoreCase("OK") && !status.equalsIgnoreCase("ERROR") && !status.equalsIgnoreCase("WARNING")) {
             status = ctx.getRestApi(p).getLoadingStatus(taskUri);
             l.debug("Loading status = "+status);
             Thread.sleep(500);
         }
+        l.debug("Data transfer finished with status "+status);
         if(!status.equalsIgnoreCase("OK")) {
             l.info("Data loading failed. Status: "+status);
             Map<String,String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
@@ -368,6 +388,7 @@ public abstract class AbstractConnector implements Connector {
      * @throws InterruptedException internal problem with making file writable
      */
     private void transferLastSnapshot(Command c, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
+        l.debug("Transfering last snapshot.");
         Connector cc = ctx.getConnector();
         String pid = ctx.getProjectId();
         // connector's schema name
@@ -381,6 +402,7 @@ public abstract class AbstractConnector implements Connector {
         String incremental = c.getParam("incremental");
         if(incremental != null && incremental.length() > 0 &&
                 incremental.equalsIgnoreCase("true")) {
+            l.debug("Using incremental mode.");
             setIncremental(parts);
         }
         boolean waitForFinish = true;
@@ -390,6 +412,7 @@ public abstract class AbstractConnector implements Connector {
                 waitForFinish = false;
         }
         extractAndTransfer(c, pid, cc, dli, parts, new int[] {cc.getLastSnapshotId()+1}, waitForFinish, p, ctx);
+        l.debug("Last Snapshot transfer finished.");
     }
 
     /**
@@ -405,6 +428,7 @@ public abstract class AbstractConnector implements Connector {
         String pid = ctx.getProjectId();
         String firstSnapshot = c.getParamMandatory("firstSnapshot");
         String lastSnapshot = c.getParamMandatory("lastSnapshot");
+        l.debug("Transfering snapshots "+firstSnapshot+" - " + lastSnapshot);
         int fs = 0,ls = 0;
         try  {
             fs = Integer.parseInt(firstSnapshot);
@@ -436,8 +460,10 @@ public abstract class AbstractConnector implements Connector {
 
             String incremental = c.getParam("incremental");
             if(incremental != null && incremental.length() > 0 &&
-                    incremental.equalsIgnoreCase("true"))
+                    incremental.equalsIgnoreCase("true")) {
+                l.debug("Using incremental mode.");
                 setIncremental(parts);
+            }
             boolean waitForFinish = true;
             if(c.checkParam("waitForFinish")) {
                 String w = c.getParam( "waitForFinish");
@@ -445,6 +471,7 @@ public abstract class AbstractConnector implements Connector {
                     waitForFinish = false;
             }
             extractAndTransfer(c, pid, cc, dli, parts, snapshots, waitForFinish, p, ctx);
+            l.debug("Snapshots transfer finished.");
         }
         else
             throw new InvalidParameterException(c.getCommand()+": The firstSnapshot can't be higher than the lastSnapshot.");
@@ -496,6 +523,7 @@ public abstract class AbstractConnector implements Connector {
      * @throws IOException IO issue
      */
     private void generateUpdateMaql(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        l.debug("Updating MAQL.");
     	final String configFile = c.getParamMandatory( "configFile");
     	final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
 
@@ -511,6 +539,7 @@ public abstract class AbstractConnector implements Connector {
         	final String maql = cc.generateMaql(newColumns);
         	FileUtil.writeStringToFile(maql, maqlFile);
         }
+        l.debug("MAQL update finished.");
     }
 
     /**

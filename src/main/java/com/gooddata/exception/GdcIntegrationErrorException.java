@@ -19,4 +19,12 @@ public class GdcIntegrationErrorException extends GdcRestApiException {
     public GdcIntegrationErrorException(String msg) {
         super(msg);
     }
+
+    public GdcIntegrationErrorException(Throwable cause) {
+        super(cause);
+    }
+
+    public GdcIntegrationErrorException(String msg, Throwable cause) {
+    	super(msg, cause);
+    }
 }

@@ -51,14 +51,17 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      * {@inheritDoc}
      */
     public void executeSystemDdlSql(Connection c) throws SQLException {
+        l.debug("Executing system DDL SQL.");
         createSnapshotTable(c);
         createFunctions(c);
+        l.debug("System DDL SQL execution finished.");
     }
 
     /**
      * {@inheritDoc}
      */
     public void executeDdlSql(Connection c, PdmSchema schema) throws SQLException {
+        l.debug("Executing DDL SQL.");
         for(PdmTable table : schema.getTables()) {
         	if (!exists(c, table.getName())) {
         		createTable(c, table);
@@ -85,29 +88,41 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         JdbcUtil.executeUpdate(c,
             "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() + "',0,0,0)"
         );
+        l.debug("DDL SQL Execution finished.");
     }
 
     /**
      * {@inheritDoc}
      */
     public void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException {
-
+        l.debug("Executing data normalization SQL.");
         //populate REFERENCEs lookups from the referenced lookups
+        l.debug("Executing referenced lookups replication.");
         executeLookupReplicationSql(c, schema);
-
+        l.debug("Finished referenced lookups replication.");
+        l.debug("Executing lookup tables population.");
         populateLookupTables(c, schema);
+        l.debug("Finished lookup tables population.");
+        l.debug("Executing connection point tables population.");
         populateConnectionPointTables(c, schema);
+        l.debug("FInished connection point tables population.");
         // nothing for the reference columns
-
+        l.debug("Inserting partial snapshot record.");
         insertSnapshotsRecord(c, schema);
+        l.debug("Executing fact table population.");
         insertFactsToFactTable(c, schema);
+        l.debug("FInished fact table population.");
 
+        l.debug("Executing fact table FK generation.");
         for(PdmTable tbl : schema.getLookupTables())
             updateForeignKeyInFactTable(c, tbl, schema);
         for(PdmTable tbl : schema.getReferenceTables())
             updateForeignKeyInFactTable(c, tbl, schema);
+        l.debug("Finished fact table FK generation.");
 
         updateSnapshotsRecord(c, schema);
+        l.debug("Snapshot record updated.");
+        l.debug("Finished data normalization SQL.");
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.gooddata.processor;
+package org.gooddata.connector.processor;
 
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.InvalidParameterException;

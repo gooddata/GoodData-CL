@@ -19,7 +19,7 @@ GenerateMaql(maqlFile="examples/ga/time.maql");
 ExecuteMaql(maqlFile="examples/ga/time.maql");
 
 # LOAD THE GOOGLE ANALYTICS DATA
-LoadGoogleAnalytics(configFile="examples/ga/ga.config.xml",username="gdc.bot@gmail.com",password="sayonara",profileId="ga:7468896",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits",startDate="2008-01-01",endDate="2010-06-15 ");
+LoadGoogleAnalytics(configFile="examples/ga/ga.config.xml",username="gdc.bot@gmail.com",password="sayonara",profileId="ga:7468896",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits",startDate="2008-01-01",endDate="2010-06-15");
 
 # GENERATE THE GA MAQL
 # CHECK OUT THE GA CONFIG THAT CONNECTS THE DATA COLUMN TO THE TIME DIMENSION THAT WE HAVE GENERATED ABOVE

@@ -1,7 +1,9 @@
-package com.gooddata.processor;
+package org.gooddata.connector.processor;
 
 import com.gooddata.exception.InvalidArgumentException;
 import com.gooddata.naming.N;
+import com.gooddata.processor.Defaults;
+import com.gooddata.processor.GdcDI;
 import com.gooddata.util.FileUtil;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -91,12 +93,15 @@ public class CliParams extends HashMap<String,String> {
      * @throws InvalidArgumentException in case of nonexistent or incorrect cli args
      */
     protected void parse(CommandLine ln) throws InvalidArgumentException {
+        l.debug("Parsing cli "+ln);
         for( Option o : mandatoryOptions) {
             String name = o.getLongOpt();
             if (ln.hasOption(name))
                 this.put(name,ln.getOptionValue(name));
-            else
+            else {
+                l.error("Missing the '"+name+"' commandline parameter.");
                 throw new InvalidArgumentException("Missing the '"+name+"' commandline parameter.");
+            }
 
         }
 
@@ -108,8 +113,10 @@ public class CliParams extends HashMap<String,String> {
 
         // use default host if there is no host in the CLI params
         if(!this.containsKey(CLI_PARAM_HOST[0])) {
-            this.put(CLI_PARAM_HOST[0],Defaults.DEFAULT_HOST);
+            this.put(CLI_PARAM_HOST[0], Defaults.DEFAULT_HOST);
         }
+
+        l.debug("Using host "+this.get(CLI_PARAM_HOST[0]));
 
         // create default FTP host if there is no host in the CLI params
         if(!this.containsKey(CLI_PARAM_FTP_HOST[0])) {
@@ -124,11 +131,16 @@ public class CliParams extends HashMap<String,String> {
                 }
                 this.put(CLI_PARAM_FTP_HOST[0],ftpHost);
             }
-            else
+            else {
+                l.error("Invalid format of the GoodData REST API host: " +
+                        this.get(CLI_PARAM_HOST[0]));
                 throw new IllegalArgumentException("Invalid format of the GoodData REST API host: " +
                         this.get(CLI_PARAM_HOST[0]));
+            }
 
         }
+
+        l.debug("Using FTP host "+this.get(CLI_PARAM_FTP_HOST[0]));
 
         // use default protocol if there is no host in the CLI params
         if(!this.containsKey(CLI_PARAM_PROTO[0])) {
@@ -136,10 +148,14 @@ public class CliParams extends HashMap<String,String> {
         }
         else {
             String proto = ln.getOptionValue(CLI_PARAM_PROTO[0]).toLowerCase();
-            if(!"http".equalsIgnoreCase(proto) && !"https".equalsIgnoreCase(proto))
+            if(!"http".equalsIgnoreCase(proto) && !"https".equalsIgnoreCase(proto)) {
+                l.error("Invalid '"+CLI_PARAM_PROTO[0]+"' parameter. Use HTTP or HTTPS.");
                 throw new InvalidArgumentException("Invalid '"+CLI_PARAM_PROTO[0]+"' parameter. Use HTTP or HTTPS.");
+            }
             this.put(CLI_PARAM_PROTO[0], proto);
         }
+
+        l.debug("Using protocol "+this.get(CLI_PARAM_PROTO[0]));
 
         // use default backend if there is no host in the CLI params
         if(!this.containsKey(CLI_PARAM_BACKEND[0])) {
@@ -152,9 +168,13 @@ public class CliParams extends HashMap<String,String> {
             this.put(CLI_PARAM_BACKEND[0], b);
         }
 
+        l.debug("Using backend "+this.get(CLI_PARAM_BACKEND[0]));
+
         if (ln.getArgs().length == 0 && !ln.hasOption("execute")) {
+            l.error("No command has been given, quitting.");
             throw new InvalidArgumentException("No command has been given, quitting.");
         }
+
         String scripts = "";
         for (final String arg : ln.getArgs()) {
             if(scripts.length()>0)
