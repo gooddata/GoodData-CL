@@ -217,10 +217,10 @@ public class GaConnector extends AbstractConnector implements Connector {
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
-            if(c.match("GenerateGaConfig")) {
+            if(c.match("GenerateGoogleAnalyticsConfig")) {
                 generateGAConfig(c, cli, ctx);
             }
-            else if(c.match("LoadGa")) {
+            else if(c.match("LoadGoogleAnalytics")) {
                 loadGA(c, cli, ctx);
             }
             else

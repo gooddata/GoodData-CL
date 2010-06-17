@@ -101,7 +101,9 @@ public class GdcDI implements Executor {
                 processed = connectors[i].processCommand(command, cliParams, context);
             }
             if(!processed)
-                this.processCommand(command, cliParams, context);
+                processed = this.processCommand(command, cliParams, context);
+            if(!processed)
+                throw new InvalidCommandException("Unknown command '"+command.getCommand()+"'");
         }
     }
 
