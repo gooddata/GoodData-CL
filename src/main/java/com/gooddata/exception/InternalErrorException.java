@@ -15,5 +15,14 @@ public class InternalErrorException extends GdcException {
     public InternalErrorException(String msg) {
         super(msg);
     }
+    
+    /**
+     * Exception constructor
+     * @param msg exception message
+     * @param cause root cause
+     */
+    public InternalErrorException(String msg, Throwable cause) {
+    	super(msg, cause);
+    }
 
 }
