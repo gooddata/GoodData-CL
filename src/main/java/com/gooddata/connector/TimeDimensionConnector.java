@@ -21,6 +21,7 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
 
     private static Logger l = Logger.getLogger(TimeDimensionConnector.class);
 
+    //Time dimension context (e.g. created, closed etc.)
     private String ctx;
 
     /**
@@ -37,14 +38,16 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
         return new TimeDimensionConnector();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void extract() throws ModelException, IOException {
         //EMPTY
     }
 
     /**
-     * Generates the MAQL for the data source
-     * @return the MAQL in string format
+     * {@inheritDoc}
      */
     public String generateMaql() {
         if(ctx != null && ctx.trim().length()>0) {
@@ -58,11 +61,7 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
     }
 
     /**
-     * Processes single command
-     * @param c command to be processed
-     * @param cli parameters (commandline params)
-     * @param ctx processing context
-     * @return true if the command has been processed, false otherwise
+     * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
@@ -78,6 +77,13 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
         return true;
     }
 
+    /**
+     * Loads TimeDimension data command processor
+     * @param c command
+     * @param p command line arguments
+     * @param ctx current processing context
+     * @throws IOException in case of IO issues
+     */
     private void loadTD(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String ct = "";
         if(c.checkParam("context"))

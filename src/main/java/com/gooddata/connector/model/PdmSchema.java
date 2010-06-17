@@ -107,12 +107,18 @@ public class PdmSchema {
         return schema;
     }
 
+    /**
+     * Adds a new lookup column
+     * @param s PDM schema
+     * @param c column
+     * @param tblType table type
+     */
     private static void addLookupColumn(PdmSchema s, SourceColumn c, String tblType) {
         String cName = StringUtil.formatShortName(c.getName());
         String sName = s.getName();
         String tableName = createLookupTableName(sName, cName);
         if(!s.contains(tableName))
-            s.addTable(createLookupTable(sName, cName, tblType, StringUtil.parseLine(c.getElements())));
+            s.addTable(createLookupTable(sName, cName, tblType));
         PdmTable lookup = null;
         try {
             lookup = s.getTableByName(tableName);
@@ -122,6 +128,11 @@ public class PdmSchema {
        	lookup.addColumn(createLookupColumn(c));
     }
 
+    /**
+     * Creates the table replication object
+     * @param s PDM schema
+     * @param c source column
+     */
     private static void createTableReplication(PdmSchema s, SourceColumn c) {
         String sName = s.getName();
         String cName = StringUtil.formatShortName(c.getName());
@@ -132,6 +143,11 @@ public class PdmSchema {
                         N.NM_PFX + cName));
     }
 
+    /**
+     * Creates a new PDM column from source columns
+     * @param c source column
+     * @return new PDm column
+     */
     private static PdmColumn createLookupColumn(SourceColumn c) {
         String name = StringUtil.formatShortName(c.getName());
         PdmColumn pc = new PdmColumn(N.NM_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
@@ -142,7 +158,14 @@ public class PdmSchema {
         return pc;
     }
 
-    private static PdmTable createLookupTable(String schemaName, String columnName, String tableType, List<String> elements) {
+    /**
+     * Create new PDM lookup table from source column
+     * @param schemaName schema name
+     * @param columnName source column name
+     * @param tableType table type
+     * @return new PDM table
+     */
+    private static PdmTable createLookupTable(String schemaName, String columnName, String tableType) {
         PdmTable lookup = new PdmTable(createLookupTableName(schemaName, columnName),tableType, columnName);
         lookup.addColumn(new PdmColumn(N.ID, PdmColumn.PDM_COLUMN_TYPE_INT,
             new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
@@ -151,10 +174,21 @@ public class PdmSchema {
         return lookup;
     }
 
+    /**
+     * Create lookup table name
+     * @param schemaName schema name
+     * @param columnName column name
+     * @return lookup table name
+     */
     private static String createLookupTableName(String schemaName, String columnName) {
         return N.LKP_PFX + schemaName + "_" + columnName;
     }
 
+    /**
+     * Create new source table
+     * @param schemaName schema name
+     * @return new source table
+     */
     private static PdmTable createSourceTable(String schemaName) {
         PdmTable sourceTable = new PdmTable(N.SRC_PFX + schemaName, PdmTable.PDM_TABLE_TYPE_SOURCE);
         // add the source table PK
@@ -163,6 +197,11 @@ public class PdmSchema {
         return sourceTable;
     }
 
+    /**
+     * Create new fact table
+     * @param schemaName schema name
+     * @return new fact table
+     */
     private static PdmTable createFactTable(String schemaName) {
         PdmTable factTable = new PdmTable(N.FCT_PFX + schemaName, PdmTable.PDM_TABLE_TYPE_FACT);
         // add the fact table PK
@@ -171,12 +210,23 @@ public class PdmSchema {
         return factTable;
     }
 
+    /**
+     * Create new PDM source table column from source column
+     * @param c source column 
+     * @return new PDM column
+     */
     private static PdmColumn createSourceColumn(SourceColumn c) {
         String name = StringUtil.formatShortName(c.getName());
         return new PdmColumn(N.SRC_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT);
     }
 
-    private static PdmColumn createFactColumn(SourceColumn c, String schemaName) throws ModelException {
+    /**
+     * Create new PDM fact table column from source column
+     * @param c source column
+     * @param schemaName schema name
+     * @return new PDM column
+     */
+    private static PdmColumn createFactColumn(SourceColumn c, String schemaName) {
         String name = StringUtil.formatShortName(c.getName());
         String type = c.getLdmType();
         if(type.equals(SourceColumn.LDM_TYPE_ATTRIBUTE) || type.equals(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||

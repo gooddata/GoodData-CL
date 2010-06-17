@@ -120,10 +120,9 @@ public class GaConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Extracts the source data CSV to the Derby database where it is going to be transformed
-     * @throws ModelException in case of PDM schema issues
+     * {@inheritDoc}
      */
-    public void extract() throws ModelException, IOException {
+    public void extract() throws IOException {
         Connection con = null;
         try {
             AnalyticsService as = new AnalyticsService(APP_NAME);
@@ -209,11 +208,7 @@ public class GaConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Processes single command
-     * @param c command to be processed
-     * @param cli parameters (commandline params)
-     * @param ctx processing context
-     * @return true if the command has been processed, false otherwise
+     * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
@@ -232,8 +227,14 @@ public class GaConnector extends AbstractConnector implements Connector {
         return true;
     }
 
+    /**
+     * Loads new GA data command processor
+     * @param c command
+     * @param p command line arguments
+     * @param ctx current processing context
+     * @throws IOException in case of IO issues
+     */
     private void loadGA(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-
         GaQuery gq = null;
         try {
             gq = new GaQuery();
@@ -258,15 +259,16 @@ public class GaConnector extends AbstractConnector implements Connector {
             gq.setFilters(c.getParam("filters"));
         // sets the current connector
         ctx.setConnector(this);
-        try {
-            this.checkProjectId();
-        }
-        catch(InvalidParameterException e) {
-            this.getConnectorBackend().setProjectId(ctx.getProjectId());
-        }
+        setProjectId(ctx);
     }
 
-
+    /**
+     * Generate GA config command processor
+     * @param c command
+     * @param p command line arguments
+     * @param ctx current processing context
+     * @throws IOException in case of IO issues
+     */
     private void generateGAConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
         String name = c.getParamMandatory("name");

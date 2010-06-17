@@ -100,6 +100,11 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         }
     }
 
+    /**
+     * Determines the LDM type from the JDBC data type
+     * @param jct jdbc data type id java.sql.Types)
+     * @return the ldm data type
+     */
     private static String getColumnType(int jct) {
         String type;
         switch (jct) {
@@ -146,11 +151,11 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         return type;
     }
 
+
     /**
-     * Extracts the source data CSV to the Derby database where it is going to be transformed
-     * @throws com.gooddata.exception.ModelException in case of PDM schema issues
+     * {@inheritDoc}
      */
-    public void extract() throws ModelException, IOException {
+    public void extract() throws IOException {
         Connection con = null;
         Statement s = null;
         ResultSet rs = null;
@@ -187,21 +192,19 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Connect the database
+     * Connects the DB
      * @param jdbcUrl JDBC url
      * @param usr JDBC username
-     * @param psw JDBC pasword
+     * @param psw JDBC password
      * @return JDBC connection
-     * @throws SQLException in case of connection issues
+     * @throws SQLException in case of DB issues
      */
     private static Connection connect(String jdbcUrl, String usr, String psw) throws SQLException {
         return DriverManager.getConnection(jdbcUrl, usr, psw);
     }
 
     /**
-     * Connects to the Derby database
-     * @return JDBC connection
-     * @throws SQLException
+     * {@inheritDoc}
      */
     public Connection connect() throws SQLException {
         return connect(getJdbcUrl(), getJdbcUsername(), getJdbcPassword());
@@ -272,11 +275,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Processes single command
-     * @param c command to be processed
-     * @param cli parameters (commandline params)
-     * @param ctx processing context
-     * @return true if the command has been processed, false otherwise
+     * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
@@ -298,7 +297,10 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         return true;
     }
 
-
+    /**
+     * Loads the JDBC driver
+     * @param drv JDBC driver class
+     */
     private void loadDriver(String drv) {
         try {
             Class.forName(drv).newInstance();
@@ -311,6 +313,13 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         }
     }
 
+    /**
+     * Loads new JDBC data command processor
+     * @param c command
+     * @param p command line arguments
+     * @param ctx current processing context
+     * @throws IOException in case of IO issues
+     */
     private void loadJdbc(Command c, CliParams p, ProcessingContext ctx) throws IOException, SQLException {
         String configFile = c.getParamMandatory("configFile");
         String usr = null;
@@ -331,14 +340,16 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         setSqlQuery(q);
         // sets the current connector
         ctx.setConnector(this);
-        try {
-            this.checkProjectId();
-        }
-        catch(InvalidParameterException e) {
-            this.getConnectorBackend().setProjectId(ctx.getProjectId());
-        }
+        setProjectId(ctx);
     }
 
+    /**
+     * Generates the JDBC config command processor
+     * @param c command
+     * @param p command line arguments
+     * @param ctx current processing context
+     * @throws IOException in case of IO issues
+     */
     private void generateJdbcConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException, SQLException {
         String configFile = c.getParamMandatory("configFile");
         String name = c.getParamMandatory("name");

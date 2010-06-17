@@ -56,7 +56,13 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         return new SfdcConnector(connectorBackend);
     }
 
-
+    /**
+     * Executes the SFDC query
+     * @param binding SFDC stub
+     * @param sfdcQuery SFDC SOOL query
+     * @return results as List of SObjects
+     * @throws SfdcException in case of SFDC communication errors
+     */
     private static List<SObject> executeQuery(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
         List<SObject> result = new ArrayList<SObject>();
         QueryOptions qo = new QueryOptions();
@@ -91,6 +97,13 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         return result;
     }
 
+    /**
+     * Executes the SFDC query, returns one row only. This is useful for metadata inspection purposes
+     * @param binding SFDC stub
+     * @param sfdcQuery SFDC SOOL query
+     * @return results as List of SObjects
+     * @throws SfdcException in case of SFDC communication errors
+     */
     private static SObject executeQueryFirstRow(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
         List<SObject> result = new ArrayList<SObject>();
         QueryOptions qo = new QueryOptions();
@@ -122,6 +135,14 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         return result.get(0);
     }
 
+    /**
+     * Retrieves the object's metadata
+     * @param c SFDC stub
+     * @param name SFDC object name
+     * @return Map of fields
+     * @throws RemoteException communication error
+     * @throws UnexpectedErrorFault general error
+     */
     private static Map<String, Field> describeObject(SoapBindingStub c, String name) throws RemoteException, UnexpectedErrorFault {
         Map<String,Field> result = new HashMap<String,Field>();
         DescribeSObjectResult describeSObjectResult = c.describeSObject(name);
@@ -176,6 +197,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         s.writeConfig(new File(configFileName));
     }
 
+    /**
+     * Derives the LDM type from the SFDC type
+     * @param fields SFDC object metadata
+     * @param fieldName the field name
+     * @return LDM type
+     */
     private static String getColumnType(Map<String,Field> fields, String fieldName) {
         String type = SourceColumn.LDM_TYPE_ATTRIBUTE;
         Field f = fields.get(fieldName);
@@ -200,10 +227,9 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Extracts the source data CSV to the Derby database where it is going to be transformed
-     * @throws com.gooddata.exception.ModelException in case of PDM schema issues
+     * {@inheritDoc}
      */
-    public void extract() throws ModelException, IOException {
+    public void extract() throws IOException {
         SoapBindingStub con = null;
         try {
             File dataFile = FileUtil.getTempFile();
@@ -253,7 +279,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @param usr SFDC username
      * @param psw SFDC pasword
      * @return SFDC stub
-     * @throws java.sql.SQLException in case of connection issues
+     * @throws ServiceException in case of connection issues
      */
     private static SoapBindingStub connect(String usr, String psw) throws ServiceException {
         SoapBindingStub binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
@@ -329,7 +355,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Connects to the Derby database
+     * Connects to the SFDC
      * @return SFDC  stub
      * @throws ServiceException in case of connection issues
      */
@@ -386,11 +412,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Processes single command
-     * @param c command to be processed
-     * @param cli parameters (commandline params)
-     * @param ctx processing context
-     * @return true if the command has been processed, false otherwise
+     * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
@@ -409,6 +431,13 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         return true;
     }
 
+    /**
+     * Loads SFDC data command processor
+     * @param c command
+     * @param p command line arguments
+     * @param ctx current processing context
+     * @throws IOException in case of IO issues
+     */
     private void loadSfdc(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
         String usr = c.getParamMandatory( "username");
@@ -421,14 +450,16 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         setSfdcQuery(q);
         // sets the current connector
         ctx.setConnector(this);
-        try {
-            this.checkProjectId();
-        }
-        catch(InvalidParameterException e) {
-            this.getConnectorBackend().setProjectId(ctx.getProjectId());
-        }
-    }    
+        setProjectId(ctx);
+    }
 
+    /**
+     * Generates the SFDC config
+     * @param c command
+     * @param p command line arguments
+     * @param ctx current processing context
+     * @throws IOException in case of IO issues
+     */
     private void generateSfdcConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
         String name = c.getParamMandatory("name");

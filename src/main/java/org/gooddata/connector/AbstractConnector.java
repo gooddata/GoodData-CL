@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * GoodData
+ * GoodData abstract connector implements functionality that can be reused in several connectors.
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
@@ -39,22 +39,22 @@ public abstract class AbstractConnector implements Connector {
     // Connector backend
     private ConnectorBackend connectorBackend;
 
+    /**
+     * Default constructor
+     */
     protected AbstractConnector() {
     }
 
     /**
-     * GoodData CSV connector. This constructor creates the connector from a config file
-     * @throws com.gooddata.exception.InitializationException issues with the initialization
-     * @throws com.gooddata.exception.MetadataFormatException issues with the metadata definitions
-     * @throws IOException in case of an IO issue
+     * GoodData abstract connector.
+     * @param backend initialized connector backend
      */
     protected AbstractConnector(ConnectorBackend backend) {
         setConnectorBackend(backend);
     }
 
     /**
-     * Generates the MAQL for the data source
-     * @return the MAQL in string format
+     * {@inheritDoc}
      */
     public String generateMaql() {
         MaqlGenerator mg = new MaqlGenerator(schema);
@@ -62,8 +62,7 @@ public abstract class AbstractConnector implements Connector {
     }
     
     /**
-     * Generates the MAQL for the specified columns of the data source
-     * @return the MAQL in string format
+     * {@inheritDoc}
      */
     public String generateMaql(List<SourceColumn> columns) {
         MaqlGenerator mg = new MaqlGenerator(schema);
@@ -71,122 +70,96 @@ public abstract class AbstractConnector implements Connector {
     }
 
     /**
-     * LDM schema getter
-     * @return LDM schema
+     * {@inheritDoc}
      */
     public SourceSchema getSchema() {
         return schema;
     }
 
     /**
-     * LDM schema setter
-     * @param schema LDM schema
+     * {@inheritDoc}
      */
     public void setSchema(SourceSchema schema) {
         this.schema = schema;
     }
 
     /**
-     * Connector backend getter
-     * @return the connector backend
+     * {@inheritDoc}
      */
     public ConnectorBackend getConnectorBackend() {
         return connectorBackend;
     }
 
     /**
-     * Connector backend setter
-     * @param connectorBackend the connector backend
+     * {@inheritDoc}
      */
     public void setConnectorBackend(ConnectorBackend connectorBackend) {
         this.connectorBackend = connectorBackend;
     }
 
     /**
-     * Drops all snapshots
+     * {@inheritDoc}
      */
     public void dropSnapshots() {
         getConnectorBackend().dropSnapshots();
     }
 
     /**
-     * Lists the current snapshots
-     * @return list of snapshots as String
-     * @throws com.gooddata.exception.InternalErrorException in case of internal issues (e.g. uninitialized schema)
+     * {@inheritDoc}
      */
-    public String listSnapshots() throws InternalErrorException {
+    public String listSnapshots() {
         return getConnectorBackend().listSnapshots();
     }
 
     /**
-     * Figures out if the connector is initialized
-     * @return the initialization status
+     * {@inheritDoc}
      */
     public boolean isInitialized() {
         return getConnectorBackend().isInitialized();
     }
 
     /**
-     * Get last snapshot number
-     * @return last snapshot number
-     * @throws InternalErrorException in case of internal issues (e.g. uninitialized schema)
+     * {@inheritDoc}
      */
-    public int getLastSnapshotId() throws InternalErrorException {
+    public int getLastSnapshotId() {
         return getConnectorBackend().getLastSnapshotId();
     }
 
 
     /**
-     * Create the GoodData data package with the ALL data
-     * @param dli the Data Loading Interface that contains the required data structures
-     * @param parts the Data Loading Interface parts
-     * @param dir target directory where the data package will be stored
-     * @param archiveName the name of the target ZIP archive
-     * @throws IOException IO issues
-     * @throws com.gooddata.exception.ModelException in case of PDM schema issues
+     * {@inheritDoc}
      */
     public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName)
-            throws IOException, ModelException {
+            throws IOException {
         getConnectorBackend().deploy(dli, parts, dir, archiveName);
     }
 
     /**
-     * Create the GoodData data package with the data from specified snapshots
-     * @param dli the Data Loading Interface that contains the required data structures
-     * @param parts the Data Loading Interface parts
-     * @param dir target directory where the data package will be stored
-     * @param archiveName the name of the target ZIP archive
-     * @param snapshotIds snapshot ids that are going to be loaded (if NULL, all snapshots are going to be loaded)
-     * @throws IOException IO issues
-     * @throws ModelException in case of PDM schema issues
+     * {@inheritDoc}
      */
     public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
-            throws IOException, ModelException {
+            throws IOException {
         getConnectorBackend().deploySnapshot(dli, parts, dir, archiveName, snapshotIds);
     }
 
     /**
-     * Initializes the Derby database schema that is going to be used for the data normalization
-     * @throws com.gooddata.exception.ModelException imn case of PDM schema issues
+     * {@inheritDoc}
      */
-    public void initialize() throws ModelException {
+    public void initialize()  {
         getConnectorBackend().initialize();
     }
 
     /**
-     * Perform the data normalization (generate lookups) in the Derby database. The database must contain the required
-     * tables
-     * @throws ModelException in case of PDM schema issues
+     * {@inheritDoc}
      */
-    public void transform() throws ModelException {        
+    public void transform() {
         getConnectorBackend().transform();
     }
 
     /**
-     * Extracts the source data CSV to the Derby database where it is going to be transformed
-     * @throws ModelException in case of PDM schema issues
+     * {@inheritDoc}
      */
-    public abstract void extract() throws ModelException, IOException;
+    public abstract void extract() throws IOException;
 
 
     /**
@@ -200,11 +173,7 @@ public abstract class AbstractConnector implements Connector {
     }
 
     /**
-     * Processes single command
-     * @param c command to be processed
-     * @param cli parameters (commandline params)
-     * @param ctx processing context
-     * @return true if the command has been processed, false otherwise
+     * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
@@ -247,13 +216,27 @@ public abstract class AbstractConnector implements Connector {
         }
     }
 
-    private void generateMAQL(Command c, CliParams p, ProcessingContext ctx) throws InvalidArgumentException, IOException {
+    /**
+     * Generates the MAQL
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void generateMAQL(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         Connector cc = ctx.getConnector();
         String maqlFile = c.getParamMandatory("maqlFile");
         String maql = cc.generateMaql();
         FileUtil.writeStringToFile(maql, maqlFile);
     }
 
+    /**
+     * Executes MAQL
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
     private void executeMAQL(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String pid = ctx.getProjectId();
         final String maqlFile = c.getParamMandatory("maqlFile");
@@ -266,7 +249,15 @@ public abstract class AbstractConnector implements Connector {
         }
     }
 
-    private void transferData(Command c, CliParams p, ProcessingContext ctx) throws InvalidArgumentException, ModelException, IOException, GdcRestApiException, InterruptedException {
+    /**
+     * Transfers the data to GoodData project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     * @throws InterruptedException internal problem with making file writable
+     */
+    private void transferData(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
         Connector cc = ctx.getConnector();
         String pid = ctx.getProjectId();
         // connector's schema name
@@ -290,8 +281,20 @@ public abstract class AbstractConnector implements Connector {
         extractAndTransfer(c, pid, cc, dli, parts, null, waitForFinish, p, ctx);
     }
 
+    /**
+     * Extract data from the internal database and transfer them to a GoodData project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @param dli data loading interface
+     * @param parts DLI parts
+     * @param snapshots transferred snapshots
+     * @param waitForFinish synchronous execution flag
+     * @throws IOException IO issues
+     * @throws InterruptedException internal problem with making file writable
+     */
     private void extractAndTransfer(Command c, String pid, Connector cc, DLI dli, List<DLIPart> parts,
-        int[] snapshots, boolean waitForFinish, CliParams p, ProcessingContext ctx) throws IOException, ModelException, GdcRestApiException, InvalidArgumentException, InterruptedException {
+        int[] snapshots, boolean waitForFinish, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
         File tmpDir = FileUtil.createTempDir();
         makeWritable(tmpDir);
         File tmpZipDir = FileUtil.createTempDir();
@@ -316,7 +319,16 @@ public abstract class AbstractConnector implements Connector {
         FileUtil.recursiveDelete(tmpZipDir);
     }
 
-    private void checkLoadingStatus(String taskUri, String tmpDir, CliParams p, ProcessingContext ctx) throws HttpMethodException, GdcLoginException, InterruptedException, GdcUploadErrorException, IOException {
+    /**
+     * Checks the status of data integration process in the GoodData platform
+     * @param taskUri the uri where the task status is determined
+     * @param tmpDir temporary dir where the temporary data reside. This directory will be deleted.
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     * @throws InterruptedException internal problem with making file writable
+     */
+    private void checkLoadingStatus(String taskUri, String tmpDir, CliParams p, ProcessingContext ctx) throws InterruptedException,IOException {
         String status = "";
         while(!status.equalsIgnoreCase("OK") && !status.equalsIgnoreCase("ERROR") && !status.equalsIgnoreCase("WARNING")) {
             status = ctx.getRestApi(p).getLoadingStatus(taskUri);
@@ -334,6 +346,10 @@ public abstract class AbstractConnector implements Connector {
             l.info("Data successfully loaded.");
     }
 
+    /**
+     * Makes a directory writable on the Unix machines
+     * @param tmpDir the directory that will be made writable
+     */
     private void makeWritable(File tmpDir) {
         try {
             Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
@@ -343,6 +359,14 @@ public abstract class AbstractConnector implements Connector {
         }
     }
 
+    /**
+     * Transfers the last snapshot of data to the GoodData project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     * @throws InterruptedException internal problem with making file writable
+     */
     private void transferLastSnapshot(Command c, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
         Connector cc = ctx.getConnector();
         String pid = ctx.getProjectId();
@@ -368,6 +392,14 @@ public abstract class AbstractConnector implements Connector {
         extractAndTransfer(c, pid, cc, dli, parts, new int[] {cc.getLastSnapshotId()+1}, waitForFinish, p, ctx);
     }
 
+    /**
+     * Transfers selected snapshots to the GoodData project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     * @throws InterruptedException internal problem with making file writable
+     */
     private void transferSnapshots(Command c, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
         Connector cc = ctx.getConnector();
         String pid = ctx.getProjectId();
@@ -418,17 +450,36 @@ public abstract class AbstractConnector implements Connector {
             throw new InvalidParameterException(c.getCommand()+": The firstSnapshot can't be higher than the lastSnapshot.");
     }
 
+    /**
+     * Drops all snapshots (drop the entire project database)
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
     private void dropSnapshots(Command c, CliParams p, ProcessingContext ctx) {
         Connector cc = ctx.getConnector();
         cc.dropSnapshots();
     }
 
+    /**
+     * Lists the current snapshots
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
     private void listSnapshots(Command c, CliParams p, ProcessingContext ctx) {
         Connector cc = ctx.getConnector();
         l.info((cc.listSnapshots()));
     }
 
-    private void updateConfig(Command c, CliParams p, ProcessingContext ctx) throws InvalidArgumentException, IOException {
+    /**
+     * Updates the config with additional columns
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void updateConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
     	final String csvHeaderFile = c.getParamMandatory( "csvHeaderFile");
     	final String configFile = c.getParamMandatory( "configFile");
     	final String defaultLdmType = c.getParamMandatory( "defaultLdmType");
@@ -437,7 +488,14 @@ public abstract class AbstractConnector implements Connector {
     	CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
     }
 
-    private void generateUpdateMaql(Command c, CliParams p, ProcessingContext ctx) throws InvalidArgumentException, IOException, GdcLoginException, HttpMethodException {
+    /**
+     * Generate the MAQL for new columns 
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issue
+     */
+    private void generateUpdateMaql(Command c, CliParams p, ProcessingContext ctx) throws IOException {
     	final String configFile = c.getParamMandatory( "configFile");
     	final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
 
@@ -458,9 +516,9 @@ public abstract class AbstractConnector implements Connector {
     /**
      * Finds the attributes with no appropriate part.
      * TODO: a generic detector of new facts, labels etc could be added too
-     * @param parts
-     * @param schema
-     * @return
+     * @param parts DLI parts
+     * @param schema former source schema
+     * @return list of new columns
      */
     private List<SourceColumn> findNewAttributes(List<DLIPart> parts, SourceSchema schema) {
     	Set<String> fileNames = new HashSet<String>();
@@ -480,6 +538,10 @@ public abstract class AbstractConnector implements Connector {
     	return result;
     }
 
+    /**
+     * Sets the incremental loading status for a part
+     * @param parts DLI part
+     */
     private void setIncremental(List<DLIPart> parts) {
         for(DLIPart part : parts) {
             if(part.getFileName().startsWith(N.FCT_PFX)) {
@@ -488,13 +550,18 @@ public abstract class AbstractConnector implements Connector {
         }
     }
 
-    protected void checkProjectId() throws InvalidParameterException {
-        String pid = getConnectorBackend().getProjectId();
-        if(pid == null || pid.length()<=0)
+    /**
+     * Sets the project id from context
+     * @param ctx process context
+     * @throws InvalidParameterException if the project id isn't initialized
+     */
+    protected void setProjectId(ProcessingContext ctx) throws InvalidParameterException {
+        String pid = ctx.getProjectId();
+        if(pid != null && pid.length() > 0)
+            this.getConnectorBackend().setProjectId(pid);
+        else
             throw new InvalidParameterException("No project is active. Please activate project via CreateProject or " +
                     "OpenProject command. ");
     }
-
-
 
 }

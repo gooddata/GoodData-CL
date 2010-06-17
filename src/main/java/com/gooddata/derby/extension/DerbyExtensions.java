@@ -24,6 +24,7 @@ public class DerbyExtensions {
 
     private final static DateTimeFormatter baseFmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 
+    // Empty date id
     private final static int EMPTY_DATE_ID = 2147483647;
 
     /**

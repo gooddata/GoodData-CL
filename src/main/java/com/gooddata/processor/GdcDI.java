@@ -79,7 +79,10 @@ public class GdcDI implements Executor {
         System.exit(1);
     }
 
-
+    /**
+     * Executes the commands in String
+     * @param commandsStr commansd string
+     */
     public void execute(final String commandsStr) {
         List<Command> cmds = new ArrayList<Command>();
         cmds.addAll(parseCmd(commandsStr));
@@ -93,6 +96,10 @@ public class GdcDI implements Executor {
         }
     }
 
+    /**
+     * Executes the commands in file
+     * @param scriptFile file with commands
+     */
     public void execute(final File scriptFile) throws IOException {
         List<Command> cmds = new ArrayList<Command>();
         cmds.addAll(parseCmd(FileUtil.readStringFromFile(scriptFile.getAbsolutePath())));
@@ -111,7 +118,6 @@ public class GdcDI implements Executor {
     /**
      * The main CLI processor
      * @param args command line argument
-     * @throws Exception any issue
      */
     public static void main(String[] args) {
 
@@ -145,20 +151,14 @@ public class GdcDI implements Executor {
             }
         }
         catch(ParseException e) {
-            throw new InvalidArgumentException("Can't parse command '" + cmd + "'");
+            throw new InvalidCommandException("Can't parse command '" + cmd + "'");
         }
-        throw new InvalidArgumentException("Can't parse command (empty command).");
+        throw new InvalidCommandException("Can't parse command (empty command).");
     }
 
 
-    
-
     /**
-     * Processes single command
-     * @param c command to be processed
-     * @param cli parameters (commandline params)
-     * @param ctx processing context
-     * @return true if the command has been processed, false otherwise
+     * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
@@ -191,6 +191,12 @@ public class GdcDI implements Executor {
     }
 
 
+    /**
+     * Create new project command processor
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
     private void createProject(Command c, CliParams p, ProcessingContext ctx) {
         try {
             String name = c.getParamMandatory("name");
@@ -204,17 +210,35 @@ public class GdcDI implements Executor {
         }
     }
 
-     private void storeProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+    /**
+     * Store project command processor
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void storeProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String fileName = c.getParamMandatory("fileName");
         String pid = ctx.getProjectId();
         FileUtil.writeStringToFile(pid, fileName);
     }
 
+    /**
+     * Retrieve project command processor
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
     private void retrieveProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String fileName = c.getParamMandatory("fileName");
         ctx.setProjectId(FileUtil.readStringFromFile(fileName).trim());
     }
-    
+
+    /**
+     * Lock project command processor
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
     private void lock(Command c, CliParams p, ProcessingContext ctx) throws IOException {
     	final String path = c.getParamMandatory( "path");
     	final File lock = new File(path);
@@ -230,6 +254,11 @@ public class GdcDI implements Executor {
     	lock.deleteOnExit();
     }
 
+    /**
+     * Instantiate all known connectors
+     * TODO: this should be automated
+     * @throws IOException in case of IO issues
+     */
     private Connector[] instantiateConnectors() throws IOException {
         String b = cliParams.get(CliParams.CLI_PARAM_BACKEND[0]);
         ConnectorBackend backend = null;

@@ -131,6 +131,11 @@ public class StringUtil {
     	return sb.toString();
     }
 
+    /**
+     * Parse CSV line
+     * @param elements CSV line
+     * @return alements as String[]
+     */
     public static List<String> parseLine(String elements) {
         if (elements == null) {
             return new ArrayList<String>();

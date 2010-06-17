@@ -22,6 +22,7 @@ public class CliParams extends HashMap<String,String> {
 
     private static Logger l = Logger.getLogger(CliParams.class);
 
+    //Options data
     public static String[] CLI_PARAM_USERNAME = {"username","u"};
     public static String[] CLI_PARAM_PASSWORD = {"password","p"};
 
@@ -35,12 +36,13 @@ public class CliParams extends HashMap<String,String> {
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
     public static String CLI_PARAM_SCRIPT = "script";
 
-
+    // mandatory options
     public static Option[] mandatoryOptions = {
         new Option(CLI_PARAM_USERNAME[1], CLI_PARAM_USERNAME[0], true, "GoodData username"),
         new Option(CLI_PARAM_PASSWORD[1], CLI_PARAM_PASSWORD[0], true, "GoodData password"),
     };
 
+    // optional options
     public static Option[] optionalOptions = {
         new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host"),
         new Option(CLI_PARAM_FTP_HOST[1], CLI_PARAM_FTP_HOST[0], true, "GoodData FTP host"),
@@ -52,15 +54,28 @@ public class CliParams extends HashMap<String,String> {
         new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files")
     };
 
-
+    /**
+     * Constructor
+     * @param ln parsed command line
+     * @throws InvalidArgumentException in case of nonexistent or incorrect cli args
+     */
     protected CliParams(CommandLine ln) throws InvalidArgumentException {
         parse(ln);
     }
 
-    public static CliParams create(CommandLine l) throws InvalidArgumentException {
-        return new CliParams(l);
+    /**
+     * Create method
+     * @param ln parsed command line
+     * @throws InvalidArgumentException in case of nonexistent or incorrect cli args
+     */
+    public static CliParams create(CommandLine ln) throws InvalidArgumentException {
+        return new CliParams(ln);
     }
 
+    /**
+     * Returns all cli options
+     * @return all cli options
+     */
     public static Options getOptions() {
         Options ops = new Options();
         for( Option o : mandatoryOptions)
@@ -70,6 +85,11 @@ public class CliParams extends HashMap<String,String> {
         return ops;
     }
 
+    /**
+     * Parse and validate the cli arguments
+     * @param ln parsed command line
+     * @throws InvalidArgumentException in case of nonexistent or incorrect cli args
+     */
     protected void parse(CommandLine ln) throws InvalidArgumentException {
         for( Option o : mandatoryOptions) {
             String name = o.getLongOpt();

@@ -3,7 +3,7 @@ package com.gooddata.processor;
 import com.gooddata.exception.ProcessingException;
 
 /**
- * GoodData
+ * GoodData command executor
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0

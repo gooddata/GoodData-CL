@@ -1,11 +1,10 @@
 package com.gooddata.naming;
 
 /**
- * Created by IntelliJ IDEA.
- * User: zdenek
- * Date: Jun 10, 2010
- * Time: 11:56:21 AM
- * To change this template use File | Settings | File Templates.
+ * Shared namings
+ *
+ * @author zd <zd@gooddata.com>
+ * @version 1.0
  */
 public class N {
 

@@ -13,11 +13,19 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Google feed dumper dumps the Google result data to CSV
+ *
+ * @author ZD <zd@gooddata.com>
+ * @version 1.0
+ */
 public class FeedDumper {
 
     
-       /**
+    /**
      * Dupmps the gdata feed to CSV
+     * @param cw CSVWriter
+     * @param feed Google feed
      * @throws IOException in case of an IO problem
      */
     public static int dump(CSVWriter cw, DataFeed feed) throws IOException {

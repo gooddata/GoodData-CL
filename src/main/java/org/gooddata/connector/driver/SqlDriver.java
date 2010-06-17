@@ -3,6 +3,7 @@ package org.gooddata.connector.driver;
 import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.connector.model.PdmSchema;
+import com.gooddata.util.JdbcUtil;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,43 +17,39 @@ import java.sql.SQLException;
 public interface SqlDriver {
 
     /**
-     * Executes the system DDL initialization
+     * Executes the system DDL initialization. Creates functions, system tables etc.
      * @param c JDBC connection
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
      * @throws SQLException in case of db problems
      */
-    public void executeSystemDdlSql(Connection c) throws ModelException, SQLException;
+    public void executeSystemDdlSql(Connection c) throws SQLException;
 
     /**
-     * Executes the DDL initialization
+     * Executes the DDL initialization. Creates the database schema that is required for the data normalization.
+     * The schema is specific for the incoming data.
      * @param c JDBC connection
      * @param schema the PDM schema
-     * @throws com.gooddata.exception.ModelException if there is a problem with the PDM schema
-     * (e.g. multiple source or fact tables)
      * @throws java.sql.SQLException in case of db problems
      */
-    public void executeDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException;
+    public void executeDdlSql(Connection c, PdmSchema schema) throws SQLException;
 
     /**
      * Executes the data normalization script
      * @param c JDBC connection
      * @param schema the PDM schema
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
      * @throws SQLException in case of db problems
      */
-    public void executeNormalizeSql(Connection c, PdmSchema schema) throws ModelException, SQLException;
+    public void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException;
 
     /**
-     * Executes the Derby SQL that extracts the data from a CSV file to the normalization database
+     * Extracts the data from a CSV file to the database for normalization
      * @param c JDBC connection
      * @param schema the PDM schema
-     * @throws ModelException in case when there is a problem with the PDM model
      * @throws SQLException in case of db problems
      */
-    public void executeExtractSql(Connection c, PdmSchema schema, String file) throws ModelException, SQLException;
+    public void executeExtractSql(Connection c, PdmSchema schema, String file) throws SQLException;
 
     /**
-     * Executes the Derby SQL that unloads the data from the normalization database to a CSV
+     * Executes the Derby SQL that unloads the normalized data from the database to a CSV
      * @param c JDBC connection
      * @param part DLI part
      * @param dir target directory
@@ -60,16 +57,29 @@ public interface SqlDriver {
      * @throws SQLException in case of db problems
      */
     public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
-            throws ModelException, SQLException;
+            throws SQLException;
 
 
     /**
-     * Executes the copying of the referenced lookup tables
+     * Executes the copying of the referenced lookup tables. This is used for REFERENCE lookups that are copies of the
+     * associated CONNECTION POINT lookups.
      * @param c JDBC connection
      * @param schema the PDM schema
-     * @throws com.gooddata.exception.ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
      * @throws java.sql.SQLException in case of db problems
      */
-    public void executeLookupReplicationSql(Connection c, PdmSchema schema) throws ModelException, SQLException;
+    public void executeLookupReplicationSql(Connection c, PdmSchema schema) throws SQLException;
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean exists(Connection c, String tbl);
+
+    /**
+     * Returns true if the specified column of the specified table exists in the DB
+     * @param tbl table name
+     * @param col column name
+     * @return true if the table exists, false otherwise
+     */
+    public boolean exists(Connection c, String tbl, String col);
 
 }
