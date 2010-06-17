@@ -1,6 +1,16 @@
 package com.gooddata.connector;
 
-import com.gooddata.exception.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.gooddata.connector.AbstractConnector;
+import org.gooddata.connector.Connector;
+import org.gooddata.connector.backend.ConnectorBackend;
+
+import com.gooddata.exception.ModelException;
+import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
@@ -8,13 +18,6 @@ import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import org.gooddata.connector.AbstractConnector;
-import org.gooddata.connector.Connector;
-import org.gooddata.connector.backend.ConnectorBackend;
-
-import java.io.*;
-
-import static org.apache.derby.tools.ij.runScript;
 
 /**
  * GoodData CSV Connector
@@ -78,11 +81,22 @@ public class CsvConnector extends AbstractConnector implements Connector {
         	s = SourceSchema.createSchema(name);
         }
         final int knownColumns = s.getColumns().size();
+        NameTransformer idGen = new NameTransformer(new NameTransformerCallback() {
+        	public String transform(String str) {
+        		return StringUtil.csvHeaderToIdentifier(str);
+        	}
+        });
+        NameTransformer titleGen = new NameTransformer(new NameTransformerCallback() {
+        	public String transform(String str) {
+        		return StringUtil.csvHeaderToTitle(str);
+        	}
+        });
+        
         for(int j = knownColumns; j < headers.length; j++) {
         	final String header = headers[j];
             final SourceColumn sc;
-            final String identifier = StringUtil.csvHeaderToIdentifier(header);
-            final String title = StringUtil.csvHeaderToTitle(header);
+            final String identifier = idGen.transform(header);
+            final String title = titleGen.transform(header);
             if (defaultLdmType != null) {
             	sc = new SourceColumn(identifier, defaultLdmType, title, folder);
             } else {
@@ -207,5 +221,34 @@ public class CsvConnector extends AbstractConnector implements Connector {
         File cf = new File(configFile);
         File csvf = FileUtil.getFile(csvHeaderFile);
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile);
+    }
+    
+    private static class NameTransformer {
+    	private final NameTransformerCallback cb;
+    	private final Set<String> seen = new HashSet<String>();
+    	
+    	public NameTransformer(NameTransformerCallback cb) {
+    		this.cb = cb;
+    	}
+    	
+    	public String transform(String str) {
+    		int index = 0;
+    		String transformed = cb.transform(str);
+    		while (true) {
+    			String result = transformed;
+    			if (index > 0) {
+    				result += " " + index;
+    			}
+    			index++;
+    			if (!seen.contains(result)) {
+    				seen.add(result);
+    				return result;
+    			}
+    		}
+    	}
+    }
+    
+    private interface NameTransformerCallback {
+    	public String transform(String str);
     }
 }
