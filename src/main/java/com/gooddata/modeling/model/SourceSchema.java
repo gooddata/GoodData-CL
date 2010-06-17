@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GoodData source schema
+ * GoodData source schema. Source schema describes the structure of the source data and its mapping to the LDM types
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0

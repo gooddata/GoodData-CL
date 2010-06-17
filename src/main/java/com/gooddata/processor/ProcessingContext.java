@@ -1,6 +1,7 @@
 package com.gooddata.processor;
 
 import com.gooddata.exception.GdcLoginException;
+import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
@@ -23,8 +24,12 @@ public class ProcessingContext {
     private GdcFTPApiWrapper _ftpApi = null;
 
 
-    public String getProjectId() {
-        return projectId;
+    public String getProjectId() throws InvalidParameterException {
+        if(projectId == null || projectId.length() <= 0)
+            throw new InvalidParameterException("No project is active. Please activate project via CreateProject or " +
+                    "OpenProject command. ");
+        else
+            return projectId;
     }
 
     public void setProjectId(String projectId) {

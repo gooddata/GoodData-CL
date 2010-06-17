@@ -13,51 +13,56 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * GoodData
+ * GoodData connector backend interface.
+ * Connector backend handles communication with the specific SQL database. Specifically it handles the DB connection
+ * and other communication specifics of the DBMS. It uses the SQL driver that generates appropriate SQL dialect.
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
- */
+*/
 public interface ConnectorBackend {
 
+
+    // Supported connector backends
+    public static final int CONNECTOR_BACKEND_DERBY_SQL = 1;
+    public static final int CONNECTOR_BACKEND_MYSQL = 2;
+    
     /**
-     * Connects to the Derby database
+     * Connects the database
      * @return JDBC connection
      * @throws java.sql.SQLException
      */
     public Connection connect() throws SQLException;
 
     /**
-     * Perform the data normalization (generate lookups) in the Derby database. The database must contain the required
-     * tables
+     * Perform the data normalization (generate lookups). The database must contain the required schema
      * @throws ModelException in case of PDM schema issues
      */
-    public void transform() throws ModelException;
+    public void transform();
 
     /**
-     * Drops all snapshots
+     * Drops all current snapshots. This is usually achieved by dropping the whole project database.
      */
     public void dropSnapshots();
 
     /**
      * Lists the current snapshots
      * @return list of snapshots as String
-     * @throws com.gooddata.exception.InternalErrorException in case of internal issues (e.g. uninitialized schema)
      */
-    public String listSnapshots() throws InternalErrorException;
+    public String listSnapshots();
 
     /**
-     * Get last snapshot number
+     * Get last snapshot number. Snapshot is each individual lad of data. Snapshots are numbered (0...N).
+     * Sometimes when you call this method at the beginning of a process that creates new snapshot, you might want to
+     * add one to the snapshot number.
      * @return last snapshot number
-     * @throws InternalErrorException in case of internal issues (e.g. uninitialized schema)
      */
-    public int getLastSnapshotId() throws InternalErrorException;
+    public int getLastSnapshotId();
 
     /**
-     * Initializes the Derby database schema that is going to be used for the data normalization
-     * @throws com.gooddata.exception.ModelException imn case of PDM schema issues
+     * Initializes the database schema that is going to be used for the data normalization
      */
-    public void initialize() throws ModelException;
+    public void initialize();
     
     /**
      * Figures out if the connector is initialized
@@ -69,32 +74,27 @@ public interface ConnectorBackend {
      * Load the all normalized data from the SQL to the GoodData data package on the disk
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
-     * @throws ModelException in case of PDM schema issues
      */
-    public void load(List<DLIPart> parts, String dir) throws ModelException;
+    public void load(List<DLIPart> parts, String dir);
 
     /**
-     * Load the normalized data from the SQL to the GoodData data package on the disk
-     * incrementally (specific snapshot)
+     * Load the normalized data of selected snapshots from the SQL to the GoodData data package on the disk.
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
      * @param snapshotIds snapshot ids that are going to be loaded (if NULL, all snapshots are going to be loaded)
-     * @throws ModelException in case of PDM schema issues
      */
-    public void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds) throws ModelException;
+    public void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds);
 
 
     /**
-     * Create the GoodData data package with the ALL data
+     * Create the GoodData data package with the ALL snapshots data
      * @param dli the Data Loading Interface that contains the required data structures
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
      * @param archiveName the name of the target ZIP archive
      * @throws IOException IO issues
-     * @throws ModelException in case of PDM schema issues
      */
-    public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName)
-            throws IOException, ModelException;
+    public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName) throws IOException;
 
     /**
      * Create the GoodData data package with the data from specified snapshots
@@ -104,17 +104,14 @@ public interface ConnectorBackend {
      * @param archiveName the name of the target ZIP archive
      * @param snapshotIds snapshot ids that are going to be loaded (if NULL, all snapshots are going to be loaded)
      * @throws IOException IO issues
-     * @throws ModelException in case of PDM schema issues
      */
-    public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
-            throws IOException, ModelException;
+    public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds) throws IOException;
 
     /**
-     * Extracts the source data CSV to the Derby database where it is going to be transformed
+     * Extracts the source data CSV to the database where it is going to be transformed
      * @param dataFile the data file to extract
-     * @throws ModelException in case of PDM schema issues
      */
-    public void extract(File dataFile) throws ModelException;
+    public void extract(File dataFile);
 
     /**
      * Returns true if the specified table exists in the DB
@@ -124,17 +121,27 @@ public interface ConnectorBackend {
     public boolean exists(String tbl);
 
     /**
-     * The project id
+     * Project id getter
+     * @return project id
      */
     public String getProjectId();
 
+    /**
+     * Project id setter
+     * @param projectId project id
+     */
     public void setProjectId(String projectId);
 
     /**
-     * The PDM schema
+     * PDM schema getter
+     * @return pdm schema
      */
     public PdmSchema getPdm();
 
+    /**
+     * PDM schema setter
+     * @param schema PDM schema
+     */
     public void setPdm(PdmSchema schema);
 
 }

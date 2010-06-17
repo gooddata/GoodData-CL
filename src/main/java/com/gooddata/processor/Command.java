@@ -9,7 +9,7 @@ import java.io.StringReader;
 import java.util.Properties;
 
 /**
- * Command.
+ * Script command wrapper
  *
  * @author Zdenek Svoboda <zd@gooddata.org>
  * @version 1.0

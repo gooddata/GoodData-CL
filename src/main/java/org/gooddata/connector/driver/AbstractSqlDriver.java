@@ -48,30 +48,24 @@ public abstract class AbstractSqlDriver implements SqlDriver {
 
 
     /**
-     * Executes the system DDL initialization
-     * @param c JDBC connection
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
-     * @throws SQLException in case of db problems
+     * {@inheritDoc}
      */
-    public void executeSystemDdlSql(Connection c) throws ModelException, SQLException {
+    public void executeSystemDdlSql(Connection c) throws SQLException {
         createSnapshotTable(c);
+        createFunctions(c);
     }
 
     /**
-     * Executes the DDL initialization
-     * @param c JDBC connection
-     * @param schema the PDM schema
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
-     * @throws SQLException in case of db problems
+     * {@inheritDoc}
      */
-    public void executeDdlSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+    public void executeDdlSql(Connection c, PdmSchema schema) throws SQLException {
         for(PdmTable table : schema.getTables()) {
         	if (!exists(c, table.getName())) {
         		createTable(c, table);
         		if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(table.getType())) {
         			prepopulateLookupTable(c, table);
         		} else if (PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT.equals(table.getType())) {
-        			final List<Map<String,String>> rows = prepareInitialTableLoad(c, table);
+        			final List<Map<String,String>> rows = prepareInitialTableLoad(table);
         			if (!rows.isEmpty()) {
         				l.warn("Prepopulating of connection point tables is not suppported (table = " + table.getName() + ")");
         			}
@@ -94,14 +88,9 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     }
 
     /**
-     * Executes the data normalization script
-     * @param c JDBC connection
-     * @param schema the PDM schema
-     * @throws com.gooddata.exception.ModelException if there is a problem with the PDM schema
-     * (e.g. multiple source or fact tables)
-     * @throws SQLException in case of db problems
+     * {@inheritDoc}
      */
-    public void executeNormalizeSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+    public void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException {
 
         //populate REFERENCEs lookups from the referenced lookups
         executeLookupReplicationSql(c, schema);
@@ -122,13 +111,9 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     }
 
     /**
-     * Executes the copying of the referenced lookup tables
-     * @param c JDBC connection
-     * @param schema the PDM schema
-     * @throws com.gooddata.exception.ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
-     * @throws java.sql.SQLException in case of db problems
+     * {@inheritDoc}
      */
-    public void executeLookupReplicationSql(Connection c, PdmSchema schema) throws ModelException, SQLException {
+    public void executeLookupReplicationSql(Connection c, PdmSchema schema) throws SQLException {
         for (PdmLookupReplication lr : schema.getLookupReplications()) {
             JdbcUtil.executeUpdate(c,
                 "DELETE FROM " + lr.getReferencingLookup()
@@ -142,10 +127,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     }
     
     /**
-     * Returns true if the specified table exists in the DB
-     * @param tbl table name
-     * @return true if the table exists, false otherwise
-     * @throws SQLException 
+     * {@inheritDoc}
      */
     public boolean exists(Connection c, String tbl) {
     	String sql = "SELECT * FROM " + tbl + " WHERE 1=0";
@@ -162,7 +144,6 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      * @param tbl table name
      * @param col column name
      * @return true if the table exists, false otherwise
-     * @throws java.lang.IllegalArgumentException if the provided table does not exist
      */
     public boolean exists(Connection c, String tbl, String col) {
     	String sql = "SELECT " + col + " FROM " + tbl + " WHERE 1=0";
@@ -177,12 +158,25 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     	}
     }
 
+    /**
+     * Indexes all table columns
+     * @param c JDBC connection
+     * @param table target table
+     * @throws SQLException in case of SQL issues
+     */
     protected void indexAllTableColumns(Connection c, PdmTable table) throws SQLException {
         for( PdmColumn column : table.getColumns()) {
             indexTableColumn(c, table, column);
         }
     }
-    
+
+    /**
+     * Indexes table's column
+     * @param c JDBC connection
+     * @param table target table
+     * @param column target table's columns
+     * @throws SQLException in case of SQL issues
+     */
     private void indexTableColumn(Connection c, PdmTable table, PdmColumn column) throws SQLException {
     	if(!column.isPrimaryKey() && !column.isUnique()) {
             JdbcUtil.executeUpdate(c,"CREATE INDEX idx_" + table.getName()
@@ -191,6 +185,12 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     	}
     }
 
+    /**
+     * Creates a new table
+     * @param c JDBC connection
+     * @param table target table
+     * @throws SQLException in case of SQL issues
+     */
     protected void createTable(Connection c, PdmTable table) throws SQLException {
         String pk = "";
         String sql = "CREATE TABLE " + table.getName() + " (\n";
@@ -211,9 +211,15 @@ public abstract class AbstractSqlDriver implements SqlDriver {
 
         JdbcUtil.executeUpdate(c, sql);
     }
-    
+
+    /**
+     * Fills the lookup table with the DISTINCT values from the source table
+     * @param c JDBC connection
+     * @param table target lookup table
+     * @throws SQLException in case of SQL issues
+     */
     private void prepopulateLookupTable(Connection c, PdmTable table) throws SQLException {
-    	final List<Map<String,String>> rows = prepareInitialTableLoad(c, table);
+    	final List<Map<String,String>> rows = prepareInitialTableLoad(table);
     	if (rows.isEmpty())
     		return;
     	
@@ -245,8 +251,14 @@ public abstract class AbstractSqlDriver implements SqlDriver {
 			});
     	}
     }
-    
-    private List<Map<String,String>> prepareInitialTableLoad(Connection c, PdmTable table) {
+
+
+    /**
+     * TODO: PK to document
+     * @param table target table
+     * @return
+     */
+    private List<Map<String,String>> prepareInitialTableLoad(PdmTable table) {
     	final List<Map<String,String>> result = new ArrayList<Map<String,String>>();
     	final List<PdmColumn> toLoad = new ArrayList<PdmColumn>();
     	int max = 0;
@@ -273,7 +285,14 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     	}
     	return result;
     }
-    
+
+    /**
+     * Add column to the table (ALTER TABLE)
+     * @param c JDBC connection
+     * @param table target table
+     * @param column target column
+     * @throws SQLException in case of SQL issues
+     */
     private void addColumn(Connection c, PdmTable table, PdmColumn column) throws SQLException {
     	String sql = "ALTER TABLE " + table.getName() + " ADD COLUMN "
     			   + column.getName() + " " + column.getType();
@@ -282,6 +301,11 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     	JdbcUtil.executeUpdate(c, sql);
     }
 
+    /**
+     * Creates the system snapshots table
+     * @param c JDBC connection
+     * @throws SQLException in case of a DB issue
+     */
     protected void createSnapshotTable(Connection c) throws SQLException {
         JdbcUtil.executeUpdate(c,
             "CREATE TABLE snapshots (" +
@@ -295,7 +319,13 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         );
     }
 
-    protected void insertSnapshotsRecord(Connection c, PdmSchema schema) throws ModelException, SQLException {
+    /**
+     * Inserts new records to the snapshots table before the load
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void insertSnapshotsRecord(Connection c, PdmSchema schema) throws SQLException {
         PdmTable factTable = schema.getFactTable();
         String fact = factTable.getName();
         Date dt = new Date();
@@ -308,7 +338,13 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         );
     }
 
-    protected void updateSnapshotsRecord(Connection c, PdmSchema schema) throws ModelException, SQLException {
+    /**
+     * Updates the snapshots table after load
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void updateSnapshotsRecord(Connection c, PdmSchema schema) throws SQLException {
         PdmTable factTable = schema.getFactTable();
         String fact = factTable.getName();
         JdbcUtil.executeUpdate(c,
@@ -321,7 +357,13 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         );
     }
 
-    protected abstract void insertFactsToFactTable(Connection c, PdmSchema schema) throws ModelException, SQLException;
+    /**
+     * Inserts rows from the source table to the fact table
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected abstract void insertFactsToFactTable(Connection c, PdmSchema schema) throws SQLException;
 
     protected void populateLookupTables(Connection c, PdmSchema schema) throws ModelException, SQLException {
         for(PdmTable lookupTable : schema.getLookupTables()) {
@@ -329,13 +371,25 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         }
     }
 
-    protected void populateConnectionPointTables(Connection c, PdmSchema schema) throws SQLException, ModelException {
+    /**
+     * Populates the connection point table
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void populateConnectionPointTables(Connection c, PdmSchema schema) throws SQLException {
         for(PdmTable cpTable : schema.getConnectionPointTables())
             populateConnectionPointTable(c, cpTable, schema);
     }
 
-    protected void updateForeignKeyInFactTable(Connection c, PdmTable lookupTable, PdmSchema schema)
-            throws ModelException, SQLException {
+    /**
+     * Updates a FK in the fact table for specified lookup table
+     * @param c JDBC connection
+     * @param lookupTable lookup table
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void updateForeignKeyInFactTable(Connection c, PdmTable lookupTable, PdmSchema schema) throws SQLException {
         String lookup = lookupTable.getName();
         String fact = schema.getFactTable().getName();
         String source = schema.getSourceTable().getName();
@@ -347,8 +401,14 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         );
     }
 
-    protected void populateLookupTable(Connection c, PdmTable lookupTable, PdmSchema schema)
-            throws ModelException, SQLException {
+    /**
+     * Populates lookup table
+     * @param c JDBC connection
+     * @param lookupTable lookup table
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void populateLookupTable(Connection c, PdmTable lookupTable, PdmSchema schema) throws SQLException {
         String lookup = lookupTable.getName();
         String fact = schema.getFactTable().getName();
         String source = schema.getSourceTable().getName();
@@ -365,8 +425,14 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         );
     }
 
-    protected void populateConnectionPointTable(Connection c, PdmTable lookupTable, PdmSchema schema)
-            throws ModelException, SQLException {
+    /**
+     * Populates connection point table
+     * @param c JDBC connection
+     * @param lookupTable connection point table
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void populateConnectionPointTable(Connection c, PdmTable lookupTable, PdmSchema schema) throws SQLException {
         String lookup = lookupTable.getName();
         String fact = schema.getFactTable().getName();
         String source = schema.getSourceTable().getName();
@@ -397,6 +463,12 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         JdbcUtil.executeUpdate(c, sql);
     }
 
+    /**
+     * Concats associated source columns with a DB specific concat method
+     * The concatenated columns are used as a unique ke (hash id) of each lookup row
+     * @param lookupTable lookup table
+     * @return the concatenated columns as String
+     */
     protected String concatAssociatedSourceColumns(PdmTable lookupTable) {
         String associatedColumns = "";
         for(PdmColumn column : lookupTable.getAssociatedColumns()) {
@@ -410,6 +482,11 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         return associatedColumns;
     }
 
+    /**
+     * Get all columns that will be inserted (exclude autoincrements)
+     * @param lookupTable lookup table
+     * @return all columns eglibile for insert
+     */
     protected String getInsertColumns(PdmTable lookupTable) {
         String insertColumns = "";
         for(PdmColumn column : lookupTable.getAssociatedColumns()) {
@@ -421,6 +498,11 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         return insertColumns;
     }
 
+    /**
+     * Returns associted columns in the source table
+     * @param lookupTable lookup table
+     * @return list of associated source columns
+     */
     protected String getAssociatedSourceColumns(PdmTable lookupTable) {
         String sourceColumns = "";
         for(PdmColumn column : lookupTable.getAssociatedColumns()) {
@@ -432,6 +514,11 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         return sourceColumns;
     }
 
+    /**
+     * Returns non-autoincrement columns
+     * @param tbl table
+     * @return non-autoincrement columns
+     */
     protected String getNonAutoincrementColumns(PdmTable tbl) {
         String cols = "";
         for (PdmColumn col : tbl.getColumns()) {
@@ -445,7 +532,14 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         return cols;
     }
 
-    protected String getLoadWhereClause(DLIPart part, PdmSchema schema, int[] snapshotIds) throws ModelException {
+    /**
+     * Generates the where clause for unloading data to CSVs in the data loading package
+     * @param part DLI part
+     * @param schema PDM schema
+     * @param snapshotIds ids of snapshots to unload
+     * @return SQL where clause
+     */
+    protected String getLoadWhereClause(DLIPart part, PdmSchema schema, int[] snapshotIds) {
         String dliTable = getTableNameFromPart(part);
         PdmTable pdmTable = schema.getTableByName(dliTable);
         String whereClause = "";
@@ -463,7 +557,13 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         return whereClause;
     }
 
-    protected String getLoadColumns(DLIPart part, PdmSchema schema) throws ModelException {
+    /**
+     * Generates the list of columns for unloading data to CSVs in the data loading package
+     * @param part DLI part
+     * @param schema PDM schema
+     * @return list of columns
+     */
+    protected String getLoadColumns(DLIPart part, PdmSchema schema)  {
         String dliTable = getTableNameFromPart(part);
         PdmTable pdmTable = schema.getTableByName(dliTable);
         List<Column> columns = part.getColumns();
@@ -484,14 +584,35 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         return cols;
     }
 
+    /**
+     * Uses DBMS specific functions for decorating fact columns for unloading from DB to CSV
+     * @param cols column list
+     * @param cl column to add to cols
+     * @param table table name
+     * @return the amended list
+     */
     protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
         return decorateOtherColumnForLoad(cols, cl, table);
     }
 
+    /**
+     * Uses DBMS specific functions for decorating lookup columns for unloading from DB to CSV
+     * @param cols column list
+     * @param cl column to add to cols
+     * @param table table name
+     * @return the amended list
+     */
     protected String decorateLookupColumnForLoad(String cols, Column cl, String table) {
         return decorateOtherColumnForLoad(cols, cl, table);
     }
-    
+
+    /**
+     * Uses DBMS specific functions for decorating generic columns for unloading from DB to CSV
+     * @param cols column list
+     * @param cl column to add to cols
+     * @param table table name
+     * @return the amended list
+     */
     protected String decorateOtherColumnForLoad(String cols, Column cl, String table) {
         if (cols != null && cols.length() > 0)
             cols += "," + table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
@@ -500,8 +621,20 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         return cols;
     }
 
+    /**
+     * Get tab,e name from DLI part
+     * @param part DLI part
+     * @return table name
+     */
     protected String getTableNameFromPart(DLIPart part) {
         return StringUtil.formatShortName(part.getFileName().split("\\.")[0]);
     }
+
+    /**
+     * Creates the DBMS specific system functions
+     * @param c JDBC connection
+     * @throws SQLException in case of DB issues
+     */
+    protected abstract void createFunctions(Connection c) throws SQLException;
 
 }

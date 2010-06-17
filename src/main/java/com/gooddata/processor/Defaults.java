@@ -1,7 +1,7 @@
 package com.gooddata.processor;
 
 /**
- * GoodData
+ * GoodData CLI defaults
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0

@@ -51,14 +51,20 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * Saves a template of the config file
      * @param configFileName the new config file name
      * @param dataFileName the data file
-     * @throws IOException
-     * @throws AssertionError 
-     * @throws ModelException 
+     * @throws IOException in case of an IO error
      */
     public static void saveConfigTemplate(String configFileName, String dataFileName) throws IOException {
     	saveConfigTemplate(configFileName, dataFileName, null, null);
     }
-    
+
+    /**
+     * Saves a template of the config file
+     * @param configFileName the new config file name
+     * @param dataFileName the data file
+     * @param defaultLdmType default LDM type
+     * @param folder default folder
+     * @throws IOException in case of an IO issue
+     */
     public static void saveConfigTemplate(String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
         File dataFile = new File(dataFileName);
         String name = dataFile.getName().split("\\.")[0];
@@ -128,20 +134,24 @@ public class CsvConnector extends AbstractConnector implements Connector {
         }
     }
 
+    /**
+     * hasHeader getter
+     * @return hasHeader flag
+     */
     public boolean getHasHeader() {
         return hasHeader;
     }
 
+    /**
+     * hasHeader setter
+     * @param hasHeader flag value
+     */
     public void setHasHeader(boolean hasHeader) {
         this.hasHeader = hasHeader;
     }
 
     /**
-     * Processes single command
-     * @param c command to be processed
-     * @param cli parameters (commandline params)
-     * @param ctx processing context
-     * @return true if the command has been processed, false otherwise
+     * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
@@ -160,8 +170,14 @@ public class CsvConnector extends AbstractConnector implements Connector {
         return true;
     }
 
-    private void loadCsv(Command c, CliParams p, ProcessingContext ctx) throws IOException,
-            ModelException {
+    /**
+     * Loads new CSV file command processor
+     * @param c command
+     * @param p command line arguments
+     * @param ctx current processing context
+     * @throws IOException in case of IO issues
+     */
+    private void loadCsv(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
         String csvDataFile = c.getParamMandatory("csvDataFile");
         String hdr = c.getParamMandatory("header");
@@ -175,14 +191,16 @@ public class CsvConnector extends AbstractConnector implements Connector {
         setHasHeader(hasHeader);
         // sets the current connector
         ctx.setConnector(this);
-        try {
-            this.checkProjectId();
-        }
-        catch(InvalidParameterException e) {
-            this.getConnectorBackend().setProjectId(ctx.getProjectId());   
-        }
+        setProjectId(ctx);
     }
 
+    /**
+     * Generate new config file from CSV command processor
+     * @param c command
+     * @param p command line arguments
+     * @param ctx current processing context
+     * @throws IOException in case of IO issues
+     */
     private void generateCsvConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
         String csvHeaderFile = c.getParamMandatory("csvHeaderFile");

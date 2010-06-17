@@ -36,25 +36,9 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
         SYNTAX_CONCAT_FUNCTION_SUFFIX = "";
         SYNTAX_CONCAT_OPERATOR = " || '" + HASH_SEPARATOR + "' || ";
     }
-
-    /**
-     * Executes the system DDL initialization
-     * @param c JDBC connection
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
-     * @throws SQLException in case of db problems
-     */
-    public void executeSystemDdlSql(Connection c) throws ModelException, SQLException {
-        super.executeSystemDdlSql(c);
-        createFunctions(c);
-    }
-
     
     /**
-     * Executes the Derby SQL that extracts the data from a CSV file to the normalization database
-     * @param c JDBC connection
-     * @param schema the PDM schema
-     * @throws ModelException in case when there is a problem with the PDM model
-     * @throws SQLException in case of db problems
+     * {@inheritDoc}
      */
     public void executeExtractSql(Connection c, PdmSchema schema, String file) throws ModelException, SQLException {
         PdmTable sourceTable = schema.getSourceTable();
@@ -69,12 +53,7 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
     }
 
     /**
-     * Executes the Derby SQL that unloads the data from the normalization database to a CSV
-     * @param c JDBC connection
-     * @param part DLI part
-     * @param dir target directory
-     * @param snapshotIds specific snapshots IDs that will be integrated
-     * @throws SQLException in case of db problems 
+     * {@inheritDoc}
      */
     public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
             throws ModelException, SQLException {
@@ -89,7 +68,10 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
         );
     }
 
-    private void createFunctions(Connection c) throws SQLException {
+    /**
+     * {@inheritDoc}
+     */
+    protected void createFunctions(Connection c) throws SQLException {
         JdbcUtil.executeUpdate(c,
             "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS DOUBLE\n" +
             " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
@@ -103,6 +85,9 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
         if (cols.length() > 0)
             cols += ",ATOD(" + table.toUpperCase() + "." +
@@ -113,6 +98,9 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
         return cols;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected String decorateLookupColumnForLoad(String cols, Column cl, String table) {
         if (cols != null && cols.length() > 0)
             cols += ",CAST(" + table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName())+
@@ -123,6 +111,9 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
         return cols;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected void insertFactsToFactTable(Connection c, PdmSchema schema) throws ModelException, SQLException {
         PdmTable factTable = schema.getFactTable();
         PdmTable sourceTable = schema.getSourceTable();

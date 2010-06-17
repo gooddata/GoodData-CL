@@ -52,16 +52,33 @@ public class MaqlGenerator {
         
         return script;
     }
-    
+
+    /**
+     * Generate MAQL for specified (new) columns
+     * @param columns list of columns
+     * @return MAQL as String
+     */
     public String generateMaql(List<SourceColumn> columns) {
     	return generateMaql(columns, false);
     }
-    
+
+    /**
+     * Creates attribute table name
+     * @param schema source schema
+     * @param sc source column
+     * @return the attribute table name
+     */
 	public static String createAttributeTableName(SourceSchema schema, SourceColumn sc) {
 		final String ssn = StringUtil.formatShortName(schema.getName());
 		return "d_" + ssn + "_" + StringUtil.formatShortName(sc.getName()); 
 	}
-    
+
+    /**
+     * Generate MAQL for selected (new) columns
+     * @param columns list of columns
+     * @param createFactsOf create the facts of attribute
+     * @return MAQL as String
+     */
     private String generateMaql(List<SourceColumn> columns, boolean createFactsOf) {
 
         // generate attributes and facts
@@ -108,6 +125,11 @@ public class MaqlGenerator {
         return script;
     }
 
+    /**
+     * Generate MAQL folders for specified columns
+     * @param columns list of columns
+     * @return MAQL as String
+     */
     private String generateFoldersMaqlDdl(List<SourceColumn> columns) {
         final ArrayList<String> attributeFolders = new ArrayList<String>();
         final ArrayList<String> factFolders = new ArrayList<String>();
@@ -149,6 +171,10 @@ public class MaqlGenerator {
         return script;
     }
 
+    /**
+     * Main loop. Process all columns in the schema
+     * @param column source columns
+     */
     private void processColumn(SourceColumn column) {
         if (column.getLdmType().equals(SourceColumn.LDM_TYPE_ATTRIBUTE)) {
         	Attribute attr = new Attribute(column);
@@ -170,6 +196,10 @@ public class MaqlGenerator {
         }
     }
 
+    /**
+     * Processes connection point column
+     * @param column source column
+     */
     private void processConnectionPoint(SourceColumn column) {
         if (column.getLdmType().equals(SourceColumn.LDM_TYPE_CONNECTION_POINT)) {
             if (hasCp) {
@@ -180,16 +210,25 @@ public class MaqlGenerator {
             attributes.put(connectionPoint.scn, connectionPoint);
         }
     }
-    
+
+    /**
+     * Generate fact table name
+     * @return fact table name
+     */
     private String getFactTableName() {
     	return N.FCT_PFX + ssn;
     }
-    
+
+    /**
+     * Generate the MAQL for the facts of attribute
+     * @param schemaName schema name
+     * @return facts of attribute MAQL DDL
+     */
     private static String createFactOfMaqlDdl(String schemaName) {
     	return "{attr." + StringUtil.formatShortName(schemaName) + "." + N.FACTS_OF + "}";
 	}
     
-    // column entities
+    // columns
 
     private abstract class Column {
         protected final SourceColumn column;
@@ -208,6 +247,8 @@ public class MaqlGenerator {
         public abstract String generateMaqlDdl();
     }
 
+
+    // attributes
     private class Attribute extends Column {
 
         protected final String table;
@@ -242,6 +283,7 @@ public class MaqlGenerator {
         }
     }
 
+    //facts
     private class Fact extends Column {
 
         Fact(SourceColumn column) {
@@ -263,6 +305,7 @@ public class MaqlGenerator {
         }
     }
 
+    //labels
     private class Label extends Column {
 
         Label(SourceColumn column) {
@@ -284,6 +327,8 @@ public class MaqlGenerator {
         }
     }
 
+
+    // dates
     private class DateColumn extends Column {
 
         DateColumn(SourceColumn column) {
@@ -312,6 +357,7 @@ public class MaqlGenerator {
         }
     }
 
+    // connection points
     private class ConnectionPoint extends Attribute {
         public ConnectionPoint(SourceColumn column) {
             super(column);
@@ -326,7 +372,8 @@ public class MaqlGenerator {
 			return "{" + getFactTableName() + "."+N.ID+"}";
 		}
     }
-    
+
+    // references
     private class Reference extends Column {
     	public Reference(SourceColumn column) {
 			super(column);

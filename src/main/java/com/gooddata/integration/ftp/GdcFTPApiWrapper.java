@@ -39,11 +39,9 @@ public class GdcFTPApiWrapper {
     /**
      * FTP transfers a local directory to the remote GDC FTP server
      * @param archiveName the name of the ZIP archive that is going to be transferred
-     * @throws SocketException
-     * @throws IOException
-     * @throws GdcUploadErrorException
+     * @throws IOException in case of IO issues
      */
-    public void transferDir(String archiveName) throws SocketException, IOException, GdcUploadErrorException {
+    public void transferDir(String archiveName) throws IOException {
         try {
             File file = new File(archiveName);
             String dir = file.getName().split("\\.")[0];
@@ -100,11 +98,9 @@ public class GdcFTPApiWrapper {
      * GET the transfer logs from the FTP server
      * @param remoteDir the primary transfer directory that contains the logs
      * @return Map with the log name and content
-     * @throws SocketException
-     * @throws IOException
-     * @throws GdcUploadErrorException
+     * @throws IOException in case of IO issues
      */
-    public Map<String, String> getTransferLogs(String remoteDir) throws SocketException, IOException, GdcUploadErrorException {
+    public Map<String, String> getTransferLogs(String remoteDir) throws IOException {
         Map<String,String> result = new HashMap<String,String>();
         try {
             client.connect(config.getGdcHost());
@@ -155,6 +151,11 @@ public class GdcFTPApiWrapper {
         return result;
     }
 
+    /**
+     * gets client reply
+     * @param client ftp client
+     * @return client reply
+     */
     private String clientReply(FTPClient client) {
     	return client.getReplyString() + " (code: " + client.getReplyCode() + ")";
     }

@@ -10,14 +10,16 @@ import java.io.IOException;
 import java.sql.*;
 
 /**
- * GoodData  abstract derby connector
- * This connector creates a GoodData LDM schema from a source schema, extracts the data from the source,
- * normalizes the data, and create the GoodData data deployment package. This connector uses the embedded MySQL
- * database.
+ * GoodData  MySQL connector backend. This connector backend is the performance option. It provides reasonable
+ * performance for large data files. This connector backend assumes that MySQL is installed on the computer where
+ * it runs.
+ * Connector backend handles communication with the specific SQL database. Specifically it handles the DB connection
+ * and other communication specifics of the Derby SQL. It uses the SQL driver that generates appropriate SQL dialect.
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
+
 public class MySqlConnectorBackend extends AbstractConnectorBackend implements ConnectorBackend {
 
     private static Logger l = Logger.getLogger(MySqlConnectorBackend.class);
@@ -60,9 +62,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
     }
 
     /**
-     * Connects to the Derby database
-     * @return JDBC connection
-     * @throws java.sql.SQLException
+     * {@inheritDoc}
      */
     public Connection connect() throws SQLException {
         String protocol = "jdbc:mysql:";
@@ -83,7 +83,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
 
 
     /**
-     * Drops all snapshots
+     * {@inheritDoc}
      */
     public void dropSnapshots() {
         Connection con = null;

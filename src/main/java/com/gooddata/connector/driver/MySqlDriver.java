@@ -39,24 +39,9 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
         SYNTAX_CONCAT_OPERATOR = ",'" + HASH_SEPARATOR + "',";
     }
     
-    /**
-     * Executes the system DDL initialization
-     * @param c JDBC connection
-     * @throws ModelException if there is a problem with the PDM schema (e.g. multiple source or fact tables)
-     * @throws SQLException in case of db problems
-     */
-    @Override
-    public void executeSystemDdlSql(Connection c) throws ModelException, SQLException {
-    	super.executeSystemDdlSql(c);
-    	createFunctions(c);
-    }
     
     /**
-     * Executes the Derby SQL that extracts the data from a CSV file to the normalization database
-     * @param c JDBC connection
-     * @param schema the PDM schema
-     * @throws ModelException in case when there is a problem with the PDM model
-     * @throws SQLException in case of db problems
+     * {@inheritDoc}
      */
     public void executeExtractSql(Connection c, PdmSchema schema, String file) throws ModelException, SQLException {
         PdmTable sourceTable = schema.getSourceTable();
@@ -69,12 +54,7 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
     }
 
     /**
-     * Executes the Derby SQL that unloads the data from the normalization database to a CSV
-     * @param c JDBC connection
-     * @param part DLI part
-     * @param dir target directory
-     * @param snapshotIds specific snapshots IDs that will be integrated
-     * @throws SQLException in case of db problems
+     * {@inheritDoc}
      */
     public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
             throws ModelException, SQLException {
@@ -98,7 +78,10 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
                 s.close();
         }
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
     protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
         if (cols.length() > 0)
             cols += ",ATOD(" + table.toUpperCase() + "." +
@@ -109,6 +92,9 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
         return cols;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected void insertFactsToFactTable(Connection c, PdmSchema schema) throws ModelException, SQLException {
         PdmTable factTable = schema.getFactTable();
         PdmTable sourceTable = schema.getSourceTable();
@@ -131,8 +117,11 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
             " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='"+fact+"')"
         );
     }
-    
-    private void createFunctions(Connection c) throws SQLException {
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void createFunctions(Connection c) throws SQLException {
     	String sql = "CREATE FUNCTION ATOD(str varchar(255)) RETURNS DECIMAL(15,4) "
 			    + "RETURN CASE "
 			    + "      WHEN str = '' THEN NULL "

@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * GoodData Connector interface
+ * GoodData Connector interface. Connector handles a specific external data source. It generates the GoodData project's
+ * logical model from the data and loads the data to the project.
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
@@ -52,46 +53,41 @@ public interface Connector extends Executor {
 
     /**
      * Initializes the database schema that is going to be used for the data normalization
-     * @throws com.gooddata.exception.ModelException imn case of PDM schema issues
      */
-    public void initialize() throws ModelException;
+    public void initialize();
 
     /**
-     * Drops all snapshots
-     */
+     * Drops all current snapshots. This is usually achieved by dropping the whole project database.
+     */    
     public void dropSnapshots();
 
     /**
      * Lists the current snapshots
      * @return list of snapshots as String
-     * @throws com.gooddata.exception.InternalErrorException in case of internal issues (e.g. uninitialized schema)
      */
-    public String listSnapshots() throws InternalErrorException;
+    public String listSnapshots();
 
     /**
-     * Extracts the source data CSV to the Derby database where it is going to be transformed
-     * @throws ModelException in case of PDM schema issues
+     * Extracts the source data CSV to the database where it is going to be transformed
+     * @throws IOException in case of IO issues
      */
-    public void extract() throws ModelException, IOException;
+    public void extract() throws IOException;
 
     /**
-     * Perform the data normalization (generate lookups) in the Derby database. The database must contain the required
-     * tables
-     * @throws ModelException in case of PDM schema issues
+     * Perform the data normalization (generate lookups). The database must contain the required
+     * schema
      */
-    public void transform() throws ModelException;
+    public void transform();
 
     /**
-     * Create the GoodData data package with the ALL data
+     * Create the GoodData data package with the ALL snapshots data
      * @param dli the Data Loading Interface that contains the required data structures
      * @param parts the Data Loading Interface parts
      * @param dir target directory where the data package will be stored
      * @param archiveName the name of the target ZIP archive
-     * @throws java.io.IOException IO issues
-     * @throws ModelException in case of PDM schema issues
+     * @throws IOException IO issues
      */
-    public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName)
-            throws IOException, ModelException;
+    public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName) throws IOException;
 
     /**
      * Create the GoodData data package with the data from specified snapshots
@@ -101,19 +97,15 @@ public interface Connector extends Executor {
      * @param archiveName the name of the target ZIP archive
      * @param snapshotIds snapshot ids that are going to be loaded (if NULL, all snapshots are going to be loaded)
      * @throws IOException IO issues
-     * @throws ModelException in case of PDM schema issues
      */
-    public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
-            throws IOException, ModelException;
+    public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds) throws IOException;
 
-    /**
-     * Get last snapshot number
+/**
+     * Get last snapshot number. Snapshot is each individual lad of data. Snapshots are numbered (0...N).
+     * Sometimes when you call this method at the beginning of a process that creates new snapshot, you might want to
+     * add one to the snapshot number.
      * @return last snapshot number
-     * @throws InternalErrorException in case of internal issues (e.g. uninitialized schema)
      */
-    public int getLastSnapshotId() throws InternalErrorException;
+    public int getLastSnapshotId();
 
-    
-
-    
 }

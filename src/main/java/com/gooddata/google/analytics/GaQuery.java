@@ -6,7 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * GoodData
+ * Google analytics query
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
