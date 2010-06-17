@@ -97,7 +97,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
 	                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_LABEL, title, "folder", "existing-attribute-name");
 	                    break;
 	                default:
-	                	throw new RuntimeException("i % 3 outside {0, 1, 2} - this cannot happen");
+	                	throw new AssertionError("i % 3 outside {0, 1, 2} - this cannot happen");
 	            }
             }
             s.addColumn(sc);
