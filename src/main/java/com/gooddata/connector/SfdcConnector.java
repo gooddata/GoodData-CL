@@ -7,7 +7,7 @@ import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.exception.SfdcException;
 import org.gooddata.processor.CliParams;
 import org.gooddata.processor.Command;
-import com.gooddata.processor.ProcessingContext;
+import org.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
 import com.sforce.soap.partner.*;

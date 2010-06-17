@@ -5,7 +5,7 @@ import com.gooddata.exception.*;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import org.gooddata.processor.CliParams;
-import com.gooddata.processor.Command;
+import org.gooddata.processor.Command;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
