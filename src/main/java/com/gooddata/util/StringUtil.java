@@ -35,7 +35,7 @@ public class StringUtil {
         for ( String r : DISCARD_CHARS ) {
             s = s.replace(r,"");
         }
-        return s.toLowerCase();
+        return s.toLowerCase().trim();
     }
 
     /**
@@ -58,7 +58,7 @@ public class StringUtil {
      * @return converted string
      */
     public static String formatLongName(String s) {
-        return s;
+        return s.trim();
     }
 
     /**
@@ -70,7 +70,7 @@ public class StringUtil {
         for ( String r : INVALID_CSV_HEADER_CHARS ) {
             s = s.replace(r,"");
         }
-        return s.toLowerCase();
+        return s.toLowerCase().trim();
     }
 
     /**
@@ -82,7 +82,7 @@ public class StringUtil {
         for ( String r : INVALID_CSV_HEADER_CHARS ) {
             s = s.replace(r,"");
         }
-        return s;
+        return s.trim();
     }
 
     /**
