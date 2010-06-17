@@ -15,5 +15,13 @@ public class ModelException extends GdcException {
     public ModelException(String s) {
         super(s);
     }
+    
+    public ModelException(Throwable t) {
+    	super(t);
+    }
+    
+    public ModelException(String s, Throwable t) {
+    	super(s, t);
+    }
 
 }
