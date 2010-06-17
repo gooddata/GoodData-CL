@@ -73,7 +73,7 @@ public class GdcDI implements Executor {
      * Prints an err message, help and exits with status code 1
      * @param err the err message
      */
-    public static void printErrorandExit(String err) {
+    public static void printErrorAndExit(String err) {
         l.error("ERROR: " + err);
         System.exit(1);
     }
@@ -220,7 +220,7 @@ public class GdcDI implements Executor {
     				lock(c, p, ctx); // retry
     			}
     		}
-    		printErrorandExit("A concurrent process found using the " + path + " lock file.");	
+    		printErrorAndExit("A concurrent process found using the " + path + " lock file.");	
     	}
     	lock.deleteOnExit();
     }
