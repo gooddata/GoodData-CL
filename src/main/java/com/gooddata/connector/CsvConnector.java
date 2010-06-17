@@ -2,13 +2,12 @@ package com.gooddata.connector;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.ConnectorBackend;
 
+import com.gooddata.connector.driver.Constants;
 import com.gooddata.exception.ModelException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
@@ -17,6 +16,7 @@ import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
+import com.gooddata.util.NameTransformer;
 import com.gooddata.util.StringUtil;
 
 /**
@@ -81,12 +81,17 @@ public class CsvConnector extends AbstractConnector implements Connector {
         	s = SourceSchema.createSchema(name);
         }
         final int knownColumns = s.getColumns().size();
-        NameTransformer idGen = new NameTransformer(new NameTransformerCallback() {
+        NameTransformer idGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
         	public String transform(String str) {
-        		return StringUtil.csvHeaderToIdentifier(str);
+        		String idorig = StringUtil.csvHeaderToIdentifier(str);
+        		int idmax = Constants.MAX_TABLE_NAME_LENGTH - s.getName().length() - 3; // good enough for 999 long names
+        		if (idorig.length() <= idmax)
+        			return idorig;
+        		return idorig.substring(0, idmax);
+        		
         	}
         });
-        NameTransformer titleGen = new NameTransformer(new NameTransformerCallback() {
+        NameTransformer titleGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
         	public String transform(String str) {
         		return StringUtil.csvHeaderToTitle(str);
         	}
@@ -221,34 +226,5 @@ public class CsvConnector extends AbstractConnector implements Connector {
         File cf = new File(configFile);
         File csvf = FileUtil.getFile(csvHeaderFile);
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile);
-    }
-    
-    private static class NameTransformer {
-    	private final NameTransformerCallback cb;
-    	private final Set<String> seen = new HashSet<String>();
-    	
-    	public NameTransformer(NameTransformerCallback cb) {
-    		this.cb = cb;
-    	}
-    	
-    	public String transform(String str) {
-    		int index = 0;
-    		String transformed = cb.transform(str);
-    		while (true) {
-    			String result = transformed;
-    			if (index > 0) {
-    				result += " " + index;
-    			}
-    			index++;
-    			if (!seen.contains(result)) {
-    				seen.add(result);
-    				return result;
-    			}
-    		}
-    	}
-    }
-    
-    private interface NameTransformerCallback {
-    	public String transform(String str);
     }
 }
