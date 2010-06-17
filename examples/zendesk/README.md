@@ -4,9 +4,9 @@
 
         $ cat Downloads/data/<filename>-csv.zip | gunzip > examples/zendesk/data.csv
 
-2. run `gdi.sh` with the GenerateCsvConfigTemplate command. This generates a `config.xml` file:
+2. run `gdi.sh` with the GenerateCsvConfig command. This generates a `config.xml` file:
 
-        $ ./bin/gdi.sh -u <username> -p <password> -e 'GenerateCsvConfigTemplate(csvHeaderFile=examples/zendesk/data.csv,configFile=examples/zendesk/config.xml)'
+        $ ./bin/gdi.sh -u <username> -p <password> -e 'GenerateCsvConfig(csvHeaderFile=examples/zendesk/data.csv,configFile=examples/zendesk/config.xml)'
 
 3. now you need configure your `config.xml` file to describe your data. For detailed instructions, see [documentation](../../doc/DOCUMENTATION.md#config). For your Zendesk data, you need to remove all &lt;folder&gt; and &lt;pk&gt; entries, change all &lt;ldmType&gt; entries to ATTRIBUTE, except entries for "Summation column" and "Resolution time", which should be set to FACT:
 

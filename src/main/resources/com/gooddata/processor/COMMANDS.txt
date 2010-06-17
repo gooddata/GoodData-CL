@@ -21,7 +21,7 @@ Script Commands:
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
   identifier - id of an existing project (takes the form of an MD5 hash)
 
- GenerateCsvConfigTemplate(csvHeaderFile=<headers>, configFile=<config> [, defaultLdmType=<type>] [, folder=<folder>]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. 
+ GenerateCsvConfig(csvHeaderFile=<headers>, configFile=<config> [, defaultLdmType=<type>] [, folder=<folder>]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. 
   headers - path to CSV header file (only the first header row will be used)
   config  - path to configuration file (will be overwritten)
 
