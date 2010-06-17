@@ -176,14 +176,11 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * Saves a template of the config file
-     * @throws com.gooddata.exception.InvalidArgumentException if there is a problem with arguments
-     * @throws java.io.IOException if there is a problem with writing the config file
-     * @throws java.sql.SQLException if there is a problem with the db
-     * @throws com.gooddata.exception.InvalidArgumentException
+     * @throws IOException if there is a problem with writing the config file
      */
     public static void saveConfigTemplate(String name, String configFileName, String sfdcUsr, String sfdcPsw,
                                   String query)
-            throws InvalidArgumentException, IOException, SfdcException {
+            throws IOException {
         l.debug("Saving SFDC config template.");
         SourceSchema s = SourceSchema.createSchema(name);
         SoapBindingStub c = null;

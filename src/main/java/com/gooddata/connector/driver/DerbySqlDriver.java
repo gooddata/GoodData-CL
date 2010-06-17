@@ -40,7 +40,7 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
     /**
      * {@inheritDoc}
      */
-    public void executeExtractSql(Connection c, PdmSchema schema, String file) throws ModelException, SQLException {
+    public void executeExtractSql(Connection c, PdmSchema schema, String file) throws SQLException {
         l.debug("Extracting data.");
         PdmTable sourceTable = schema.getSourceTable();
         String source = sourceTable.getName();
@@ -57,7 +57,7 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
      * {@inheritDoc}
      */
     public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
-            throws ModelException, SQLException {
+            throws SQLException {
         l.debug("Unloading data.");
         String file = dir + System.getProperty("file.separator") + part.getFileName();
         String cols = getLoadColumns(part, schema);
@@ -119,7 +119,7 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
     /**
      * {@inheritDoc}
      */
-    protected void insertFactsToFactTable(Connection c, PdmSchema schema) throws ModelException, SQLException {
+    protected void insertFactsToFactTable(Connection c, PdmSchema schema) throws SQLException {
         PdmTable factTable = schema.getFactTable();
         PdmTable sourceTable = schema.getSourceTable();
         String fact = factTable.getName();

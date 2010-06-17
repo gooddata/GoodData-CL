@@ -142,9 +142,9 @@ public class GdcDI implements Executor {
      * Parses the commands
      * @param cmd commands string
      * @return array of commands
-     * @throws InvalidArgumentException in case there is an invalid command
+     * @throws InvalidCommandException in case there is an invalid command
      */
-    protected static List<Command> parseCmd(String cmd) throws InvalidArgumentException {
+    protected static List<Command> parseCmd(String cmd) throws InvalidCommandException {
         l.debug("Parsing comands: "+cmd);
         try {
             if(cmd != null && cmd.length()>0) {

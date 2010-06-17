@@ -79,7 +79,7 @@ import org.gooddata.connector.driver.SqlDriver;
      * {@inheritDoc}
      */
     public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName)
-            throws IOException, ModelException {
+            throws IOException {
         deploySnapshot(dli, parts, dir, archiveName, null);
     }
 

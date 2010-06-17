@@ -36,7 +36,6 @@ public interface ConnectorBackend {
 
     /**
      * Perform the data normalization (generate lookups). The database must contain the required schema
-     * @throws ModelException in case of PDM schema issues
      */
     public void transform();
 

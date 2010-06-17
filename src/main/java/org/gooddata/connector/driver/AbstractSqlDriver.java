@@ -380,7 +380,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      */
     protected abstract void insertFactsToFactTable(Connection c, PdmSchema schema) throws SQLException;
 
-    protected void populateLookupTables(Connection c, PdmSchema schema) throws ModelException, SQLException {
+    protected void populateLookupTables(Connection c, PdmSchema schema) throws SQLException {
         for(PdmTable lookupTable : schema.getLookupTables()) {
             populateLookupTable(c, lookupTable, schema);
         }

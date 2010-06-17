@@ -42,7 +42,7 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
      * {@inheritDoc}
      */
     @Override
-    public void extract() throws ModelException, IOException {
+    public void extract() throws IOException {
         //EMPTY
     }
 

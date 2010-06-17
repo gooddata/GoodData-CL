@@ -54,9 +54,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * Saves a template of the config file
-     * @throws java.io.IOException if there is a problem with writing the config file
+     * @throws IOException if there is a problem with writing the config file
      * @throws SQLException if there is a problem with the db
-     * @throws InvalidArgumentException  
      */
     public static void saveConfigTemplate(String name, String configFileName, String jdbcUsr, String jdbcPsw,
                                   String jdbcDriver, String jdbcUrl,String query)

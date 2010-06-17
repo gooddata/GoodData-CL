@@ -124,9 +124,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
 
     /**
      * Extracts the source data CSV to the Derby database where it is going to be transformed
-     * @throws ModelException in case of PDM schema issues
+     * @throws IOException in case of IO issues
      */
-    public void extract() throws ModelException, IOException {
+    public void extract() throws IOException {
         if(getHasHeader()) {
             File tmp = FileUtil.stripCsvHeader(getDataFile());
             getConnectorBackend().extract(tmp);
