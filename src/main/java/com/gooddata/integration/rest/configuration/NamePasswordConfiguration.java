@@ -13,7 +13,7 @@ public class NamePasswordConfiguration {
     /**
      * default GDC host
      */
-    public static final String DEFAULT_GDC_HOST = "preprod.gooddata.com";
+    public static final String DEFAULT_GDC_HOST = "secure.gooddata.com";
     /**
      * default Gdc protocol
      */

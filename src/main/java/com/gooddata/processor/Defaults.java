@@ -8,8 +8,8 @@ package com.gooddata.processor;
  */
 public class Defaults {
 
-    public static String DEFAULT_HOST = "dli.getgooddata.com";
-    public static String DEFAULT_PROTO = "http";
+    public static String DEFAULT_HOST = "secure.gooddata.com";
+    public static String DEFAULT_PROTO = "https";
     public static String DEFAULT_BACKEND = "DERBY";
     
 }
