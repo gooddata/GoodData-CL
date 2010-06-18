@@ -114,16 +114,15 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         l.debug("FInished fact table population.");
 
         l.debug("Executing fact table FK generation.");
-        for(PdmTable tbl : schema.getLookupTables())
-            updateForeignKeyInFactTable(c, tbl, schema);
-        for(PdmTable tbl : schema.getReferenceTables())
-            updateForeignKeyInFactTable(c, tbl, schema);
+        updateFactTableFk(c, schema);
         l.debug("Finished fact table FK generation.");
 
         updateSnapshotsRecord(c, schema);
         l.debug("Snapshot record updated.");
         l.debug("Finished data normalization SQL.");
     }
+
+
 
     /**
      * {@inheritDoc}
@@ -397,23 +396,40 @@ public abstract class AbstractSqlDriver implements SqlDriver {
             populateConnectionPointTable(c, cpTable, schema);
     }
 
+    private void updateFactTableFk(Connection c, PdmSchema schema) throws SQLException {
+        String fact = schema.getFactTable().getName();
+        String updateStatement = "";
+        for(PdmTable tbl : schema.getLookupTables())
+            if(updateStatement.length() > 0)
+                updateStatement += " , " + generateFactUpdateSetStatement(tbl, schema);
+            else
+                updateStatement += generateFactUpdateSetStatement(tbl, schema);
+        for(PdmTable tbl : schema.getReferenceTables())
+            if(updateStatement.length() > 0)
+                updateStatement += " , " + generateFactUpdateSetStatement(tbl, schema);
+            else
+                updateStatement += generateFactUpdateSetStatement(tbl, schema);
+        updateStatement = "UPDATE " + fact + " SET " + updateStatement +
+                " WHERE "+N.ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name = '" + fact+"')";
+        JdbcUtil.executeUpdate(c, updateStatement);
+    }
+
+
     /**
-     * Updates a FK in the fact table for specified lookup table
-     * @param c JDBC connection
+     * Generates the UPDATE SET statement for individual lookup FK
      * @param lookupTable lookup table
      * @param schema PDM schema
-     * @throws SQLException in case of a DB issue
+     * @return the column update clause
      */
-    protected void updateForeignKeyInFactTable(Connection c, PdmTable lookupTable, PdmSchema schema) throws SQLException {
+    protected String generateFactUpdateSetStatement(PdmTable lookupTable, PdmSchema schema) {
         String lookup = lookupTable.getName();
         String fact = schema.getFactTable().getName();
         String source = schema.getSourceTable().getName();
         String associatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
-        JdbcUtil.executeUpdate(c,
-              "UPDATE " + fact + " SET  " + lookupTable.getAssociatedSourceColumn() + "_"+N.ID+" = (SELECT "+N.ID+" FROM " +
+
+        return lookupTable.getAssociatedSourceColumn() + "_"+N.ID+" = (SELECT "+N.ID+" FROM " +
               lookup + " d," + source + " o WHERE " + associatedSourceColumns + " = d."+N.HSH+" AND o."+N.SRC_ID+"= " +
-              fact + "."+N.ID+") WHERE "+N.ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name = '" + fact+"')"
-        );
+              fact + "."+N.ID+") ";
     }
 
     /**

@@ -48,10 +48,13 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
         PdmTable sourceTable = schema.getSourceTable();
         String source = sourceTable.getName();
         String cols = getNonAutoincrementColumns(sourceTable);
+        JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" DISABLE KEYS");
+
         JdbcUtil.executeUpdate(c,
-            "LOAD DATA INFILE '" + file + "' INTO TABLE " + source.toUpperCase() + " CHARACTER SET UTF8 "+
+            "LOAD DATA INFILE '" + file + "' INTO TABLE " + source + " CHARACTER SET UTF8 "+
             "COLUMNS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' (" + cols + ")"
         );
+        JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" ENABLE KEYS");
         l.debug("Finished extracting data.");
     }
 
@@ -71,7 +74,7 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
             s = c.createStatement();
             String sql = "SELECT " + cols + " INTO OUTFILE '" + file +
 	            "' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' FROM " +
-	            dliTable.toUpperCase() + whereClause;
+	            dliTable + whereClause;
             rs = JdbcUtil.executeQuery(s, sql);
         }
         finally {
