@@ -7,4 +7,9 @@ common/target/
 connector/target/
 snaplogic/target/
 .idea
-GoodData.iml
+GoodDataDI.iml
+backend/backend.iml
+cli/cli.iml
+common/common.iml
+connector/connector.iml
+snaplogic/snaplogic.iml
