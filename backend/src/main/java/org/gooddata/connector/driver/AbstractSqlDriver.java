@@ -409,9 +409,11 @@ public abstract class AbstractSqlDriver implements SqlDriver {
                 updateStatement += " , " + generateFactUpdateSetStatement(tbl, schema);
             else
                 updateStatement += generateFactUpdateSetStatement(tbl, schema);
-        updateStatement = "UPDATE " + fact + " SET " + updateStatement +
+        if(updateStatement.length()>0) {
+            updateStatement = "UPDATE " + fact + " SET " + updateStatement +
                 " WHERE "+N.ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name = '" + fact+"')";
-        JdbcUtil.executeUpdate(c, updateStatement);
+            JdbcUtil.executeUpdate(c, updateStatement);
+        }
     }
 
 
