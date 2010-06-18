@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import com.gooddata.processor.Command;
+import org.gooddata.processor.Command;
 
 public class DIScriptParser {
 
