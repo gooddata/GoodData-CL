@@ -1,2 +1,10 @@
 db/
+tmp/
 target/
+backend/target/
+cli/target/
+common/target/
+connector/target/
+snaplogic/target/
+.idea
+GoodData.iml
