@@ -22,7 +22,7 @@ echo.
 goto error
 
 :execute
-%JAVA_HOME%\bin\java.exe  -Xmx256M -Dlog4j.configuration=%PRJ_BIN%..\log4j.configuration -Dderby.system.home=%PRJ_BIN%..\db -Djava.io.tmpdir=%PRJ_BIN%..\tmp -classpath %PRJ_BIN%..;%PRJ_BIN%..\cli\target\cli-1.0-SNAPSHOT-jar-with-dependencies.jar com.gooddata.processor.GdcDI %*
+"%JAVA_HOME%\bin\java.exe" -Xmx512M -Dlog4j.configuration=%PRJ_BIN%..\log4j.configuration -Dderby.system.home=%PRJ_BIN%..\db -Djava.io.tmpdir=%PRJ_BIN%..\tmp -classpath %PRJ_BIN%..;%PRJ_BIN%..\cli\target\cli-1.0-SNAPSHOT-jar-with-dependencies.jar com.gooddata.processor.GdcDI %*
 goto end
 
 :error
