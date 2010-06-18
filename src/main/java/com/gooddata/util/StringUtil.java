@@ -40,6 +40,18 @@ public class StringUtil {
     }
 
     /**
+     * Checks if the string contains an character that shoukd be stripped from identifier name
+     * @param s the checked
+     * @return true if there are invalid chars, false otherwise
+     */
+    public static boolean containsInvvalidIdentifierChar(String s) {
+        for ( String r : DISCARD_CHARS )
+            if(s.indexOf(r)>=0)
+                return true;
+        return false;
+    }
+
+    /**
      * Remove whitespace
      * Currently only converts to the lowercase and replace spaces
      * @param s the string to process

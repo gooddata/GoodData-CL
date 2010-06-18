@@ -224,4 +224,17 @@ public class SourceSchema {
     	return new StringBuffer(getName()).append(" [").append(getColumns()).append("]").toString();
     }
 
+    /**
+     * Validates the source schema
+     * @throws ModelException in case of a validation error
+     */
+    public void validate() throws ModelException {
+        if(name == null || name.length() <=0)
+            throw new ModelException("Schema needs to have a name.");
+        if(StringUtil.containsInvvalidIdentifierChar(name))
+            throw new ModelException("Schema name contains invalid characters");
+        for(SourceColumn c : columns)
+            c.validate();
+    }
+
 }

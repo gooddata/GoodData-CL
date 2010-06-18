@@ -1,5 +1,8 @@
 package com.gooddata.modeling.model;
 
+import com.gooddata.exception.ModelException;
+import com.gooddata.util.StringUtil;
+
 /**
  * GoodData LDM schema column
  *
@@ -243,4 +246,30 @@ public class SourceColumn {
 	public String toString() {
 		return new StringBuffer(getName()).append("(").append(getLdmType()).append(")").toString();
 	}
+
+    /**
+     * Validates the source column
+     * @throws com.gooddata.exception.ModelException in case of a validation error
+     */
+    public void validate() throws ModelException {
+        if(StringUtil.containsInvvalidIdentifierChar(name))
+            throw new ModelException("Column name "+name+" contains invalid characters");
+        if( !LDM_TYPE_ATTRIBUTE.equals(ldmType) && 
+            !LDM_TYPE_CONNECTION_POINT.equals(ldmType) &&
+            !LDM_TYPE_DATE.equals(ldmType) && 
+            !LDM_TYPE_FACT.equals(ldmType) &&
+            !LDM_TYPE_IGNORE.equals(ldmType) && 
+            !LDM_TYPE_LABEL.equals(ldmType) &&
+            !LDM_TYPE_REFERENCE.equals(ldmType) )
+                throw new ModelException("Column "+name+" has invalid LDM type "+ldmType);
+        if(LDM_TYPE_LABEL.equals(ldmType) && (reference == null || reference.length()<=0))
+            throw new ModelException("Column "+name+" has type LABEL but doesn't contain any reference.");
+        if(LDM_TYPE_REFERENCE.equals(ldmType) && (reference == null || reference.length()<=0))
+            throw new ModelException("Column "+name+" has type REFERENCE but doesn't contain any reference.");
+        if(LDM_TYPE_REFERENCE.equals(ldmType) && (schemaReference == null || schemaReference.length()<=0))
+            throw new ModelException("Column "+name+" has type REFERENCE but doesn't contain any schema reference.");
+        if(LDM_TYPE_DATE.equals(ldmType) && (format == null || format.length()<=0))
+            throw new ModelException("Column "+name+" has type DATA but doesn't contain any date format.");
+    }
+
 }

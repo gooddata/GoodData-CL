@@ -44,6 +44,7 @@ public class PdmSchema {
      * @return the new PdmSchema
      */
     public static PdmSchema createSchema(SourceSchema srcSchema) throws ModelException {
+        srcSchema.validate();
         String schemaName = StringUtil.formatShortName(srcSchema.getName());
         PdmSchema schema = new PdmSchema(schemaName);
 
