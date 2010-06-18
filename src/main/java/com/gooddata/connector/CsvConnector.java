@@ -1,10 +1,8 @@
 package com.gooddata.connector;
 
-import com.gooddata.exception.*;
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.util.FileUtil;
-import com.gooddata.util.StringUtil;
+import java.io.File;
+import java.io.IOException;
+
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.ConnectorBackend;
@@ -12,9 +10,13 @@ import org.gooddata.processor.CliParams;
 import org.gooddata.processor.Command;
 import org.gooddata.processor.ProcessingContext;
 
-import java.io.*;
-
-import static org.apache.derby.tools.ij.runScript;
+import com.gooddata.connector.driver.Constants;
+import com.gooddata.exception.ProcessingException;
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.util.FileUtil;
+import com.gooddata.util.NameTransformer;
+import com.gooddata.util.StringUtil;
 
 /**
  * GoodData CSV Connector
@@ -78,11 +80,26 @@ public class CsvConnector extends AbstractConnector implements Connector {
         	s = SourceSchema.createSchema(name);
         }
         final int knownColumns = s.getColumns().size();
+        NameTransformer idGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
+        	public String transform(String str) {
+        		String idorig = StringUtil.csvHeaderToIdentifier(str);
+        		int idmax = Constants.MAX_TABLE_NAME_LENGTH - s.getName().length() - 3; // good enough for 999 long names
+        		if (idorig.length() <= idmax)
+        			return idorig;
+        		return idorig.substring(0, idmax);
+        		
+        	}
+        });
+        NameTransformer titleGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
+        	public String transform(String str) {
+        		return StringUtil.csvHeaderToTitle(str);
+        	}
+        });
         for(int j = knownColumns; j < headers.length; j++) {
         	final String header = headers[j];
             final SourceColumn sc;
-            final String identifier = StringUtil.csvHeaderToIdentifier(header);
-            final String title = StringUtil.csvHeaderToTitle(header);
+            final String identifier = idGen.transform(header);
+            final String title = titleGen.transform(header);
             if (defaultLdmType != null) {
             	sc = new SourceColumn(identifier, defaultLdmType, title, folder);
             } else {
