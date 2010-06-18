@@ -29,7 +29,8 @@ public class CsvConnector extends AbstractConnector implements Connector {
     
     // data file
     private File dataFile;
-
+    
+     //hasheader flag
     private boolean hasHeader;
 
     /**

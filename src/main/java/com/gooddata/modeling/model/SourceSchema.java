@@ -16,6 +16,11 @@ import java.util.List;
  */
 public class SourceSchema {
 
+    // initial XML config comment
+    public static String CONFIG_INITIAL_COMMENT = "<!-- See documentation at " +
+            "http://github.com/gooddata/Java-DI-Tool/blob/master/doc/DOCUMENTATION.md#config -->\n\n";
+    
+
     /**
      * The LDM schema name
      */
@@ -98,7 +103,7 @@ public class SourceSchema {
      */
     public void writeConfig(File configFile) throws IOException {
         FileWriter w = new FileWriter(configFile);
-        w.write(toXml());
+        w.write(CONFIG_INITIAL_COMMENT + toXml());
         w.flush();
         w.close();
     }
