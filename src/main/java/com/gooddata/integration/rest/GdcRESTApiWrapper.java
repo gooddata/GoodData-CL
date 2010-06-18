@@ -1,26 +1,33 @@
 package com.gooddata.integration.rest;
 
-import com.gooddata.integration.model.DLI;
-import com.gooddata.integration.model.DLIPart;
-import com.gooddata.integration.model.Project;
-import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.exception.GdcLoginException;
-import com.gooddata.exception.GdcProjectAccessException;
-import com.gooddata.exception.GdcRestApiException;
-import com.gooddata.exception.HttpMethodException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
-import org.apache.commons.httpclient.*;
+
+import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.gooddata.exception.GdcLoginException;
+import com.gooddata.exception.GdcProjectAccessException;
+import com.gooddata.exception.GdcRestApiException;
+import com.gooddata.exception.HttpMethodException;
+import com.gooddata.integration.model.DLI;
+import com.gooddata.integration.model.DLIPart;
+import com.gooddata.integration.model.Project;
+import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 
 /**
  * The GoodData REST API Java wrapper.
@@ -78,7 +85,7 @@ public class GdcRESTApiWrapper {
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(loginStructure.toString().getBytes()));
         loginPost.setRequestEntity(request);
         try {
-            executeMethodOk(loginPost);
+            executeMethodOk(loginPost, false); // do not re-login on SC_UNAUTHORIZED
             // read SST from cookie
             for (Cookie cookie : client.getState().getCookies()) {
                 if ("GDCAuthSST".equals(cookie.getName())) {
@@ -555,7 +562,6 @@ public class GdcRESTApiWrapper {
         return maqlStructure;
     }
 
-
     /**
      * Executes HttpMethod and test if the response if 200(OK)
      *
@@ -564,11 +570,27 @@ public class GdcRESTApiWrapper {
      * @throws HttpMethodException
      */
     protected String executeMethodOk(HttpMethod method) throws HttpMethodException {
+    	return executeMethodOk(method, true);
+    }
+
+    /**
+     * Executes HttpMethod and test if the response if 200(OK)
+     *
+     * @param method the HTTP method
+     * @param reLoginOn401 flag saying whether we should call login() and retry on {@link HttpStatus.SC_UNAUTHORIZED}
+     * @return response body as String
+     * @throws HttpMethodException
+     */
+    private String executeMethodOk(HttpMethod method, boolean reLoginOn401) throws HttpMethodException {
         try {
             client.executeMethod(method);
 
             if (method.getStatusCode() == HttpStatus.SC_OK) {
                 return method.getResponseBodyAsString();
+            } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reLoginOn401) {
+            	// retry
+            	login();
+            	return executeMethodOk(method, false);
             } else {
                 String msg = method.getStatusCode() + " " + method.getStatusText();
                 String body = method.getResponseBodyAsString();
