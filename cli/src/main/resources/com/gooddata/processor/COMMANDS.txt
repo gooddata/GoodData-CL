@@ -1,0 +1,72 @@
+Usage: gdi.sh -u username -p password [ -h hostname ] [ -i project_id ] [-e commands] [<file1>, ...]
+ -h,--host <arg>       GoodData host (secure.gooddata.com by default)
+ -t, --proto <arg>     URL Protocol (HTTP or HTTPS, HTTPS by default)
+ -p,--password <arg>   GoodData password
+ -u,--username <arg>   GoodData username
+ -i,--project <arg>    GoodData project identifier (takes the form of an MD5 hash)
+ -e,--execute <arg>    Lommands to execute
+ -b,--backend <arg>    Local database backend (DERBY or MYSQL, DERBY by default)
+ -d,--dbusername <arg> Database backend username (not required for the local Derby SQL)
+ -c,--dbpassword <arg> Database backend password (not required for the local Derby SQL) 
+ file                  path to script file with commands to execute
+ 
+Either -e or file(s) must be specified.
+
+Script Commands:
+
+ CreateProject(name=<project-name>, desc=<description>) - create a new project on the <hostname> server
+  project-name - name of the new project
+  description  - (optional) project description
+
+ OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
+  identifier - id of an existing project (takes the form of an MD5 hash)
+
+ GenerateCsvConfig(csvHeaderFile=<headers>, configFile=<config> [, defaultLdmType=<type>] [, folder=<folder>]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. 
+  headers - path to CSV header file (only the first header row will be used)
+  config  - path to configuration file (will be overwritten)
+
+ LoadCsv(csvDataFile=<data>, configFile=<config>) - load CSV data file using config file describing the file structure, must call OpenProject
+  dataset - dataset name (must be identical to the dataset name in XML config)
+  data    - path to CSV datafile (data only, no header row)
+  config  - path to XML configuration file
+  
+ Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded. 
+
+ GenerateMaql(maqlFile=<maql>) - generate MAQL DDL script describing data model from the local config file, must call OpenProject and LoadCsv before
+  maqlFile - path to MAQL file (will be overwritten)
+  
+ GenerateUpdateMaql(maqlFile=<maql>) - generate MAQL DDL snippet describing the columns available in the local configuration but missing in the remote GoodData project
+  maqlFile - path to MAQL file (will be overwritten)
+
+ ExecuteMaql(maqlFile=<maql> [, ifExists=<boolean>]) - run MAQL DDL script on server to generate data model, must call OpenProject and LoadCsv before
+  maqlFile - path to the MAQL file (relative to PWD)
+  ifExists - if set to true the command quits silently if the maqlFile does not exist (default = false)
+
+ ListSnapshots() - list all data snapshots from internal local DB, must call OpenProject before
+
+ DropSnapshots() - list data snapshots from internal local DB, must call OpenProject before
+ 
+ UpdateConfig(csvHeaderFile=<headers>, configFile=<config>, defaultLdmType=<type>, defaultFolder=<folder>) - adds new columns in the CSV headers file into the configFile
+  headers - path to CSV header file (only the first header row will be used)
+  config  - path to configuration file (will be overwritten with a version extended with new columns)
+  type - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
+  folder - folder where to place new attributes
+  
+ StoreProject(fileName=<file>) - saves the current project identifier into the specified file
+  fileName - file to save the project identifier
+  
+ RetrieveProject(fileName=<file>) - loads the current project identifier from the specified file
+  fileName - file to load the project identifier from
+  
+ TransferData(incremental=<true|false>) - upload data to the server, must call OpenProject and LoadCsv before
+  incremental - incremental transfer (true | false)
+
+ TransferSnapshots - ?
+  lastSnapshot - the last transferred snapshot id
+  firstSnapshot - the first transferred snapshot id
+  incremental - incremental transfer (true | false)
+
+ TransferLastSnapshot - ?
+  incremental - incremental transfer (true | false)
+  
+ UploadDir(path=<directory-path>, dataset=<dataset-identifier>) - uploads a directory containing manually prepared CSV files to provided dataset.  Must call OpenProject before.  

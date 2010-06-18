@@ -1,0 +1,88 @@
+PARSER_BEGIN(DIScriptParser)
+
+package com.gooddata.processor.parser;
+
+import java.io.FileReader;
+import java.io.Reader;
+import org.apache.log4j.Logger;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Properties;
+
+import org.gooddata.processor.Command;
+
+public class DIScriptParser {
+
+    private static Logger l = Logger.getLogger(DIScriptParser.class);
+
+   
+}
+PARSER_END(DIScriptParser) 
+
+/**  And now, the actual parsing specifications...... */
+
+/** Skip these characters, they are considered "white space" **/
+SKIP :                              
+{
+    " "
+    | "\t"
+    | "\r"
+    | "\n"
+
+}
+
+
+TOKEN: /*RESERVED TOKENS FOR UQL */
+{
+      <SEMICOLON: ";">
+   |  <COMMA:  ",">
+   |  <LPAREN: "(">
+   |  <RPAREN: ")">
+   |  <EQUALS: "=">
+   
+}
+
+TOKEN : /* the keywords and comparators - QUOTEDVALUE accounts for escaped quotes as well */
+{
+        <NAME: (["A"-"Z","a"-"z","0"-"9"])+ >
+|       <STRING: "\"" (~["\""])+ "\"" >
+|       <COMMENT: "#"(~["\n","\r"])* ("\n"|"\r"|"\r\n")? >
+}
+
+
+List<Command> parse() :
+{
+    List<Command> commands = new ArrayList<Command>();
+    Command c;
+}
+{
+    (<COMMENT> | c = command(){commands.add(c);})* {return commands;}       // a query followed by optional sort
+}
+
+Command command() :
+{
+    Command c;
+    Token t;
+    Properties p;
+}
+{            
+	t = <NAME>{c=new Command(t.image);}<LPAREN>p = parameters(){c.setParameters(p);}<RPAREN><SEMICOLON>{return c;}
+}
+
+Properties parameters() :
+{
+    Properties prop = new Properties();
+    String[] v1;
+}
+{
+	(v1=parameter() {prop.put(v1[0],v1[1]);}(<COMMA>)?)* {return prop;}
+}
+
+String[] parameter() :
+{
+    Token name;
+    Token value;
+}
+{
+	name=<NAME><EQUALS>value=<STRING>{return new String[]{name.image,value.image.replace("\"","")};}
+}

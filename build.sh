@@ -1,3 +1,3 @@
 #! /bin/bash
 
-./maven/bin/mvn assembly:assembly
+mvn assembly:assembly
