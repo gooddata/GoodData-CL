@@ -231,8 +231,10 @@ public class SourceSchema {
     public void validate() throws ModelException {
         if(name == null || name.length() <=0)
             throw new ModelException("Schema needs to have a name.");
+        /*
         if(StringUtil.containsInvvalidIdentifierChar(name))
             throw new ModelException("Schema name contains invalid characters");
+        */
         for(SourceColumn c : columns)
             c.validate();
     }

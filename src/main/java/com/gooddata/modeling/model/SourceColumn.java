@@ -252,8 +252,10 @@ public class SourceColumn {
      * @throws com.gooddata.exception.ModelException in case of a validation error
      */
     public void validate() throws ModelException {
+        /*
         if(StringUtil.containsInvvalidIdentifierChar(name))
             throw new ModelException("Column name "+name+" contains invalid characters");
+        */
         if( !LDM_TYPE_ATTRIBUTE.equals(ldmType) && 
             !LDM_TYPE_CONNECTION_POINT.equals(ldmType) &&
             !LDM_TYPE_DATE.equals(ldmType) && 
