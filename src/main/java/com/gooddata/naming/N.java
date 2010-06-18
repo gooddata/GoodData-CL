@@ -25,5 +25,5 @@ public class N {
 
 
     //public final static String FTP_SRV_SUFFIX = "-upload";
-    public final static String FTP_SRV_SUFFIX = "";
+    public final static String FTP_SRV_SUFFIX = "-di";
 }
