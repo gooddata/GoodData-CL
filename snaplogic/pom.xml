@@ -26,7 +26,6 @@
 			<groupId>org.gooddata.di</groupId>
 			<artifactId>common</artifactId>
 		</dependency>
-	</dependencies>
-	
-	<!-- 3rd party dependencies --> 
+        <!-- 3rd party dependencies -->
+	</dependencies> 
 </project>

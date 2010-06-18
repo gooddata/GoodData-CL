@@ -23,17 +23,14 @@
 		<dependency>
 			<groupId>com.google.gdata</groupId>
 			<artifactId>gdata-java-client</artifactId>
-			<version>1.40.0.atlassian-2</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
-			<version>2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis</artifactId>
-			<version>1.4</version>
 		</dependency>
 	</dependencies>
 </project>
