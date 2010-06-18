@@ -33,6 +33,7 @@
       <ldmType>DATE</ldmType>
       <folder>Opportunity</folder>
       <format>yyyy-MM-dd</format>
+      <schemaReference>closed</schemaReference>
     </column>
     <column>
       <name>stagename</name>
@@ -46,6 +47,7 @@
       <ldmType>DATE</ldmType>
       <folder>Opportunity</folder>
       <format>yyyy-MM-dd</format>
+      <schemaReference>created</schemaReference>
     </column>
     <column>
       <name>expectedrevenue</name>

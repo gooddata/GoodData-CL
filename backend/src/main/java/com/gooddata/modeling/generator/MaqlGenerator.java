@@ -339,7 +339,7 @@ public class MaqlGenerator {
         public String generateMaqlDdl() {
             String folderStatement = "";
             String folder = column.getFolder();
-            String reference = column.getReference();
+            String reference = column.getSchemaReference();
             if (folder != null && folder.length() > 0) {
                 String sfn = StringUtil.formatShortName(folder);
                 folderStatement = ", FOLDER {ffld." + sfn + "}";

@@ -7,7 +7,7 @@
       <ldmType>DATE</ldmType>
       <folder>GA</folder>
       <format>yyyy-MM-dd</format>
-      <reference>ga</reference>
+      <schemaReference>ga</schemaReference>
     </column>
     <column>
       <name>browser</name>
