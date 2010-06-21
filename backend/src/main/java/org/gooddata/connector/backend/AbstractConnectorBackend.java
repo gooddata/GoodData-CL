@@ -289,7 +289,7 @@ import org.gooddata.connector.driver.SqlDriver;
             return sg.exists(con, tbl);
         }
         catch (SQLException e) {
-        	throw new InternalError(e.getMessage());
+        	throw new InternalErrorException(e);
 		}
         finally {
             try {
@@ -312,7 +312,7 @@ import org.gooddata.connector.driver.SqlDriver;
             sg.executeExtractSql(con, getPdm(), dataFile.getAbsolutePath());
         }
         catch (SQLException e) {
-            throw new InternalError(e.getMessage());
+            throw new InternalErrorException(e);
         }
         finally {
             try {
@@ -346,7 +346,7 @@ import org.gooddata.connector.driver.SqlDriver;
             }
         }
         catch (SQLException e) {
-            throw new InternalError(e.getMessage());
+            throw new InternalErrorException(e);
         }
         finally {
             try {

@@ -18,6 +18,14 @@ public class InternalErrorException extends GdcException {
     
     /**
      * Exception constructor
+     * @param cause root cause
+     */
+    public InternalErrorException(Throwable cause) {
+    	super(cause);
+    }
+    
+    /**
+     * Exception constructor
      * @param msg exception message
      * @param cause root cause
      */

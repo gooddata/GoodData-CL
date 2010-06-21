@@ -189,7 +189,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                     con.close();
             }
             catch (SQLException e) {
-                throw new InternalError(e.getMessage());
+                throw new InternalErrorException(e);
             }
         }
     }
