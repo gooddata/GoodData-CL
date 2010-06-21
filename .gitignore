@@ -5,7 +5,7 @@ backend/target/
 cli/target/
 common/target/
 connector/target/
-snaplogic/target/
+gooddata-snaplogic/target/
 distro/target
 .idea
 GoodDataDI.iml
@@ -13,4 +13,4 @@ backend/backend.iml
 cli/cli.iml
 common/common.iml
 connector/connector.iml
-snaplogic/snaplogic.iml
+gooddata-snaplogic/gooddata-snaplogic.iml

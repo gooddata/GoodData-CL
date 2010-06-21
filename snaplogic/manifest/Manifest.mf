@@ -1,2 +1,0 @@
-Manifest-Version: 1.0
-SnapLogic-Components: org.snaplogic.snap.gooddata.GoodDataConnection,org.snaplogic.snap.gooddata.GoodDataPut
