@@ -13,3 +13,4 @@ cli/cli.iml
 common/common.iml
 connector/connector.iml
 gooddata-snaplogic/gooddata-snaplogic.iml
+snaplogic/snaplogic.iml
