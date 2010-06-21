@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.gooddata.di</groupId>
+		<artifactId>JavaDI</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>gooddata-snap</artifactId>
+	<description>Snaplogic distribution module</description>
+    <name>gooddata-snap</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.gooddata.di</groupId>
+			<artifactId>gooddata-snaplogic</artifactId>			
+		</dependency>               
+	</dependencies>
+	<build>
+		<plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+						<descriptor>src/main/assembly/sl.xml</descriptor>
+					</descriptors>
+                    <archive>
+                        <manifest>
+                           <addClasspath>true</addClasspath>
+                           <mainClass>com.gooddata.processor.GdcDI</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+					        <outputDirectory>${project.build.directory}/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>           
+		</plugins>
+	</build>
+</project>
