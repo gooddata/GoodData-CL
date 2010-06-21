@@ -15,7 +15,7 @@
         <module>backend</module>
         <module>connector</module>
         <module>common</module>
-        <module>snaplogic</module>
+        <module>gooddata-snaplogic</module>
     </modules>   
     
     <dependencies>

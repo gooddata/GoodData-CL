@@ -24,7 +24,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-						<descriptor>src/main/assembly/sl.xml</descriptor>
+						<descriptor>src/main/assembly/cli.xml</descriptor>
 					</descriptors>
                     <archive>
                         <manifest>

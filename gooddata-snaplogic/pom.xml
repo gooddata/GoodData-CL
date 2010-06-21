@@ -31,14 +31,14 @@
             <groupId>org.snaplogic</groupId>
             <artifactId>javacc</artifactId>
             <version>2.2.2</version>
-            <scope>system</scope>
+            <scope>provided</scope>
             <systemPath>${basedir}/lib/javacc.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.snaplogic</groupId>
             <artifactId>snaplogic</artifactId>
             <version>2.2.2</version>
-            <scope>system</scope>
+            <scope>provided</scope>
             <systemPath>${basedir}/lib/snapi.jar</systemPath>
         </dependency>
     </dependencies>
