@@ -1,17 +1,26 @@
-# THE SIMPLEST EXAMPLE. LOADS A SIMPLE FLAT FILE WITH A STOCK QUOTE DATA
+# This is a simple example which loads a simple flat file with a stock quote data.
+# Lines starting with "#" are comments and will not be executed
 
-# CREATE A NEW PROJECT
+# Create a new project
 CreateProject(name="Quotes");
 
-# LOAD THE STOCK QUOTES DATA FILE
-# THE DATA FILE CONFIG HAS BEEN GENERATED
+# Load the stock quotes data file
+# The XML config file describing data structure is already included in this example
 LoadCsv(csvDataFile="examples/quotes/quotes.csv",header="true",configFile="examples/quotes/quotes.config.xml");
 
-# GENERATE THE STOCK QUOTES MAQL
+# Generate the stock quotes MAQL script
 GenerateMaql(maqlFile="examples/quotes/quotes.maql");
 
-# EXECUTE THE STOCK QUOTES MAQL
+# Execute the MAQL script generated above on the server to create data model in the project
 ExecuteMaql(maqlFile="examples/quotes/quotes.maql");
 
-# TRANSFER THE STOCK QUOTES DATA
+# Transfer the stock quotes data
 TransferLastSnapshot();
+
+# If you wanted to repeatedly load data, you might want now to store the Project ID for later reuse by uncommenting the line below
+# StoreProject(fileName="examples/quotes/quotes.pid");
+
+# Subsequently, you'd run a following script:
+# RetrieveProject(fileName="examples/quotes/quotes.pid");
+# LoadCsv(csvDataFile="examples/quotes/quotes.csv", configFile="examples/quotes/quotes.config.xml");
+# TransferData(incremental="false");
