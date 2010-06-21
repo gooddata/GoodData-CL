@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.gooddata.di</groupId>
-			<artifactId>snaplogic</artifactId>			
+			<artifactId>gooddata-snaplogic</artifactId>			
 		</dependency>               
 	</dependencies>
 	<build>
