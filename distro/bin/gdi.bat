@@ -1,5 +1,8 @@
 @echo off
+setlocal ENABLEDELAYEDEXPANSION
+
 SET PRJ_BIN=%~dp0
+SET PRJ=%PRJ_BIN%..
 
 if not "%JAVA_HOME%" == "" goto jhomeok
 
@@ -22,7 +25,11 @@ echo.
 goto error
 
 :execute
-"%JAVA_HOME%\bin\java.exe" -Xmx512M -Dlog4j.configuration=%PRJ_BIN%..\log4j.configuration -Dderby.system.home=%PRJ_BIN%..\db -Djava.io.tmpdir=%PRJ_BIN%..\tmp -classpath %PRJ_BIN%..;%PRJ_BIN%..\cli\target\cli-1.0-SNAPSHOT-jar-with-dependencies.jar com.gooddata.processor.GdcDI %*
+
+if defined CLASSPATH (set CLSPTH=%CLASSPATH%;%PRJ%;.) else (set CLSPTH=%PRJ%)
+FOR /R %PRJ%\lib %%G IN (*.jar) DO set CLSPTH=!CLSPTH!;%%G
+
+"%JAVA_HOME%\bin\java.exe" -Xmx512M -Dlog4j.configuration=%PRJ%\log4j.configuration -Dderby.system.home=%PRJ%\db -Djava.io.tmpdir=%PRJ%\tmp -classpath %CLSPTH% com.gooddata.processor.GdcDI %*
 goto end
 
 :error

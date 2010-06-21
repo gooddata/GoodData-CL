@@ -7,8 +7,12 @@ A=${A:-$0}      # if original wasn't a symlink, BSD returns empty string
 SCRIPT_REAL_PATH=$(cd ${A%/*} && echo $PWD/${A##*/}) # path to original shell script, resolved from relative paths
 PROJECT_DIR=`dirname \`dirname $SCRIPT_REAL_PATH\``  # base directory
 
-. $PROJECT_DIR/bin/cfg.sh
+CLSPTH=$PROJECT_DIR
+for i in `ls $PROJECT_DIR/lib/*.jar`
+do
+  CLSPTH=${CLSPTH}:${i}
+done
 
 DI_TMPDIR=${DI_TMPDIR:-$PROJECT_DIR/tmp}
 
-java -Xmx512M -Dlog4j.configuration=$PROJECT_DIR/log4j.configuration -Dderby.system.home=$PROJECT_DIR/db -Djava.io.tmpdir=$DI_TMPDIR -cp ${CLASSPATH} com.gooddata.processor.GdcDI $*
+java -Xmx512M -Dlog4j.configuration=$PROJECT_DIR/log4j.configuration -Dderby.system.home=$PROJECT_DIR/db -Djava.io.tmpdir=$DI_TMPDIR -cp ${CLSPTH} com.gooddata.processor.GdcDI $*
