@@ -1,0 +1,1 @@
+This is the Derby SQL default database directory.

@@ -13,6 +13,6 @@ do
   CLSPTH=${CLSPTH}:${i}
 done
 
-DI_TMPDIR=${DI_TMPDIR:-$PROJECT_DIR/tmp}
+TMPDIR=/tmp
 
-java -Xmx512M -Dlog4j.configuration=$PROJECT_DIR/log4j.configuration -Dderby.system.home=$PROJECT_DIR/db -Djava.io.tmpdir=$DI_TMPDIR -cp ${CLSPTH} com.gooddata.processor.GdcDI $*
+java -Xmx512M -Dlog4j.configuration=$PROJECT_DIR/log4j.configuration -Dderby.system.home=$PROJECT_DIR/db -Djava.io.tmpdir=$TMPDIR -cp ${CLSPTH} com.gooddata.processor.GdcDI $*
