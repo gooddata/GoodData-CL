@@ -1,16 +1,17 @@
-# THIS EXAMPLE DEMONSTRATES HOW TO LOAD ZENDESK DATA TO GOODDATA
+# This example demonstrates how to load zendesk data to GoodData
+# Lines starting with "#" are comments and will not be executed
 
-# CREATE A NEW PROJECT
+# Create a new project
 CreateProject(name="Zendesk Sample Project");
 
-# STORE THE PROJECT ID TO FILE FOR THE FOLLOWING SCRIPT
+# Store the project id to file for the following script
 StoreProject(fileName="examples/zendesk/pid");
 
-# LOAD THE ZENDESK DATA
+# Load the Zendesk data
 LoadCsv(csvDataFile="examples/zendesk/data.csv", configFile="examples/zendesk/config.xml");
 
-# GENERATE THE ZENDESK MAQL
+# Generate the zendesk MAQL
 GenerateMaql(maqlFile="examples/zendesk/zendesk.maql");
 
-# EXECUTE THE ZENDESK MAQL
+# Execute the Zendesk MAQL
 ExecuteMaql(maqlFile="examples/zendesk/zendesk.maql");
