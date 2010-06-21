@@ -1,12 +1,10 @@
 package org.gooddata.connector.driver;
 
-import com.gooddata.exception.ModelException;
-import com.gooddata.integration.model.DLIPart;
-import com.gooddata.connector.model.PdmSchema;
-import com.gooddata.util.JdbcUtil;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import com.gooddata.connector.model.PdmSchema;
+import com.gooddata.integration.model.DLIPart;
 
 /**
  * GoodData SQL Executor
@@ -72,7 +70,7 @@ public interface SqlDriver {
     /**
      * {@inheritDoc}
      */
-    public boolean exists(Connection c, String tbl);
+    public boolean exists(Connection c, String tbl) throws SQLException;
 
     /**
      * Returns true if the specified column of the specified table exists in the DB
@@ -80,6 +78,6 @@ public interface SqlDriver {
      * @param col column name
      * @return true if the table exists, false otherwise
      */
-    public boolean exists(Connection c, String tbl, String col);
+    public boolean exists(Connection c, String tbl, String col) throws SQLException;
 
 }

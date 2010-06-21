@@ -1,8 +1,12 @@
 package org.gooddata.connector.driver;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,14 +19,12 @@ import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmLookupReplication;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
-import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
-import com.gooddata.util.JdbcUtil.DummyResultSetHandler;
 import com.gooddata.util.JdbcUtil.StatementHandler;
 
 /**
@@ -142,35 +144,52 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     
     /**
      * {@inheritDoc}
+     * @throws SQLException 
      */
-    public boolean exists(Connection c, String tbl) {
-    	String sql = "SELECT * FROM " + tbl + " WHERE 1=0";
+    public boolean exists(Connection c, String tbl) throws SQLException {
+    	DatabaseMetaData md = c.getMetaData();
+    	ResultSet rs = md.getTables(null, null, tbl, null);
     	try {
-	    	JdbcUtil.executeQuery(c, sql, new DummyResultSetHandler());
-	    	return true;
-    	} catch (SQLException e) {
-    		return false;
+	    	return rs.next();
+    	} finally {
+    		if (rs != null && !rs.isClosed())
+    			rs.close();
     	}
     }
 
     /**
-     * Returns true if the specified column of the specified table exists in the DB
+     * Returns true if the specified column of the specified table exists in the DB. Case sensitive!
      * @param tbl table name
      * @param col column name
      * @return true if the table exists, false otherwise
+     * @throws IllegalArgumentException if the required table does not exist
+     * @throws SQLException if other database related problem occures 
      */
-    public boolean exists(Connection c, String tbl, String col) {
+    public boolean exists(Connection c, String tbl, String col) throws SQLException {
+    	if (!exists(c, tbl))
+    		throw new IllegalArgumentException("Table '" + tbl + "' does not exist.");
     	String sql = "SELECT " + col + " FROM " + tbl + " WHERE 1=0";
-    	try {
-	    	JdbcUtil.executeQuery(c, sql, new DummyResultSetHandler());
-	    	return true;
-    	} catch (SQLException e) {
-    		if (exists(c, tbl))
-    			return false;
-    		else
-    			throw new IllegalArgumentException(e);
-    	}
+		Statement st = c.createStatement();
+		try {
+            ResultSet rs = st.executeQuery(sql);
+            try {
+	            ResultSetMetaData md = rs.getMetaData();
+	            int cols = md.getColumnCount();
+	            for (int i = 0; i < cols; i++) {
+	            	if (col.equals(md.getColumnName(i)))
+	            		return true;
+	            }
+	            return false;
+    		} finally {
+    			if (rs != null && !rs.isClosed())
+    				rs.close();
+    		}
+		} finally {
+			if (st != null && !st.isClosed())
+				st.close();
+		}
     }
+
 
     /**
      * Indexes all table columns
