@@ -178,10 +178,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
             }
             else if(c.match("LoadCsv")) {
                 loadCsv(c, cli, ctx);
-            }
-            else if (c.match( "UpdateConfig")) {
-                updateConfig(c, cli, ctx);
-            }            
+            }           
             else
                 return super.processCommand(c, cli, ctx);
         }
@@ -225,24 +222,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
     private void generateCsvConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
         String csvHeaderFile = c.getParamMandatory("csvHeaderFile");
-        File cf = new File(configFile);
-        File csvf = FileUtil.getFile(csvHeaderFile);
-        CsvConnector.saveConfigTemplate(configFile, csvHeaderFile);
-    }
-
-    /**
-     * Updates the config with additional columns
-     * @param c command
-     * @param p cli parameters
-     * @param ctx current context
-     * @throws IOException IO issues
-     */
-    private void updateConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-    	final String csvHeaderFile = c.getParamMandatory( "csvHeaderFile");
-    	final String configFile = c.getParamMandatory( "configFile");
-    	final String defaultLdmType = c.getParamMandatory( "defaultLdmType");
-    	final String folder = c.getParam( "defaultFolder");
-
-    	saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
+        String defaultLdmType = c.getParam( "defaultLdmType");
+    	String folder = c.getParam( "defaultFolder");
+        
+        CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
     }
 }

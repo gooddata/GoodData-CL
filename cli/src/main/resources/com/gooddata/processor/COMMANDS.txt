@@ -24,6 +24,8 @@ Script Commands:
  GenerateCsvConfig(csvHeaderFile=<headers>, configFile=<config> [, defaultLdmType=<type>] [, folder=<folder>]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. 
   headers - path to CSV header file (only the first header row will be used)
   config  - path to configuration file (will be overwritten)
+  type - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
+  folder - folder where to place new attributes
 
  LoadCsv(csvDataFile=<data>, configFile=<config>) - load CSV data file using config file describing the file structure, must call OpenProject
   dataset - dataset name (must be identical to the dataset name in XML config)
@@ -45,12 +47,6 @@ Script Commands:
  ListSnapshots() - list all data snapshots from internal local DB, must call OpenProject before
 
  DropSnapshots() - list data snapshots from internal local DB, must call OpenProject before
- 
- UpdateConfig(csvHeaderFile=<headers>, configFile=<config>, defaultLdmType=<type>, defaultFolder=<folder>) - adds new columns in the CSV headers file into the configFile
-  headers - path to CSV header file (only the first header row will be used)
-  config  - path to configuration file (will be overwritten with a version extended with new columns)
-  type - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
-  folder - folder where to place new attributes
   
  StoreProject(fileName=<file>) - saves the current project identifier into the specified file
   fileName - file to save the project identifier
