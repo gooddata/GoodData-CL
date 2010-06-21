@@ -1,0 +1,10 @@
+# THIS EXAMPLE DEMONSTRATES HOW TO LOAD ZENDESK DATA TO GOODDATA
+
+# RETRIEVE THE PROJECT THAT HAS BEEN SAVED BY THE FIRST SCRIPT
+RetrieveProject(fileName="examples/zendesk/pid");
+
+# LOAD THE ZENDESK DATA
+LoadCsv(csvDataFile="examples/zendesk/data.csv", configFile="examples/zendesk/config.xml");
+
+# TRANSFER THE ZENDESK DATA TO THE GOODDATA PROJECT
+TransferData(incremental="false");

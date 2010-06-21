@@ -1,0 +1,16 @@
+<schema>
+  <name>Department</name>
+  <columns>
+    <column>
+      <name>department</name>
+      <title>Department</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+    </column>
+    <column>
+      <name>name</name>
+      <title>Name</title>
+      <ldmType>LABEL</ldmType>
+      <reference>department</reference>
+    </column>
+  </columns>
+</schema>

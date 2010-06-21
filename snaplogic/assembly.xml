@@ -1,0 +1,22 @@
+<assembly>
+    <id>snaplogic</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>pkg/snaplogic-gooddata-1.0/</directory>
+            <outputDirectory>snaplogic-gooddata-1.0</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>pkg/snaplogic-gooddata-1.0/</directory>
+            <outputDirectory>snaplogic-gooddata-1.0</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

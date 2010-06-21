@@ -1,0 +1,1 @@
+See https://www.snaplogic.org/trac/wiki/Documentation/Snaps/snaplogic-gooddata-1.0

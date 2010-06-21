@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/pmktg/!svn/ver/2360/trunk/util/GoodDataSnap/src/org/snaplogic/snap/gooddata
+END
+GoodDataConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/pmktg/!svn/ver/2360/trunk/util/GoodDataSnap/src/org/snaplogic/snap/gooddata/GoodDataConnection.java
+END
+AbstractGoodDataComponent.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/pmktg/!svn/ver/2360/trunk/util/GoodDataSnap/src/org/snaplogic/snap/gooddata/AbstractGoodDataComponent.java
+END
+GoodDataPut.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/pmktg/!svn/ver/2360/trunk/util/GoodDataSnap/src/org/snaplogic/snap/gooddata/GoodDataPut.java
+END

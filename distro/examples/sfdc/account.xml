@@ -1,0 +1,17 @@
+<schema>
+  <name>Account</name>
+  <columns>
+    <column>
+      <name>id</name>
+      <title>Id</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+      <folder>Account</folder>
+    </column>
+    <column>
+      <name>name</name>
+      <title>Name</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Account</folder>
+    </column>
+  </columns>
+</schema>
