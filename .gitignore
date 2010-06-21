@@ -6,6 +6,7 @@ cli/target/
 common/target/
 connector/target/
 snaplogic/target/
+distro/target
 .idea
 GoodDataDI.iml
 backend/backend.iml
