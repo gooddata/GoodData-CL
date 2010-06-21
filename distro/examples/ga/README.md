@@ -1,10 +1,8 @@
 # Loading Google Analytics data into GoodData
 
-This example shows the Google Analytics data connector in use.
+This example demonstrates the built-in Google Analytics data connector that allows you to quickly load your Google Analytics data into GoodData.
 
-Run `gdi.sh` with the `ga.cmd` script. The script uses the `ga.config.xml` configuration describing incoming data structure.
+Run `gdi.sh` with the `ga.cmd` script. The script uses the `ga.config.xml` config to describe incoming data. Review the [XML file](ga.config.xml) and the [documentation](http://github.com/gooddata/Java-DI-Tool/blob/master/doc/DOCUMENTATION.md#config) if you have a customized Google Analytics account.
 
         $ ./bin/gdi.sh -u <username> -p <password> examples/quotes/ga.cmd
         Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
-
-This creates a `GA` project in GoodData, sets up the data model and loads the data file into the project. If you have a customized Google Analytics account, read the [script file](ga.config.xml) for further detail.
