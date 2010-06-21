@@ -1,21 +1,21 @@
-# THIS EXAMPLE DEMONSTRATES HOW TO LOAD MORE COMPLEX STRUCTURES TO GOODDATA
-# THREE DATASETS: DEPARTMENT, EMPLOYEE, AND SALARY ARE LOADED ARE CONNECTED TOGETHER
-# CHECK THE CONFIGURATION FILES THAT CONTAINS THE CONNECTION POINTS AND REFERENCES
+# This example demonstrates how to load more complex structures to GoodData
+# Three datasets: department, employee, and salary are loaded are connected together
+# Check the configuration files that contains the connection points and references
 
-# CREATE A NEW PROJECT
+# Create a new project
 CreateProject(name="HR");
 
-# STORE THE PROJECT ID TO FILE FOR THE FOLLOWING TWO SCRIPTS
+# Store the project ID to file for the subsequent two scripts
 StoreProject(fileName="examples/hr/pid");
 
-# LOAD THE DEPARTMENT FILE
+# Load the department data file, using the XML file describing the data
 LoadCsv(csvDataFile="examples/hr/department.csv",header="true",configFile="examples/hr/department.xml");
 
-# GENERATE THE DEPARTMENT MAQL
+# Generate the MAQL script describing data model for department data
 GenerateMaql(maqlFile="examples/hr/department.maql");
 
-# EXECUTE THE DEPARTMENT MAQL
+# Execute the MAQL script on the server
 ExecuteMaql(maqlFile="examples/hr/department.maql");
 
-# TRANSFER THE DEPARTMENT DATA
+# Transfer the department data
 TransferLastSnapshot(incremental="false");
