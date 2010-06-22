@@ -112,13 +112,13 @@ public class GaConnector extends AbstractConnector implements Connector {
                     }
                 }
                 else {
-                    l.error("Invalid dimension name '" + dim + "'");
+                    l.debug("Invalid dimension name '" + dim + "'");
                     throw new InvalidArgumentException("Invalid dimension name '" + dim + "'");
                 }
             }
         }
         else {
-            l.error("Please specify Google Analytics dimensions separated by comma.");
+            l.debug("Please specify Google Analytics dimensions separated by comma.");
             throw new InvalidArgumentException("Please specify Google Analytics dimensions separated by comma.");            
         }
         if(mtrs != null && mtrs.length() > 0) {
@@ -131,13 +131,13 @@ public class GaConnector extends AbstractConnector implements Connector {
                     s.addColumn(sc);
                 }
                 else {
-                    l.error("Invalid dimension name '" + mtr + "'");
+                    l.debug("Invalid dimension name '" + mtr + "'");
                     throw new InvalidArgumentException("Invalid metric name '" + mtr + "'");
                 }
             }
         }
         else {
-            l.error("Please specify Google Analytics metrics separated by comma.");
+            l.debug("Please specify Google Analytics metrics separated by comma.");
             throw new InvalidArgumentException("Please specify Google Analytics metrics separated by comma.");
         }
         s.writeConfig(new File(configFileName));

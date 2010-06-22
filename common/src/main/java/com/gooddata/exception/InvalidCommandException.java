@@ -35,4 +35,8 @@ public class InvalidCommandException extends GdcException {
         super(msg);
     }
 
+    public InvalidCommandException(String msg, Throwable e) {
+        super(msg, e);
+    }
+
 }

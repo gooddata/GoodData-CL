@@ -24,6 +24,7 @@
 package com.gooddata.connector.backend;
 
 import com.gooddata.connector.driver.MySqlDriver;
+import com.gooddata.exception.InternalErrorException;
 import com.gooddata.util.JdbcUtil;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
@@ -120,7 +121,8 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
             s.execute("DROP DATABASE IF EXISTS " + getProjectId());
 
         } catch (SQLException e) {
-            l.error("Can't drop MySQL database.", e);
+            l.debug("Error dropping MySQL snapshots.", e);
+            throw new InternalErrorException("Error dropping MySQL snapshots.",e);
         }
         finally {
             try  {
@@ -130,7 +132,8 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
                     con.close();
             }
             catch (SQLException e) {
-                l.error("Can't close MySQL connection.", e);    
+                l.debug("Can't close MySQL connection.", e);
+                throw new InternalErrorException("Can't close MySQL connection.", e);
             }
         }
         l.debug("Finished dropping MySQL snapshots "+getProjectId());

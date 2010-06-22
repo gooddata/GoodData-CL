@@ -42,4 +42,9 @@ public class GdcLoginException extends GdcProjectAccessException {
     public GdcLoginException(String msg) {
         super(msg);
     }
+
+    public GdcLoginException(String msg, Throwable e) {
+        super(msg, e);
+    }
+    
 }

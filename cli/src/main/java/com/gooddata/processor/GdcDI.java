@@ -128,19 +128,106 @@ public class GdcDI implements Executor {
             }
         }
         catch (InvalidArgumentException e) {
-            l.error(e.getMessage());
-            l.info(commandsHelp());
-        }
-        catch (GdcLoginException e) {
-            l.error("Error logging to GoodData. Please check your GoodData username and password.");
+            l.error("Invalid command line argument: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Invalid command line argument:",e);
             l.info(commandsHelp());
         }
         catch (InvalidCommandException e) {
-            l.error(e.getMessage());
+            l.error("Invalid command: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Invalid command.",e);
         }
+        catch (SfdcException e) {
+            l.error("Error communicating with SalesForce: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Error communicating with SalesForce.",e);
+        }
+        catch (ProcessingException e) {
+            l.error("Error processing command: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Error processing command.",e);
+        }
+        catch (ModelException e) {
+            l.error("Model issue: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Model issue.",e);
+        }
+        catch (GdcLoginException e) {
+            l.error("Error logging to GoodData. Please check your GoodData username and password: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Error logging to GoodData. Please check your GoodData username and password.",e);
+        }        
         catch (IOException e) {
-            l.error(e.getMessage());
+            l.error("Encountered an IO or database problem: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Encountered an IO or database problem.",e);
         }
+        catch (InternalErrorException e) {
+            l.error("Internal error: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("REST API invocation error: "+e.getMessage());
+        }
+        catch (HttpMethodException e) {
+            l.error("Error executing GoodData REST API: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Error executing GoodData REST API.",e);
+        }
+        catch (GdcRestApiException e) {
+            l.error("REST API invocation error: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("REST API invocation error: "+e.getMessage());
+        }
+        catch (GdcException e) {
+            l.error("Unrecognized error: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Unrecognized error: ",e);
+        }
+
 
     }
 
@@ -253,14 +340,6 @@ public class GdcDI implements Executor {
         return cp;
     }
 
-    /**
-     * Prints an err message, help and exits with status code 1
-     * @param err the err message
-     */
-    public static void printErrorAndExit(String err) {
-        l.error("ERROR: " + err);
-        System.exit(1);
-    }
 
     /**
      * Executes the commands in String
@@ -327,7 +406,8 @@ public class GdcDI implements Executor {
             CommandLineParser parser = new GnuParser();
             new GdcDI(parser.parse(o, args));
         } catch (org.apache.commons.cli.ParseException e) {
-            l.error("Error parsing command line parameters",e);
+            l.error("Error parsing command line parameters: "+e.getMessage());
+            l.debug("Error parsing command line parameters",e);
         }
     }
 
@@ -405,16 +485,10 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void createProject(Command c, CliParams p, ProcessingContext ctx) {
-        try {
-            String name = c.getParamMandatory("name");
-            ctx.setProjectId(ctx.getRestApi(p).createProject(name, name));
-            String pid = ctx.getProjectId();
-            l.info("Project id = '"+pid+"' created.");
-        }
-        catch (GdcRestApiException e) {
-            l.error("Can't create project. You are most probably over the project count quota. " +
-                    "Please try deleting few projects.");            
-        }
+        String name = c.getParamMandatory("name");
+        ctx.setProjectId(ctx.getRestApi(p).createProject(name, name));
+        String pid = ctx.getProjectId();
+        l.info("Project id = '"+pid+"' created.");
     }
 
     /**
@@ -458,7 +532,8 @@ public class GdcDI implements Executor {
     				lock(c, p, ctx); // retry
     			}
     		}
-    		printErrorAndExit("A concurrent process found using the " + path + " lock file.");	
+            l.debug("A concurrent process found using the " + path + " lock file.");
+    		throw new IOException("A concurrent process found using the " + path + " lock file.");
     	}
     	lock.deleteOnExit();
     }

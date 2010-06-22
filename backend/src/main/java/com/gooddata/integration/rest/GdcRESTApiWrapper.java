@@ -118,10 +118,11 @@ public class GdcRESTApiWrapper {
                     return ssToken;
                 }
             }
-            l.debug("Error logging into GoodData.");
+            l.debug("GDCAuthSST was not found in cookies after login.");
             throw new GdcLoginException("GDCAuthSST was not found in cookies after login.");
         } catch (HttpMethodException ex) {
-            throw new GdcLoginException("Login to GDC failed: " + ex.getMessage());
+            l.debug("Error logging into GoodData.", ex);
+            throw new GdcLoginException("Login to GDC failed.", ex);
         } finally {
             loginPost.releaseConnection();
         }
@@ -162,8 +163,8 @@ public class GdcRESTApiWrapper {
         try {
             executeMethodOk(secutityTokenGet);
         } catch (HttpMethodException ex) {
-            throw new GdcLoginException("Cannot login to:" + config.getUrl() + TOKEN_URI + ". Reason: "
-                    + ex.getMessage());
+            l.debug("Cannot login to:" + config.getUrl() + TOKEN_URI + ".",ex);
+            throw new GdcLoginException("Cannot login to:" + config.getUrl() + TOKEN_URI + ".",ex);
         } finally {
             secutityTokenGet.releaseConnection();
         }
@@ -232,12 +233,14 @@ public class GdcRESTApiWrapper {
      */
     @SuppressWarnings("unchecked")
     private Iterator<JSONObject> getProjectsLinks() throws HttpMethodException {
+        l.debug("Getting project links.");
         HttpMethod req = new GetMethod(config.getUrl() + MD_URI);
         setJsonHeaders(req);
         String resp = executeMethodOk(req);
         JSONObject parsedResp = JSONObject.fromObject(resp);
         JSONObject about = parsedResp.getJSONObject("about");
         JSONArray links = about.getJSONArray("links");
+        l.debug("Got project links "+links);
         return links.iterator();
     }
 
@@ -283,7 +286,7 @@ public class GdcRESTApiWrapper {
             }
         }
         l.debug("The DLI name=" + name + " doesn't exist in the project id="+projectId);
-        throw new GdcProjectAccessException("The DLI name=" + name + " doesn't exist!");
+        throw new GdcProjectAccessException("The DLI name=" + name + " doesn't exist in the project id="+projectId);
     }
 
     /**
@@ -305,7 +308,7 @@ public class GdcRESTApiWrapper {
             }
         }
         l.debug("The DLI id=" + id+ " doesn't exist in the project id="+projectId);
-        throw new GdcProjectAccessException("The DLI id=" + id + " doesn't exist!");
+        throw new GdcProjectAccessException("The DLI id=" + id+ " doesn't exist in the project id="+projectId);
     }
 
 
@@ -330,19 +333,21 @@ public class GdcRESTApiWrapper {
         String response = executeMethodOk(interfacesGet);
         JSONObject responseObject = JSONObject.fromObject(response);
         if (responseObject == null) {
+            l.debug("The project id=" + projectId + " doesn't exist!");
             throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
         }
         JSONObject interfaceQuery = responseObject.getJSONObject("about");
         if (interfaceQuery == null) {
+            l.debug("The project id=" + projectId + " doesn't exist!");
             throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
         }
         JSONArray links = interfaceQuery.getJSONArray("links");
         if (links == null) {
+            l.debug("The project id=" + projectId + " doesn't exist!");
             throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
         }
         for (Object ol : links) {
             JSONObject link = (JSONObject) ol;
-            String descriptorUri = config.getUrl() + link.getString("link") + "/descriptor";
             DLI ii = new DLI(link);
             list.add(ii);
         }
@@ -467,7 +472,7 @@ public class GdcRESTApiWrapper {
             JSONObject responseObject = JSONObject.fromObject(response);
             uri = responseObject.getString("uri");
         } catch (HttpMethodException ex) {
-            l.error("Creating project fails: ",ex);
+            l.debug("Creating project fails: ",ex);
             throw new GdcRestApiException("Creating project fails: ",ex);
         } finally {
             createProjectPost.releaseConnection();
@@ -478,6 +483,7 @@ public class GdcRESTApiWrapper {
             l.debug("Created project id="+id);
             return id;
         }
+        l.debug("Error creating project.");
         throw new GdcRestApiException("Error creating project.");
     }
 
@@ -516,17 +522,17 @@ public class GdcRESTApiWrapper {
         String resp = executeMethodOk(req);
         JSONObject parsedResp = JSONObject.fromObject(resp);
         if(parsedResp == null) {
-            l.error("Can't get project from "+uri);
+            l.debug("Can't get project from "+uri);
             throw new GdcRestApiException("Can't get project from "+uri);
         }
         JSONObject project = parsedResp.getJSONObject("project");
         if(project == null) {
-            l.error("Can't get project from "+uri);
+            l.debug("Can't get project from "+uri);
             throw new GdcRestApiException("Can't get project from "+uri);
         }
         JSONObject links = project.getJSONObject("links");
         if(links == null) {
-            l.error("Can't get project from "+uri);
+            l.debug("Can't get project from "+uri);
             throw new GdcRestApiException("Can't get project from "+uri);
         }
         String mdUrl = links.getString("metadata");
@@ -537,6 +543,7 @@ public class GdcRESTApiWrapper {
                 return cs[cs.length -1];
             }
         }
+        l.debug("Can't get project from "+uri);
         throw new GdcRestApiException("Can't get project from "+uri); 
     }
 
@@ -563,7 +570,7 @@ public class GdcRESTApiWrapper {
             JSONArray uris = responseObject.getJSONArray("uris");
             return (String[])uris.toArray(new String[]{""});
         } catch (HttpMethodException ex) {
-            l.error("MAQL execution: ",ex);
+            l.debug("MAQL execution: ",ex);
             throw new GdcRestApiException("MAQL execution: ",ex);
         } finally {
             maqlPost.releaseConnection();
@@ -599,7 +606,7 @@ public class GdcRESTApiWrapper {
      * Executes HttpMethod and test if the response if 200(OK)
      *
      * @param method the HTTP method
-     * @param reLoginOn401 flag saying whether we should call login() and retry on {@link HttpStatus.SC_UNAUTHORIZED}
+     * @param reLoginOn401 flag saying whether we should call login() and retry on 
      * @return response body as String
      * @throws HttpMethodException
      */
@@ -625,13 +632,15 @@ public class GdcRESTApiWrapper {
                         msg += body;
                     }
                 }
+                l.debug("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
                 throw new HttpMethodException("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
             }
         } catch (HttpException e) {
-            throw new HttpMethodException("HttpException: " + e.getMessage());
+            l.debug("Error invoking GoodData REST API.",e);
+            throw new HttpMethodException("Error invoking GoodData REST API.",e);
         } catch (IOException e) {
-            l.error("Error invoking GoodData API.",e);
-            throw new HttpMethodException("IOException: " + e.getMessage());
+            l.debug("Error invoking GoodData REST API.",e);
+            throw new HttpMethodException("Error invoking GoodData REST API.",e);
         }
     }
 

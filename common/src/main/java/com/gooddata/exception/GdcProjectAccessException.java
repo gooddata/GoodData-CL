@@ -42,4 +42,8 @@ public class GdcProjectAccessException extends GdcRestApiException {
     public GdcProjectAccessException(String msg) {
         super(msg);
     }
+
+    public GdcProjectAccessException(String msg, Throwable e) {
+        super(msg, e);
+    }
 }

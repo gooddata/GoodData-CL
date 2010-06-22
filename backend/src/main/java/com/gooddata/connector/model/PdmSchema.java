@@ -23,6 +23,7 @@
 
 package com.gooddata.connector.model;
 
+import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
@@ -147,7 +148,8 @@ public class PdmSchema {
         try {
             lookup = s.getTableByName(tableName);
         } catch (ModelException e) {
-            l.error("Intenal problem: schema contains a table but it can't find it.");
+            l.debug("Intenal problem: schema contains a table but it can't find it.",e);
+            throw new InternalErrorException("Intenal problem: schema contains a table but it can't find it.",e);
         }
        	lookup.addColumn(createLookupColumn(c));
     }

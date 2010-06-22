@@ -60,7 +60,7 @@ public class JdbcUtil {
             return rc;
         }
         catch (SQLException e) {
-            l.error("Error executing SQL: statement='" + sql + "', result='" + rc + "'", e);
+            l.debug("Error executing SQL: statement='" + sql + "', result='" + rc + "'", e);
             throw e;
         }
         finally {
@@ -97,7 +97,7 @@ public class JdbcUtil {
     		rc = s.executeUpdate();
     		return rc;
     	} catch (SQLException e) {
-    		l.error("Error executing SQL: statement='" + sql + "', result='" + rc + "'", e);
+    		l.debug("Error executing SQL: statement='" + sql + "', result='" + rc + "'", e);
             throw e;
     	} finally {
     		if (s != null)
@@ -121,7 +121,7 @@ public class JdbcUtil {
             return rs;
         }
         catch (SQLException e) {
-            l.error("Error executing SQL: statement='" + sql + "'", e);
+            l.debug("Error executing SQL: statement='" + sql + "'", e);
             throw e;
         }
     }
@@ -130,7 +130,7 @@ public class JdbcUtil {
      * Execute query an passes the ResultSet to the given handler on each record
      * @param c JDBC connection
      * @param sql sql statement
-     * @param Jdbc ResultSet handler
+     * @param handler Jdbc ResultSet handler
      * @throws SQLException in case of a db issue 
      */
     public static void executeQuery(Connection c, String sql, ResultSetHandler handler) throws SQLException {

@@ -23,6 +23,7 @@
 
 package org.gooddata.processor;
 
+import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
 import org.apache.log4j.Logger;
 
@@ -79,7 +80,8 @@ public class Command {
             this.parameters.load(new StringReader(params.replace(",","\n")));
         }
         catch (IOException e) {
-            l.error("Error extracting command parameters.",e);
+            l.debug("Error extracting command parameters.",e);
+            throw new InvalidCommandException("Error extracting command parameters.",e);
         }
     }
 

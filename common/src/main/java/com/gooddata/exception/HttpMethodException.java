@@ -42,4 +42,8 @@ public class HttpMethodException extends GdcRestApiException {
     public HttpMethodException(String msg) {
         super(msg);
     }
+
+    public HttpMethodException(String msg, Throwable e) {
+        super(msg, e);
+    }
 }

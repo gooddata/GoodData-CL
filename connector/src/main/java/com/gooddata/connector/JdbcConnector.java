@@ -200,7 +200,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             FileUtil.recursiveDelete(dataFile);
         }
         catch (SQLException e) {
-            l.error("Error retrieving data from the JDBC source.", e);    
+            l.debug("Error retrieving data from the JDBC source.", e);
+            throw new IOException("Error retrieving data from the JDBC source.", e);
         }
         finally {
             try {
