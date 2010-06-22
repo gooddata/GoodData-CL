@@ -1,9 +1,9 @@
 cd snaplogic
-mvn.bat install
+call mvn install
 cd ..
-mvn.bat install
+call mvn install
 cd cli-distro
-mvn.bat assembly:assembly
+call mvn assembly:assembly
 cd ..
 cd snap-distro
-mvn.bat assembly:assembly
+call mvn assembly:assembly
