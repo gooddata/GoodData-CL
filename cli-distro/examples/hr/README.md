@@ -1,3 +1,5 @@
+# Loading CSV data sets into GoodData
+
 The HR example demonstrates how to use the basic CSV connector to quickly load various CSV files into GoodData and join them together.
 
 1, Run `gdi.sh` script with the `1-department.txt` file to create a new GoodData project and the 'Department' dataset containing fields as described in the `department.xml` file. This dataset will be populated with records from the `department.csv` CSV file:
