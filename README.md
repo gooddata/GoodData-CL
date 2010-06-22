@@ -4,9 +4,9 @@ work on top of the GoodData REST APIs.
 
 # Binary installation
 
-See separate [Windows](#win) and [Unix](#unix) instructions.
+See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 
-<a name="unix">
+<a name="iunix">
 ## UNIX/Mac installation
 </a>
 
@@ -21,7 +21,7 @@ See separate [Windows](#win) and [Unix](#unix) instructions.
          -u,--username <arg>   GoodData username
         [...]
 
-<a name="win">
+<a name="iwin">
 ## Windows installation
 </a>
 
@@ -39,9 +39,9 @@ See separate [Windows](#win) and [Unix](#unix) instructions.
 
 # Building from sources
 
-See separate [Windows](#win) and [Unix](#unix) instructions.
+See separate [Windows](#swin) and [Unix](#sunix) instructions.
 
-<a name="unix">
+<a name="sunix">
 ## UNIX/Mac installation
 </a>
 
@@ -65,9 +65,9 @@ See separate [Windows](#win) and [Unix](#unix) instructions.
 
 4. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
-    gooddata-di-cli-1.0-SNAPSHOT-final.tar.bz2
-    gooddata-di-cli-1.0-SNAPSHOT-final.tar.gz
-    gooddata-di-cli-1.0-SNAPSHOT-final.zip
+    - gooddata-di-cli-1.0-SNAPSHOT-final.tar.bz2
+    - gooddata-di-cli-1.0-SNAPSHOT-final.tar.gz
+    - gooddata-di-cli-1.0-SNAPSHOT-final.zip
 
 
 
@@ -81,7 +81,7 @@ See separate [Windows](#win) and [Unix](#unix) instructions.
          -u,--username <arg>   GoodData username
         [...]
 
-<a name="win">
+<a name="swin">
 ## Windows installation
 </a>
 
@@ -106,9 +106,9 @@ See separate [Windows](#win) and [Unix](#unix) instructions.
 
 4. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
-    gooddata-di-cli-1.0-SNAPSHOT-final.tar.bz2
-    gooddata-di-cli-1.0-SNAPSHOT-final.tar.gz
-    gooddata-di-cli-1.0-SNAPSHOT-final.zip
+    - gooddata-di-cli-1.0-SNAPSHOT-final.tar.bz2
+    - gooddata-di-cli-1.0-SNAPSHOT-final.tar.gz
+    - gooddata-di-cli-1.0-SNAPSHOT-final.zip
 
 5. run the gdi.bat without arguments to get help from the unpacked distribution:
 
