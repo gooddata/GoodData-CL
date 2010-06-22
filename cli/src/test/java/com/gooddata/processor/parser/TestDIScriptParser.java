@@ -20,7 +20,7 @@ public class TestDIScriptParser extends TestCase {
 
     public void testParseCmd() throws Exception {
         try {
-            Reader r = new FileReader("../distro/examples/ga/ga.cmd");
+            Reader r = new FileReader("../cli-distro/examples/ga/ga.txt");
             DIScriptParser parser = new DIScriptParser(r);
             List<Command> commands = parser.parse();
             assertEquals(commands.size(),8);

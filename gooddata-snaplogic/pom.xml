@@ -29,10 +29,12 @@
         <dependency>
             <groupId>org.snaplogic</groupId>
             <artifactId>javacc</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.snaplogic</groupId>
             <artifactId>snapi</artifactId>
+            <optional>true</optional>
         </dependency>
         <!-- 3rd party dependencies -->
     </dependencies>

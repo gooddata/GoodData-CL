@@ -1,4 +1,5 @@
-This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities that work on top of the GoodData REST APIs.
+This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities that
+work on top of the GoodData REST APIs.
 
 # Installation
 
@@ -26,7 +27,16 @@ See separate [Windows](#win) and [Unix](#unix) instructions.
         [INFO] Final Memory: 31M/81M
         [INFO] ------------------------------------------------------------------------
 
-4. run without arguments to get help:
+4. Unpack one of the distributions that have been built in the cli-distro/target subdirectory:
+
+    gooddata-di-cli-1.0-SNAPSHOT-final.tar.bz2
+    gooddata-di-cli-1.0-SNAPSHOT-final.tar.gz
+    gooddata-di-cli-1.0-SNAPSHOT-final.zip
+
+
+
+
+5. Run the gdi.sh without arguments to get help from the unpacked distribution:
 
         $ ./bin/gdi.sh
         usage: GdcDI
