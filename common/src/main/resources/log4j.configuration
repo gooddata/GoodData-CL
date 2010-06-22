@@ -2,6 +2,10 @@ log4j.rootLogger=info, stdout
 log4j.logger.com.gooddata.util.JdbcUtil=debug, S
 log4j.logger.org.apache.commons.httpclient=debug,H
 
+# Prevent Axis to issue harmless complains about missing javax.activation.DataHandler
+# and javax.mail.internet.MimeMultipart. Attachment support is not required.
+log4j.logger.org.apache.axis.utils.JavaUtils=error, H
+
 log4j.additivity.com.gooddata.util.JdbcUtil=false
 log4j.additivity.org.apache.commons.httpclient=false
 
