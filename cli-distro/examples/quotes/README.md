@@ -4,6 +4,13 @@ This basic example loads a data file containing stock quotes data.
 
 Run `gdi.sh` with the `quotes.txt` script. The script uses the `quotes.config.xml` configuration.
 
+_Windows:_
+
+        c:> bin\gdi.sh -u <username> -p <password> examples\quotes\quotes.txt
+        Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
+
+_Unix like OS (Linux, Mac OS X and others):_
+
         $ ./bin/gdi.sh -u <username> -p <password> examples/quotes/quotes.txt
         Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
 
