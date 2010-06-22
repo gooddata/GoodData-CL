@@ -113,7 +113,7 @@ public class GdcDI implements Executor {
             String scripts = cliParams.get(CLI_PARAM_SCRIPT);
             
             if(execute!= null && scripts != null && execute.length()>0 && scripts.length()>0) {
-                l.error("You can't execute a script and use the -e command line parameter at the same time.");
+                throw new InvalidArgumentException("You can't execute a script and use the -e command line parameter at the same time.");
             }
             if(execute!= null && execute.length() > 0) {
                 l.debug("Executing arg="+execute);
@@ -130,6 +130,13 @@ public class GdcDI implements Executor {
         catch (InvalidArgumentException e) {
             l.error(e.getMessage());
             l.info(commandsHelp());
+        }
+        catch (GdcLoginException e) {
+            l.error("Error logging to GoodData. Please check your GoodData username and password.");
+            l.info(commandsHelp());
+        }
+        catch (InvalidCommandException e) {
+            l.error(e.getMessage());
         }
         catch (IOException e) {
             l.error(e.getMessage());
@@ -164,7 +171,6 @@ public class GdcDI implements Executor {
             if (ln.hasOption(name))
                 cp.put(name,ln.getOptionValue(name));
             else {
-                l.error("Missing the '"+name+"' commandline parameter.");
                 throw new InvalidArgumentException("Missing the '"+name+"' commandline parameter.");
             }
 
@@ -197,8 +203,6 @@ public class GdcDI implements Executor {
                 cp.put(CLI_PARAM_FTP_HOST[0],ftpHost);
             }
             else {
-                l.error("Invalid format of the GoodData REST API host: " +
-                        cp.get(CLI_PARAM_HOST[0]));
                 throw new IllegalArgumentException("Invalid format of the GoodData REST API host: " +
                         cp.get(CLI_PARAM_HOST[0]));
             }
@@ -214,7 +218,6 @@ public class GdcDI implements Executor {
         else {
             String proto = ln.getOptionValue(CLI_PARAM_PROTO[0]).toLowerCase();
             if(!"http".equalsIgnoreCase(proto) && !"https".equalsIgnoreCase(proto)) {
-                l.error("Invalid '"+CLI_PARAM_PROTO[0]+"' parameter. Use HTTP or HTTPS.");
                 throw new InvalidArgumentException("Invalid '"+CLI_PARAM_PROTO[0]+"' parameter. Use HTTP or HTTPS.");
             }
             cp.put(CLI_PARAM_PROTO[0], proto);
@@ -236,7 +239,6 @@ public class GdcDI implements Executor {
         l.debug("Using backend "+cp.get(CLI_PARAM_BACKEND[0]));
 
         if (ln.getArgs().length == 0 && !ln.hasOption("execute")) {
-            l.error("No command has been given, quitting.");
             throw new InvalidArgumentException("No command has been given, quitting.");
         }
 
@@ -350,10 +352,8 @@ public class GdcDI implements Executor {
             }
         }
         catch(ParseException e) {
-            l.error("Can't parse command '" + cmd + "'");
             throw new InvalidCommandException("Can't parse command '" + cmd + "'");
         }
-        l.error("Can't parse command (empty command).");
         throw new InvalidCommandException("Can't parse command (empty command).");
     }
 

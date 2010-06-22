@@ -121,7 +121,6 @@ public class GdcRESTApiWrapper {
             l.debug("Error logging into GoodData.");
             throw new GdcLoginException("GDCAuthSST was not found in cookies after login.");
         } catch (HttpMethodException ex) {
-            l.error("Error logging to GoodData.",ex);
             throw new GdcLoginException("Login to GDC failed: " + ex.getMessage());
         } finally {
             loginPost.releaseConnection();
