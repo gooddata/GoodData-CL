@@ -18,7 +18,8 @@ This particular example is built using the embedded [Derby](http://db.apache.org
 
 When building an integration scenario connecting to your own database you can start with modifying this example.
 
- In such case, the first steps you need to perform are as follows:
- - grab the appropriate JDBC driver (ask you database administrator if unsure)
- - place it to the `lib/` folder of the installation directory
- - modify the `driver` and `url` parameters of the `LoadJdbc` command appropriately 
+In such case, the first steps you need to perform are as follows:
+
+- grab the appropriate JDBC driver (ask you database administrator if unsure)
+- place it to the `lib/` folder of the installation directory
+- modify the `driver` and `url` parameters of the `LoadJdbc` command appropriately 
