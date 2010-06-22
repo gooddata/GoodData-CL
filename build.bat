@@ -1,0 +1,9 @@
+cd snaplogic
+mvn.bat install
+cd ..
+mvn.bat install
+cd cli-distro
+mvn.bat assembly:assembly
+cd ..
+cd snap-distro
+mvn.bat assembly:assembly
