@@ -10,7 +10,7 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 ## UNIX/Mac installation
 </a>
 
-1. [download](http://github.com/gooddata/Java-DI-Tool/archives/master) and unpack the binary distribution:
+1. [download](http://github.com/gooddata/Java-DI-Tool/downloads) and unpack the binary distribution:
 
 2. run the gdi.sh without arguments to get help from the unpacked distribution:
 
@@ -25,9 +25,9 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 ## Windows installation
 </a>
 
-1. [download](http://github.com/gooddata/Java-DI-Tool/archives/master) and unpack the binary distribution:
+1. [download](http://github.com/gooddata/Java-DI-Tool/downloads) and unpack the binary distribution:
 
-5. run the gdi.bat without arguments to get help from the unpacked distribution:
+2. run the gdi.bat without arguments to get help from the unpacked distribution:
 
         bin\gdi.bat
         usage: GdcDI
