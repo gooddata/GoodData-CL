@@ -23,32 +23,52 @@
 
 package com.gooddata.connector;
 
-import au.com.bytecode.opencsv.CSVWriter;
-import com.gooddata.exception.*;
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.exception.SfdcException;
-import org.gooddata.processor.CliParams;
-import org.gooddata.processor.Command;
-import org.gooddata.processor.ProcessingContext;
-import com.gooddata.util.FileUtil;
-import com.gooddata.util.StringUtil;
-import com.sforce.soap.partner.*;
-import com.sforce.soap.partner.fault.*;
-import com.sforce.soap.partner.sobject.SObject;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.rpc.ServiceException;
+
 import org.apache.axis.message.MessageElement;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
 import org.gooddata.connector.backend.ConnectorBackend;
+import org.gooddata.processor.CliParams;
+import org.gooddata.processor.Command;
 import org.gooddata.processor.ProcessingContext;
 
-import javax.xml.rpc.ServiceException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.*;
+import au.com.bytecode.opencsv.CSVWriter;
+
+import com.gooddata.exception.InvalidArgumentException;
+import com.gooddata.exception.ProcessingException;
+import com.gooddata.exception.SfdcException;
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.util.FileUtil;
+import com.gooddata.util.StringUtil;
+import com.sforce.soap.partner.DescribeSObjectResult;
+import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.FieldType;
+import com.sforce.soap.partner.LoginResult;
+import com.sforce.soap.partner.QueryOptions;
+import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.SessionHeader;
+import com.sforce.soap.partner.SforceServiceLocator;
+import com.sforce.soap.partner.SoapBindingStub;
+import com.sforce.soap.partner.fault.ApiQueryFault;
+import com.sforce.soap.partner.fault.ExceptionCode;
+import com.sforce.soap.partner.fault.InvalidIdFault;
+import com.sforce.soap.partner.fault.InvalidQueryLocatorFault;
+import com.sforce.soap.partner.fault.LoginFault;
+import com.sforce.soap.partner.fault.UnexpectedErrorFault;
+import com.sforce.soap.partner.sobject.SObject;
 
 /**
  * GoodData SFDC Connector
@@ -63,6 +83,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     private String sfdcUsername;
     private String sfdcPassword;
     private String sfdcQuery;
+    private String sfdcToken;
 
     /**
      * Creates a new SFDC connector
@@ -201,12 +222,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * Saves a template of the config file
      * @throws IOException if there is a problem with writing the config file
      */
-    public static void saveConfigTemplate(String name, String configFileName, String sfdcUsr, String sfdcPsw,
+    public static void saveConfigTemplate(String name, String configFileName, String sfdcUsr, String sfdcPsw, String sfdcToken,
                                   String query)
             throws IOException {
         l.debug("Saving SFDC config template.");
         SourceSchema s = SourceSchema.createSchema(name);
-        SoapBindingStub c = connect(sfdcUsr, sfdcPsw);
+        SoapBindingStub c = connect(sfdcUsr, sfdcPsw, sfdcToken);
         SObject result = executeQueryFirstRow(c, query);
         if(result != null) {
             Map<String,Field> fields = describeObject(c, result.getType());
@@ -266,10 +287,9 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      */
     public void extract() throws IOException {
         l.debug("Extracting SFDC data.");
-        SoapBindingStub con = null;
         File dataFile = FileUtil.getTempFile();
         CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
-        SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword());
+        SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
         List<SObject> result = null;
         try {
             result = executeQuery(c, getSfdcQuery());
@@ -314,9 +334,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @return SFDC stub
      * @throws ServiceException in case of connection issues
      */
-    private static SoapBindingStub connect(String usr, String psw) throws SfdcException {
+    private static SoapBindingStub connect(String usr, String psw, String token) throws SfdcException {
         SoapBindingStub binding = null;
         LoginResult loginResult = null;
+        if (token != null) {
+        	psw += token;
+        }
         try {
             binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
             l.debug("Connecting to SFDC.");
@@ -415,15 +438,6 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Connects to the SFDC
-     * @return SFDC  stub
-     * @throws ServiceException in case of connection issues
-     */
-    public SoapBindingStub connect() throws SfdcException {
-        return connect(getSfdcUsername(), getSfdcPassword());
-    }
-
-    /**
      * SFDC username getter
      * @return SFDC username
      */
@@ -470,6 +484,21 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     public void setSfdcQuery(String sfdcQuery) {
         this.sfdcQuery = sfdcQuery;
     }
+    
+    /**
+     * SFDC security token getter
+     * @return SFDC security token
+     */
+	public String getSfdcToken() {
+		return sfdcToken;
+	}
+
+    /**
+     * SFDC security token setter
+     */
+	public void setSfdcToken(String sfdcToken) {
+		this.sfdcToken = sfdcToken;
+	}
 
     /**
      * {@inheritDoc}
@@ -507,10 +536,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         String usr = c.getParamMandatory( "username");
         String psw = c.getParamMandatory( "password");
         String q = c.getParamMandatory("query");
+        String t = c.getParam("token");
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         setSfdcUsername(usr);
         setSfdcPassword(psw);
+    	setSfdcToken(t);
         setSfdcQuery(q);
         // sets the current connector
         ctx.setConnector(this);
@@ -529,10 +560,9 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         String name = c.getParamMandatory("name");
         String usr = c.getParamMandatory( "username");
         String psw = c.getParamMandatory( "password");
+        String token = c.getParam("token");
         String query = c.getParamMandatory("query");
-        File cf = new File(configFile);
-
-        SfdcConnector.saveConfigTemplate(name, configFile, usr, psw, query);
+        
+        SfdcConnector.saveConfigTemplate(name, configFile, usr, psw, token, query);
     }
-
 }

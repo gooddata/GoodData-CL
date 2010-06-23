@@ -123,18 +123,21 @@ JDBC Connector Commands:
 SalesForce Connector Commands:
 ------------------------------
 
- GenerateSfdcConfig(name=<name>, configFile=<config>, query=<soql-query>, username=<sfdc-username>, password=<sfdc-password>)  - generate an XML config file based on the fields from your SFDC query.
+ GenerateSfdcConfig(name=<name>, configFile=<config>, query=<soql-query>, username=<sfdc-username>, password=<sfdc-password>, token=<sfdc-security-token>)  - generate an XML config file based on the fields from your SFDC query.
   name - the new dataset name
   configFile  - path to configuration file (will be overwritten)
   query - SOQL query (e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
   username - SFDC username
-  password - SFDC password (you might need to append the security token to the password)
+  password - SFDC password
+  token - SFDC security token (you may append the security token to the password instead using this parameter)
   
- LoadSfdc(configFile=<config>, driver=<jdbc-driver>, url=<jdbc-url>, query=<sql-query> [, username=<jdbc-username>] [, password=<jdbc-password>])  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
+ LoadSfdc(configFile=<config>, query=<soql-query>, username=<sfdc-username>, password=<sfdc-password>, token=<sfdc-security-token>)  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
   configFile  - path to configuration file (will be overwritten)
   query - SOQL query (e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
   username - SFDC username
-  password - SFDC password (you might need to append the security token to the password)
+  password - SFDC password
+  token - SFDC security token (you may append the security token to the password instead using this parameter)
+  
 
 Time Dimension Connector:
 -------------------------

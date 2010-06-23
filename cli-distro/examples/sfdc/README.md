@@ -18,3 +18,4 @@ _Unix like OS (Linux, Mac OS X and others):_
         Data successfully loaded.
         Data successfully loaded.
 
+Note: this example fetches sample data from GoodData's demo account at SalesForce. 
