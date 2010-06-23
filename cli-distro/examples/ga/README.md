@@ -2,7 +2,7 @@
 
 This example demonstrates the built-in Google Analytics data connector that allows you to quickly load your Google Analytics data into GoodData.
 
-Run `gdi.sh` with the `ga.txt` script. The script uses the `ga.config.xml` config to describe incoming data. Review the [XML file](ga.config.xml) and the [documentation](http://github.com/gooddata/Java-DI-Tool/blob/master/doc/DOCUMENTATION.md#config) if you have a customized Google Analytics account.
+Run `gdi.sh` with the `ga.txt` script. The script uses the `ga.config.xml` config to describe incoming data. Review the [XML file](ga.config.xml) and the [documentation](http://github.com/gooddata/GoodData-DI/blob/master/cli-distro/doc/DOCUMENTATION.md#config) if you have a customized Google Analytics account.
 
 _Windows:_
 
