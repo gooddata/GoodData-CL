@@ -4,7 +4,7 @@
 
 ## About this example
 
-The SFDC example shows how to create a GoodData project that models basic SFDC entities and populate it directly from your SFDC.
+The SFDC example shows how to create a GoodData project that models basic SFDC modules and populate it directly from your SFDC.
 
 _Windows:_
 
