@@ -20,8 +20,13 @@ When building an integration scenario connecting to your own database you can st
 
 In such case, the first steps you need to perform are as follows:
 
-    - grab the appropriate JDBC driver (can be downloaded from your database vendor's website, ask you database administrator if unsure)
+    - grab the appropriate **JDBC 4** driver (can be downloaded from your database vendor's website, ask you database administrator if unsure)
     - place it to the `lib/` folder of the installation directory
     - modify the `driver` and `url` parameters of the `LoadJdbc` command appropriately. If unsure about the `url` syntax please consult the documentation of your JDBC driver or your database administrator.
 
-For your convenience, this distribution has already bundled a couple of freely redistributable JDBC drivers in the `lib/` folder.
+For your convenience, this distribution has already bundled a couple of freely redistributable JDBC 4 drivers in the `lib/` folder as follows:
+
+    - MySQL
+    - PostgreSQL
+    - Apache Derby
+    
