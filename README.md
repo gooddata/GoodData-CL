@@ -1,8 +1,9 @@
 This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities that
-work on top of the GoodData REST APIs.
+work on top of the GoodData REST APIs. You can either follow instructions for [binary installation](#binary) or you can [compile](#source) from source code. Unless you wish to participate in development of the tool, you should choose the easier [binary](#binary) install.
 
-
+<a name="binary">
 # Binary installation
+</a>
 
 See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 
@@ -42,8 +43,9 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
          -u,--username <arg>   GoodData username
         [...]
 
-
+<a name="source">
 # Building from sources
+</a>
 
 See separate [Windows](#swin) and [Unix](#sunix) instructions.
 
