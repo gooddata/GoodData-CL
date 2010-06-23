@@ -1,47 +1,8 @@
 This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities that
-work on top of the GoodData REST APIs. You can either follow instructions for [binary installation](#binary) or you can [compile](#source) from source code. Unless you wish to participate in development of the tool, you should choose the easier [binary](#binary) install.
+work on top of the GoodData REST APIs.
 
-<a name="binary">
-# Binary installation
-</a>
-
-See separate [Windows](#iwin) and [Unix](#iunix) instructions.
-
-<a name="iunix">
-## UNIX/Mac installation
-</a>
-
-1. [download](http://github.com/gooddata/GoodData-DI/downloads) and unpack the binary distribution:
-
-2. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
-   Please note that only the Java version 1.6 is currently supported.
-
-3. run the gdi.sh without arguments to get help from the unpacked distribution:
-
-        $ ./bin/gdi.sh
-        usage: GdcDI
-         -h,--host <arg>       GoodData host
-         -p,--password <arg>   GoodData password
-         -u,--username <arg>   GoodData username
-        [...]
-
-<a name="iwin">
-## Windows installation
-</a>
-
-1. [download](http://github.com/gooddata/GoodData-DI/downloads) and unpack the binary distribution:
-
-2. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
-   Please note that only the Java version 1.6 is currently supported.
-
-3. run the gdi.bat without arguments to get help from the unpacked distribution:
-
-        bin\gdi.bat
-        usage: GdcDI
-         -h,--host <arg>       GoodData host
-         -p,--password <arg>   GoodData password
-         -u,--username <arg>   GoodData username
-        [...]
+Unless you wish to participate in development of the tool, you should choose the easier [binary](cli-distro/README.md)
+install.
 
 <a name="source">
 # Building from sources
@@ -83,9 +44,6 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
     - gooddata-di-cli-1.0-SNAPSHOT-final.tar.bz2
     - gooddata-di-cli-1.0-SNAPSHOT-final.tar.gz
     - gooddata-di-cli-1.0-SNAPSHOT-final.zip
-
-
-
 
 7. run the gdi.sh without arguments to get help from the unpacked distribution:
 
