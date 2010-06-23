@@ -18,5 +18,5 @@ The examples are as follows:
 1. External data connectors:
 
     - [Google Analytics](ga/) - loads your Google Analytics data to GoodData. You need a valid Google Analytics account. Note Google Analytics does not work with Google Apps accounts
-    - [SalesForce](sfdc/) - loads some fields of Opportunity and Account from your SalesForce into GoodData
+    - [SalesForce](sfdc/) - loads some fields of Opportunity and Account from your SalesForce into GoodData (**Warning:** depends on a not yet release version of GoodData!)
 
