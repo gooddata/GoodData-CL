@@ -10,7 +10,7 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 ## UNIX/Mac installation
 </a>
 
-1. [download](http://github.com/gooddata/Java-DI-Tool/downloads) and unpack the binary distribution:
+1. [download](http://github.com/gooddata/GoodData-DI/downloads) and unpack the binary distribution:
 
 2. run the gdi.sh without arguments to get help from the unpacked distribution:
 
@@ -25,7 +25,7 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 ## Windows installation
 </a>
 
-1. [download](http://github.com/gooddata/Java-DI-Tool/downloads) and unpack the binary distribution:
+1. [download](http://github.com/gooddata/GoodData-DI/downloads) and unpack the binary distribution:
 
 2. run the gdi.bat without arguments to get help from the unpacked distribution:
 
@@ -45,7 +45,7 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
 ## UNIX/Mac installation
 </a>
 
-1. [download](http://github.com/gooddata/Java-DI-Tool/archives/master) the code and unpack *(or git clone this repository)*:
+1. [download](http://github.com/gooddata/GoodData-DI/archives/master) the code and unpack *(or git clone this repository)*:
 
 2. make sure you have [Apache Maven](http://maven.apache.org/) installed:
 
@@ -85,7 +85,7 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
 ## Windows installation
 </a>
 
-1. [download](http://github.com/gooddata/Java-DI-Tool/archives/master) the code and unzip
+1. [download](http://github.com/gooddata/GoodData-DI/archives/master) the code and unzip
 
 2. make sure you have [Apache Maven](http://maven.apache.org/) installed:
 

@@ -21,7 +21,7 @@
   ~ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<!-- See documentation at http://github.com/gooddata/Java-DI-Tool/blob/master/doc/DOCUMENTATION.md#config -->
+<!-- See documentation at http://github.com/gooddata/GoodData-DI/blob/master/cli-distro/doc/DOCUMENTATION.md#config -->
 <schema>
   <name>Employee</name>
   <columns>

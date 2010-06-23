@@ -312,9 +312,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:gooddata/Java-DI-Tool.git</connection>
-        <url>scm:git:git@github.com:gooddata/Java-DI-Tool.git</url>
-        <developerConnection>scm:git:git@github.com:gooddata/Java-DI-Tool.git</developerConnection>
+        <connection>scm:git:git@github.com:gooddata/GoodData-DI.git</connection>
+        <url>scm:git:git@github.com:gooddata/GoodData-DI.git</url>
+        <developerConnection>scm:git:git@github.com:gooddata/GoodData-DI.git</developerConnection>
     </scm>
 
 </project>
