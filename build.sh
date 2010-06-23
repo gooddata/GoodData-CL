@@ -1,11 +1,11 @@
 #! /bin/bash
 
 cd snaplogic
-mvn install
+$M2_HOME/bin/mvn install
 cd ..
-mvn install
+$M2_HOME/bin/mvn install
 cd cli-distro
-mvn assembly:assembly
+$M2_HOME/bin/mvn assembly:assembly
 cd ..
 cd snap-distro
-mvn assembly:assembly
+$M2_HOME/bin/mvn assembly:assembly
