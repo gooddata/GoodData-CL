@@ -32,6 +32,7 @@ import com.gooddata.modeling.model.SourceSchema;
 import org.gooddata.processor.CliParams;
 import org.gooddata.processor.Command;
 import com.gooddata.util.FileUtil;
+import com.google.gdata.client.ClientLoginAccountType;
 import com.google.gdata.client.analytics.AnalyticsService;
 import com.google.gdata.data.analytics.DataFeed;
 import com.google.gdata.util.AuthenticationException;
@@ -151,7 +152,7 @@ public class GaConnector extends AbstractConnector implements Connector {
         Connection con = null;
         try {
             AnalyticsService as = new AnalyticsService(APP_NAME);
-		    as.setUserCredentials(getGoogleAnalyticsUsername(), getGoogleAnalyticsPassword());
+		    as.setUserCredentials(getGoogleAnalyticsUsername(), getGoogleAnalyticsPassword(), ClientLoginAccountType.GOOGLE);
             File dataFile = FileUtil.getTempFile();
             GaQuery gaq = getGoogleAnalyticsQuery();
             gaq.setMaxResults(5000);
