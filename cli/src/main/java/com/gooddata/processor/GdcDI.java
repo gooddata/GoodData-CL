@@ -394,12 +394,23 @@ public class GdcDI implements Executor {
     }
     
 
+    private static boolean checkJavaVersion() {
+        String version = System.getProperty("java.version");
+        if(version.startsWith("1.6"))
+            return true;
+        l.error("You're running Java "+version+". Please use Java 6 (1.6) for running this tool. " +
+                "Please refer to http://java.sun.com/javase/downloads/index.jsp for the Java 6 installation.");
+        throw new InternalErrorException("You're running Java "+version+". Please use Java 6 (1.6) for running this tool. " +
+                "Please refer to http://java.sun.com/javase/downloads/index.jsp for the Java 6 installation.");
+    }
+
     /**
      * The main CLI processor
      * @param args command line argument
      */
     public static void main(String[] args) {
 
+        checkJavaVersion();
         PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
         try {
             Options o = getOptions();
