@@ -23,12 +23,8 @@ if [ ! -x "$M2CMD" ] ; then
 fi
 
 
-cd snaplogic
-"$M2CMD" install
-cd ..
 "$M2CMD" install
 cd cli-distro
 "$M2CMD" assembly:assembly
-cd ..
-cd snap-distro
+cd ../snap-distro
 "$M2CMD" assembly:assembly

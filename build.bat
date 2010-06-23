@@ -22,14 +22,10 @@ echo.
 goto error
 
 :execute
-cd snaplogic
-call %M2_HOME%\bin\mvn.bat install
-cd ..
 call %M2_HOME%\bin\mvn.bat install
 cd cli-distro
 call %M2_HOME%\bin\mvn.bat assembly:assembly
-cd ..
-cd snap-distro
+cd ..\snap-distro
 call %M2_HOME%\bin\mvn.bat assembly:assembly
 goto end
 

@@ -27,7 +27,7 @@
 
 	<parent>
 		<groupId>org.gooddata.di</groupId>
-		<artifactId>JavaDI</artifactId>    
+		<artifactId>GoodData-DI</artifactId>    
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
