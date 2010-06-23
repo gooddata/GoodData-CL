@@ -23,6 +23,8 @@ snaplogic/snaplogic.iml
 
 cli-distro/target/
 cli-distro/cli-distro.iml
+cli-distro/gooddata-di-cli.iml
 
 snap-distro/target/
 snap-distro/snap-distro.iml
+snap-distro/gooddata-snap.iml
