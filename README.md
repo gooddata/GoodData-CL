@@ -52,7 +52,14 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
         $ which mvn
         /usr/bin/mvn
 
-3. build the toolkit:
+3. create the M2_HOME environment variable that points to the Maven root directory
+
+        $ export M2_HOME=path-to-your-maven-installation-dir
+
+4. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
+   Please note that only the Java version 1.6 is currently supported.
+
+5. build the toolkit:
 
         $ ./build.sh
         [...]
@@ -63,7 +70,7 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
         [INFO] Final Memory: 31M/81M
         [INFO] ------------------------------------------------------------------------
 
-4. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
+6. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
     - gooddata-di-cli-1.0-SNAPSHOT-final.tar.bz2
     - gooddata-di-cli-1.0-SNAPSHOT-final.tar.gz
@@ -72,7 +79,7 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
 
 
 
-5. run the gdi.sh without arguments to get help from the unpacked distribution:
+7. run the gdi.sh without arguments to get help from the unpacked distribution:
 
         $ ./bin/gdi.sh
         usage: GdcDI
@@ -93,7 +100,14 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
         Apache Maven 2.2.1 (r801777; 2009-08-06 21:16:01 +0200)
         [...]
 
-3. build the toolkit:
+3. create the M2_HOME environment variable that points to the Maven root directory
+
+        C:\> SET M2_HOME=path-to-your-maven-installation-dir
+
+4. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
+   Please note that only the Java version 1.6 is currently supported.
+
+5. build the toolkit:
 
         C:\>build.bat
         [...]
@@ -104,13 +118,13 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
         [INFO] Final Memory: 31M/81M
         [INFO] ------------------------------------------------------------------------
 
-4. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
+6. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
     - gooddata-di-cli-1.0-SNAPSHOT-final.tar.bz2
     - gooddata-di-cli-1.0-SNAPSHOT-final.tar.gz
     - gooddata-di-cli-1.0-SNAPSHOT-final.zip
 
-5. run the gdi.bat without arguments to get help from the unpacked distribution:
+7. run the gdi.bat without arguments to get help from the unpacked distribution:
 
         bin\gdi.bat
         usage: GdcDI
