@@ -20,6 +20,9 @@ Project Management Commands:
   project-name - name of the new project
   description  - (optional) project description
 
+ DropProject(id=<project-id>) - drop the project on the <hostname> server
+  project-id - project id
+
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
   identifier - id of an existing project (takes the form of an MD5 hash)
 

@@ -462,6 +462,9 @@ public class GdcDI implements Executor {
             if(c.match("CreateProject")) {
                 createProject(c, cli, ctx);
             }
+            if(c.match("DropProject")) {
+                dropProject(c, cli, ctx);
+            }
             else if(c.match("OpenProject")) {
                 ctx.setProjectId(c.getParamMandatory("id"));
                 l.debug("Opened project id="+ctx.getProjectId());
@@ -500,6 +503,18 @@ public class GdcDI implements Executor {
         ctx.setProjectId(ctx.getRestApi(p).createProject(name, name));
         String pid = ctx.getProjectId();
         l.info("Project id = '"+pid+"' created.");
+    }
+
+    /**
+     * Drop project command processor
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void dropProject(Command c, CliParams p, ProcessingContext ctx) {
+        String id = c.getParamMandatory("id");
+        ctx.getRestApi(p).dropProject(id);
+        l.info("Project id = '"+id+"' dropped.");
     }
 
     /**

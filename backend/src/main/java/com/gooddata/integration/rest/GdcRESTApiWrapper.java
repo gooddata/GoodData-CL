@@ -38,6 +38,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -80,6 +81,7 @@ public class GdcRESTApiWrapper {
     protected HttpClient client;
     protected NamePasswordConfiguration config;
     private String ssToken;
+    private JSONObject profile;
 
     /**
      * Constructs the GoodData REST API Java wrapper
@@ -108,13 +110,26 @@ public class GdcRESTApiWrapper {
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(loginStructure.toString().getBytes()));
         loginPost.setRequestEntity(request);
         try {
-            executeMethodOk(loginPost, false); // do not re-login on SC_UNAUTHORIZED
+            String resp = executeMethodOk(loginPost, false); // do not re-login on SC_UNAUTHORIZED
             // read SST from cookie
             for (Cookie cookie : client.getState().getCookies()) {
                 if ("GDCAuthSST".equals(cookie.getName())) {
                     ssToken = cookie.getValue();
                     setTokenCookie();
                     l.debug("Succesfully logged into GoodData.");
+                    JSONObject rsp = JSONObject.fromObject(resp);
+                    JSONObject userLogin =  rsp.getJSONObject("userLogin");
+                    String profileUri = userLogin.getString("profile");
+                    if(profileUri != null && profileUri.length()>0) {
+                        GetMethod gm = new GetMethod(config.getUrl() + profileUri);
+                        setJsonHeaders(gm);
+                        resp = executeMethodOk(gm);
+                        this.profile = JSONObject.fromObject(resp);
+                    }
+                    else {
+                        l.debug("Empty account profile.");
+                        throw new GdcRestApiException("Empty account profile.");
+                    }
                     return ssToken;
                 }
             }
@@ -451,7 +466,7 @@ public class GdcRESTApiWrapper {
     
 
     /**
-     * Kicks the GDC platform to inform it that the FTP transfer is finished.
+     * Create a new GoodData project
      *
      * @param name project name
      * @param desc project description
@@ -485,6 +500,27 @@ public class GdcRESTApiWrapper {
         }
         l.debug("Error creating project.");
         throw new GdcRestApiException("Error creating project.");
+    }
+
+    /**
+     * Drops a GoodData project
+     *
+     * @param projectId project id
+     * @throws GdcRestApiException
+     */
+    public void dropProject(String projectId) throws GdcRestApiException {
+        l.debug("Dropping project id="+projectId);
+        DeleteMethod dropProjectDelete = new DeleteMethod(config.getUrl() + getProjectDeleteUri(projectId));
+        setJsonHeaders(dropProjectDelete);
+        try {
+            executeMethodOk(dropProjectDelete);
+        } catch (HttpMethodException ex) {
+            l.debug("Dropping project id="+projectId + " failed.",ex);
+            throw new GdcRestApiException("Dropping project id="+projectId + " failed.",ex);
+        } finally {
+            dropProjectDelete.releaseConnection();
+        }
+        l.debug("Dropped project id="+projectId);
     }
 
     /**
@@ -684,6 +720,107 @@ public class GdcRESTApiWrapper {
      */
     protected String getProjectMdUrl(String projectId) {
         return config.getUrl() + MD_URI + projectId;
+    }
+
+    /**
+     * Gets the project ID from the project URI
+     * @param projectUri project URI
+     * @return the project id
+     */
+    public String getProjectIdFromUri(String projectUri) {
+        String[] cmpnts = projectUri.split("/");
+        if(cmpnts != null && cmpnts.length > 0) {
+            String id = cmpnts[cmpnts.length-1];
+            return id;
+        }
+        else
+            throw new GdcRestApiException("Invalid project uri structure uri="+projectUri);
+    }
+
+    /**
+     * Gets the project delete URI from the project id
+     * @param projectId project ID
+     * @return the project delete URI
+     */
+    protected String getProjectDeleteUri(String projectId) {
+        if(profile != null) {
+            JSONObject as = profile.getJSONObject("accountSetting");
+            if(as!=null) {
+                JSONObject lnks = as.getJSONObject("links");
+                if(lnks != null) {
+                    String projectsUri = lnks.getString("projects");
+                    if(projectsUri != null && projectsUri.length()>0) {
+                        HttpMethod req = new GetMethod(config.getUrl()+projectsUri);
+                        setJsonHeaders(req);
+                        String resp = executeMethodOk(req);
+                        JSONObject rsp = JSONObject.fromObject(resp);
+                        if(rsp != null) {
+                            JSONArray projects = rsp.getJSONArray("projects");
+                            for(Object po : projects) {
+                                JSONObject p = (JSONObject)po;
+                                JSONObject project = p.getJSONObject("project");
+                                if(project != null) {
+                                    JSONObject links = project.getJSONObject("links");
+                                    if(links != null) {
+                                        String uri = links.getString("metadata");
+                                        if(uri != null && uri.length() > 0) {
+                                            String id = getProjectIdFromUri(uri);
+                                            if(projectId.equals(id)) {
+                                                String sf = links.getString("self");
+                                                if(sf != null && sf.length()>0)
+                                                    return sf;
+                                            }
+                                        }
+                                        else {
+                                            l.debug("Project with no metadata uri.");
+                                            throw new GdcRestApiException("Project with no metadata uri.");
+                                        }
+                                    }
+                                    else {
+                                        l.debug("Project with no links.");
+                                        throw new GdcRestApiException("Project with no links.");
+                                    }
+                                }
+                                else {
+                                    l.debug("No project in the project list.");
+                                    throw new GdcRestApiException("No project in the project list.");
+                                }
+                            }
+                        }
+                        else {
+                            l.debug("Can't get project from "+projectsUri);
+                            throw new GdcRestApiException("Can't get projects from uri="+projectsUri);
+                        }
+                    }
+                    else {
+                        l.debug("No projects link in the account settings.");
+                        throw new GdcRestApiException("No projects link in the account settings.");
+                    }
+                }
+                else {
+                    l.debug("No links in the account settings.");
+                    throw new GdcRestApiException("No links in the account settings.");
+                }
+            }
+            else {
+                l.debug("No account settings.");
+                throw new GdcRestApiException("No account settings.");
+            }
+        }
+        else {
+            l.debug("No active account profile found. Perhaps you are not connected to the GoodData anymore.");
+            throw new GdcRestApiException("No active account profile found. Perhaps you are not connected to the GoodData anymore.");
+        }
+        l.debug("Project "+projectId+" not found in the current account profile.");
+        throw new GdcRestApiException("Project "+projectId+" not found in the current account profile.");        
+    }
+
+    /**
+     * Profile getter
+     * @return the profile of the currently logged user
+     */
+    protected JSONObject getProfile() {
+        return profile;
     }
 
 }
