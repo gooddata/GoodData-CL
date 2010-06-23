@@ -20,3 +20,4 @@ The examples are as follows:
     - [Google Analytics](ga/) - loads your Google Analytics data to GoodData. You need a valid Google Analytics account. Note Google Analytics does not work with Google Apps accounts
     - [SalesForce](sfdc/) - loads some fields of Opportunity and Account from your SalesForce into GoodData (**Warning:** depends on a not yet released version of GoodData!)
 
+Feel free to start building your own integration scenarios on the top of these examples. How about fetching more metrics from GoogleAnalytics or more SalesForce modules? How about mashing up your SalesForce or GoogleAnalytics data with your internal systems? Please share your experience at the [GoodData Developer Forum](http://support.gooddata.com/forums/176660-developer-forum).
