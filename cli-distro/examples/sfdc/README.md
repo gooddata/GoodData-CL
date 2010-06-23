@@ -1,6 +1,8 @@
 # Loading your SalesForce data into GoodData
 
-<h1 style="color:red">ATTENTION: This example requires the GoodData release 33 which is not generally available yet</h1>
+**ATTENTION: This example requires the GoodData release 33 which is not generally available yet</h1>**
+
+## About this example
 
 The SFDC example shows how to create a GoodData project that models basic SFDC entities and populate it directly from your SFDC.
 
@@ -19,6 +21,8 @@ _Unix like OS (Linux, Mac OS X and others):_
         Data successfully loaded.
 
 Note: this example fetches sample data from GoodData's demo account at SalesForce. 
+
+## What next?
 
 In order to customize this example to import your own SalesForce data into GoodData, you will need to change the SFDC username, password and security token parameters that are passed to `LoadSfdc` and optionally `GenerateSfdcConfig` commands.
 
