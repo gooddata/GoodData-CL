@@ -6,11 +6,11 @@
   ~ that the following conditions are met:
   ~
   ~     * Redistributions of source code must retain the above copyright notice, this list of conditions and
-  ~        the following disclaimer.
+  ~	the following disclaimer.
   ~     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions
-  ~        and the following disclaimer in the documentation and/or other materials provided with the distribution.
+  ~	and the following disclaimer in the documentation and/or other materials provided with the distribution.
   ~     * Neither the name of the GoodData Corporation nor the names of its contributors may be used to endorse
-  ~        or promote products derived from this software without specific prior written permission.
+  ~	or promote products derived from this software without specific prior written permission.
   ~
   ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
   ~ OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
@@ -34,44 +34,49 @@
 
 	<artifactId>gooddata-di-cli</artifactId>
 	<description>GoodData DI framework and cli tools</description>
-    <name>gooddata-di-cli</name>
+	<name>gooddata-di-cli</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.gooddata.di</groupId>
 			<artifactId>cli</artifactId>			
-		</dependency>               
+		</dependency>	       
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>8.4-701.jdbc4</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
 						<descriptor>src/main/assembly/cli.xml</descriptor>
 					</descriptors>
-                    <archive>
-                        <manifest>
-                           <addClasspath>true</addClasspath>
-                           <mainClass>com.gooddata.processor.GdcDI</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin> 
+					<archive>
+						<manifest>
+						    <addClasspath>true</addClasspath>
+						    <mainClass>com.gooddata.processor.GdcDI</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin> 
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
 						<phase>compile</phase>
 						<goals>
-							<goal>copy-dependencies</goal>
+						<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-					        <outputDirectory>${project.build.directory}/lib</outputDirectory>
+						<outputDirectory>${project.build.directory}/lib</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>           
+			</plugin>	   
 		</plugins>
 	</build>
 </project>
