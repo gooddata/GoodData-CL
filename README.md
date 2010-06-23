@@ -12,7 +12,10 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 
 1. [download](http://github.com/gooddata/GoodData-DI/downloads) and unpack the binary distribution:
 
-2. run the gdi.sh without arguments to get help from the unpacked distribution:
+2. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
+   Please note that only the Java version 1.6 is currently supported.
+
+3. run the gdi.sh without arguments to get help from the unpacked distribution:
 
         $ ./bin/gdi.sh
         usage: GdcDI
@@ -27,7 +30,10 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 
 1. [download](http://github.com/gooddata/GoodData-DI/downloads) and unpack the binary distribution:
 
-2. run the gdi.bat without arguments to get help from the unpacked distribution:
+2. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
+   Please note that only the Java version 1.6 is currently supported.
+
+3. run the gdi.bat without arguments to get help from the unpacked distribution:
 
         bin\gdi.bat
         usage: GdcDI
