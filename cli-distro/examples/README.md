@@ -15,16 +15,16 @@ The examples are as follows:
 
 1. CSV connector examples:
 
-    - [Quotes](quotes#readme) - loads a simple CSV file of daily stock quotes from AMEX, NYSE and NASDAY in 2008
-    - [Human Resources](hr#readme) - loads three separate CSV datasets of Deparments, Employees and Paid Salaries and connect them to enable reports such as _'Total paid amount by department'_ etc.
+    - [Quotes](quotes/#readme) - loads a simple CSV file of daily stock quotes from AMEX, NYSE and NASDAY in 2008
+    - [Human Resources](hr/#readme) - loads three separate CSV datasets of Deparments, Employees and Paid Salaries and connect them to enable reports such as _'Total paid amount by department'_ etc.
 
 1. JDBC connector example: 
 
-    - [Fundamentals](jdbc#readme) - shows how to connect an existing database accessible via JDBC and create GoodData data sets from the results of `SELECT` SQL statements
+    - [Fundamentals](jdbc/#readme) - shows how to connect an existing database accessible via JDBC and create GoodData data sets from the results of `SELECT` SQL statements
 
 1. External data connectors:
 
-    - [Google Analytics](ga#readme) - loads your Google Analytics data to GoodData. You need a valid Google Analytics account. Note Google Analytics does not work with Google Apps accounts
-    - [SalesForce](sfdc#readme) - loads some fields of Opportunity and Account from your SalesForce into GoodData
+    - [Google Analytics](ga/#readme) - loads your Google Analytics data to GoodData. You need a valid Google Analytics account. Note Google Analytics does not work with Google Apps accounts
+    - [SalesForce](sfdc/#readme) - loads some fields of Opportunity and Account from your SalesForce into GoodData
 
 Feel free to start building your own integration scenarios on the top of these examples. How about fetching more metrics from GoogleAnalytics or more SalesForce modules? How about mashing up your SalesForce or GoogleAnalytics data with your internal systems? Please share your experience at the [GoodData Developer Forum](http://support.gooddata.com/forums/176660-developer-forum).
