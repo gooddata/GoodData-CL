@@ -11,6 +11,12 @@ These fields are described in the pre-created `examples/quotes/quotes.config.xml
       <title>Market</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
+    ...
+    <column>
+      <name>CLOSE_PRICE</name>
+      <title>Close Price</title>
+      <ldmType>FACT</ldmType>
+    </column>
 
 Most of fields is either a number to be aggregated, such as a stock price (its `ldmType` is `FACT`) or it can be used to break down an aggregated number, e.g Market or Industry - these fields have `ldmType` set to `ATTRIBUTE`.
 
