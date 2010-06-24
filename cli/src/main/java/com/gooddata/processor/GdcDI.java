@@ -582,7 +582,7 @@ public class GdcDI implements Executor {
             GaConnector.createConnector(backend),
             SfdcConnector.createConnector(backend),
             JdbcConnector.createConnector(backend),
-            TimeDimensionConnector.createConnector()    
+            DateDimensionConnector.createConnector()    
         };
     }
 

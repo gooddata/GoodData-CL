@@ -40,9 +40,9 @@ import java.io.IOException;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class TimeDimensionConnector extends AbstractConnector implements Connector {
+public class DateDimensionConnector extends AbstractConnector implements Connector {
 
-    private static Logger l = Logger.getLogger(TimeDimensionConnector.class);
+    private static Logger l = Logger.getLogger(DateDimensionConnector.class);
 
     //Time dimension context (e.g. created, closed etc.)
     private String ctx;
@@ -50,15 +50,15 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
     /**
      * Creates a new Time Dimension Connector
      */
-    protected TimeDimensionConnector() {
+    protected DateDimensionConnector() {
     }
 
     /**
      * Creates a new Time Dimension Connector
      * @return new Time Dimension Connector
      */
-    public static TimeDimensionConnector createConnector() {
-        return new TimeDimensionConnector();
+    public static DateDimensionConnector createConnector() {
+        return new DateDimensionConnector();
     }
 
     /**
@@ -94,7 +94,7 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
         l.debug("Processing command "+c.getCommand());
         try {
             if(c.match("LoadDateDimension")) {
-                loadTD(c, cli, ctx);
+                loadDateDimension(c, cli, ctx);
             }
             else {
                 l.debug("No match passing the command "+c.getCommand()+" further.");
@@ -109,13 +109,13 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
     }
 
     /**
-     * Loads TimeDimension data command processor
+     * Loads DateDimension data command processor
      * @param c command
      * @param p command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
      */
-    private void loadTD(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+    private void loadDateDimension(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String ct = "";
         if(c.checkParam("name"))
             ct = c.getParam( "name");
