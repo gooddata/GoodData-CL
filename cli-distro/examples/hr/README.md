@@ -7,6 +7,7 @@ The HR example demonstrates how to use the basic CSV connector to quickly load v
 This data set will be populated with records from the `department.csv` CSV file. The structure of the `department.csv` file is described in the `department.xml` configuration file: one unique _connection point_ and its corresponding label.
 
 The model is described by the _logical data model (LDM) diagram_ below:
+
 ![Department LDM Diagram](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/hr/hr_1_department_ldm.png "Department LDM Diagram")
 
 The _Department_ box represent both the `Department` connection point and its label and the `Records of Department` box refers to the entire data set. These boxes are called _attributes_ in GoodData jargon.
@@ -31,6 +32,7 @@ _Unix like OS (Linux, Mac OS X and others):_
 The `employee.csv` file includes four columns: `ID` which is described as a _connection point_ in the `employee.xml` configuration file, `FIRSTNAME` and `LASTNAME` described as _labels_ and finally `DEPARTMENT` which is described as a `REFERENCE` to the schema `Department` (which is specified by the `schemaReference` element in the `employee.xml` file). The `REFERENCE` field always connect the target dataset using the value of it connection point. For example, _Sheri Nowmer_ from the `employee.csv` belongs to the department _d1_ which belongs to _HQ General Management_.
 
 The logical model diagram of these two connected data sets will be as follows:
+
 ![Employee and Department LDM Diagram](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/hr/hr_2_employee_ldm.png "Employee and Deparment LDM Diagram")
         
 Run `gdi.sh` with the `2-employee.txt` file to add the 'Employee' dataset, connect it to 'Deparment' and populate it with data from the `employee.csv` file.
