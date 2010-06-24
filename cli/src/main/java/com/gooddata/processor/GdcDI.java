@@ -198,7 +198,7 @@ public class GdcDI implements Executor {
                 l.error("Caused by: "+c.getMessage());
                 c = c.getCause();
             }
-            l.debug("REST API invocation error: "+e.getMessage());
+            l.debug("REST API invocation error: ",e);
         }
         catch (HttpMethodException e) {
             l.error("Error executing GoodData REST API: "+e.getMessage());
@@ -216,7 +216,7 @@ public class GdcDI implements Executor {
                 l.error("Caused by: "+c.getMessage());
                 c = c.getCause();
             }
-            l.debug("REST API invocation error: "+e.getMessage());
+            l.debug("REST API invocation error: ", e);
         }
         catch (GdcException e) {
             l.error("Unrecognized error: "+e.getMessage());
