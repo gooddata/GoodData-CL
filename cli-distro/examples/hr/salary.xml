@@ -24,6 +24,7 @@
       <title>Pay Day</title>
       <ldmType>DATE</ldmType>
       <format>yyyy-MM-dd</format>  
+      <schemaReference>payment</schemaReference>
     </column>
   </columns>
 </schema>

@@ -5,6 +5,15 @@
 # Retrieve the project ID saved by the first script
 RetrieveProject(fileName="examples/hr/pid");
 
+# Loads time dimension to the project
+LoadDateDimension(name="Payment");
+
+# Generate the date dimension MAQL script
+GenerateMaql(maqlFile="examples/hr/payment_date.maql");
+
+# Execute the date dimensionEXECUTE THE DATE DIMENSION MAQL
+ExecuteMaql(maqlFile="examples/hr/payment_date.maql");
+
 # Load the salary data file, using the XML file describing the data
 LoadCsv(csvDataFile="examples/hr/salary.csv",header="true",configFile="examples/hr/salary.xml");
 
