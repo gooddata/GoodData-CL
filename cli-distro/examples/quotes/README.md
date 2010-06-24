@@ -34,4 +34,8 @@ _Unix like OS (Linux, Mac OS X and others):_
         $ ./bin/gdi.sh -u <username> -p <password> examples/quotes/quotes.txt
         Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
 
-This creates a "Quotes" project in GoodData, sets up the data model and loads the data file into the project. Read further comments in the [script file](quotes.txt) for instructions how to setup a repeatable data load or how to create another project based your own CSV data set. 
+This creates a "Quotes" project in GoodData, sets up the data model and loads the data file into the project.
+
+Now you can log into the [GoodData user interface](https://secure.gooddata.com/) and select the _Quotes_ project. When you switch to the _Data_ section and click _Model_ in the left menu bar you can see a data model visualization similar to what's outlined above. Then you can switch to the _Reports_ section and start building your first reports. 
+
+Read further comments in the [script file](quotes.txt) for instructions how to setup a repeatable data load or how to create another project based your own CSV data set. 
