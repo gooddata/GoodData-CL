@@ -20,7 +20,7 @@ The structure of the logical model built on the top of this data set is as follo
 
 ![Quotes Logical Model Diagram](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/quotes/quotes_ldm.png "Quotes Logical Model Diagram")
 
-The light green boxes depict attributes and the `Id` connection points, the ovals represent facts, labels and most of the attributes of the `Date (Quotes)` dimension such as `Month (Quotes)`, `Year (Quotes)` etc are hidden for the sake of simplicity. 
+The light green boxes depict attributes and the `Id` connection points, the ovals represent facts, labels and most of the attributes of the `Date (Quotes)` dimension hidden for the sake of simplicity. The attributes belonging to the date dimension are shown using double border line. 
 
 Run `gdi.sh` with the `quotes.txt` script as follows:
 
