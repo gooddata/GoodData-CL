@@ -4,7 +4,7 @@
 CreateProject(name="SFDC");
 
 # LOADS A NEW TIME DIMENSION TO THE PROJECT
-LoadTimeDimension(context="Created");
+LoadDateDimension(context="Created");
 
 # GENERATE THE TIME DIMENSION MAQL
 GenerateMaql(maqlFile="examples/sfdc/created.maql");
@@ -15,7 +15,7 @@ GenerateMaql(maqlFile="examples/sfdc/created.maql");
 ExecuteMaql(maqlFile="examples/sfdc/created.maql");
 
 # LOADS A NEW TIME DIMENSION TO THE PROJECT
-LoadTimeDimension(context="Closed");
+LoadDateDimension(context="Closed");
 
 # GENERATE THE TIME DIMENSION MAQL
 GenerateMaql(maqlFile="examples/sfdc/closed.maql");

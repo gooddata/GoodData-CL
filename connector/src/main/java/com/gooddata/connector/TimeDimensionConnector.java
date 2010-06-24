@@ -93,7 +93,7 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         l.debug("Processing command "+c.getCommand());
         try {
-            if(c.match("LoadTimeDimension")) {
+            if(c.match("LoadDateDimension")) {
                 loadTD(c, cli, ctx);
             }
             else {
@@ -117,8 +117,8 @@ public class TimeDimensionConnector extends AbstractConnector implements Connect
      */
     private void loadTD(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String ct = "";
-        if(c.checkParam("context"))
-            ct = c.getParam( "context");
+        if(c.checkParam("name"))
+            ct = c.getParam( "name");
         this.ctx = ct;
         // sets the current connector
         ctx.setConnector(this);

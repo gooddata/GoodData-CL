@@ -145,5 +145,5 @@ SalesForce Connector Commands:
 Time Dimension Connector:
 -------------------------
 
- LoadTimeDimension(context=<context-name>)  - load new time dimension into the project, must call CreateProject or OpenProject before
-  context - the time dimension context differentiates the time dimension form others. This is typically something like "closed", "created" etc.
+ LoadDateDimension(name=<name>)  - load new time dimension into the project, must call CreateProject or OpenProject before
+  name - the time dimension name differentiates the time dimension form others. This is typically something like "closed", "created" etc.

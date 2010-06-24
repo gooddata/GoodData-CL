@@ -4,68 +4,70 @@
   <columns>
     <column>
       <name>ID</name>
-      <title>ID</title>
+      <title>Id</title>
       <ldmType>CONNECTION_POINT</ldmType>
     </column>
     <column>
       <name>COMPANY</name>
-      <title>COMPANY</title>
+      <title>Company</title>
         <ldmType>LABEL</ldmType>
         <reference>SYMBOL</reference>
     </column>
     <column>
       <name>SYMBOL</name>
-      <title>SYMBOL</title>
+      <title>Symbol</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
       <name>SECTOR</name>
-      <title>SECTOR</title>
+      <title>Sector</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
       <name>INDUSTRY</name>
-      <title>INDUSTRY</title>
+      <title>Industry</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
       <name>MARKET</name>
-      <title>MARKET</title>
+      <title>Market</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>
     <column>
       <name>QUOTE_DATE</name>
-      <title>QUOTE_DATE</title>
-      <ldmType>ATTRIBUTE</ldmType>
+      <title>Quote Date</title>
+      <ldmType>DATE</ldmType>
+      <format>yyyy-MM-dd</format>
+      <schemaReference>quote</schemaReference>
     </column>
     <column>
       <name>OPEN_PRICE</name>
-      <title>OPEN_PRICE</title>
+      <title>Open Price</title>
       <ldmType>FACT</ldmType>
     </column>
     <column>
       <name>HIGH_PRICE</name>
-      <title>HIGH_PRICE</title>
+      <title>High Price</title>
       <ldmType>FACT</ldmType>
     </column>
     <column>
       <name>LOW_PRICE</name>
-      <title>LOW_PRICE</title>
+      <title>Low Price</title>
       <ldmType>FACT</ldmType>
     </column>
     <column>
       <name>CLOSE_PRICE</name>
-      <title>CLOSE_PRICE</title>
+      <title>Close Price</title>
       <ldmType>FACT</ldmType>
     </column>
     <column>
       <name>VOLUME</name>
-      <title>VOLUME</title>
+      <title>Volume</title>
       <ldmType>FACT</ldmType>
     </column>
     <column>
       <name>ADJUSTED_CLOSE_PRICE</name>
-      <title>ADJUSTED_CLOSE_PRICE</title>
+      <title>Adjusted Close Price</title>
       <ldmType>FACT</ldmType>
     </column>
   </columns>

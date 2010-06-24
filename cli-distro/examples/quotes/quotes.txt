@@ -3,6 +3,9 @@
 # CREATE A NEW PROJECT
 CreateProject(name="Quotes");
 
+# LOADS TIME DIMENSION TO THE PROJECT
+LoadDateDimension(context="Quote");
+
 # LOAD THE STOCK QUOTES DATA FILE
 # THE DATA FILE CONFIG HAS BEEN GENERATED
 LoadCsv(csvDataFile="examples/quotes/quotes.csv",header="true",configFile="examples/quotes/quotes.config.xml");
