@@ -27,6 +27,7 @@ import org.apache.log4j.helpers.DateTimeDateFormat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * GoodData CSV data type guessing
@@ -82,8 +83,9 @@ public class DataTypeGuess {
     public static boolean isDate(String t) {
         for(SimpleDateFormat d : dtf) {
             try {
-                d.parse(t);
-                return true;
+                Date dt = d.parse(t);
+                if(t.equals(d.format(dt)))
+                    return true;
             }
             catch (ParseException e) {
                 //NOTHING HERE

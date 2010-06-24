@@ -48,9 +48,9 @@ public class TestDataTypeGuess extends TestCase {
 
     public void testIsDate() {
         assertTrue(DataTypeGuess.isDate("2010-11-12"));
-        //assertFalse(DataTypeGuess.isDate("2010-13-12"));
+        assertFalse(DataTypeGuess.isDate("2010-13-12"));
         assertTrue(DataTypeGuess.isDate("11/12/2010"));
-        //assertFalse(DataTypeGuess.isDate("13/12/2010"));
+        assertFalse(DataTypeGuess.isDate("13/12/2010"));
     }
 
 }
