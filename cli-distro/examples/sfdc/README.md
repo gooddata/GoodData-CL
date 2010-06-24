@@ -1,7 +1,5 @@
 # Loading your SalesForce data into GoodData
 
-**ATTENTION: This example requires the GoodData release 33 which is not generally available yet</h1>**
-
 ## About this example
 
 The SFDC example shows how to create a GoodData project that models basic SFDC modules and populate it directly from your SFDC.
