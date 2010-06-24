@@ -23,11 +23,15 @@
 
 package com.gooddata.csv;
 
+import au.com.bytecode.opencsv.CSVReader;
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.modeling.model.SourceSchema;
 import org.apache.log4j.helpers.DateTimeDateFormat;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 /**
  * GoodData CSV data type guessing
@@ -60,8 +64,10 @@ public class DataTypeGuess {
      */
     public static boolean isDecimal(String t) {
         try {
+            /*
             if(isInteger(t))
                 return false;
+            */
             Double.parseDouble(t);
             return true;
         }
@@ -93,5 +99,56 @@ public class DataTypeGuess {
         }
         return false;
     }
+
+
+    /**
+     * Guesses the CSV schema
+     * @param cr CSV reader
+     * @param hasHeader
+     * @return the String[] with the CSV column types
+     * @throws IOException in case of IO issue
+     */
+    public static String[] guessCsvSchema(CSVReader cr, boolean hasHeader) throws IOException {
+        String[] header = null;
+        String[] row = cr.readNext();
+
+        if(hasHeader) {
+            header = row;
+            row = cr.readNext();
+        }
+
+        List<Set<String>> excludedColumnTypes = new ArrayList<Set<String>>();
+
+        for(int i=0; i < row.length; i++) {
+            HashSet<String> allTypes = new HashSet<String>();
+            excludedColumnTypes.add(allTypes);
+        }
+        int countdown = 1000;
+        while(row != null && countdown-- >0) {
+            for(int i=0; i< row.length; i++) {
+                Set<String> types = excludedColumnTypes.get(i);
+                String value = row[i];
+                if(!isDate(value)) {
+                    types.add(SourceColumn.LDM_TYPE_DATE);
+                }
+                if(!isDecimal(value)) {
+                    types.add(SourceColumn.LDM_TYPE_FACT);
+                }
+            }
+            row = cr.readNext();
+        }
+        String[] ret = new String[excludedColumnTypes.size()];
+        for(int i=0; i < excludedColumnTypes.size(); i++) {
+            Set excludedColumnType = excludedColumnTypes.get(i);
+            if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_DATE))
+                ret[i] = SourceColumn.LDM_TYPE_DATE;
+            else if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_FACT))
+                ret[i] = SourceColumn.LDM_TYPE_FACT;
+            else if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_ATTRIBUTE))
+                ret[i] = SourceColumn.LDM_TYPE_ATTRIBUTE;
+        }
+        return ret;
+    }
+
 
 }

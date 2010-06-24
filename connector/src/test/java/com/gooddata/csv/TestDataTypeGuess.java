@@ -23,7 +23,11 @@
 
 package com.gooddata.csv;
 
+import au.com.bytecode.opencsv.CSVReader;
 import junit.framework.TestCase;
+
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * GoodData
@@ -43,7 +47,7 @@ public class TestDataTypeGuess extends TestCase {
     public void testIsDecimal() {
         assertTrue(DataTypeGuess.isDecimal("1E3"));
         assertTrue(DataTypeGuess.isDecimal("12.3"));
-        assertFalse(DataTypeGuess.isDecimal("12"));
+        assertTrue(DataTypeGuess.isDecimal("12"));
     }
 
     public void testIsDate() {
@@ -51,6 +55,29 @@ public class TestDataTypeGuess extends TestCase {
         assertFalse(DataTypeGuess.isDate("2010-13-12"));
         assertTrue(DataTypeGuess.isDate("11/12/2010"));
         assertFalse(DataTypeGuess.isDate("13/12/2010"));
+    }
+
+    private String concatArray(String[] a) {
+        String ret = "";
+        for(String c : a)
+            ret += c;
+        return ret;
+    }
+
+    public void testGuessCsvSchema() throws IOException {
+        CSVReader csvr = new CSVReader(new FileReader("cli-distro/examples/quotes/quotes.csv"));
+        String[] types = DataTypeGuess.guessCsvSchema(csvr, true);
+        assertEquals(concatArray(types), concatArray(new String[] {"FACT","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE",
+                "ATTRIBUTE","ATTRIBUTE","DATE","FACT","FACT","FACT","FACT","FACT","FACT"}));
+        csvr = new CSVReader(new FileReader("cli-distro/examples/hr/department.csv"));
+        types = DataTypeGuess.guessCsvSchema(csvr, true);
+        assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE"}));
+        csvr = new CSVReader(new FileReader("cli-distro/examples/hr/employee.csv"));
+        types = DataTypeGuess.guessCsvSchema(csvr, true);
+        assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE"}));
+        csvr = new CSVReader(new FileReader("cli-distro/examples/hr/salary.csv"));
+        types = DataTypeGuess.guessCsvSchema(csvr, true);
+        assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE","FACT","DATE"}));        
     }
 
 }
