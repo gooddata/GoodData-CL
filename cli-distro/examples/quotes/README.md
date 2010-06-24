@@ -18,7 +18,7 @@ These fields are described in the pre-created `examples/quotes/quotes.config.xml
       <ldmType>FACT</ldmType>
     </column>
 
-Most of fields is either a number to be aggregated, such as a stock price (its `ldmType` is `FACT`) or it can be used to break down an aggregated number, e.g Market or Industry - these fields have `ldmType` set to `ATTRIBUTE`.
+First `&lt;column&gt;` record describes the first column of the CSV file, second record the second column and so on. Most of fields is either a number to be aggregated, such as a stock price (its `ldmType` is `FACT`) or it can be used to break down an aggregated number, e.g Market or Industry - these fields have `ldmType` set to `ATTRIBUTE`.
 
 Other `ldmType`s include `CONNECTION_POINT` (a unique identifier of a record within a dataset), `LABEL` (an alias of an `ATTRIBUTE` or a `CONNECTION_POINT`) and `DATE`. For example, the `Id` field is marked as `CONNECTION_POINT`, `Company` is an alias of `SYMBOL` and the `Quote Date` holds a date formatted as `yyyy-MM-dd` (e.g. 2008-02-28 for February 28th 2008). Note the `schemaReference` property tells GoodData to connect this date field to the date dimension named _Quote_.  
 
