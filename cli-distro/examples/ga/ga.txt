@@ -8,7 +8,7 @@ CreateProject(name="GA");
 #GenerateGaConfig(name="GA",configFile="examples/ga/ga.config.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits");
 
 # Loads a new time dimension to the project
-LoadDateDimension(context="ga");
+LoadDateDimension(name="ga");
 
 # Generate the time dimension MAQL
 GenerateMaql(maqlFile="examples/ga/time.maql");

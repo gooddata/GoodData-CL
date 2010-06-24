@@ -4,7 +4,13 @@
 CreateProject(name="Quotes");
 
 # LOADS TIME DIMENSION TO THE PROJECT
-LoadDateDimension(context="Quote");
+LoadDateDimension(name="Quote");
+
+# GENERATE THE DATE DIMENSION MAQL
+GenerateMaql(maqlFile="examples/quotes/quote_date.maql");
+
+# EXECUTE THE DATE DIMENSION MAQL
+ExecuteMaql(maqlFile="examples/quotes/quote_date.maql");
 
 # LOAD THE STOCK QUOTES DATA FILE
 # THE DATA FILE CONFIG HAS BEEN GENERATED
