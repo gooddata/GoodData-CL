@@ -462,7 +462,7 @@ public class GdcDI implements Executor {
             if(c.match("CreateProject")) {
                 createProject(c, cli, ctx);
             }
-            if(c.match("DropProject")) {
+            else if(c.match("DropProject")) {
                 dropProject(c, cli, ctx);
             }
             else if(c.match("OpenProject")) {
