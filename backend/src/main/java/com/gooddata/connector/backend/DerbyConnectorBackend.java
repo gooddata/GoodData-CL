@@ -25,13 +25,12 @@ package com.gooddata.connector.backend;
 
 import com.gooddata.connector.driver.DerbySqlDriver;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.backend.AbstractConnectorBackend;
-import org.gooddata.connector.backend.ConnectorBackend;
 
-import java.io.*;
-import java.sql.*;
-
-import static org.apache.derby.tools.ij.runScript;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * GoodData  Derby SQL connector backend. This connector backend is zero-install option. It provides reasonable
@@ -76,6 +75,7 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
 
     /**
      * Create method
+     * @return a new instance of the connector backend 
      * @throws java.io.IOException in case of an IO issue
      */
     public static DerbyConnectorBackend create() throws IOException {

@@ -21,7 +21,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.processor;
+package com.gooddata.processor;
 
 import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Properties;
 
 /**
@@ -129,10 +128,7 @@ public class Command {
      * @return returns true if the command matches the command name, false otherwise
      */
     public boolean match(String cms) {
-        if(this.getCommand().equalsIgnoreCase(cms))
-            return true;
-        else
-            return false;
+        return this.getCommand().equalsIgnoreCase(cms);
     }
 
     /**
@@ -165,10 +161,7 @@ public class Command {
      */
     public boolean checkParam(String p) {
         String v = (String)this.getParameters().get(p);
-        if(v == null || v.length() == 0) {
-            return false;
-        }
-        return true;
+        return (v != null && v.length() > 0);
     }
 
 }

@@ -27,12 +27,10 @@ import com.gooddata.exception.GdcUploadErrorException;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.util.FileUtil;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 

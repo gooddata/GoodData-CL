@@ -21,7 +21,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.processor;
+package com.gooddata.processor;
 
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import org.apache.log4j.Logger;

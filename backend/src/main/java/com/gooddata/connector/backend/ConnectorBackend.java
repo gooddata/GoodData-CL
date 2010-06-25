@@ -21,11 +21,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.connector.backend;
+package com.gooddata.connector.backend;
 
 import com.gooddata.connector.model.PdmSchema;
-import com.gooddata.exception.InternalErrorException;
-import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 
@@ -44,16 +42,11 @@ import java.util.List;
  * @version 1.0
 */
 public interface ConnectorBackend {
-
-
-    // Supported connector backends
-    public static final int CONNECTOR_BACKEND_DERBY_SQL = 1;
-    public static final int CONNECTOR_BACKEND_MYSQL = 2;
     
     /**
      * Connects the database
      * @return JDBC connection
-     * @throws java.sql.SQLException
+     * @throws java.sql.SQLException in case of a SQL error
      */
     public Connection connect() throws SQLException;
 

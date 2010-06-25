@@ -32,8 +32,6 @@ import com.google.gdata.data.analytics.Metric;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 

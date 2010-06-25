@@ -23,29 +23,23 @@
 
 package com.gooddata.processor;
 
-import java.io.*;
-import java.util.*;
-
 import com.gooddata.connector.*;
+import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.backend.DerbyConnectorBackend;
 import com.gooddata.connector.backend.MySqlConnectorBackend;
+import com.gooddata.exception.*;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.naming.N;
 import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
-
-import com.gooddata.exception.*;
+import com.gooddata.util.FileUtil;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.gooddata.connector.Connector;
 
-import com.gooddata.util.FileUtil;
-import org.gooddata.connector.backend.ConnectorBackend;
-import org.gooddata.processor.CliParams;
-import org.gooddata.processor.Command;
-import org.gooddata.processor.Executor;
-import org.gooddata.processor.ProcessingContext;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The GoodData Data Integration CLI processor.
@@ -90,8 +84,6 @@ public class GdcDI implements Executor {
         new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files")
     };
 
-    private String projectId = null;
-    private Connector connector = null;
     private CliParams cliParams = null;
     private Connector[] connectors = null;
 
@@ -145,6 +137,15 @@ public class GdcDI implements Executor {
                 c = c.getCause();
             }
             l.debug("Invalid command.",e);
+        }
+        catch (InvalidParameterException e) {
+            l.error("Invalid command parameter: "+e.getMessage());
+            Throwable c = e.getCause();
+            while(c!=null) {
+                l.error("Caused by: "+c.getMessage());
+                c = c.getCause();
+            }
+            l.debug("Invalid command parameter.",e);
         }
         catch (SfdcException e) {
             l.error("Error communicating with SalesForce: "+e.getMessage());
@@ -278,7 +279,7 @@ public class GdcDI implements Executor {
 
         // create default FTP host if there is no host in the CLI params
         if(!cp.containsKey(CLI_PARAM_FTP_HOST[0])) {
-            String[] hcs = cp.get(CLI_PARAM_HOST[0]).toString().split("\\.");
+            String[] hcs = cp.get(CLI_PARAM_HOST[0]).split("\\.");
             if(hcs != null && hcs.length > 0) {
                 String ftpHost = "";
                 for(int i=0; i<hcs.length; i++) {
@@ -361,6 +362,7 @@ public class GdcDI implements Executor {
     /**
      * Executes the commands in file
      * @param scriptFile file with commands
+     * @throws IOException in case of an IO issue
      */
     public void execute(final File scriptFile) throws IOException {
         List<Command> cmds = new ArrayList<Command>();
@@ -522,6 +524,7 @@ public class GdcDI implements Executor {
      * @param c command
      * @param p cli parameters
      * @param ctx current context
+     * @throws IOException in case of an IO issue 
      */
     private void storeProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String fileName = c.getParamMandatory("fileName");
@@ -535,6 +538,7 @@ public class GdcDI implements Executor {
      * @param c command
      * @param p cli parameters
      * @param ctx current context
+     * @throws IOException in case of an IO issue 
      */
     private void retrieveProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String fileName = c.getParamMandatory("fileName");
@@ -547,6 +551,7 @@ public class GdcDI implements Executor {
      * @param c command
      * @param p cli parameters
      * @param ctx current context
+     * @throws IOException in case of an IO issue 
      */
     private void lock(Command c, CliParams p, ProcessingContext ctx) throws IOException {
     	final String path = c.getParamMandatory( "path");
@@ -567,6 +572,7 @@ public class GdcDI implements Executor {
     /**
      * Instantiate all known connectors
      * TODO: this should be automated
+     * @return array of all active connectors
      * @throws IOException in case of IO issues
      */
     private Connector[] instantiateConnectors() throws IOException {

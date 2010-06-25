@@ -23,53 +23,31 @@
 
 package com.gooddata.connector;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.rpc.ServiceException;
-
-import com.gooddata.exception.InternalErrorException;
-import org.apache.axis.message.MessageElement;
-import org.apache.log4j.Logger;
-import org.gooddata.connector.AbstractConnector;
-import org.gooddata.connector.Connector;
-import org.gooddata.connector.backend.ConnectorBackend;
-import org.gooddata.processor.CliParams;
-import org.gooddata.processor.Command;
-import org.gooddata.processor.ProcessingContext;
-
 import au.com.bytecode.opencsv.CSVWriter;
-
+import com.gooddata.connector.backend.ConnectorBackend;
+import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.InvalidArgumentException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.exception.SfdcException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
+import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import com.sforce.soap.partner.DescribeSObjectResult;
-import com.sforce.soap.partner.Field;
-import com.sforce.soap.partner.FieldType;
-import com.sforce.soap.partner.LoginResult;
-import com.sforce.soap.partner.QueryOptions;
-import com.sforce.soap.partner.QueryResult;
-import com.sforce.soap.partner.SessionHeader;
-import com.sforce.soap.partner.SforceServiceLocator;
-import com.sforce.soap.partner.SoapBindingStub;
-import com.sforce.soap.partner.fault.ApiQueryFault;
-import com.sforce.soap.partner.fault.ExceptionCode;
-import com.sforce.soap.partner.fault.InvalidIdFault;
-import com.sforce.soap.partner.fault.InvalidQueryLocatorFault;
-import com.sforce.soap.partner.fault.LoginFault;
-import com.sforce.soap.partner.fault.UnexpectedErrorFault;
+import com.sforce.soap.partner.*;
+import com.sforce.soap.partner.fault.*;
 import com.sforce.soap.partner.sobject.SObject;
+import org.apache.axis.message.MessageElement;
+import org.apache.log4j.Logger;
+
+import javax.xml.rpc.ServiceException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.*;
 
 /**
  * GoodData SFDC Connector
@@ -97,6 +75,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
    /**
      * Creates a new SFDC connector
      * @param connectorBackend connector backend
+     * @return a new instance of the SFDC connector
      */
     public static SfdcConnector createConnector(ConnectorBackend connectorBackend) {
         return new SfdcConnector(connectorBackend);
@@ -221,6 +200,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * Saves a template of the config file
+     * @param name new schema name
+     * @param configFileName config file name
+     * @param sfdcUsr SFDC username
+     * @param sfdcPsw SFDC password
+     * @param sfdcToken SFDC security token
+     * @param query SFDC query
      * @throws IOException if there is a problem with writing the config file
      */
     public static void saveConfigTemplate(String name, String configFileName, String sfdcUsr, String sfdcPsw, String sfdcToken,
@@ -291,7 +276,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         File dataFile = FileUtil.getTempFile();
         CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
         SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
-        List<SObject> result = null;
+        List<SObject> result;
         try {
             result = executeQuery(c, getSfdcQuery());
         } catch (SfdcException e) {
@@ -332,12 +317,13 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * Connect the SFDC
      * @param usr SFDC username
      * @param psw SFDC pasword
+     * @param token SFDC security token
      * @return SFDC stub
-     * @throws ServiceException in case of connection issues
+     * @throws SfdcException in case of connection issues
      */
     private static SoapBindingStub connect(String usr, String psw, String token) throws SfdcException {
-        SoapBindingStub binding = null;
-        LoginResult loginResult = null;
+        SoapBindingStub binding;
+        LoginResult loginResult;
         if (token != null) {
         	psw += token;
         }
@@ -496,6 +482,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * SFDC security token setter
+     * @param sfdcToken SFDC security token
      */
 	public void setSfdcToken(String sfdcToken) {
 		this.sfdcToken = sfdcToken;

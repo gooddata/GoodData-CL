@@ -21,22 +21,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.connector.backend;
+package com.gooddata.connector.backend;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
-
+import com.gooddata.connector.driver.SqlDriver;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.GdcIntegrationErrorException;
 import com.gooddata.exception.InternalErrorException;
-import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
@@ -44,7 +34,11 @@ import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.driver.SqlDriver;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
+import java.util.List;
 
 /**
  * GoodData abstract connector backend. This connector backend provides the base implementation that the specific
@@ -74,16 +68,11 @@ import org.gooddata.connector.driver.SqlDriver;
     // MySQL password
     private String password;
     
-    /**
-     * The ZIP archive suffix
-     */
-    protected static final String DLI_ARCHIVE_SUFFIX = ".zip";
-
 
     /**
      * Constructor
      * @param username database backend username
-     * @param username database backend password 
+     * @param password database backend password 
      * @throws IOException in case of an IO issue 
      */
     protected AbstractConnectorBackend(String username, String password) throws IOException {

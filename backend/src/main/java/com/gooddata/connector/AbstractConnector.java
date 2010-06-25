@@ -21,23 +21,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.connector;
+package com.gooddata.connector;
 
-import com.gooddata.exception.*;
+import com.gooddata.connector.backend.ConnectorBackend;
+import com.gooddata.connector.model.PdmSchema;
+import com.gooddata.exception.InvalidCommandException;
+import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.exception.ProcessingException;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.generator.MaqlGenerator;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.naming.N;
-import org.gooddata.processor.CliParams;
-import org.gooddata.processor.Command;
-import org.gooddata.processor.ProcessingContext;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
+import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.backend.ConnectorBackend;
 
 import java.io.File;
 import java.io.IOException;
@@ -318,6 +320,8 @@ public abstract class AbstractConnector implements Connector {
     /**
      * Extract data from the internal database and transfer them to a GoodData project
      * @param c command
+     * @param pid project id
+     * @param cc connector
      * @param p cli parameters
      * @param ctx current context
      * @param dli data loading interface
@@ -449,7 +453,7 @@ public abstract class AbstractConnector implements Connector {
         String firstSnapshot = c.getParamMandatory("firstSnapshot");
         String lastSnapshot = c.getParamMandatory("lastSnapshot");
         l.debug("Transfering snapshots "+firstSnapshot+" - " + lastSnapshot);
-        int fs = 0,ls = 0;
+        int fs,ls;
         try  {
             fs = Integer.parseInt(firstSnapshot);
         }
@@ -593,7 +597,7 @@ public abstract class AbstractConnector implements Connector {
         if(pid != null && pid.length() > 0)
             this.getConnectorBackend().setProjectId(pid);
         else
-            throw new InvalidParameterException("No project is active. Please activate project via CreateProject or " +
+            throw new InvalidCommandException("No project is active. Please activate project via CreateProject or " +
                     "OpenProject command. ");
     }
 

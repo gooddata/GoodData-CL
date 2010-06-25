@@ -21,22 +21,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.connector.driver;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
+package com.gooddata.connector.driver;
 
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmLookupReplication;
@@ -47,8 +32,13 @@ import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
-import com.gooddata.util.StringUtil;
 import com.gooddata.util.JdbcUtil.StatementHandler;
+import com.gooddata.util.StringUtil;
+import org.apache.log4j.Logger;
+
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
 
 /**
  * GoodData abstract SQL driver. Generates the DDL (tables and indexes), DML (transformation SQL) and other

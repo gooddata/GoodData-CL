@@ -27,11 +27,12 @@ import com.gooddata.connector.driver.MySqlDriver;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.util.JdbcUtil;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.backend.AbstractConnectorBackend;
-import org.gooddata.connector.backend.ConnectorBackend;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * GoodData  MySQL connector backend. This connector backend is the performance option. It provides reasonable
@@ -69,7 +70,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
     /**
      * Constructor
      * @param username database backend username
-     * @param username database backend password
+     * @param password database backend password
      * @throws java.io.IOException in case of an IO issue
      */
     protected MySqlConnectorBackend(String username, String password) throws IOException {
@@ -80,7 +81,8 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
     /**
      * Create
      * @param username MySQL username
-     * @param password MySQL password 
+     * @param password MySQL password
+     * @return a new instance of the MySQL connector backend
      * @throws java.io.IOException in case of an IO issue
      */
     public static MySqlConnectorBackend create(String username, String password) throws IOException {
@@ -92,7 +94,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
      */
     public Connection connect() throws SQLException {
         String protocol = "jdbc:mysql:";
-        Connection con = null;
+        Connection con;
         try {
             con = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
         }
@@ -132,8 +134,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
                     con.close();
             }
             catch (SQLException e) {
-                l.debug("Can't close MySQL connection.", e);
-                throw new InternalErrorException("Can't close MySQL connection.", e);
+                l.error("Can't close MySQL connection.", e);
             }
         }
         l.debug("Finished dropping MySQL snapshots "+getProjectId());

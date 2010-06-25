@@ -24,13 +24,17 @@
 package com.gooddata.connector;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import com.gooddata.exception.*;
+import com.gooddata.connector.backend.ConnectorBackend;
+import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.InvalidArgumentException;
+import com.gooddata.exception.ProcessingException;
 import com.gooddata.google.analytics.FeedDumper;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import org.gooddata.processor.CliParams;
-import org.gooddata.processor.Command;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
+import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.google.gdata.client.ClientLoginAccountType;
 import com.google.gdata.client.analytics.AnalyticsService;
@@ -38,12 +42,10 @@ import com.google.gdata.data.analytics.DataFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.AbstractConnector;
-import org.gooddata.connector.Connector;
-import org.gooddata.connector.backend.ConnectorBackend;
-import org.gooddata.processor.ProcessingContext;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -75,8 +77,10 @@ public class GaConnector extends AbstractConnector implements Connector {
     }
 
      /**
-     * Creates a new Google Analytics Connector
-     * @param connectorBackend connector backend
+      * Creates a new Google Analytics Connector
+      * @param connectorBackend connector backend
+      * @return a new instance of the GA connector
+      *
      */
     public static GaConnector createConnector(ConnectorBackend connectorBackend) {
         return new GaConnector(connectorBackend);
@@ -149,7 +153,6 @@ public class GaConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public void extract() throws IOException {
-        Connection con = null;
         try {
             AnalyticsService as = new AnalyticsService(APP_NAME);
 		    as.setUserCredentials(getGoogleAnalyticsUsername(), getGoogleAnalyticsPassword(), ClientLoginAccountType.GOOGLE);
@@ -174,14 +177,6 @@ public class GaConnector extends AbstractConnector implements Connector {
             throw new InternalErrorException(e);
         } catch (ServiceException e) {
             throw new InternalErrorException(e);
-        } finally {
-            try {
-                if (con != null && !con.isClosed())
-                    con.close();
-            }
-            catch (SQLException e) {
-                throw new InternalErrorException(e);
-            }
         }
     }
 
@@ -265,7 +260,7 @@ public class GaConnector extends AbstractConnector implements Connector {
      * @throws IOException in case of IO issues
      */
     private void loadGA(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-        GaQuery gq = null;
+        GaQuery gq;
         try {
             gq = new GaQuery();
         } catch (MalformedURLException e) {
@@ -304,8 +299,7 @@ public class GaConnector extends AbstractConnector implements Connector {
         String name = c.getParamMandatory("name");
         String dimensions = c.getParamMandatory("dimensions");
         String metrics = c.getParamMandatory("metrics");
-        File cf = new File(configFile);
-        GaQuery gq = null;
+        GaQuery gq;
         try {
             gq = new GaQuery();
         } catch (MalformedURLException e) {

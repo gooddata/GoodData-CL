@@ -23,8 +23,9 @@
 
 package org.snaplogic.snap.gooddata;
 
-import java.util.Map;
-
+import com.gooddata.exception.GdcLoginException;
+import com.gooddata.integration.ftp.GdcFTPApiWrapper;
+import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import org.snaplogic.cc.ComponentAPI;
 import org.snaplogic.cc.InputView;
 import org.snaplogic.cc.OutputView;
@@ -32,9 +33,7 @@ import org.snaplogic.common.ComponentResourceErr;
 import org.snaplogic.common.exceptions.SnapComponentException;
 import org.snaplogic.snapi.ResDef;
 
-import com.gooddata.exception.GdcLoginException;
-import com.gooddata.integration.ftp.GdcFTPApiWrapper;
-import com.gooddata.integration.rest.GdcRESTApiWrapper;
+import java.util.Map;
 
 public abstract class AbstractGoodDataComponent extends ComponentAPI {
 

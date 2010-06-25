@@ -23,7 +23,7 @@
 
 package com.gooddata.processor.parser;
 
-import org.gooddata.processor.Command;
+import com.gooddata.processor.Command;
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 

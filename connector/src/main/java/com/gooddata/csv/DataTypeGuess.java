@@ -23,21 +23,16 @@
 
 package com.gooddata.csv;
 
+import au.com.bytecode.opencsv.CSVReader;
+import com.gooddata.connector.driver.Constants;
+import com.gooddata.modeling.model.SourceColumn;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import au.com.bytecode.opencsv.CSVReader;
-
-import com.gooddata.connector.driver.Constants;
-import com.gooddata.modeling.model.SourceColumn;
+import java.util.*;
 
 /**
  * GoodData CSV data type guessing

@@ -24,20 +24,18 @@
 package com.gooddata.connector;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import com.gooddata.exception.*;
+import com.gooddata.connector.backend.ConnectorBackend;
+import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import org.gooddata.processor.CliParams;
-import org.gooddata.processor.Command;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
+import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.AbstractConnector;
-import org.gooddata.connector.Connector;
-import org.gooddata.connector.backend.ConnectorBackend;
-import org.gooddata.processor.Command;
-import org.gooddata.processor.ProcessingContext;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -70,6 +68,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     /**
      * Creates a new JDBC connector
      * @param connectorBackend connector backend
+     * @return a new instance of the JdbcConnector
      */
     public static JdbcConnector createConnector(ConnectorBackend connectorBackend) {
         return new JdbcConnector(connectorBackend);
@@ -77,6 +76,13 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * Saves a template of the config file
+     * @param name new schema name
+     * @param configFileName config file name
+     * @param jdbcUsr JDBC username
+     * @param jdbcPsw JDBC password
+     * @param jdbcDriver JDBC driver class name
+     * @param jdbcUrl JDBC url
+     * @param query JDBC query
      * @throws IOException if there is a problem with writing the config file
      * @throws SQLException if there is a problem with the db
      */
@@ -99,7 +105,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
-        ResultSetMetaData rsm = null;
+        ResultSetMetaData rsm;
         try {
             con = connect(jdbcUrl, jdbcUsr, jdbcPsw);
             st = con.createStatement();
@@ -207,7 +213,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                     con.close();
             }
             catch (SQLException e) {
-                throw new InternalErrorException(e);
+                l.error("Error closing JDBC connection.",e);
             }
         }
     }
@@ -344,6 +350,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
      * @param p command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
+     * @throws SQLException in case of a DB issue
      */
     private void loadJdbc(Command c, CliParams p, ProcessingContext ctx) throws IOException, SQLException {
         String configFile = c.getParamMandatory("configFile");
@@ -374,6 +381,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
      * @param p command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
+     * @throws SQLException in case of a DB issue 
      */
     private void generateJdbcConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException, SQLException {
         String configFile = c.getParamMandatory("configFile");

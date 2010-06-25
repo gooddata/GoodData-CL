@@ -21,7 +21,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.processor;
+package com.gooddata.processor;
 
 import com.gooddata.exception.ProcessingException;
 
@@ -39,6 +39,7 @@ public interface Executor {
      * @param c command to be processed
      * @param cli parameters (commandline params)
      * @param ctx processing context
+     * @throws ProcessingException in case of issues during the command processing
      * @return true if the command has been processed, false otherwise
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException;

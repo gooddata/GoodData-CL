@@ -24,7 +24,6 @@
 package com.gooddata.modeling.model;
 
 import com.gooddata.exception.ModelException;
-import com.gooddata.util.StringUtil;
 
 /**
  * GoodData LDM schema column

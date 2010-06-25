@@ -23,28 +23,23 @@
 
 package org.snaplogic.snap.gooddata;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.snaplogic.cc.Capabilities;
-import org.snaplogic.cc.Capability;
-import org.snaplogic.cc.ComponentAPI;
-import org.snaplogic.cc.InputView;
-import org.snaplogic.cc.OutputView;
+import com.gooddata.exception.GdcLoginException;
+import com.gooddata.integration.ftp.GdcFTPApiWrapper;
+import com.gooddata.integration.rest.GdcRESTApiWrapper;
+import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import org.snaplogic.cc.*;
 import org.snaplogic.cc.prop.SimpleProp;
 import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
 import org.snaplogic.common.ComponentResourceErr;
 import org.snaplogic.common.exceptions.SnapComponentException;
 import org.snaplogic.snapi.PropertyConstraint;
-import org.snaplogic.snapi.ResDef;
 import org.snaplogic.snapi.PropertyConstraint.Type;
+import org.snaplogic.snapi.ResDef;
 
-import com.gooddata.exception.GdcLoginException;
-import com.gooddata.integration.ftp.GdcFTPApiWrapper;
-import com.gooddata.integration.rest.GdcRESTApiWrapper;
-import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract class from which other DB connection components derive. It is used

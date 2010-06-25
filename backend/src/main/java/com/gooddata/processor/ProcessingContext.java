@@ -21,8 +21,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.processor;
+package com.gooddata.processor;
 
+import com.gooddata.connector.Connector;
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
@@ -30,7 +31,6 @@ import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.Connector;
 
 /**
  * GoodData
@@ -50,7 +50,7 @@ public class ProcessingContext {
 
     public String getProjectId() throws InvalidParameterException {
         if(projectId == null || projectId.length() <= 0)
-            throw new InvalidParameterException("No project is active. Please activate project via CreateProject or " +
+            throw new InvalidCommandException("No project is active. Please activate project via CreateProject or " +
                     "OpenProject command. ");
         else
             return projectId;

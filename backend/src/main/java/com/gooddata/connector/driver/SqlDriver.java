@@ -21,13 +21,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.connector.driver;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+package com.gooddata.connector.driver;
 
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.integration.model.DLIPart;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * GoodData SQL Executor
@@ -65,6 +65,7 @@ public interface SqlDriver {
      * Extracts the data from a CSV file to the database for normalization
      * @param c JDBC connection
      * @param schema the PDM schema
+     * @param file extracted file
      * @throws SQLException in case of db problems
      */
     public void executeExtractSql(Connection c, PdmSchema schema, String file) throws SQLException;
@@ -72,6 +73,7 @@ public interface SqlDriver {
     /**
      * Executes the Derby SQL that unloads the normalized data from the database to a CSV
      * @param c JDBC connection
+     * @param schema PDM schema
      * @param part DLI part
      * @param dir target directory
      * @param snapshotIds specific snapshots IDs that will be integrated
@@ -97,9 +99,11 @@ public interface SqlDriver {
 
     /**
      * Returns true if the specified column of the specified table exists in the DB
+     * @param c JDBC connection 
      * @param tbl table name
      * @param col column name
      * @return true if the table exists, false otherwise
+     * @throws SQLException in case of a DB issue 
      */
     public boolean exists(Connection c, String tbl, String col) throws SQLException;
 

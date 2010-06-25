@@ -23,20 +23,18 @@
 
 package com.gooddata.connector.driver;
 
-import com.gooddata.exception.ModelException;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.DLIPart;
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
+import com.gooddata.integration.model.Column;
+import com.gooddata.integration.model.DLIPart;
 import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
-import org.gooddata.connector.driver.AbstractSqlDriver;
-import org.gooddata.connector.driver.SqlDriver;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * GoodData Derby SQL driver. Generates the DDL (tables and indexes), DML (transformation SQL) and other

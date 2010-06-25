@@ -23,24 +23,21 @@
 
 package com.gooddata.connector;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.gooddata.connector.AbstractConnector;
-import org.gooddata.connector.Connector;
-import org.gooddata.connector.backend.ConnectorBackend;
-import org.gooddata.processor.CliParams;
-import org.gooddata.processor.Command;
-import org.gooddata.processor.ProcessingContext;
-
+import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.driver.Constants;
 import com.gooddata.csv.DataTypeGuess;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
+import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.NameTransformer;
 import com.gooddata.util.StringUtil;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * GoodData CSV Connector
@@ -78,16 +75,6 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * Saves a template of the config file
      * @param configFileName the new config file name
      * @param dataFileName the data file
-     * @throws IOException in case of an IO error
-     */
-    public static void saveConfigTemplate(String configFileName, String dataFileName) throws IOException {
-    	saveConfigTemplate(configFileName, dataFileName, null, null);
-    }
-
-    /**
-     * Saves a template of the config file
-     * @param configFileName the new config file name
-     * @param dataFileName the data file
      * @param defaultLdmType default LDM type
      * @param folder default folder
      * @throws IOException in case of an IO issue
@@ -99,6 +86,12 @@ public class CsvConnector extends AbstractConnector implements Connector {
     
     /**
      * Generates a source schema from the headers of a CSV file with a help of a partial config file
+     * @param configFileName config file name
+     * @param dataFileName CSV data file name
+     * @param defaultLdmType default LDM type
+     * @param folder folder
+     * @return new SourceSchema
+     * @throws IOException in case of IO issues
      */
     static SourceSchema guessSourceSchema (String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
         File dataFile = new File(dataFileName);

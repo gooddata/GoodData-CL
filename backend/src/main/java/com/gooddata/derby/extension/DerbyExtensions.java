@@ -23,19 +23,11 @@
 
 package com.gooddata.derby.extension;
 
+import com.gooddata.connector.driver.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import com.gooddata.connector.driver.Constants;
-
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
 
 /**
  * GoodData Derby SQL extension functions

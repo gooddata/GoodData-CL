@@ -21,13 +21,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.gooddata.connector;
+package com.gooddata.connector;
 
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
-import org.gooddata.processor.Executor;
+import com.gooddata.processor.Executor;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,6 +50,7 @@ public interface Connector extends Executor {
     /**
      * Generates the MAQL for the specified columns
      * of the datasource
+     * @param columns columns that the MAQL is generated for
      * @return the MAQL in string format
      */
     public String generateMaql(List<SourceColumn> columns);
