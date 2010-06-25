@@ -23,17 +23,21 @@
 
 package com.gooddata.csv;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import au.com.bytecode.opencsv.CSVReader;
 
 import com.gooddata.connector.driver.Constants;
 import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.modeling.model.SourceSchema;
-import org.apache.log4j.helpers.DateTimeDateFormat;
-
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * GoodData CSV data type guessing
@@ -65,6 +69,9 @@ public class DataTypeGuess {
      * @return true if the String is decimal, false otherwise
      */
     public static boolean isDecimal(String t) {
+    	for (String c : Constants.DISCARD_CHARS) {
+    		t = t.replace(c, "");
+    	}
         try {
             /*
             if(isInteger(t))
@@ -100,6 +107,18 @@ public class DataTypeGuess {
             }
         }
         return false;
+    }
+    
+    /**
+     * Guesses the CSV schema
+     * @param cr CSV reader
+     * @param hasHeader
+     * @return the String[] with the CSV column types
+     * @throws IOException in case of IO issue
+     */
+    public static String[] guessCsvSchema(File f, boolean hasHeader) throws IOException {
+    	CSVReader cr = new CSVReader(new FileReader(f));
+    	return guessCsvSchema(cr, hasHeader);
     }
 
 

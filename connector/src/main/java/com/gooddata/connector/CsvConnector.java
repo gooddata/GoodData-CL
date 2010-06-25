@@ -34,6 +34,7 @@ import org.gooddata.processor.Command;
 import org.gooddata.processor.ProcessingContext;
 
 import com.gooddata.connector.driver.Constants;
+import com.gooddata.csv.DataTypeGuess;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
@@ -119,30 +120,24 @@ public class CsvConnector extends AbstractConnector implements Connector {
         		return StringUtil.csvHeaderToTitle(str);
         	}
         });
-        for(int j = knownColumns; j < headers.length; j++) {
-        	final String header = headers[j];
-            final SourceColumn sc;
-            final String identifier = idGen.transform(header);
-            final String title = titleGen.transform(header);
-            if (defaultLdmType != null) {
-            	sc = new SourceColumn(identifier, defaultLdmType, title, folder);
-            } else {
-	            switch (i %3) {
-	                case 0:
-	                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_ATTRIBUTE, title, "folder");
-	                    break;
-	                case 1:
-	                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_FACT, title, "folder");
-	                    break;
-	                case 2:
-	                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_LABEL, title, "folder", "existing-attribute-name");
-	                    break;
-	                default:
-	                	throw new AssertionError("i % 3 outside {0, 1, 2} - this cannot happen");
+        if (knownColumns < headers.length) {
+        	String[] guessed = DataTypeGuess.guessCsvSchema(dataFile, true);
+        	if (guessed.length != headers.length) {
+        		throw new AssertionError("The size of data file header is different than the number of guessed fields");
+        	}
+	        for(int j = knownColumns; j < headers.length; j++) {
+	        	final String header = headers[j];
+	            final SourceColumn sc;
+	            final String identifier = idGen.transform(header);
+	            final String title = titleGen.transform(header);
+	            if (defaultLdmType != null) {
+	            	sc = new SourceColumn(identifier, defaultLdmType, title, folder);
+	            } else {
+		            sc = new SourceColumn(identifier, guessed[j], title, folder);
 	            }
-            }
-            s.addColumn(sc);
-            i++;
+	            s.addColumn(sc);
+	            i++;
+	        }
         }
         s.writeConfig(new File(configFileName));
     }
