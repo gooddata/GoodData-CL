@@ -11,7 +11,7 @@ LoadDateDimension(name="Payment");
 # Generate the date dimension MAQL script
 GenerateMaql(maqlFile="examples/hr/payment_date.maql");
 
-# Execute the date dimensionEXECUTE THE DATE DIMENSION MAQL
+# Execute the date dimension MAQL
 ExecuteMaql(maqlFile="examples/hr/payment_date.maql");
 
 # Load the salary data file, using the XML file describing the data
