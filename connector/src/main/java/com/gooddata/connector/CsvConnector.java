@@ -93,6 +93,14 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @throws IOException in case of an IO issue
      */
     public static void saveConfigTemplate(String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
+    	SourceSchema s = guessSourceSchema(configFileName, dataFileName, defaultLdmType, folder);
+        s.writeConfig(new File(configFileName));
+    }
+    
+    /**
+     * Generates a source schema from the headers of a CSV file with a help of a partial config file
+     */
+    static SourceSchema guessSourceSchema (String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
         File dataFile = new File(dataFileName);
         String name = dataFile.getName().split("\\.")[0];
         String[] headers = FileUtil.getCsvHeader(dataFile);
@@ -138,8 +146,8 @@ public class CsvConnector extends AbstractConnector implements Connector {
 	            s.addColumn(sc);
 	            i++;
 	        }
-        }
-        s.writeConfig(new File(configFileName));
+        } 
+        return s;
     }
 
     /**
