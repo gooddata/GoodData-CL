@@ -11,7 +11,7 @@ Each of the examples performs some or all of the steps as follows:
 1. Describe your datasets and create corresponding models in your GoodData project. The description involves information about which fields can be aggregated (_facts_) and by which the aggregated numbers can be broken down (_attributes_), how to connect multiple data sets, and so on. 
 1. Populate your datasets with data from various sources. The example covers loading data from CSV files, Google Analytics and Salesforce web services, and from a relational database accessible via a JDBC-4 interface.
 
-The examples are as follows:
+**The examples are as follows:**
 
 1. CSV connector examples:
 
