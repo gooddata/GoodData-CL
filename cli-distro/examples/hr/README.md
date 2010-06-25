@@ -2,6 +2,8 @@
 
 The HR example demonstrates how to use the basic CSV connector to quickly load various CSV files into GoodData and join them together.
 
+### Departments Data Set
+
 Run `gdi.sh` script with the `1-department.txt` file to create a new GoodData project and the _Department_ data set containing fields as described in the `department.xml` file. 
 
 _Windows:_
@@ -17,6 +19,8 @@ _Unix like OS (Linux, Mac OS X and others):_
         Project id = 'nfh4zj3itxkxhevu4a22t4xgeg41d5h0' created.
         Data successfully loaded.
 
+### Employee Data Set
+
 Run `gdi.sh` with the `2-employee.txt` file to add the 'Employee' dataset, connect it to 'Deparment' and populate it with data from the `employee.csv` file.
 
 _Windows:_
@@ -29,6 +33,8 @@ _Unix like OS (Linux, Mac OS X and others):_
 
         $ ./bin/gdi.sh -u <username> -p <password> examples/hr/2-employee.txt
         Data successfully loaded.
+
+### Salary Data Set
 
 The _Salary_ dataset will be added, connected and populated by running the following command:
 
