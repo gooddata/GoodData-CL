@@ -32,9 +32,9 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>gooddata-cl-cli</artifactId>
+	<artifactId>gooddata-cli</artifactId>
 	<description>GoodData CL tools</description>
-	<name>gooddata-cl-cli</name>
+	<name>gooddata-cli</name>
 
 	<dependencies>
 		<dependency>
