@@ -1,3 +1,4 @@
+log4j.rootLogger=debug, D
 log4j.rootLogger=info, stdout
 log4j.logger.com.gooddata.util.JdbcUtil=debug, S
 log4j.logger.org.apache.commons.httpclient=debug,H
@@ -24,3 +25,9 @@ log4j.appender.H.File=http.log
 log4j.appender.H.MaxFileSize=10000KB
 log4j.appender.H.layout=org.apache.log4j.PatternLayout
 log4j.appender.H.layout.ConversionPattern=%p %t %c - %m%n
+
+log4j.appender.D=org.apache.log4j.RollingFileAppender
+log4j.appender.D.File=debug.log
+log4j.appender.D.MaxFileSize=10000KB
+log4j.appender.D.layout=org.apache.log4j.PatternLayout
+log4j.appender.D.layout.ConversionPattern=%p %t %c - %m%n
