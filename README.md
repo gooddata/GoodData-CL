@@ -30,22 +30,20 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
 
 5. build the toolkit:
 
-        $ ./build.sh
-        [...]
-        [INFO] BUILD SUCCESSFUL
-        [INFO] ------------------------------------------------------------------------
-        [INFO] Total time: 9 seconds
-        [INFO] Finished at: Tue Jun 01 20:07:19 CEST 2010
-        [INFO] Final Memory: 31M/81M
-        [INFO] ------------------------------------------------------------------------
+        $ mvn install
 
-6. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
+6. build the client distribution
+
+        $ cd cli-distro
+        $ mvn assembly:asembly
+
+7. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
     - gooddata-cl-1.0-SNAPSHOT-final.tar.bz2
     - gooddata-cl-1.0-SNAPSHOT-final.tar.gz
     - gooddata-cl-1.0-SNAPSHOT-final.zip
 
-7. run the gdi.sh without arguments to get help from the unpacked distribution:
+8. run the gdi.sh without arguments to get help from the unpacked distribution:
 
         $ ./bin/gdi.sh
         usage: GdcDI
@@ -75,22 +73,20 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
 
 5. build the toolkit:
 
-        C:\>build.bat
-        [...]
-        [INFO] BUILD SUCCESSFUL
-        [INFO] ------------------------------------------------------------------------
-        [INFO] Total time: 9 seconds
-        [INFO] Finished at: Tue Jun 01 20:07:19 CEST 2010
-        [INFO] Final Memory: 31M/81M
-        [INFO] ------------------------------------------------------------------------
+        C:\>mvn install
 
-6. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
+6. build the client distribution
+
+        C:\>cd cli-distro
+        C:\>mvn assembly:asembly
+
+7. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
     - gooddata-cl-1.0-SNAPSHOT-final.tar.bz2
     - gooddata-cl-1.0-SNAPSHOT-final.tar.gz
     - gooddata-cl-1.0-SNAPSHOT-final.zip
 
-7. run the gdi.bat without arguments to get help from the unpacked distribution:
+8. run the gdi.bat without arguments to get help from the unpacked distribution:
 
         bin\gdi.bat
         usage: GdcDI
