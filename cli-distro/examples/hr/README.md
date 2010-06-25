@@ -4,7 +4,7 @@ The HR example demonstrates how to use the basic CSV connector to quickly load v
 
 ## Departments Data Set
 
-The departments data set is a minimalistic CSV that contains only a short department identifier and a department name.
+The departments data set is a minimalistic CSV that contains only a unique department identifier and a department name.
 
 Run `gdi.sh` script with the `1-department.txt` file to create a new GoodData project and the _Department_ data set containing fields as described in the `department.xml` file. 
 
