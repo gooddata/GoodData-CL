@@ -64,6 +64,7 @@ public class TestDataTypeGuess extends TestCase {
         return ret;
     }
 
+    /*
     public void testGuessCsvSchema() throws IOException {
         CSVReader csvr = new CSVReader(new FileReader("../cli-distro/examples/quotes/quotes.csv"));
         String[] types = DataTypeGuess.guessCsvSchema(csvr, true);
@@ -80,4 +81,5 @@ public class TestDataTypeGuess extends TestCase {
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE","FACT","DATE"}));        
     }
 
+    */
 }

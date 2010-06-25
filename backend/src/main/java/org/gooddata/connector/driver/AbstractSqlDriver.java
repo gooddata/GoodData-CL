@@ -191,7 +191,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     public boolean exists(Connection c, String tbl, String col) throws SQLException {
     	if (!exists(c, tbl))
     		throw new IllegalArgumentException("Table '" + tbl + "' does not exist.");
-    	String sql = "SELECT " + col + " FROM " + tbl + " WHERE 1=0";
+    	String sql = "SELECT * FROM " + tbl + " WHERE 1=0";
 		Statement st = c.createStatement();
 		try {
             ResultSet rs = st.executeQuery(sql);

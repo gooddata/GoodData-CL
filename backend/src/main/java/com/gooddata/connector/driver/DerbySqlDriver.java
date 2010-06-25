@@ -36,8 +36,7 @@ import org.apache.log4j.Logger;
 import org.gooddata.connector.driver.AbstractSqlDriver;
 import org.gooddata.connector.driver.SqlDriver;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * GoodData Derby SQL driver. Generates the DDL (tables and indexes), DML (transformation SQL) and other
@@ -163,5 +162,24 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
             " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='"+fact+"')"
         );
     }
+
+    /**
+     * {@inheritDoc}
+     * Derby SQL catalog is all in uppercase! We need to convert all names to uppercase :(
+     * @throws SQLException
+     */
+    public boolean exists(Connection c, String tbl) throws SQLException {
+    	return super.exists(c,tbl.toUpperCase());
+    }
+
+    /**
+     * {@inheritDoc}
+     * Derby SQL catalog is all in uppercase! We need to convert all names to uppercase :(
+     * @throws SQLException
+     */    
+    public boolean exists(Connection c, String tbl, String col) throws SQLException {
+    	return super.exists(c,tbl.toUpperCase(), col.toUpperCase());
+    }
+
     
 }

@@ -65,9 +65,6 @@ public class DataTypeGuess {
      * @return true if the String is decimal, false otherwise
      */
     public static boolean isDecimal(String t) {
-    	for (String c : Constants.DISCARD_CHARS) {
-    		t = t.replaceAll(c, "");
-    	}
         try {
             /*
             if(isInteger(t))

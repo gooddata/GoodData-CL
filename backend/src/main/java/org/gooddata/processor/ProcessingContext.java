@@ -24,6 +24,7 @@
 package org.gooddata.processor;
 
 import com.gooddata.exception.GdcLoginException;
+import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
@@ -66,6 +67,30 @@ public class ProcessingContext {
     public void setConnector(Connector connector) {
         this.connector = connector;
     }
+
+    /**
+     * Retrieves a connector and checks if it has been initialized
+     * @return connector
+     */
+    public Connector getConnectorMandatory() {
+        Connector cc = getConnector();
+        if(cc == null)
+            throw new InvalidCommandException("No conector initialized. Please load connector using a LoadXXX command.");
+        return cc;
+    }
+
+    /**
+     * Retrieves a project id and checks if it has been initialized
+     * @return project id
+     */
+    public String getProjectIdMandatory() {
+        String pid = getProjectId();
+        if(pid == null || pid.length()<=0)
+            throw new InvalidCommandException("No active project. Please activate a project using CreateProject, " +
+                    "OpenProject, or RetrieveProject commands.");
+        return pid;
+    }
+
 
     public GdcRESTApiWrapper getRestApi(CliParams cliParams) throws GdcLoginException {
     	if (_restApi == null) {

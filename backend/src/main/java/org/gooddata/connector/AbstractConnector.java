@@ -253,7 +253,7 @@ public abstract class AbstractConnector implements Connector {
      * @throws IOException IO issues
      */
     private void generateMAQL(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-        Connector cc = ctx.getConnector();
+        Connector cc = ctx.getConnectorMandatory();
         String maqlFile = c.getParamMandatory("maqlFile");
         String maql = cc.generateMaql();
         FileUtil.writeStringToFile(maql, maqlFile);
@@ -268,7 +268,7 @@ public abstract class AbstractConnector implements Connector {
      */
     private void executeMAQL(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         l.debug("Executing MAQL.");
-        String pid = ctx.getProjectId();
+        String pid = ctx.getProjectIdMandatory();
         final String maqlFile = c.getParamMandatory("maqlFile");
         final String ifExistsStr = c.getParam("ifExists");
         final boolean ifExists = (ifExistsStr != null && "true".equalsIgnoreCase(ifExistsStr));
@@ -290,8 +290,8 @@ public abstract class AbstractConnector implements Connector {
      */
     private void transferData(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
         l.debug("Transferring data.");
-        Connector cc = ctx.getConnector();
-        String pid = ctx.getProjectId();
+        Connector cc = ctx.getConnectorMandatory();
+        String pid = ctx.getProjectIdMandatory();
         // connector's schema name
         String ssn = StringUtil.formatShortName(cc.getSchema().getName());
         cc.initialize();
@@ -398,6 +398,7 @@ public abstract class AbstractConnector implements Connector {
         }
     }
 
+
     /**
      * Transfers the last snapshot of data to the GoodData project
      * @param c command
@@ -408,8 +409,8 @@ public abstract class AbstractConnector implements Connector {
      */
     private void transferLastSnapshot(Command c, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
         l.debug("Transfering last snapshot.");
-        Connector cc = ctx.getConnector();
-        String pid = ctx.getProjectId();
+        Connector cc = ctx.getConnectorMandatory();
+        String pid = ctx.getProjectIdMandatory();
         // connector's schema name
         String ssn = StringUtil.formatShortName(cc.getSchema().getName());
 
@@ -443,8 +444,8 @@ public abstract class AbstractConnector implements Connector {
      * @throws InterruptedException internal problem with making file writable
      */
     private void transferSnapshots(Command c, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
-        Connector cc = ctx.getConnector();
-        String pid = ctx.getProjectId();
+        Connector cc = ctx.getConnectorMandatory();
+        String pid = ctx.getProjectIdMandatory();
         String firstSnapshot = c.getParamMandatory("firstSnapshot");
         String lastSnapshot = c.getParamMandatory("lastSnapshot");
         l.debug("Transfering snapshots "+firstSnapshot+" - " + lastSnapshot);
@@ -503,7 +504,7 @@ public abstract class AbstractConnector implements Connector {
      * @param ctx current context
      */
     private void dropSnapshots(Command c, CliParams p, ProcessingContext ctx) {
-        Connector cc = ctx.getConnector();
+        Connector cc = ctx.getConnectorMandatory();
         cc.dropSnapshots();
     }
 
@@ -514,7 +515,7 @@ public abstract class AbstractConnector implements Connector {
      * @param ctx current context
      */
     private void listSnapshots(Command c, CliParams p, ProcessingContext ctx) {
-        Connector cc = ctx.getConnector();
+        Connector cc = ctx.getConnectorMandatory();
         l.info((cc.listSnapshots()));
     }
 
@@ -530,11 +531,11 @@ public abstract class AbstractConnector implements Connector {
     	final String configFile = c.getParamMandatory( "configFile");
     	final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
 
-    	final String pid = ctx.getProjectId();
+    	final String pid = ctx.getProjectIdMandatory();
     	final String maqlFile = c.getParamMandatory( "maqlFile");
     	final String dataset = schema.getDatasetName();
 
-    	Connector cc = ctx.getConnector();
+    	Connector cc = ctx.getConnectorMandatory();
         List<DLIPart> parts = ctx.getRestApi(p).getDLIParts(dataset, pid);
 
         final List<SourceColumn> newColumns = findNewAttributes(parts, schema);
@@ -588,7 +589,7 @@ public abstract class AbstractConnector implements Connector {
      * @throws InvalidParameterException if the project id isn't initialized
      */
     protected void setProjectId(ProcessingContext ctx) throws InvalidParameterException {
-        String pid = ctx.getProjectId();
+        String pid = ctx.getProjectIdMandatory();
         if(pid != null && pid.length() > 0)
             this.getConnectorBackend().setProjectId(pid);
         else
