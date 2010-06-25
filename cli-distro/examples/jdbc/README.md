@@ -1,6 +1,6 @@
 # Loading Fundamentals data from an existing JDBC source into GoodData
 
-This example shows how to connect an existing database accessible via JDBC, and create and populate a GoodData data set with results of a `SELECT` statement performed against an embedded database of companies fundamentals.
+This example shows how to connect an existing database accessible via JDBC, and create and populate a GoodData data set with results of a `SELECT` statement performed against an embedded database of companies' fundamentals.
 
 Run `gdi.sh` with the `fundamentals.txt` script. The script uses the `fundamentals.config.xml` configuration.
 
@@ -13,6 +13,9 @@ _Unix like OS (Linux, Mac OS X and others):_
 
         $ ./bin/gdi.sh -u <username> -p <password> examples/jdbc/fundamentals.txt
         Project id = 'yz5uq4am9ip3vxiou6m8xntd81r8qdh6' created.
+
+
+## What Next?
 
 This particular example is built using the embedded [Derby](http://db.apache.org/derby/) database.
 
@@ -29,4 +32,5 @@ For your convenience, this distribution has already bundled a couple of freely r
  - MySQL
  - PostgreSQL
  - Apache Derby
-    
+
+

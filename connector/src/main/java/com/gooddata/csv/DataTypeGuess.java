@@ -24,6 +24,8 @@
 package com.gooddata.csv;
 
 import au.com.bytecode.opencsv.CSVReader;
+
+import com.gooddata.connector.driver.Constants;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import org.apache.log4j.helpers.DateTimeDateFormat;
@@ -63,6 +65,9 @@ public class DataTypeGuess {
      * @return true if the String is decimal, false otherwise
      */
     public static boolean isDecimal(String t) {
+    	for (String c : Constants.DISCARD_CHARS) {
+    		t = t.replaceAll(c, "");
+    	}
         try {
             /*
             if(isInteger(t))

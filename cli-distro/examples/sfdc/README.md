@@ -2,7 +2,7 @@
 
 ## About this example
 
-The SFDC example shows how to create a GoodData project that models basic SFDC modules and populate it directly from your SFDC.
+The SFDC example shows how to create a GoodData project that models basic SFDC modules and populates the project directly from your SFDC account.
 
 _Windows:_
 
@@ -22,7 +22,7 @@ Note: this example fetches sample data from GoodData's demo account at SalesForc
 
 ## What next?
 
-In order to customize this example to import your own SalesForce data into GoodData, you will need to change the SFDC username, password and security token parameters that are passed to `LoadSfdc` and optionally `GenerateSfdcConfig` commands.
+In order to customize this example to import your own SalesForce data into GoodData, you will need to change the SFDC username, password and security token parameters that are passed to `LoadSfdc` and optionally `GenerateSfdcConfig` commands in the `sfdc.txt` script file.
 
 If you don't know your SFDC security token, you can either ask your SFDC administrator for help or generate a new one using the following procedure:
 
