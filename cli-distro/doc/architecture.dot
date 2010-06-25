@@ -1,13 +1,19 @@
-digraph GoodDataDI {
+digraph GoodDataCL {
+	CLI -> Connector;
 	Connector -> GdcRestAPIWrapper;
 	Connector -> GdcFtpAPIWrapper;
-	Connector -> DerbySQLGenerator;
+	Connector -> MySqlConnectorBackend;
+	Connector -> DerbyConnectorBackend;
 	Connector -> MAQLGenerator;
 	MAQLGenerator -> SourceSchema;
-	DerbySQLGenerator -> SourceSchema;
+	MySqlConnectorBackend -> PdmSchema;
+	MySqlConnectorBackend -> MySqlDriver;
+	DerbyConnectorBackend -> PdmSchema;
+	DerbyConnectorBackend -> DerbySqlDriver;
 	SourceSchema -> SourceColumn;
-	GdcRestAPIWrapper -> GoodDataProject;
-	GdcRestAPIWrapper -> GoodDataDLI;
-	GdcRestAPIWrapper -> GoodDataDLIPart;
-	GoodDataDLIPart -> GoodDataColumn;
+	PdmSchema -> PdmColumn;
+	GdcRestAPIWrapper -> Project;
+	GdcRestAPIWrapper -> DLI;
+	GdcRestAPIWrapper -> DLIPart;
+	DLIPart -> Column;
 }
