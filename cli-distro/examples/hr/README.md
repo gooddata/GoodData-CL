@@ -10,9 +10,9 @@ The model is described by the _logical data model (LDM) diagram_ below:
 
 ![Department LDM Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/hr/hr_1_department_ldm.png "Department LDM Diagram")
 
-The _Department_ box represent both the `Department` connection point and its label and the `Records of Department` box refers to the entire data set. These boxes are called _attributes_ in GoodData jargon.
+The _Department_ box represents both the `Department` connection point and its label and the `Records of Department` box refers to the entire data set. These boxes are called _attributes_ in GoodData jargon.
 
-Run `gdi.sh` script with the `1-department.txt` file to create a new GoodData project and the 'Department' data set containing fields as described in the `department.xml` file. 
+Run `gdi.sh` script with the `1-department.txt` file to create a new GoodData project and the _Department_ data set containing fields as described in the `department.xml` file. 
 
 _Windows:_
 
@@ -29,7 +29,7 @@ _Unix like OS (Linux, Mac OS X and others):_
 
 ## Employee Data Set
 
-The `employee.csv` file includes four columns: `ID` which is described as a _connection point_ in the `employee.xml` configuration file, `FIRSTNAME` and `LASTNAME` described as _labels_ and finally `DEPARTMENT` which is described as a `REFERENCE` to the schema `Department` (which is specified by the `schemaReference` element in the `employee.xml` file). The `REFERENCE` field always connect the target dataset using the value of it connection point. For example, _Sheri Nowmer_ from the `employee.csv` belongs to the department _d1_ which belongs to _HQ General Management_.
+The `employee.csv` file includes four columns: `ID` which is described as a _connection point_ in the `employee.xml` configuration file, `FIRSTNAME` and `LASTNAME` described as _labels_ and finally `DEPARTMENT` which is described as a `REFERENCE` to the `Department` schema (which is specified by the `schemaReference` element in the `employee.xml` file). The `REFERENCE` field always connects to the target data set using the value of its connection point. For example, _Sheri Nowmer_ from the `employee.csv` belongs to the department _d1_ which refers to _HQ General Management_.
 
 The logical model diagram of these two connected data sets will be as follows:
 
@@ -50,7 +50,7 @@ _Unix like OS (Linux, Mac OS X and others):_
 
 ## Salary Data Set
 
-The Salary data set will enhance our project with information about who and when received a payment. As described in the `salary.xml` configuration file, this dataset connnects to the `employee.csv` using the `EMPLOYEE_ID` _reference_ field and the date of payment is available in the `DATE` field.
+The Salary data set will enhance our project with information about who received a payment and when. As described in the `salary.xml` configuration file, this data set connnects to the `employee.csv` using the `EMPLOYEE_ID` _reference_ field and the date of payment is available in the `DATE` field.
 
 The complete logical data model can be illustrated by the following diagram:
 
@@ -58,7 +58,7 @@ The complete logical data model can be illustrated by the following diagram:
 
 For the sake of simplicity, only some of the date related attributes are displayed.
 
-The 'Salary' dataset will be added, connect and populated by running the following command:
+The _Salary_ dataset will be added, connected and populated by running the following command:
 
 _Windows:_
 
@@ -71,4 +71,6 @@ _Unix like OS (Linux, Mac OS X and others):_
         $ ./bin/gdi.sh -u <username> -p <password> examples/hr/3-salary.txt
         Data successfully loaded.
 
-Now you can log into the [GoodData user interface](https://secure.gooddata.com/) and select the _Quotes_ project. When you switch to the _Data_ section and click _Model_ in the left menu bar you can see a data model visualization similar to what's outlined above. Then you can switch to the _Reports_ section and start building your first reports - how about showing cross-department salary trend as a stacked bar chart?
+Now you can log into the [GoodData user interface](https://secure.gooddata.com/) and select the _HR_ project. When you switch to the _Data_ section and click _Model_ in the left menu bar you can see a data model visualization similar to what's outlined above.
+
+Then you can switch to the _Reports_ section and start building your first reports - how about showing cross-department salary trend as a stacked bar chart?

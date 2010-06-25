@@ -18,15 +18,22 @@ These fields are described in the pre-created `examples/quotes/quotes.config.xml
       <ldmType>FACT</ldmType>
     </column>
 
-First `&lt;column&gt;` record describes the first column of the CSV file, second record the second column and so on. Most of fields is either a number to be aggregated, such as a stock price (its `ldmType` is `FACT`) or it can be used to break down an aggregated number, e.g Market or Industry - these fields have `ldmType` set to `ATTRIBUTE`.
+First `&lt;column&gt;` record describes the first column of the CSV file, second record the second column and so on. Most of fields is either a number to be aggregated, such as a Stock Price (its `ldmType` is `FACT`) or it can be used to break down an aggregated number, e.g Market or Industry - these fields have `ldmType` set to `ATTRIBUTE`.
 
-Other `ldmType`s include `CONNECTION_POINT` (a unique identifier of a record within a dataset), `LABEL` (an alias of an `ATTRIBUTE` or a `CONNECTION_POINT`) and `DATE`. For example, the `Id` field is marked as `CONNECTION_POINT`, `Company` is an alias of `SYMBOL` and the `Quote Date` holds a date formatted as `yyyy-MM-dd` (e.g. 2008-02-28 for February 28th 2008). Note the `schemaReference` property tells GoodData to connect this date field to the date dimension named _Quote_.  
+Other `ldmType`s include `CONNECTION_POINT` (a unique identifier of a record within a dataset), `LABEL` (an alias of an `ATTRIBUTE` or a `CONNECTION_POINT`) and `DATE`. For example, the `Id` field is marked as `CONNECTION_POINT`, `Company` is an alias of `SYMBOL` and the `Quote Date` holds a date formatted as `yyyy-MM-dd` (e.g. 2008-02-28 for February 28th 2008).
+
+Note the `schemaReference` property tells GoodData to connect this date field to the date dimension named _Quote_. This date dimension is created in the model by the following lines at the begining of the `quotes.txt` script:
+
+    LoadDateDimension(name="Quote");
+    GenerateMaql(maqlFile="examples/quotes/quote_date.maql");
+    ExecuteMaql(maqlFile="examples/quotes/quote_date.maql");
+
 
 The structure of the logical model built on the top of this data set is as follows:
 
 ![Quotes Logical Model Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/quotes/quotes_ldm.png "Quotes Logical Model Diagram")
 
-The light green boxes depict attributes and the `Id` connection points, the ovals represent facts, labels and most of the attributes of the `Date (Quotes)` dimension hidden for the sake of simplicity. The attributes belonging to the date dimension are shown using double border line. 
+The light green boxes depict attributes including the `Id` connection point, the ovals represent facts. Labels and most of the attributes of the `Date (Quotes)` dimension hidden for the sake of simplicity. The attributes belonging to the date dimension are shown using double border line. 
 
 Run `gdi.sh` with the `quotes.txt` script as follows:
 
