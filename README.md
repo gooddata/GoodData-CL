@@ -26,7 +26,7 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
         $ export M2_HOME=path-to-your-maven-installation-dir
 
 4. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
-   Please note that only the Java version 1.6 is currently supported.
+   Please note that only the Java versions 1.5 and 1.6 are currently supported.
 
 5. build the toolkit:
 
@@ -71,7 +71,7 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
         C:\> SET M2_HOME=path-to-your-maven-installation-dir
 
 4. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
-   Please note that only the Java version 1.6 is currently supported.
+   Please note that only the Java versions 1.5 and 1.6 are currently supported.
 
 5. build the toolkit:
 
