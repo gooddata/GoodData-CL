@@ -71,8 +71,8 @@ Data Transfer Commands:
 CSV Connector Commands:
 -----------------------
 
- GenerateCsvConfig(csvDataFile=<file>, configFile=<config> [, defaultLdmType=<type>] [, folder=<folder>]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
-  csvDataFile - path to CSV file (only the first header row will be used)
+ GenerateCsvConfig(csvHeaderFile=<file>, configFile=<config> [, defaultLdmType=<type>] [, folder=<folder>]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
+  csvHeaderFile - path to CSV file (only the first header row will be used)
   configFile  - path to configuration file (will be overwritten)
   defaultLdmType - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
   folder - folder where to place new attributes
