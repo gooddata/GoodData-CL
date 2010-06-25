@@ -2,6 +2,22 @@
 
 This basic example loads a CSV data file containing stock quotes from the AMEX, NASDAQ and NYSE markets from January to August 2008.
 
+Run `gdi.sh` with the `quotes.txt` script as follows:
+
+_Windows:_
+
+        c:> bin\gdi.sh -u <username> -p <password> examples\quotes\quotes.txt
+        Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
+
+_Unix like OS (Linux, Mac OS X and others):_
+
+        $ ./bin/gdi.sh -u <username> -p <password> examples/quotes/quotes.txt
+        Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
+
+This creates a "Quotes" project in GoodData, sets up the data model and loads the data file into the project.
+
+## What's Inside?
+
 Each line of the CSV file contain fields titled `Id`, `Company`, `Symbol`, `Sector`, `Industry`, `Market`, `Quote Date`, `Open Price`, `High Price`, `Low Price`, `Close Price`, `Volume` and `Adjusted Close Price`.
 
 These fields are described in the pre-created `examples/quotes/quotes.config.xml` configuration file that consists of records such as:
@@ -35,19 +51,7 @@ The structure of the logical model built on the top of this data set is as follo
 
 The light green boxes depict attributes including the `Id` connection point, the ovals represent facts. Labels and most of the attributes of the `Date (Quotes)` dimension hidden for the sake of simplicity. The attributes belonging to the date dimension are shown using double border line. 
 
-Run `gdi.sh` with the `quotes.txt` script as follows:
-
-_Windows:_
-
-        c:> bin\gdi.sh -u <username> -p <password> examples\quotes\quotes.txt
-        Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
-
-_Unix like OS (Linux, Mac OS X and others):_
-
-        $ ./bin/gdi.sh -u <username> -p <password> examples/quotes/quotes.txt
-        Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
-
-This creates a "Quotes" project in GoodData, sets up the data model and loads the data file into the project.
+## What Next?
 
 Now you can log into the [GoodData user interface](https://secure.gooddata.com/) and select the _Quotes_ project. When you switch to the _Data_ section and click _Model_ in the left menu bar you can see a data model visualization similar to what's outlined above. Then you can switch to the _Reports_ section and start building your first reports. 
 
