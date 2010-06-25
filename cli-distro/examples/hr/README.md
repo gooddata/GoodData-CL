@@ -8,7 +8,7 @@ This data set will be populated with records from the `department.csv` CSV file.
 
 The model is described by the _logical data model (LDM) diagram_ below:
 
-![Department LDM Diagram](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/hr/hr_1_department_ldm.png "Department LDM Diagram")
+![Department LDM Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/hr/hr_1_department_ldm.png "Department LDM Diagram")
 
 The _Department_ box represent both the `Department` connection point and its label and the `Records of Department` box refers to the entire data set. These boxes are called _attributes_ in GoodData jargon.
 
@@ -33,7 +33,7 @@ The `employee.csv` file includes four columns: `ID` which is described as a _con
 
 The logical model diagram of these two connected data sets will be as follows:
 
-![Employee and Department LDM Diagram](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/hr/hr_2_employee_ldm.png "Employee and Deparment LDM Diagram")
+![Employee and Department LDM Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/hr/hr_2_employee_ldm.png "Employee and Deparment LDM Diagram")
         
 Run `gdi.sh` with the `2-employee.txt` file to add the 'Employee' dataset, connect it to 'Deparment' and populate it with data from the `employee.csv` file.
 
@@ -54,7 +54,7 @@ The Salary data set will enhance our project with information about who and when
 
 The complete logical data model can be illustrated by the following diagram:
 
-![Full HR Diagram](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/hr/hr_3_salary_ldm.png "Full HR Diagram")
+![Full HR Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/hr/hr_3_salary_ldm.png "Full HR Diagram")
 
 For the sake of simplicity, only some of the date related attributes are displayed.
 

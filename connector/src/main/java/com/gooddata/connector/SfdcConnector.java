@@ -35,6 +35,7 @@ import java.util.Map;
 
 import javax.xml.rpc.ServiceException;
 
+import com.gooddata.exception.InternalErrorException;
 import org.apache.axis.message.MessageElement;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.AbstractConnector;
@@ -295,7 +296,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             result = executeQuery(c, getSfdcQuery());
         } catch (SfdcException e) {
             l.debug("SFDC query execution failed.",e);
-            throw new IOException("SFDC query execution failed: ",e);
+            throw new InternalErrorException("SFDC query execution failed: ",e);
         }
         if(result != null && result.size() > 0) {
             l.debug("Started retrieving SFDC data.");

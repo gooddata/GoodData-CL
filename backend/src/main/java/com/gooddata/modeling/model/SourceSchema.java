@@ -41,7 +41,7 @@ public class SourceSchema {
 
     // initial XML config comment
     public static String CONFIG_INITIAL_COMMENT = "<!-- See documentation at " +
-            "http://github.com/gooddata/GoodData-DI/blob/master/cli-distro/doc/DOCUMENTATION.md#config -->\n\n";
+            "http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/DOCUMENTATION.md#config -->\n\n";
     
 
     /**

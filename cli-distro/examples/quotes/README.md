@@ -24,7 +24,7 @@ Other `ldmType`s include `CONNECTION_POINT` (a unique identifier of a record wit
 
 The structure of the logical model built on the top of this data set is as follows:
 
-![Quotes Logical Model Diagram](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/quotes/quotes_ldm.png "Quotes Logical Model Diagram")
+![Quotes Logical Model Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/quotes/quotes_ldm.png "Quotes Logical Model Diagram")
 
 The light green boxes depict attributes and the `Id` connection points, the ovals represent facts, labels and most of the attributes of the `Date (Quotes)` dimension hidden for the sake of simplicity. The attributes belonging to the date dimension are shown using double border line. 
 

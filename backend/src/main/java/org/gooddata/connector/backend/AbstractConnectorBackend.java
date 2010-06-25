@@ -244,9 +244,9 @@ import org.gooddata.connector.driver.SqlDriver;
         }
         finally {
             try {
-                if(r != null && !r.isClosed())
+                if(r != null)
                     r.close();
-                if (s != null && !s.isClosed())
+                if (s != null)
                     s.close();
                 if(con != null && !con.isClosed())
                     con.close();
@@ -281,9 +281,9 @@ import org.gooddata.connector.driver.SqlDriver;
         }
         finally {
             try {
-                if(r != null && !r.isClosed())
+                if(r != null)
                     r.close();
-                if(s != null && !s.isClosed())
+                if(s != null)
                     s.close();
                 if(con != null && !con.isClosed())
                     con.close();

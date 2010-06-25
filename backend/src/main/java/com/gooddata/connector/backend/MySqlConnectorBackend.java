@@ -126,7 +126,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         }
         finally {
             try  {
-                if(s != null && !s.isClosed())
+                if(s != null)
                     s.close();
                 if(con != null && !con.isClosed())
                     con.close();

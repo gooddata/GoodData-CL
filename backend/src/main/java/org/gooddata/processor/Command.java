@@ -27,6 +27,7 @@ import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
@@ -77,7 +78,7 @@ public class Command {
         this(command);
         this.parameters = new Properties();
         try {
-            this.parameters.load(new StringReader(params.replace(",","\n")));
+            this.parameters.load(new ByteArrayInputStream(params.replace(",","\n").getBytes()));
         }
         catch (IOException e) {
             l.debug("Error extracting command parameters.",e);

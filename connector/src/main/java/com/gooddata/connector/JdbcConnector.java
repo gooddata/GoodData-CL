@@ -116,9 +116,9 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             s.writeConfig(new File(configFileName));
         }
         finally {
-            if(rs != null && !rs.isClosed())
+            if(rs != null)
                 rs.close();
-            if(st != null && !st.isClosed())
+            if(st != null)
                 st.close();
             if(con != null && !con.isClosed())
                 con.close();
@@ -138,12 +138,6 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 type = SourceColumn.LDM_TYPE_ATTRIBUTE;
                 break;
             case Types.VARCHAR:
-                type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-                break;
-            case Types.NCHAR:
-                type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-                break;
-            case Types.NVARCHAR:
                 type = SourceColumn.LDM_TYPE_ATTRIBUTE;
                 break;
             case Types.INTEGER:
@@ -201,13 +195,13 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         }
         catch (SQLException e) {
             l.debug("Error retrieving data from the JDBC source.", e);
-            throw new IOException("Error retrieving data from the JDBC source.", e);
+            throw new InternalErrorException("Error retrieving data from the JDBC source.", e);
         }
         finally {
             try {
-                if (rs != null && !rs.isClosed())
+                if (rs != null)
                     rs.close();
-                if (s != null && !s.isClosed())
+                if (s != null)
                     s.close();
                 if (con != null && !con.isClosed())
                     con.close();

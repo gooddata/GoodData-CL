@@ -1,4 +1,4 @@
-<!-- See documentation at http://github.com/gooddata/GoodData-DI/blob/master/cli-distro/doc/DOCUMENTATION.md#config --><schema>
+<!-- See documentation at http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/DOCUMENTATION.md#config --><schema>
   <name>Opportunity</name>
   <columns>
     <column>

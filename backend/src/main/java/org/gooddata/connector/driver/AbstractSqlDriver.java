@@ -175,7 +175,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     	try {
 	    	return rs.next();
     	} finally {
-    		if (rs != null && !rs.isClosed())
+    		if (rs != null)
     			rs.close();
     	}
     }
@@ -204,11 +204,11 @@ public abstract class AbstractSqlDriver implements SqlDriver {
 	            }
 	            return false;
     		} finally {
-    			if (rs != null && !rs.isClosed())
+    			if (rs != null)
     				rs.close();
     		}
 		} finally {
-			if (st != null && !st.isClosed())
+			if (st != null)
 				st.close();
 		}
     }

@@ -65,17 +65,17 @@ public class TestDataTypeGuess extends TestCase {
     }
 
     public void testGuessCsvSchema() throws IOException {
-        CSVReader csvr = new CSVReader(new FileReader("cli-distro/examples/quotes/quotes.csv"));
+        CSVReader csvr = new CSVReader(new FileReader("../cli-distro/examples/quotes/quotes.csv"));
         String[] types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"FACT","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE",
                 "ATTRIBUTE","ATTRIBUTE","DATE","FACT","FACT","FACT","FACT","FACT","FACT"}));
-        csvr = new CSVReader(new FileReader("cli-distro/examples/hr/department.csv"));
+        csvr = new CSVReader(new FileReader("../cli-distro/examples/hr/department.csv"));
         types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE"}));
-        csvr = new CSVReader(new FileReader("cli-distro/examples/hr/employee.csv"));
+        csvr = new CSVReader(new FileReader("../cli-distro/examples/hr/employee.csv"));
         types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE"}));
-        csvr = new CSVReader(new FileReader("cli-distro/examples/hr/salary.csv"));
+        csvr = new CSVReader(new FileReader("../cli-distro/examples/hr/salary.csv"));
         types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE","FACT","DATE"}));        
     }

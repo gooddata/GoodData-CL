@@ -11,7 +11,7 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 ## UNIX/Mac installation
 </a>
 
-1. [download](http://github.com/gooddata/GoodData-DI/downloads) and unpack the binary distribution:
+1. [download](http://github.com/gooddata/GoodData-CL/downloads) and unpack the binary distribution:
 
 2. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
    Please note that only the Java version 1.6 is currently supported.
@@ -29,7 +29,7 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 ## Windows installation
 </a>
 
-1. [download](http://github.com/gooddata/GoodData-DI/downloads) and unpack the binary distribution:
+1. [download](http://github.com/gooddata/GoodData-CL/downloads) and unpack the binary distribution:
 
 2. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
    Please note that only the Java version 1.6 is currently supported.

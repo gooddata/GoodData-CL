@@ -101,9 +101,9 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
             rs = JdbcUtil.executeQuery(s, sql);
         }
         finally {
-            if (rs != null && !rs.isClosed())
+            if (rs != null)
                 rs.close();
-            if (s != null && !s.isClosed())
+            if (s != null)
                 s.close();
         }
         l.debug("Data unloading finished.");

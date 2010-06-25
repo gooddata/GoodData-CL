@@ -25,8 +25,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.gooddata.di</groupId>
-		<artifactId>GoodData-DI</artifactId>
+		<groupId>org.gooddata.cl</groupId>
+		<artifactId>GoodData-CL</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>connector</artifactId>
@@ -35,11 +35,11 @@
 	<dependencies>
 		<!-- GDC DI modules -->
 		<dependency>
-			<groupId>org.gooddata.di</groupId>
+			<groupId>org.gooddata.cl</groupId>
 			<artifactId>backend</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.gooddata.di</groupId>
+			<groupId>org.gooddata.cl</groupId>
 			<artifactId>common</artifactId>
 		</dependency>
 		<!-- 3rd party dependencies -->

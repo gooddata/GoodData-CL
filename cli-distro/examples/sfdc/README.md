@@ -27,10 +27,10 @@ In order to customize this example to import your own SalesForce data into GoodD
 If you don't know your SFDC security token, you can either ask your SFDC administrator for help or generate a new one using the following procedure:
 
   1. Click the _Setup_ link in SFDC menu:
-     ![SFDC setup link screenshot](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/sfdc/sfdc_token_01_menu.png "SFDC Setup link screenshot")
+     ![SFDC setup link screenshot](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/sfdc/sfdc_token_01_menu.png "SFDC Setup link screenshot")
   1. Click the _Reset security token_:
-     ![SFDC setup screen screenshot](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/sfdc/sfdc_token_02_setup.png "SFDC Setup screen screenshot")
+     ![SFDC setup screen screenshot](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/sfdc/sfdc_token_02_setup.png "SFDC Setup screen screenshot")
   1. Click the _Reset security token_ button in the following confirmation screen:
-     ![SFDC token reset confirmation screenshot](http://github.com/gooddata/GoodData-DI/raw/master/cli-distro/examples/sfdc/sfdc_token_03_confirm.png "SFDC token reset screenshot")
+     ![SFDC token reset confirmation screenshot](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/sfdc/sfdc_token_03_confirm.png "SFDC token reset screenshot")
 
 An e-mail with the SFDC security token will arrive into your mailbox soon; please check your _spam_ folder if it seems to take too long.
