@@ -77,7 +77,7 @@ _Unix like OS (Linux, Mac OS X and others):_
        
 ### What's Inside?
 
-As described in the `salary.xml` configuration file, this data set connnects to the `employee.csv` using the `EMPLOYEE_ID` _reference_ field and the date of payment is available in the `DATE` field.
+As described in the `salary.xml` configuration file, this data set connnects to the `employee.csv` using the `EMPLOYEE_ID` field (`ldmType` is `REFERENCE`) and the date of payment is available in the `DATE` field (`ldmType` is `DATE`). Note the `DATE` field has the `schemaReference` set to `payment` which refers to the date dimension defined and created in the lines 9, 12 and 15 of the `3-salary.txt` script.
 
 The complete logical data model can be illustrated by the following diagram:
 
