@@ -35,7 +35,7 @@ import java.io.IOException;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class TestDataTypeGuess extends TestCase {
+public class DataTypeGuessTest extends TestCase {
 
     public void testIsInteger() {
         assertTrue(DataTypeGuess.isInteger("12"));
@@ -64,22 +64,21 @@ public class TestDataTypeGuess extends TestCase {
         return ret;
     }
 
-    /*
     public void testGuessCsvSchema() throws IOException {
-        CSVReader csvr = new CSVReader(new FileReader("../cli-distro/examples/quotes/quotes.csv"));
+    	String path = getClass().getResource("/com/gooddata/csv/quotes.csv").getPath();
+        CSVReader csvr = new CSVReader(new FileReader(path));
         String[] types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"FACT","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE",
                 "ATTRIBUTE","ATTRIBUTE","DATE","FACT","FACT","FACT","FACT","FACT","FACT"}));
-        csvr = new CSVReader(new FileReader("../cli-distro/examples/hr/department.csv"));
+        csvr = new CSVReader(new FileReader(getClass().getResource("/com/gooddata/csv/department.csv").getPath()));
         types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE"}));
-        csvr = new CSVReader(new FileReader("../cli-distro/examples/hr/employee.csv"));
+        csvr = new CSVReader(new FileReader(getClass().getResource("/com/gooddata/csv/employee.csv").getPath()));
         types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE"}));
-        csvr = new CSVReader(new FileReader("../cli-distro/examples/hr/salary.csv"));
+        csvr = new CSVReader(new FileReader(getClass().getResource("/com/gooddata/csv/salary.csv").getPath()));
         types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE","FACT","DATE"}));        
     }
 
-    */
 }
