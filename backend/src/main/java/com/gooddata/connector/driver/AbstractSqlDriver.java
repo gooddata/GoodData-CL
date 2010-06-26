@@ -188,7 +188,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
             try {
 	            ResultSetMetaData md = rs.getMetaData();
 	            int cols = md.getColumnCount();
-	            for (int i = 0; i < cols; i++) {
+	            for (int i = 1; i <= cols; i++) {
 	            	if (col.equals(md.getColumnName(i)))
 	            		return true;
 	            }
