@@ -19,7 +19,7 @@ For example, if you log into your Google Analytics user interface with username 
                         metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits",
                         startDate="2008-01-01",endDate="2010-06-15");
 
-Run `gdi.sh` with the `ga.txt` script. The script uses the `ga.config.xml` configuration file to describe incoming data.
+After you have customized the `ga.txt` script, you can try the Google Analytics example by running the following command:
 
 _Windows:_
 
