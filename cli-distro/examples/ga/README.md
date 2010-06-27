@@ -7,7 +7,7 @@ Edit the `examples/ga/ga.txt` file and locate the line starting with the `LoadGo
 Make sure you provide `username` and `password` of an account that can log on to the Google Analytics user interface to access the statitics of the entered profile.
 
 The value of the `profileId` parameter is the same as the value of the `id` field in the web address of your Google Analytics reports:
- ![Google Analytics profileId in the web address screenshot](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/sfdc/ga_profileId.png "Google Analytics profileId in the web address screenshot")
+ ![Google Analytics profileId in the web address screenshot](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/ga/ga_profileId.png "Google Analytics profileId in the web address screenshot")
 
 For example, if you log into your Google Analytics user interface with username `jane@example.com` and password `jabberwocky78` and the web address of your profile's Google Analytics dashboard is `https://www.google.com/analytics/reporting/?reset=1&**id=7468896**&pdr=20100527-20100626` then your `LoadGoogleAnalytics` command will be as follows:
 
