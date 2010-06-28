@@ -73,11 +73,11 @@ The most simple data set takes the form of `SELECT <field1>, <field2>, ... FROM 
 
 When adding a data set featuring custom fields or even custom object you need to know the API names of the custom fields. These API names can be found under the _Setup_ menu of your Salesforce. For example, in order to get the API name of the `Contract Value` field of GoodData's SalesForce we need to:
 
- 1. Click _Setup_ in the main menu and expand App Setup / Customize / Opportunities / Fields items in the left menu bar:
+ 1. **Click _Setup_ in the main menu** and expand App Setup / Customize / Opportunities / Fields items in the left menu bar:
  ![Click Setup and expand App Setup etc](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/sfdc/sfdc_fields_01_setup.png)
- 2. Scroll down to the _Opportunity Custom Fields & Relationships_ and click the _Contract Value_ link
+ 2. **Scroll down** to the _Opportunity Custom Fields & Relationships_ and click the _Contract Value_ link
  ![Opportunity Custom Fields & Relationships](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/sfdc/sfdc_fields_02_custom_fields.png)
- 3. Check the _API Name_ field in the following screen:
+ 3. **Check the _API Name_ field** in the following screen:
  ![SFDC API Name](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/sfdc/sfdc_fields_03_api_name.png)
 
 So the last thing I need to add the `Contract_Value__c` field API name to the `query` parameter of the opportunity related occurences of the `LoadSfdc` and `GenerateSfdcConfig` commands in the `sfdc.txt` script.
