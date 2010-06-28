@@ -25,6 +25,10 @@ GenerateMaql(maqlFile="examples/sfdc/closed.maql");
 # NO DATA TRANSFER IS NECESSARY FOR TIME DIMENSIONS
 ExecuteMaql(maqlFile="examples/sfdc/closed.maql");
 
+# GENERATE THE ACCOUNT CONFIG 
+# INTENTIONALLY COMMENTED OUT, A PRE-GENERATED CONFIG FILE IS INCLUDED ALREADY IN THE 'sfdc' FOLDER
+#GenerateSfdcConfig(name="Account", configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name FROM Account");
+
 # LOAD THE ACCOUNT
 LoadSfdc(configFile="examples/sfdc/account.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name FROM Account");
 
@@ -39,10 +43,10 @@ TransferLastSnapshot(incremental="true");
 
 # GENERATE THE OPPORTUNITY CONFIG 
 # INTENTIONALLY COMMENTED OUT, A PRE-GENERATED CONFIG FILE IS INCLUDED ALREADY IN THE 'sfdc' FOLDER
-#GenerateSfdcConfig(name="Opportunity", configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
+#GenerateSfdcConfig(name="Opportunity", configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
 
 # LOAD THE OPPORTUNITY
-LoadSfdc(configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
+LoadSfdc(configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
 
 # GENERATE THE OPPORTUNITY MAQL
 GenerateMaql(maqlFile="examples/sfdc/opportunity.maql");

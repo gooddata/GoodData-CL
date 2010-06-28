@@ -4,7 +4,7 @@
   <columns>
     <column>
       <name>id</name>
-      <title>Id</title>
+      <title>Account Id</title>
       <ldmType>CONNECTION_POINT</ldmType>
       <folder>Account</folder>
     </column>
