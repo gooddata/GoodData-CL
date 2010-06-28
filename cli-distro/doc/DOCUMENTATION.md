@@ -17,7 +17,7 @@ For initial installation, please refer to the [README](http://github.com/gooddat
         $ ./bin/gdi.sh -u <username> -p <password> -e 'CreateProject("my project")'
         $ ./bin/gdi.sh -u <username> -p <password> /path/to/commands.txt
 
-3. A list of commands and descriptions is displayed when you run `gdi.sh` without parameter. It can also be found [here](http://github.com/gooddata/GoodData-CL/blob/master/src/main/resources/com/gooddata/processor/COMMANDS.txt#files)
+3. A list of commands and descriptions is displayed when you run `gdi.sh` without parameter. It can also be found [here](http://github.com/gooddata/GoodData-CL/blob/master/cli/src/main/resources/com/gooddata/processor/COMMANDS.txt#files)
 
 <a name="workflow">
 # Workflow
