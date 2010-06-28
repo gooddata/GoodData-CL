@@ -293,7 +293,7 @@ public class SourceColumn {
         if(LDM_TYPE_REFERENCE.equals(ldmType) && (schemaReference == null || schemaReference.length()<=0))
             throw new ModelException("Column "+name+" has type REFERENCE but doesn't contain any schema reference.");
         if(LDM_TYPE_DATE.equals(ldmType) && (format == null || format.length()<=0))
-            throw new ModelException("Column "+name+" has type DATA but doesn't contain any date format.");
+            throw new ModelException("Column "+name+" has type DATE but doesn't contain any date format.");
     }
 
 }
