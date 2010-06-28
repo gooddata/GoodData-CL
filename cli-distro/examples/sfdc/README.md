@@ -23,6 +23,7 @@ Note: this example fetches sample data from GoodData's demo account at SalesForc
 ## What's Inside?
 
 The `sfdc.txt` script brings the following entities into the project:
+
  - date dimension associated with the opportunity creation using the `LoadDateDimension(name="Created");`
  - date dimension associated with closing an opportunity using the `LoadDateDimension(name="Closed");`
  - SFDC `Account` object; only the `Id` and `Name` fields are loaded as specified by the `query` parameter of the first `LoadSfdc` command
