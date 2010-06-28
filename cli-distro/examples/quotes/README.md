@@ -55,4 +55,4 @@ The light green boxes depict attributes including the `Id` connection point, the
 
 Now you can log into the [GoodData user interface](https://secure.gooddata.com/) and select the _Quotes_ project. When you switch to the _Data_ section and click _Model_ in the left menu bar you can see a data model visualization similar to what's outlined above. Then you can switch to the _Reports_ section and start building your first reports. 
 
-Read further comments in the [script file](quotes.txt) for instructions how to setup a repeatable data load or how to create another project based your own CSV data set. 
+Read further comments in the [script file](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/quotes/quotes.txt) for instructions how to setup a repeatable data load or how to create another project based your own CSV data set. 
