@@ -6,7 +6,7 @@ The SFDC example shows how to create a GoodData project that models basic SFDC o
 
 _Windows:_
 
-        c:> bin\gdi.sh -u <username> -p <password> examples\sfdc\sfdc.txt
+        c:> bin\gdi.bat -u <username> -p <password> examples\sfdc\sfdc.txt
         Project id = 'wuw52aoc8z6rjvd1ufem23zxhdeuukm3' created.
         Data successfully loaded.
         Data successfully loaded.

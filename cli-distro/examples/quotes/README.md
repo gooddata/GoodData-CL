@@ -6,7 +6,7 @@ Run `gdi.sh` with the `quotes.txt` script as follows:
 
 _Windows:_
 
-        c:> bin\gdi.sh -u <username> -p <password> examples\quotes\quotes.txt
+        c:> bin\gdi.bat -u <username> -p <password> examples\quotes\quotes.txt
         Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
 
 _Unix like OS (Linux, Mac OS X and others):_
