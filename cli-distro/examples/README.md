@@ -15,7 +15,7 @@ Each of the examples performs some or all of the steps as follows:
 
 1. CSV connector examples:
 
-    - [Quotes](quotes/#readme) - loads a simple CSV file of daily stock quotes from AMEX, NYSE and NASDAY in 2008
+    - [Quotes](quotes/#readme) - loads a simple CSV file of daily stock quotes from AMEX, NYSE and NASDAQ in 2008
     - [Human Resources](hr/#readme) - loads three separate CSV data sets of Deparments, Employees and Paid Salaries and connect them to enable reports such as _'Total paid amount by department'_ etc.
 
 1. JDBC connector example: 
