@@ -23,7 +23,7 @@ _Unix like OS (Linux, Mac OS X and others):_
 
 ### What's Inside
 
-This data set will be populated with records from the `department.csv` CSV file. The structure of the `department.csv` file is described in the `department.xml` configuration file: one unique _connection point_ and its corresponding label.
+This data set will be populated with records from the `department.csv` CSV file. The structure of the `department.csv` file is described in the `department.xml` configuration file: one unique _connection point_ (with `ldmType` set to `CONNECTION_POINT` and its corresponding label (`ldmType` set to `LABEL` and the `reference` set to the `name` of the primary field - `department`).
 
 The model is described by the _logical data model (LDM) diagram_ below:
 
@@ -33,7 +33,11 @@ The _Department_ box represents both the `Department` connection point and its l
 
 ## Employee Data Set
 
-The `employee.csv` data set contains employee names and departments. It can be connected to the `department.csv` data set using the `DEPARTMENT` field.
+The `employee.csv` data set contains employee names and departments.
+
+As described by the `employee.xml` configuration file it can be connected to the `department.csv` data set using the `DEPARTMENT` field: see the fourth `column` element with the `ldmType` set to `REFERENCE` and `schemaReference` set to the name of the referenced data set which is `Department`.
+
+Compare to the `name` element at the begining of the `department.xml` file.
 
 Run `gdi.sh` with the `2-employee.txt` file to add the 'Employee' dataset, connect it to 'Deparment' and populate it with data from the `employee.csv` file.
 
