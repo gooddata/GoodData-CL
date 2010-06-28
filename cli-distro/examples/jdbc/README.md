@@ -42,13 +42,13 @@ If unsure, please consult your database administrator or the following list of c
 
  - PostgreSQL:
 
-   - driver: 
-   - sample url: 
+   - driver: `org.postgresql.Driver`
+   - sample url: jdbc:postgresql://localhost/mydatabase
 
 - Apache Derby
 
-   - driver: org.apache.derby.jdbc.EmbeddedDriver
-   - sample url: jdbc:derby:../examples/jdbc/fundamentals
+   - driver: `org.apache.derby.jdbc.EmbeddedDriver`
+   - sample url: jdbc:derby:/path/to/my/data/folder
 
 ### Define your data set
 
