@@ -79,5 +79,5 @@ Finally, review the generated configuration file (you have specified its name vi
   - All fields you want to aggregate have set `ldmType` property as `FACT`
   - The fields to be used to break down your aggregated numbers have `ldmType` set to `ATTRIBUTE`.
   - If there is a field that can be used as a unique identifier of each row set its `ldmType` to `CONNECTION_POINT`. 
-
+  - If your data set contains any date fields, their `ldmType` should be specified as `DATE` and `format` should be `yyyy-MM-dd`. In this case, your `myjdbc.txt` script should also create a date dimension for every such field and this date dimension should be referenced by the `schemaReference` attribute of the configuration file, please refer to the [Quotes example](../quotes/#readme) for more details 
 
