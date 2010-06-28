@@ -74,4 +74,4 @@ In each &lt;column&gt; entry, following tags can be used:
 # Examples
 </a>
 
-The examples folder contains typical some typical scenarios. Each example contains it's own [README](../examples/zendesk/README.md#readme) file describing usage.
+The examples folder contains typical some typical scenarios. Each example contains it's own [README](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/README.md#readme) file describing usage.
