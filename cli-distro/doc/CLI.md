@@ -25,6 +25,8 @@ The ongoing data loading scripts usually:
 
 # Commands Reference
 
+The following paragraphs describe the specific GoodData CL commands. 
+ 
 ## Project Management Commands
 
 * CreateProject(name=&lt;project-name&gt;, desc=&lt;description&gt;) - create a new project on the &lt;hostname&gt; server
