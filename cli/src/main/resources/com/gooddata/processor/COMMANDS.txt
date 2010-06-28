@@ -142,8 +142,8 @@ SalesForce Connector Commands:
   token - SFDC security token (you may append the security token to the password instead using this parameter)
   
 
-Time Dimension Connector:
--------------------------
+Time Dimension Connector Commands:
+----------------------------------
 
  LoadDateDimension(name=<name>)  - load new time dimension into the project, must call CreateProject or OpenProject before
   name - the time dimension name differentiates the time dimension form others. This is typically something like "closed", "created" etc.

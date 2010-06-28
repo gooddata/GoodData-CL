@@ -1,53 +1,75 @@
+# GoodData CL Commands
 
+GoodData Cl supports following groups of commands:
 
-Project Management Commands:
-----------------------------
+ * Project Management Commands create (`CreateProject`), drop (`DropProject`) or open (`OpenProject`) a project identified by a project id. You can also save a project id to a file (`StoreProject`) in order to retrieve (`RetrieveProject`) it in another command script.
+ * Connector Commands that either generate the [XML configuration](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/XML.md) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Load<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
+ * Logical Model Management Commands generate (`GenerateMaql`) and execute (`ExecuteMaql`) the [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) script for a connector that has been previously loaded via the `Load<Source-Type>` command.
+* Data Transfer Commands that transform, and transfer the data from a previously loaded (`Load<Source-Type>`) connector. All the data that are transferred are accumulated in a local database (Derby SQL or MySQL) as so called snapshots. You can decide to transfer all snapshots (`TransferData`), any snapshot (`TransferSnapshots`) or the last snapshot (`TransferLastSnapshot`).
 
-* CreateProject(name=<project-name>, desc=<description>) - create a new project on the <hostname> server
+## Project Initialization Workflow
+Usually you want to initialize your project with following commands:
+
+1. `CreateProject` or `OpenProject`. 
+2. Optionally you generate [XML configuration](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/XML.md) for your data source using a `Generate<Source-Type>Config` command that yields an XML configuration file. This file describes your data structure and a way how the GoodData Logical Data Model is going to be generated. Sometimes you might want to review the XML config file and perform some changes. You'll most probably want to comment out the `Generate<Source-Type>Config` after the first run. 
+3. Initialize your data source Connector using a `Load<Source-Type>` command. The `Load<Source-Type>` command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
+4. Generate and execute [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) for your data source using the `GenerateMaql` and `ExecuteMaql` commands. The [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) generates your project's Logical Data Model (LDM) and Data Loading Interface (DLI). The DLI is later used by the following Data Transfer commands. You need to generate your LDM and DLI only once per each project. That is why the scripts that transfer data on regular basis don't use the the `GenerateMaql` and `ExecuteMaql` commands.
+5. `TransferData` or `TransferLastSnapshot` commands that transform, package, and transfer the data.
+
+## Project Data Loading Workflow
+The ongoing data loading scripts usually:
+
+1. `OpenProject` or `RetrieveProject` command.
+2. Initialize your data source Connector using a `Load<Source-Type>` command. The `Load<Source-Type>` command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
+3. `TransferData` or `TransferLastSnapshot` commands that transform, package, and transfer the data.
+
+# Commands Reference
+
+## Project Management Commands
+
+* CreateProject(name=&lt;project-name&gt;, desc=&lt;description&gt;) - create a new project on the &lt;hostname&gt; server
   project-name - name of the new project
   description  - (optional) project description
 
-* DropProject(id=<project-id>) - drop the project on the <hostname> server
+* DropProject(id=&lt;project-id&gt;) - drop the project on the &lt;hostname&gt; server
   project-id - project id
 
-* OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
+* OpenProject(id=&lt;identifier&gt;) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
   identifier - id of an existing project (takes the form of an MD5 hash)
 
-* StoreProject(fileName=<file>) - saves the current project identifier into the specified file
+* StoreProject(fileName=&lt;file&gt;) - saves the current project identifier into the specified file
   fileName - file to save the project identifier
   
-* RetrieveProject(fileName=<file>) - loads the current project identifier from the specified file
+* RetrieveProject(fileName=&lt;file&gt;) - loads the current project identifier from the specified file
   fileName - file to load the project identifier from
 
- Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
+ Lock(path=&lt;file&gt;) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 
-Logical Model Management Commands:
-----------------------------------
+## Logical Model Management Commands
 
-* GenerateMaql(maqlFile=<maql>) - generate MAQL DDL script describing data model from the local config file, must call CreateProject or OpenProject and a LoadXXX before
+* GenerateMaql(maqlFile=&lt;maql&gt;) - generate MAQL DDL script describing data model from the local config file, must call CreateProject or OpenProject and a LoadXXX before
   maqlFile - path to MAQL file (will be overwritten)
   
-* GenerateUpdateMaql(maqlFile=<maql>) - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project, must call CreateProject or OpenProject and LoadXXX before
+* GenerateUpdateMaql(maqlFile=&lt;maql&gt;) - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project, must call CreateProject or OpenProject and LoadXXX before
   maqlFile - path to MAQL file (will be overwritten)
 
-* ExecuteMaql(maqlFile=<maql> [, ifExists=<true | false>]) - run MAQL DDL script on server to generate data model, must call CreateProject or OpenProject and LoadXXX before
+* ExecuteMaql(maqlFile=&lt;maql&gt; [, ifExists=&lt;true | false&gt;]) - run MAQL DDL script on server to generate data model, must call CreateProject or OpenProject and LoadXXX before
   maqlFile - path to the MAQL file (relative to PWD)
   ifExists - if set to true the command quits silently if the maqlFile does not exist, default is false
 
-Data Transfer Commands:
------------------------
+## Data Transfer Commands
 
-* TransferData([incremental=<true | false>] [, waitForFinish=<true | false>]) - upload data (all snapshots) to the server, must call CreateProject or OpenProject and Load<Connector> before
+* TransferData([incremental=&lt;true | false&gt;] [, waitForFinish=&lt;true | false&gt;]) - upload data (all snapshots) to the server, must call CreateProject or OpenProject and Load&lt;Connector&gt; before
   incremental - incremental transfer (true | false), default is false
   waitForFinish - waits for the server-side processing (true | false), default is true
 
-* TransferSnapshots(firstSnapshot=snapshot-id, lastSnapshot=snapshot-id [,incremental=<true | false>] [, waitForFinish=<true | false>]) - uploads all snapshots between the firstSnapshot and the lastSnapshot (inclusive). 
+* TransferSnapshots(firstSnapshot=snapshot-id, lastSnapshot=snapshot-id [,incremental=&lt;true | false&gt;] [, waitForFinish=&lt;true | false&gt;]) - uploads all snapshots between the firstSnapshot and the lastSnapshot (inclusive). 
   firstSnapshot - the first transferred snapshot id
   lastSnapshot - the last transferred snapshot id
   incremental - incremental transfer (true | false), default is false
   waitForFinish - waits for the server-side processing (true | false), default is true
 
-* TransferData([incremental=<true | false>] [, waitForFinish=<true | false>]) - uploads the lastSnapshot 
+* TransferData([incremental=&lt;true | false&gt;] [, waitForFinish=&lt;true | false&gt;]) - uploads the lastSnapshot 
   incremental - incremental transfer (true | false), default is false
   waitForFinish - waits for the server-side processing (true | false), default is true
 
@@ -55,31 +77,28 @@ Data Transfer Commands:
 
 * DropSnapshots() - drops the internal DB, must call CreateProject or OpenProject before
 
-CSV Connector Commands:
------------------------
+## CSV Connector Commands
 
-* GenerateCsvConfig(csvHeaderFile=<file>, configFile=<config> [, defaultLdmType=<type>] [, folder=<folder>]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
+* GenerateCsvConfig(csvHeaderFile=&lt;file&gt;, configFile=&lt;config&gt; [, defaultLdmType=&lt;type&gt;] [, folder=&lt;folder&gt;]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
   csvHeaderFile - path to CSV file (only the first header row will be used)
   configFile  - path to configuration file (will be overwritten)
   defaultLdmType - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
   folder - folder where to place new attributes
 
-* LoadCsv(csvDataFile=<data>, configFile=<config>, header=<true | false>) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
+* LoadCsv(csvDataFile=&lt;data&gt;, configFile=&lt;config&gt;, header=&lt;true | false&gt;) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
   csvDataFile    - path to CSV datafile
   configFile  - path to XML configuration file (see the GenerateCsvConfig command that generates the config file template)
   header - true if the CSV file has header in the first row, false otherwise 
 
-GoogleAnalytics Connector Commands:
------------------------------------
+## GoogleAnalytics Connector Commands
 
-* GenerateGoogleAnalyticsConfig(name=<name>, configFile=<config>, dimensions=<pipe-separated-ga-dimensions>, metrics=<pipe-separated-ga-metrics>) - generate an XML config file based on the fields from your GA query.
+* GenerateGoogleAnalyticsConfig(name=&lt;name&gt;, configFile=&lt;config&gt;, dimensions=&lt;pipe-separated-ga-dimensions&gt;, metrics=&lt;pipe-separated-ga-metrics&gt;) - generate an XML config file based on the fields from your GA query.
   name - the new dataset name
   configFile  - path to configuration file (will be overwritten)
   dimensions - pipe (|) separated list of Google Analytics dimensions (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html)
   metrics - pipe (|) separated list of Google Analytics metrics (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html)
 
-
-* LoadGoogleAnalytics(configFile=<config>, username=<ga-username>, password=<ga-password>, profileId=<ga-profile-id>, dimensions=<pipe-separated-ga-dimensions>, metrics=<pipe-separated-ga-metrics>, startDate=<date>, endDate=<date>, filters=<ga-filter-string>)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
+* LoadGoogleAnalytics(configFile=&lt;config&gt;, username=&lt;ga-username&gt;, password=&lt;ga-password&gt;, profileId=&lt;ga-profile-id&gt;, dimensions=&lt;pipe-separated-ga-dimensions&gt;, metrics=&lt;pipe-separated-ga-metrics&gt;, startDate=&lt;date&gt;, endDate=&lt;date&gt;, filters=&lt;ga-filter-string&gt;)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
   configFile  - path to configuration file (will be overwritten)
   username - Google Analytics username
   password - Google Analytics password
@@ -90,10 +109,9 @@ GoogleAnalytics Connector Commands:
   endDate - the GA end date in the yyyy-mm-dd format  
   filters - the GA filters (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#filters)
 
-JDBC Connector Commands:
-------------------------
+## JDBC Connector Commands
 
-* GenerateJdbcConfig(name=<name>, configFile=<config>, driver=<jdbc-driver>, url=<jdbc-url>, query=<sql-query> [, username=<jdbc-username>] [, password=<jdbc-password>])  - generate an XML config file based on the fields from your JDBC query.
+* GenerateJdbcConfig(name=&lt;name&gt;, configFile=&lt;config&gt;, driver=&lt;jdbc-driver&gt;, url=&lt;jdbc-url&gt;, query=&lt;sql-query&gt; [, username=&lt;jdbc-username&gt;] [, password=&lt;jdbc-password&gt;])  - generate an XML config file based on the fields from your JDBC query.
   name - the new dataset name
   configFile  - path to configuration file (will be overwritten)
   driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
@@ -102,7 +120,7 @@ JDBC Connector Commands:
   username - JDBC username
   password - JDBC password
   
-* LoadJdbc(configFile=<config>, driver=<jdbc-driver>, url=<jdbc-url>, query=<sql-query> [, username=<jdbc-username>] [, password=<jdbc-password>])  - load JDBC data file using config file describing the file structure, must call CreateProject or OpenProject before
+* LoadJdbc(configFile=&lt;config&gt;, driver=&lt;jdbc-driver&gt;, url=&lt;jdbc-url&gt;, query=&lt;sql-query&gt; [, username=&lt;jdbc-username&gt;] [, password=&lt;jdbc-password&gt;])  - load JDBC data file using config file describing the file structure, must call CreateProject or OpenProject before
   configFile  - path to configuration file (will be overwritten)
   driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
   url - JDBC url (e.g. "jdbc:derby:mydb")
@@ -110,10 +128,9 @@ JDBC Connector Commands:
   username - JDBC username
   password - JDBC password
 
-SalesForce Connector Commands:
-------------------------------
+## SalesForce Connector Commands
 
-* GenerateSfdcConfig(name=<name>, configFile=<config>, query=<soql-query>, username=<sfdc-username>, password=<sfdc-password>, token=<sfdc-security-token>)  - generate an XML config file based on the fields from your SFDC query.
+* GenerateSfdcConfig(name=&lt;name&gt;, configFile=&lt;config&gt;, query=&lt;soql-query&gt;, username=&lt;sfdc-username&gt;, password=&lt;sfdc-password&gt;, token=&lt;sfdc-security-token&gt;)  - generate an XML config file based on the fields from your SFDC query.
   name - the new dataset name
   configFile  - path to configuration file (will be overwritten)
   query - SOQL query (e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
@@ -121,7 +138,7 @@ SalesForce Connector Commands:
   password - SFDC password
   token - SFDC security token (you may append the security token to the password instead using this parameter)
   
-* LoadSfdc(configFile=<config>, query=<soql-query>, username=<sfdc-username>, password=<sfdc-password>, token=<sfdc-security-token>)  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
+* LoadSfdc(configFile=&lt;config&gt;, query=&lt;soql-query&gt;, username=&lt;sfdc-username&gt;, password=&lt;sfdc-password&gt;, token=&lt;sfdc-security-token&gt;)  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
   configFile  - path to configuration file (will be overwritten)
   query - SOQL query (e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
   username - SFDC username
@@ -129,8 +146,7 @@ SalesForce Connector Commands:
   token - SFDC security token (you may append the security token to the password instead using this parameter)
   
 
-Time Dimension Connector:
--------------------------
+## Time Dimension Connector Commands
 
-* LoadDateDimension(name=<name>)  - load new time dimension into the project, must call CreateProject or OpenProject before
+* LoadDateDimension(name=&lt;name&gt;)  - load new time dimension into the project, must call CreateProject or OpenProject before
   name - the time dimension name differentiates the time dimension form others. This is typically something like "closed", "created" etc.
