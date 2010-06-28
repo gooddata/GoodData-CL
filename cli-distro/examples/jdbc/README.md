@@ -1,4 +1,4 @@
-# Loading Fundamentals data from an existing JDBC source into GoodData
+# Loading data from a database using JDBC
 
 This example shows how to connect an existing database accessible via JDBC, and create and populate a GoodData data set with results of a `SELECT` statement performed against an embedded database of companies' fundamentals.
 

@@ -1,4 +1,4 @@
-# Loading HR demo data into GoodData
+# Loading and connecting multiple data sets
 
 The HR example demonstrates how to use the basic CSV connector to quickly load various CSV files into GoodData and join them together.
 
