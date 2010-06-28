@@ -35,6 +35,6 @@ _Unix like OS (Linux, Mac OS X and others):_
 
 ## What Next?
 
-Review the [XML file](ga.config.xml) and the [documentation](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/DOCUMENTATION.md#config) if you want to include additional metrics and dimensions.
+Review the [XML file](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/ga/ga.config.xml) and the [documentation](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/DOCUMENTATION.md#config) if you want to include additional metrics and dimensions.
 
 Note: data sets involving more than 7 dimensions are not supported by Google Analytics.
