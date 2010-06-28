@@ -23,7 +23,7 @@ _Unix like OS (Linux, Mac OS X and others):_
 
 ### What's Inside
 
-This data set will be populated with records from the `department.csv` CSV file. The structure of the `department.csv` file is described in the `department.xml` configuration file: one unique _connection point_ (with `ldmType` set to `CONNECTION_POINT` and its corresponding label (`ldmType` set to `LABEL` and the `reference` set to the `name` of the primary field - `department`).
+This data set will be populated with records from the `department.csv` CSV file. The structure of the `department.csv` file is described in the `department.xml` configuration file: one unique _connection point_ (with `ldmType` set to `CONNECTION_POINT`) and its corresponding label (`ldmType` set to `LABEL` and the `reference` set to the `name` of the primary field - `department`).
 
 The model is described by the _logical data model (LDM) diagram_ below:
 
@@ -35,9 +35,6 @@ The _Department_ box represents both the `Department` connection point and its l
 
 The `employee.csv` data set contains employee names and departments.
 
-As described by the `employee.xml` configuration file it can be connected to the `department.csv` data set using the `DEPARTMENT` field: see the fourth `column` element with the `ldmType` set to `REFERENCE` and `schemaReference` set to the name of the referenced data set which is `Department`.
-
-Compare to the `name` element at the begining of the `department.xml` file.
 
 Run `gdi.sh` with the `2-employee.txt` file to add the 'Employee' dataset, connect it to 'Deparment' and populate it with data from the `employee.csv` file.
 
@@ -55,7 +52,9 @@ _Unix like OS (Linux, Mac OS X and others):_
 
 ### What's Inside?
 
-The `employee.csv` file includes four columns: `ID` which is described as a _connection point_ in the `employee.xml` configuration file, `FIRSTNAME` and `LASTNAME` described as _labels_ and finally `DEPARTMENT` which is described as a `REFERENCE` to the `Department` schema (which is specified by the `schemaReference` element in the `employee.xml` file). The `REFERENCE` field always connects to the target data set using the value of its connection point. For example, _Sheri Nowmer_ from the `employee.csv` belongs to the department _d1_ which refers to _HQ General Management_.
+The `employee.csv` file includes four columns: `ID` which is described as a `CONNECTION_POINT` in the `employee.xml` configuration file, `FIRSTNAME` and `LASTNAME` described as `LABEL`s and `DEPARTMENT` which is a `REFERENCE` to the `Department` schema by the `schemaReference` element (compare to the `name` element at the begining of the `department.xml` configuration file).
+
+The `REFERENCE` field always connects to the target data set using the value of its connection point. For example, _Sheri Nowmer_ from the `employee.csv` belongs to the department _d1_ which refers to _HQ General Management_.
 
 The logical model diagram of these two connected data sets will be as follows:
 
