@@ -1,4 +1,4 @@
-# Loading Google Analytics data into GoodData
+# Loading your Google Analytics data into GoodData
 
 This example demonstrates the built-in Google Analytics data connector that allows you to quickly load your Google Analytics data into GoodData. In order to run this example, you need a Google Account with an access to a Google Analytics Profile (i.e. access to a website statistics in Google Analytics).
 

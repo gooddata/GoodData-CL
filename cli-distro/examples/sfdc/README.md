@@ -1,4 +1,4 @@
-# Loading your SalesForce data into GoodData
+# Loading SalesForce data into GoodData
 
 ## About this example
 

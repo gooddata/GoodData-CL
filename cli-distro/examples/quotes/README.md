@@ -1,4 +1,4 @@
-# Loading Quotes data into GoodData
+# Loading time based data file into GoodData
 
 This basic example loads a CSV data file containing stock quotes from the AMEX, NASDAQ and NYSE markets from January to August 2008.
 
