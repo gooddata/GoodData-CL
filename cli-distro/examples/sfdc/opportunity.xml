@@ -3,33 +3,39 @@
   <columns>
     <column>
       <name>id</name>
-      <title>Id</title>
+      <title>Opportunity Id</title>
       <ldmType>CONNECTION_POINT</ldmType>
       <folder>Opportunity</folder>
     </column>
     <column>
+      <name>name</name>
+      <title>Opportunity Name</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Opportunity</folder>
+    </column>
+    <column>
       <name>accountid</name>
-      <title>AccountId</title>
+      <title>Account Id</title>
       <ldmType>REFERENCE</ldmType>
       <folder>Opportunity</folder>
-      <reference>id</reference>
+      <reference>account</reference>
       <schemaReference>Account</schemaReference>
     </column>
     <column>
       <name>iswon</name>
-      <title>IsWon</title>
+      <title>Is Won</title>
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Opportunity</folder>
     </column>
     <column>
       <name>isclosed</name>
-      <title>IsClosed</title>
+      <title>Is Closed</title>
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Opportunity</folder>
     </column>
     <column>
       <name>closedate</name>
-      <title>CloseDate</title>
+      <title>Close Date</title>
       <ldmType>DATE</ldmType>
       <folder>Opportunity</folder>
       <format>yyyy-MM-dd</format>
@@ -37,13 +43,13 @@
     </column>
     <column>
       <name>stagename</name>
-      <title>StageName</title>
+      <title>Stage</title>
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Opportunity</folder>
     </column>
     <column>
       <name>createddate</name>
-      <title>CreatedDate</title>
+      <title>Created Date</title>
       <ldmType>DATE</ldmType>
       <folder>Opportunity</folder>
       <format>yyyy-MM-dd</format>
@@ -51,7 +57,7 @@
     </column>
     <column>
       <name>expectedrevenue</name>
-      <title>ExpectedRevenue</title>
+      <title>Expected Revenue</title>
       <ldmType>FACT</ldmType>
       <folder>Opportunity</folder>
     </column>
