@@ -52,3 +52,7 @@ on the standard 3306 TCP port. Once you have the MySQL engine up and running, yo
  `-b`, `-d`, and `-c` flags.
 
  e.g. `bin/gdi.sh -u username -p password -b mysql -d mysql-user -c mysql-psw <script-file>`
+
+# Next Steps
+
+Please see the [GoodData CL examples and documentation](/gooddata-cl/).
