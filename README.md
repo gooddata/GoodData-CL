@@ -1,18 +1,16 @@
 This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities that
 work on top of the GoodData REST APIs.
 
-Unless you wish to participate in development of the tool, you should choose the easier [binary](cli-distro/README.md)
+Unless you wish to participate in development of the tool, you should choose the easier [binary](http://developer.gooddata.com/gooddata-cl/install.html)
 install.
 
-<a name="source">
+<a name="source"></a>
 # Building from sources
-</a>
 
 See separate [Windows](#swin) and [Unix](#sunix) instructions.
 
-<a name="sunix">
+<a name="sunix"></a>
 ## UNIX/Mac installation
-</a>
 
 1. [download](http://github.com/gooddata/GoodData-CL/archives/master) the code and unpack *(or git clone this repository)*:
 
@@ -52,9 +50,8 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
          -u,--username <arg>   GoodData username
         [...]
 
-<a name="swin">
+<a name="swin"></a>
 ## Windows installation
-</a>
 
 1. [download](http://github.com/gooddata/GoodData-CL/archives/master) the code and unzip
 

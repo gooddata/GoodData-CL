@@ -1,14 +1,10 @@
 This is GoodData command-line utility. The utility contains data modeling, transformation and loading functionality that work on top of the [GoodData REST APIs](http://developer.gooddata.com/apis/).
 
-<a name="binary">
-# Binary installation
-</a>
-
 See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 
-<a name="iunix">
+<a name="iunix"></a>
 ## UNIX/Mac installation
-</a>
+
 
 1. [download](http://github.com/gooddata/GoodData-CL/downloads) and unpack the binary distribution:
 
@@ -24,9 +20,8 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
          -u,--username <arg>   GoodData username
         [...]
 
-<a name="iwin">
+<a name="iwin"></a>
 ## Windows installation
-</a>
 
 1. [download](http://github.com/gooddata/GoodData-CL/downloads) and unpack the binary distribution:
 

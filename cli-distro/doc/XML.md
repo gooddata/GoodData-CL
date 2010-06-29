@@ -1,6 +1,4 @@
-<a name="config">
 # XML Configuration File
-</a>
 
 The XML configuration file is generated using the GenerateCsvConfig() command. It uses your CSV file to find the names of columns in the first row of the file. The generated XML file is an example and should be modified before being used.
 
