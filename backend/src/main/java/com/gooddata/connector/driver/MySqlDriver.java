@@ -111,10 +111,10 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
      */
     protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
         if (cols.length() > 0)
-            cols += ",ATOD(" + table.toUpperCase() + "." +
+            cols += ",ATOD(" + table + "." +
                     StringUtil.formatShortName(cl.getName())+")";
         else
-            cols +=  "ATOD(" + table.toUpperCase() + "." +
+            cols +=  "ATOD(" + table + "." +
                     StringUtil.formatShortName(cl.getName())+")";
         return cols;
     }
