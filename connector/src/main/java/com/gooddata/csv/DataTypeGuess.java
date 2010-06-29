@@ -23,16 +23,22 @@
 
 package com.gooddata.csv;
 
-import au.com.bytecode.opencsv.CSVReader;
-import com.gooddata.connector.driver.Constants;
-import com.gooddata.modeling.model.SourceColumn;
-
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import au.com.bytecode.opencsv.CSVReader;
+
+import com.gooddata.connector.driver.Constants;
+import com.gooddata.modeling.model.SourceColumn;
 
 /**
  * GoodData CSV data type guessing
@@ -106,16 +112,26 @@ public class DataTypeGuess {
     
     /**
      * Guesses the CSV schema
-     * @param cr CSV reader
+     * @param f CSV file
      * @param hasHeader
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
-    public static String[] guessCsvSchema(File f, boolean hasHeader) throws IOException {
-    	CSVReader cr = new CSVReader(new FileReader(f));
-    	return guessCsvSchema(cr, hasHeader);
+    public static String[] guessCsvSchema(URL url, boolean hasHeader) throws IOException {
+    	return guessCsvSchema(url.openStream(), hasHeader);
     }
 
+    /**
+     * Guesses the CSV schema
+     * @param is CSV stream
+     * @param hasHeader
+     * @return the String[] with the CSV column types
+     * @throws IOException in case of IO issue
+     */
+    public static String[] guessCsvSchema(InputStream is, boolean hasHeader) throws IOException {
+    	CSVReader cr = new CSVReader(new InputStreamReader(is));
+    	return guessCsvSchema(cr, hasHeader);
+    }
 
     /**
      * Guesses the CSV schema

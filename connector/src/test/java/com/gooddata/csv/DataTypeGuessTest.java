@@ -23,11 +23,13 @@
 
 package com.gooddata.csv;
 
-import au.com.bytecode.opencsv.CSVReader;
-import junit.framework.TestCase;
-
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+
+import com.gooddata.util.FileUtil;
+
+import junit.framework.TestCase;
+import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * GoodData
@@ -65,18 +67,17 @@ public class DataTypeGuessTest extends TestCase {
     }
 
     public void testGuessCsvSchema() throws IOException {
-    	String path = getClass().getResource("/com/gooddata/csv/quotes.csv").getPath();
-        CSVReader csvr = new CSVReader(new FileReader(path));
+        CSVReader csvr = FileUtil.getResourceAsCsvReader("/com/gooddata/csv/quotes.csv");
         String[] types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"FACT","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE",
                 "ATTRIBUTE","ATTRIBUTE","DATE","FACT","FACT","FACT","FACT","FACT","FACT"}));
-        csvr = new CSVReader(new FileReader(getClass().getResource("/com/gooddata/csv/department.csv").getPath()));
+        csvr = FileUtil.getResourceAsCsvReader("/com/gooddata/csv/department.csv");
         types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE"}));
-        csvr = new CSVReader(new FileReader(getClass().getResource("/com/gooddata/csv/employee.csv").getPath()));
+        csvr = new CSVReader(new InputStreamReader(getClass().getResource("/com/gooddata/csv/employee.csv").openStream()));
         types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE"}));
-        csvr = new CSVReader(new FileReader(getClass().getResource("/com/gooddata/csv/salary.csv").getPath()));
+        csvr = new CSVReader(new InputStreamReader(getClass().getResource("/com/gooddata/csv/salary.csv").openStream()));
         types = DataTypeGuess.guessCsvSchema(csvr, true);
         assertEquals(concatArray(types), concatArray(new String[] {"ATTRIBUTE","ATTRIBUTE","FACT","DATE"}));        
     }
