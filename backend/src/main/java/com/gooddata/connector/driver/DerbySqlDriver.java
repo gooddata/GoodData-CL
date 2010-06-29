@@ -125,8 +125,8 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
                 else
                     inClause = "" + i;
             }
-            whereClause = ",SNAPSHOTS WHERE " + dliTable.toUpperCase() +
-                    ".ID BETWEEN SNAPSHOTS.FIRSTID and SNAPSHOTS.LASTID AND SNAPSHOTS.ID IN (" + inClause + ")";
+            whereClause = ",snapshots WHERE " + dliTable.toUpperCase() +
+                    ".ID BETWEEN snapshots.firstid and snapshots.lastid AND snapshots.id IN (" + inClause + ")";
         }
         return whereClause;
     }

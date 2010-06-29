@@ -616,8 +616,8 @@ public abstract class AbstractSqlDriver implements SqlDriver {
                 else
                     inClause = "" + i;
             }
-            whereClause = ",SNAPSHOTS WHERE " + dliTable +
-                    ".ID BETWEEN SNAPSHOTS.FIRSTID and SNAPSHOTS.LASTID AND SNAPSHOTS.ID IN (" + inClause + ")";
+            whereClause = ",snapshots WHERE " + dliTable +
+                    ".ID BETWEEN snapshots.firstid and snapshots.lastid AND snapshots.id IN (" + inClause + ")";
         }
         return whereClause;
     }
