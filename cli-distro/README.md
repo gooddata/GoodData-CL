@@ -1,4 +1,4 @@
-This is GoodData command-line utility. The utility contains data modeling, transformation and loading functionality that work on top of the [GoodData REST APIs](http://developer.gooddata.com/apis/).
+This is GoodData command-line utility. The utility contains data modeling, transformation and loading functionality that work on top of the [GoodData REST APIs](http://developer.gooddata.com/api/).
 
 See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 
