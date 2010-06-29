@@ -13,7 +13,7 @@ For initial installation, please refer to the [README](http://developer.gooddata
         $ ./bin/gdi.sh -u <username> -p <password> -e 'CreateProject("my project")'
         $ ./bin/gdi.sh -u <username> -p <password> /path/to/commands.txt
 
-3. A [list of commands](http://developer.gooddata.com/gooddata-cl/cli-commands.html) and descriptions is displayed when you run `gdi.sh` without parameter. It can also be found [here](http://developer.gooddata.com/gooddata-cl/cli-commands.html).
+3. A [list of commands](http://developer.gooddata.com/gooddata-cl/cli-commands.html) and descriptions is displayed when you run `gdi.sh` without parameter.
 
 # Workflow
 
