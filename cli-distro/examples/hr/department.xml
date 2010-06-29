@@ -6,12 +6,14 @@
       <name>department</name>
       <title>Department</title>
       <ldmType>CONNECTION_POINT</ldmType>
+      <folder>Department</folder>
     </column>
     <column>
       <name>name</name>
       <title>Name</title>
       <ldmType>LABEL</ldmType>
       <reference>department</reference>
+      <folder>Department</folder>
     </column>
   </columns>
 </schema>

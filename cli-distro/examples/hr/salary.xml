@@ -6,6 +6,7 @@
       <name>salary</name>
       <title>Salary</title>
       <ldmType>CONNECTION_POINT</ldmType>
+      <folder>Salary</folder>
     </column>
     <column>
       <name>employee</name>
@@ -13,11 +14,13 @@
       <ldmType>REFERENCE</ldmType>
       <reference>employee</reference>
       <schemaReference>Employee</schemaReference>  
+      <folder>Salary</folder>
     </column>
     <column>
       <name>payment</name>
       <title>Payment</title>
       <ldmType>FACT</ldmType>
+      <folder>Salary</folder>
     </column>
     <column>
       <name>payday</name>
@@ -25,6 +28,7 @@
       <ldmType>DATE</ldmType>
       <format>yyyy-MM-dd</format>  
       <schemaReference>payment</schemaReference>
+      <folder>Salary</folder>
     </column>
   </columns>
 </schema>

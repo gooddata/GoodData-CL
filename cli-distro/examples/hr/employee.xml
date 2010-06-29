@@ -6,18 +6,21 @@
       <name>employee</name>
       <title>Employee</title>
       <ldmType>CONNECTION_POINT</ldmType>
+      <folder>Employee</folder>
     </column>
     <column>
       <name>firstname</name>
       <title>First Name</title>
       <ldmType>LABEL</ldmType>
       <reference>employee</reference>
+      <folder>Employee</folder>
     </column>
     <column>
       <name>lastname</name>
       <title>Last Name</title>
       <ldmType>LABEL</ldmType>
       <reference>employee</reference>
+      <folder>Employee</folder>
     </column>
     <column>
       <name>department</name>
@@ -25,6 +28,7 @@
       <ldmType>REFERENCE</ldmType>
       <reference>department</reference>
       <schemaReference>Department</schemaReference>  
+      <folder>Employee</folder>
     </column>
   </columns>
 </schema>

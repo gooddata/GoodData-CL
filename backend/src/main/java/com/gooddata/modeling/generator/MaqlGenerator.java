@@ -161,7 +161,11 @@ public class MaqlGenerator {
             String folder = column.getFolder();
             if (folder != null && folder.length() > 0) {
                 if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL)) {
+                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL) ||
+                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
+                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
+                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
+                {
                     if (!attributeFolders.contains(folder))
                         attributeFolders.add(folder);
                 }
