@@ -23,8 +23,24 @@
 
 package com.gooddata.connector;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+
 import au.com.bytecode.opencsv.CSVWriter;
+
 import com.gooddata.connector.backend.ConnectorBackend;
+import com.gooddata.connector.driver.Constants;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
@@ -35,12 +51,7 @@ import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.*;
+import com.gooddata.util.JdbcUtil.ResultSetHandler;
 
 /**
  * GoodData JDBC Connector
@@ -117,7 +128,12 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 String cnm = StringUtil.formatShortName(rsm.getColumnName(i));
                 String cdsc = rsm.getColumnName(i);
                 String type = getColumnType(rsm.getColumnType(i));
-                s.addColumn(new SourceColumn(cnm, type, cdsc));
+                SourceColumn column = new SourceColumn(cnm, type, cdsc);
+                if (SourceColumn.LDM_TYPE_DATE.equals(type)) {
+                	column.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
+                }
+                s.addColumn(column);
+                
             }
             s.writeConfig(new File(configFileName));
         }
@@ -190,9 +206,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             File dataFile = FileUtil.getTempFile();
             CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
             s = con.createStatement();
-            rs = JdbcUtil.executeQuery(s, getSqlQuery());
-            l.debug("Started retrieving JDBC data.");
-            cw.writeAll(rs,false);
+            JdbcUtil.executeQuery(con, getSqlQuery(), new ResultSetCsvWriter(cw));
             l.debug("Finished retrieving JDBC data.");
             cw.flush();
             cw.close();
@@ -400,5 +414,35 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         JdbcConnector.saveConfigTemplate(name, cf.getAbsolutePath(), usr, psw, drv, url, query);
     }
 
-
+    private static class ResultSetCsvWriter implements ResultSetHandler {
+    	
+    	private final CSVWriter cw;
+    	
+    	public ResultSetCsvWriter(CSVWriter cw) {
+    		this.cw = cw;
+		}
+    	
+    	public void handle(ResultSet rs) throws SQLException {
+    		final int length = rs.getMetaData().getColumnCount();
+    		final String[] line = new String[length];
+    		for (int i = 1; i <= length; i++) {
+    			final int sqlType = rs.getMetaData().getColumnType(i);
+    			final Object value = rs.getObject(i);
+    			if (value == null)
+    				line[i - 1] = "\\N";
+    			else {
+	    			switch (sqlType) {
+	    				case Types.DATE:
+	    				case Types.TIMESTAMP:
+	    					Date date = (Date)value;
+	    					line[i - 1] = Constants.DEFAULT_DATE_FMT.format(date);
+	    					break;
+	    				default:
+	    					line[i - 1] = value.toString();
+	    			}
+    			}
+    		}
+    		cw.writeNext(line);
+    	}
+    }
 }
