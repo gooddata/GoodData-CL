@@ -2,10 +2,10 @@
 
 GoodData Cl supports following groups of commands:
 
- * Project Management Commands create (`CreateProject`), drop (`DropProject`) or open (`OpenProject`) a project identified by a project id. You can also save a project id to a file (`StoreProject`) in order to retrieve (`RetrieveProject`) it in another command script.
- * Connector Commands that either generate the [XML configuration](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/XML.md) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Load<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
- * Logical Model Management Commands generate (`GenerateMaql`) and execute (`ExecuteMaql`) the [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) script for a connector that has been previously loaded via the `Load<Source-Type>` command.
-* Data Transfer Commands that transform, and transfer the data from a previously loaded (`Load<Source-Type>`) connector. All the data that are transferred are accumulated in a local database (Derby SQL or MySQL) as so called snapshots. You can decide to transfer all snapshots (`TransferData`), any snapshot (`TransferSnapshots`) or the last snapshot (`TransferLastSnapshot`).
+ * **Project Management Commands**: create (`CreateProject`), drop (`DropProject`) or open (`OpenProject`) a project identified by a project id. You can also save a project id to a file (`StoreProject`) in order to retrieve (`RetrieveProject`) it in another command script.
+ * **Connector Commands** that either generate the [XML configuration](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/XML.md) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Load<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
+ * **Logical Model Management Commands** generate (`GenerateMaql`) and execute (`ExecuteMaql`) the [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) script for a connector that has been previously loaded via the `Load<Source-Type>` command.
+* **Data Transfer Commands** that transform, and transfer the data from a previously loaded (`Load<Source-Type>`) connector. All the data that are transferred are accumulated in a local database (Derby SQL or MySQL) as so called snapshots. You can decide to transfer all snapshots (`TransferData`), any snapshot (`TransferSnapshots`) or the last snapshot (`TransferLastSnapshot`).
 
 ## Project Initialization Workflow
 Usually you want to initialize your project with following commands:
