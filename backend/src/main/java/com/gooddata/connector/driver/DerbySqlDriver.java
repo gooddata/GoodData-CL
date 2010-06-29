@@ -113,6 +113,27 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
     /**
      * {@inheritDoc}
      */
+    protected String getLoadWhereClause(DLIPart part, PdmSchema schema, int[] snapshotIds) {
+        String dliTable = getTableNameFromPart(part);
+        PdmTable pdmTable = schema.getTableByName(dliTable);
+        String whereClause = "";
+        if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) && snapshotIds != null && snapshotIds.length > 0) {
+            String inClause = "";
+            for(int i : snapshotIds) {
+                if(inClause.length()>0)
+                    inClause += ","+i;
+                else
+                    inClause = "" + i;
+            }
+            whereClause = ",SNAPSHOTS WHERE " + dliTable.toUpperCase() +
+                    ".ID BETWEEN SNAPSHOTS.FIRSTID and SNAPSHOTS.LASTID AND SNAPSHOTS.ID IN (" + inClause + ")";
+        }
+        return whereClause;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
         if (cols.length() > 0)
             cols += ",ATOD(" + table.toUpperCase() + "." +
@@ -133,6 +154,17 @@ public class DerbySqlDriver extends AbstractSqlDriver implements SqlDriver {
         else
             cols +=  "CAST("+table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName())+
                     " AS VARCHAR(128))";
+        return cols;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected String decorateOtherColumnForLoad(String cols, Column cl, String table) {
+        if (cols != null && cols.length() > 0)
+            cols += "," + table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
+        else
+            cols +=  table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
         return cols;
     }
 

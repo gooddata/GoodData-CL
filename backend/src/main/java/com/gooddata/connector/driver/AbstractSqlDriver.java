@@ -616,7 +616,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
                 else
                     inClause = "" + i;
             }
-            whereClause = ",SNAPSHOTS WHERE " + dliTable.toUpperCase() +
+            whereClause = ",SNAPSHOTS WHERE " + dliTable +
                     ".ID BETWEEN SNAPSHOTS.FIRSTID and SNAPSHOTS.LASTID AND SNAPSHOTS.ID IN (" + inClause + ")";
         }
         return whereClause;
@@ -680,9 +680,9 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      */
     protected String decorateOtherColumnForLoad(String cols, Column cl, String table) {
         if (cols != null && cols.length() > 0)
-            cols += "," + table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
+            cols += "," + table + "." + StringUtil.formatShortName(cl.getName());
         else
-            cols +=  table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
+            cols +=  table + "." + StringUtil.formatShortName(cl.getName());
         return cols;
     }
 
