@@ -25,6 +25,7 @@ package com.gooddata.processor;
 
 import com.gooddata.connector.Connector;
 import com.gooddata.exception.GdcLoginException;
+import com.gooddata.exception.InvalidArgumentException;
 import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
@@ -95,6 +96,7 @@ public class ProcessingContext {
     public GdcRESTApiWrapper getRestApi(CliParams cliParams) throws GdcLoginException {
     	if (_restApi == null) {
             NamePasswordConfiguration httpConfig = cliParams.getHttpConfig();
+            checkConfig(httpConfig);
             l.debug("Using the GoodData HTTP host '" + httpConfig.getGdcHost() + "'.");
             _restApi = new GdcRESTApiWrapper(httpConfig);
             _restApi.login();
@@ -105,10 +107,19 @@ public class ProcessingContext {
     public GdcFTPApiWrapper getFtpApi(CliParams cliParams) {
     	if (_ftpApi == null) {
             NamePasswordConfiguration ftpConfig = cliParams.getFtpConfig();
+            checkConfig(ftpConfig);
 	        l.debug("Using the GoodData FTP host '" + ftpConfig.getGdcHost() + "'.");
 	        _ftpApi = new GdcFTPApiWrapper(ftpConfig);
     	}
     	return _ftpApi;
     }
 
+    private static void checkConfig(NamePasswordConfiguration config) {
+        if (config.getUsername() == null) {
+        	throw new InvalidArgumentException("Missing the 'username' commandline parameter.");
+        }
+        if (config.getPassword() == null) {
+        	throw new InvalidArgumentException("Missing the 'password' commandline parameter.");
+        }
+    }
 }
