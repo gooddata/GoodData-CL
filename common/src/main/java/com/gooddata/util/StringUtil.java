@@ -199,7 +199,7 @@ public class StringUtil {
     	String[] nextLine;
     	int i = 0;
     	while ((nextLine = in.readNext()) != null) {
-    		if (i > skipRows) {
+    		if (i >= skipRows) {
     			out.writeNext(nextLine);
     		}
     		i++;
