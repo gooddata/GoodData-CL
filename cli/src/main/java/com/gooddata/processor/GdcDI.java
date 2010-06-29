@@ -33,13 +33,20 @@ import com.gooddata.naming.N;
 import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
 import com.gooddata.util.FileUtil;
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The GoodData Data Integration CLI processor.
@@ -184,22 +191,37 @@ public class GdcDI implements Executor {
             l.debug("Error logging to GoodData. Please check your GoodData username and password.",e);
         }        
         catch (IOException e) {
-            l.error("Encountered an IO or database problem: "+e.getMessage());
+            l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '"+e.getMessage()+"'");
             Throwable c = e.getCause();
             while(c!=null) {
                 l.error("Caused by: "+c.getMessage());
                 c = c.getCause();
             }
-            l.debug("Encountered an IO or database problem.",e);
+            l.debug("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '"+e.getMessage()+"'",e);
         }
         catch (InternalErrorException e) {
-            l.error("Internal error: "+e.getMessage());
             Throwable c = e.getCause();
-            while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
-                c = c.getCause();
+            if( c != null && c instanceof SQLException) {
+                l.error("Error extracting data. Can't process the incoming data. Please check the CSV file " +
+                        "separator and consistency (same number of columns in each row). Also, please make sure " +
+                        "that the number of columns in your XML config file matches the number of rows in your " +
+                        "data source. More info: '"+c.getMessage()+
+                        "'");
+                l.debug("Error extracting data. Can't process the incoming data. Please check the CSV file " +
+                        "separator and consistency (same number of columns in each row). Also, please make sure " +
+                        "that the number of columns in your XML config file matches the number of rows in your " +
+                        "data source. More info: '"+c.getMessage()+
+                        "'",c);
             }
-            l.debug("REST API invocation error: ",e);
+            else {
+                l.error("Internal error: "+e.getMessage());
+                c = e.getCause();
+                while(c!=null) {
+                    l.error("Caused by: "+c.getMessage());
+                    c = c.getCause();
+                }
+                l.debug("REST API invocation error: ",e);
+            }
         }
         catch (HttpMethodException e) {
             l.error("Error executing GoodData REST API: "+e.getMessage());

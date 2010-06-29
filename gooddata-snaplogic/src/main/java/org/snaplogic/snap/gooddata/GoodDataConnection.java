@@ -27,6 +27,8 @@ import com.gooddata.exception.GdcLoginException;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import com.gooddata.naming.N;
+import com.gooddata.processor.Defaults;
 import org.snaplogic.cc.*;
 import org.snaplogic.cc.prop.SimpleProp;
 import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
@@ -124,13 +126,29 @@ public class GoodDataConnection extends ComponentAPI {
                 "Connection Protocol", 
                 protocolConstraint, 
                 true));
-        setPropertyValue(PROP_PROTOCOL, "https");
+        setPropertyValue(PROP_PROTOCOL, Defaults.DEFAULT_PROTO);
         
         setPropertyDef(PROP_HOSTNAME, new SimpleProp("Hostname", SimplePropType.SnapString, "Hostname of GoodData server", true));
-        setPropertyValue(PROP_HOSTNAME, "secure.gooddata.com");
+        setPropertyValue(PROP_HOSTNAME, Defaults.DEFAULT_HOST);
         
-        setPropertyDef(PROP_HOSTNAME_FTP, new SimpleProp("FTP host", SimplePropType.SnapString, "FTP server where to upload the data", true));
-        setPropertyValue(PROP_HOSTNAME_FTP, "secure-upload.gooddata.com");
+        setPropertyDef(PROP_HOSTNAME, new SimpleProp("FTP host", SimplePropType.SnapString, "FTP server where to upload the data", true));
+        String hostname = (String)getPropertyValue(PROP_HOSTNAME);
+        String[] hcs = hostname.split("\\.");
+        if(hcs != null && hcs.length > 0) {
+            String ftpHost = "";
+            for(int i=0; i<hcs.length; i++) {
+                if(i>0)
+                    ftpHost += "." + hcs[i];
+                else
+                    ftpHost = hcs[i] + N.FTP_SRV_SUFFIX;
+            }
+            setPropertyValue(PROP_HOSTNAME_FTP, ftpHost);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid format of the GoodData REST API host: " +
+                    hostname);
+        }
+
         
         setCategories(CONNECTION_CATEGORIES, false);
     }

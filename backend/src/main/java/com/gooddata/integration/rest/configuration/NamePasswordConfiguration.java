@@ -23,6 +23,8 @@
 
 package com.gooddata.integration.rest.configuration;
 
+import com.gooddata.processor.Defaults;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -36,11 +38,11 @@ public class NamePasswordConfiguration {
     /**
      * default GDC host
      */
-    public static final String DEFAULT_GDC_HOST = "secure.gooddata.com";
+    public static final String DEFAULT_GDC_HOST = Defaults.DEFAULT_HOST;
     /**
      * default Gdc protocol
      */
-    public static final String DEFAULT_GCD_PROTO = "https";
+    public static final String DEFAULT_GCD_PROTO = Defaults.DEFAULT_PROTO;
 
     // GDC protocol
     private String protocol;

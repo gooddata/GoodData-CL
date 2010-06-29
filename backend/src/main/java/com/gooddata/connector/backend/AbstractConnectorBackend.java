@@ -193,7 +193,7 @@ import java.util.List;
             sg.executeNormalizeSql(con, getPdm());
         }
         catch (SQLException e) {
-            throw new GdcIntegrationErrorException("Error normalizing PDM Schema " + getPdm().getName() + " " + getPdm().getTables(), e);
+            throw new InternalErrorException("Error normalizing PDM Schema " + getPdm().getName() + " " + getPdm().getTables(), e);
         }
         finally {
             try {
