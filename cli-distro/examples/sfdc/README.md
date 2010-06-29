@@ -6,7 +6,7 @@ The SFDC example shows how to create a GoodData project that models basic SFDC o
 
 _Windows:_
 
-        c:> bin\gdi.sh -u <username> -p <password> examples\sfdc\sfdc.txt
+        c:> bin\gdi.bat -u <username> -p <password> examples\sfdc\sfdc.txt
         Project id = 'wuw52aoc8z6rjvd1ufem23zxhdeuukm3' created.
         Data successfully loaded.
         Data successfully loaded.
@@ -27,7 +27,7 @@ The `sfdc.txt` script brings the following entities into the project:
  - date dimension associated with the opportunity creation using the `LoadDateDimension(name="Created");`
  - date dimension associated with closing an opportunity using the `LoadDateDimension(name="Closed");`
  - SFDC `Account` object; only the `Id` and `Name` fields are loaded as specified by the `query` parameter of the first `LoadSfdc` command
- - SFDC `Opportunity` object with `Id`, `AccountId`, `IsWon`, `IsClosed`, `CloseDate`, `StageName`, `CreatedDate`, `ExpectedRevenue` and  `Amount` fields as specified by the `query parameter of the second `LoadSfdc` command
+ - SFDC `Opportunity` object with `Id`, `AccountId`, `IsWon`, `IsClosed`, `CloseDate`, `StageName`, `CreatedDate`, `ExpectedRevenue` and  `Amount` fields as specified by the query parameter of the second `LoadSfdc` command
 
 The _Account_ and _Opportunity_ data sets loaded by the `LoadSfdc` commands are described by the `account.xml` and `opportunity.xml` configuration files. The configuration files describe the fields of the data sets in the order of fields occurence within the data sets.
 
