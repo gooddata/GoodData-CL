@@ -165,7 +165,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
      */
     public void extract() throws IOException {
         if(getHasHeader()) {
-            File tmp = FileUtil.stripCsvHeader(getDataFile());
+        	File src = getDataFile();
+            File tmp = FileUtil.getTempFile();
+            StringUtil.normalize(src, tmp, 1);
             getConnectorBackend().extract(tmp);
             tmp.delete();
         }
