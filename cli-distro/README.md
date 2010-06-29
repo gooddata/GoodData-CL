@@ -1,5 +1,4 @@
-This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities that
-work on top of the GoodData REST APIs.
+This is GoodData command-line utility. The utility contains data modeling, transformation and loading functionality that work on top of the [GoodData REST APIs](http://developer.gooddata.com/apis/).
 
 <a name="binary">
 # Binary installation
