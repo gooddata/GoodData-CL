@@ -23,6 +23,12 @@
 
 package com.gooddata.connector;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.driver.Constants;
 import com.gooddata.csv.DataTypeGuess;
@@ -35,9 +41,6 @@ import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.NameTransformer;
 import com.gooddata.util.StringUtil;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * GoodData CSV Connector
@@ -94,14 +97,16 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @throws IOException in case of IO issues
      */
     static SourceSchema guessSourceSchema (String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
-        File dataFile = new File(dataFileName);
-        String name = dataFile.getName().split("\\.")[0];
-        String[] headers = FileUtil.getCsvHeader(dataFile);
+    	return guessSourceSchema(new FileInputStream(configFileName), new File(dataFileName).toURI().toURL(), defaultLdmType, folder);
+    }
+    
+    static SourceSchema guessSourceSchema (InputStream configStream, URL dataUrl, String defaultLdmType, String folder) throws IOException {
+        String name = dataUrl.getFile().split("\\.")[0];
+        String[] headers = FileUtil.getCsvHeader(dataUrl);
         int i = 0;
         final SourceSchema s;
-        File configFile = new File(configFileName);
-        if (configFile.exists()) {
-        	s = SourceSchema.createSchema(configFile);
+        if (configStream != null) {
+        	s = SourceSchema.createSchema(configStream);
         } else {
         	s = SourceSchema.createSchema(name);
         }
@@ -122,7 +127,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         	}
         });
         if (knownColumns < headers.length) {
-        	String[] guessed = DataTypeGuess.guessCsvSchema(dataFile, true);
+        	String[] guessed = DataTypeGuess.guessCsvSchema(dataUrl, true);
         	if (guessed.length != headers.length) {
         		throw new AssertionError("The size of data file header is different than the number of guessed fields");
         	}

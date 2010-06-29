@@ -23,10 +23,26 @@
 
 package com.gooddata.util;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.net.URL;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * File utils
@@ -248,15 +264,15 @@ public class FileUtil {
         bw.close();
         return tmpFile;
     }
-
+    
     /**
-     * Retrieves CSV headers from a file
-     * @param file CSV file
+     * Retrieves CSV headers from an URL
+     * @param is CSV stream
      * @return the headers as String[]
      * @throws IOException in case of IO issues
      */
-    public static String[] getCsvHeader(File file) throws IOException {
-        BufferedReader r = new BufferedReader(new FileReader(file));
+    public static String[] getCsvHeader(URL url) throws IOException {
+        BufferedReader r = new BufferedReader(new InputStreamReader(url.openStream()));
         String headerLine = r.readLine();
         r.close();
         return headerLine.split(",");
@@ -290,5 +306,10 @@ public class FileUtil {
     public static File getFile(String fileName) throws IOException {
         return getFile(fileName, false);
     }
+
+	public static CSVReader getResourceAsCsvReader(String path) throws IOException {
+		InputStream is = FileUtil.class.getResource(path).openStream();
+		return new CSVReader(new InputStreamReader(is));    	
+	}
 
 }

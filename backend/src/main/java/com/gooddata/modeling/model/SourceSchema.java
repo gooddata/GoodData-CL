@@ -23,16 +23,19 @@
 
 package com.gooddata.modeling.model;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.gooddata.exception.ModelException;
 import com.gooddata.util.StringUtil;
 import com.thoughtworks.xstream.XStream;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * GoodData source schema. Source schema describes the structure of the source data and its mapping to the LDM types
@@ -75,7 +78,6 @@ public class SourceSchema {
         return new SourceSchema(name);
     }
 
-
     /**
      * Creates a new SourceSchema from the XML config file
      * @param configFile the config file
@@ -84,6 +86,16 @@ public class SourceSchema {
      */
     public static SourceSchema createSchema(File configFile) throws IOException {
         return fromXml(configFile);
+    }
+    
+    /**
+     * Creates a new SourceSchema from the XML config steam
+     * @param configStream the config stream
+     * @return new SourceSchema
+     * @throws IOException in case of an IO issue 
+     */
+    public static SourceSchema createSchema(InputStream configStream) throws IOException {
+        return fromXml(configStream);
     }
     
     /**
@@ -113,10 +125,19 @@ public class SourceSchema {
      * @throws IOException in case of an IO issue
      */
     protected static SourceSchema fromXml(File configFile) throws IOException {
-        XStream xstream = new XStream();
+        return fromXml(new FileInputStream(configFile));
+    }
+    
+    /**
+     * Deserializes the schema from an XML stream
+     * @param is the stream of the XML definition
+     * @throws IOException in case of an IO issue
+     */
+    protected static SourceSchema fromXml(InputStream is) throws IOException {
+    	XStream xstream = new XStream();
         xstream.alias("column", SourceColumn.class);
         xstream.alias("schema", SourceSchema.class);
-        FileReader r = new FileReader(configFile);
+        Reader r = new InputStreamReader(is);
         SourceSchema schema = (SourceSchema)xstream.fromXML(r);
         r.close();
         return schema;

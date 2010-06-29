@@ -23,24 +23,26 @@
 
 package com.gooddata.connector;
 
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.modeling.model.SourceSchema;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
 import junit.framework.TestCase;
 
-import java.io.File;
-import java.io.IOException;
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.modeling.model.SourceSchema;
 
 
 public class CsvConnnectorTest extends TestCase {
 
 	public void testGuessSourceSchema() throws IOException {
 		
-		final String incompleteConfig =  getClass().getResource("/com/gooddata/connector/guess_incompleteConfig.xml").getPath();
-		final String expectedConfig = getClass().getResource("/com/gooddata/connector/guess_expectedConfig.xml").getPath();
-		final String csvFile = getClass().getResource("/com/gooddata/connector/guess_quotes.csv").getPath(); 
+		final InputStream incompleteConfig =  getClass().getResourceAsStream("/com/gooddata/connector/guess_incompleteConfig.xml");
+		final InputStream expectedConfig = getClass().getResourceAsStream("/com/gooddata/connector/guess_expectedConfig.xml");
+		final URL csvUrl = getClass().getResource("/com/gooddata/connector/guess_quotes.csv");
 		
-		SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvFile, null, null);
-		SourceSchema expected = SourceSchema.createSchema(new File(expectedConfig));
+		SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, null);
+		SourceSchema expected = SourceSchema.createSchema(expectedConfig);
 		
 		assertEquals(expected.getColumns().size(), guessed.getColumns().size());
 		
