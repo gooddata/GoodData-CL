@@ -1,20 +1,21 @@
-# THIS EXAMPLE SHOWS HOW TO LOAD THE JDBC DATA TO THE GOODDATA PROJECT
+# This example shows how to load the JDBC data to the GoodData project
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
-# CREATE A NEW PROJECT
+# Create a new project
 CreateProject(name="FUNDAMENTALS");
 
-# GENERATE CONFIG FILE. THIS COMMAND IS COMMENTED OUT AS WE HAVE DONE THAT ALREADY.
-# IF YOU CHANGE THE JDBC INPUT DATA YOU NEED TO RE-RUN THE CONFIG FILE GENERATION
+# Generate config file. This command is commented out as we have done that already.
+# If you change the JDBC input data you need to re-generate the config file
 #GenerateJdbcConfig(name="FUNDAMENTALS",configFile="examples/jdbc/fundamentals.config.xml",driver="org.apache.derby.jdbc.EmbeddedDriver",url="jdbc:derby:../examples/jdbc/fundamentals",query="SELECT * FROM FUNDAMENTALS");
 
-# LOAD JDBC DATA
+# load JDBC data
 LoadJdbc(configFile="examples/jdbc/fundamentals.config.xml",driver="org.apache.derby.jdbc.EmbeddedDriver",url="jdbc:derby:../examples/jdbc/fundamentals",query="SELECT * FROM FUNDAMENTALS");
 
-# GENERATE THE FUNDAMENTALS MAQL
+# Generate the data model MAQL script
 GenerateMaql(maqlFile="examples/jdbc/fundamentals.maql");
 
-# EXECUTE THE FUNDAMENTALS MAQL
+# Execute the MAQL script to set up a data model in your project
 ExecuteMaql(maqlFile="examples/jdbc/fundamentals.maql");
 
-# TRANSFER THE FUNDAMENTALS DATA
+# Transfer the Fundamentals data
 TransferLastSnapshot(incremental="true");
