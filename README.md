@@ -37,9 +37,8 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
 
 7. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
-    - gooddata-cl-1.0-SNAPSHOT-final.tar.bz2
-    - gooddata-cl-1.0-SNAPSHOT-final.tar.gz
-    - gooddata-cl-1.0-SNAPSHOT-final.zip
+    - gooddata-cl-1.0-BETA.tar.gz
+    - gooddata-cl-1.0-BETA.zip
 
 8. run the gdi.sh without arguments to get help from the unpacked distribution:
 
@@ -79,9 +78,8 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
 
 7. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
-    - gooddata-cl-1.0-SNAPSHOT-final.tar.bz2
-    - gooddata-cl-1.0-SNAPSHOT-final.tar.gz
-    - gooddata-cl-1.0-SNAPSHOT-final.zip
+    - gooddata-cl-1.0-BETA.tar.gz
+    - gooddata-cl-1.0-BETA.zip
 
 8. run the gdi.bat without arguments to get help from the unpacked distribution:
 

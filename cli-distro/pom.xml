@@ -29,7 +29,7 @@
 	<parent>
 		<groupId>org.gooddata.cl</groupId>
 		<artifactId>GoodData-CL</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0-BETA</version>
 	</parent>
 
 	<artifactId>gooddata-cli</artifactId>
