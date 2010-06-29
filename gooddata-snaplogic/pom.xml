@@ -27,31 +27,41 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.gooddata.cl</groupId>
-        <artifactId>GoodData-CL</artifactId>
-        <version>1.0-BETA</version>
+        <groupId>com.gooddata.cl</groupId>
+        <artifactId>gooddata-cl</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>gooddata-snaplogic</artifactId>
-    <name>gooddata-snaplogic</name>
+    <artifactId>gooddata-cl-snaplogic</artifactId>
+    <description>GoodData CL Snaplogic component. Implements the Snaplogic components.</description>
+    <name>gooddata-cl-snaplogic</name>
+
+    <licenses>
+        <license>
+            <name>The BSD License</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+            <distribution>repo</distribution>
+            <comments>The BSD License</comments>
+        </license>
+    </licenses>
 
     <dependencies>
-        <!-- GDC DI modules -->
+        <!-- GoodData CL modules -->
         <dependency>
-            <groupId>org.gooddata.cl</groupId>
-            <artifactId>backend</artifactId>
+            <groupId>com.gooddata.cl</groupId>
+            <artifactId>gooddata-cl-backend</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.gooddata.cl</groupId>
-            <artifactId>connector</artifactId>
+            <groupId>com.gooddata.cl</groupId>
+            <artifactId>gooddata-cl-connector</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.gooddata.cl</groupId>
-            <artifactId>common</artifactId>
+            <groupId>com.gooddata.cl</groupId>
+            <artifactId>gooddata-cl-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.gooddata.cl</groupId>
-            <artifactId>snaplogic</artifactId>
+            <groupId>com.gooddata.cl</groupId>
+            <artifactId>gooddata-cl-snaplogic-lib</artifactId>
         </dependency>
         <dependency>
             <groupId>org.snaplogic</groupId>

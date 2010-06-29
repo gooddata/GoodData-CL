@@ -27,14 +27,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.gooddata.cl</groupId>
-        <artifactId>GoodData-CL</artifactId>
-        <version>1.0-BETA</version>
+        <groupId>com.gooddata.cl</groupId>
+        <artifactId>gooddata-cl</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>snaplogic</artifactId>
-    <description>Snaplogic JARs</description>
-    <name>snaplogic</name>
+    <artifactId>gooddata-cl-snaplogic-lib</artifactId>
+    <description>Snaplogic required libraries</description>
+    <name>gooddata-cl-snaplogic-lib</name>
 
     <build>
         <plugins>

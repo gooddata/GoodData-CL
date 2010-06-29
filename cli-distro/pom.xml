@@ -27,20 +27,31 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.gooddata.cl</groupId>
-		<artifactId>GoodData-CL</artifactId>
-		<version>1.0-BETA</version>
+		<groupId>com.gooddata.cl</groupId>
+		<artifactId>gooddata-cl</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>gooddata-cli</artifactId>
-	<description>GoodData CL tools</description>
+	<description>Builds the GoodData CL command line tool distribution.</description>
 	<name>gooddata-cli</name>
 
+    <licenses>
+        <license>
+            <name>The BSD License</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+            <distribution>repo</distribution>
+            <comments>The BSD License</comments>
+        </license>
+    </licenses>
+
 	<dependencies>
+        <!-- GoodData CL modules -->
 		<dependency>
-			<groupId>org.gooddata.cl</groupId>
-			<artifactId>cli</artifactId>			
-		</dependency>	       
+			<groupId>com.gooddata.cl</groupId>
+			<artifactId>gooddata-cl-cli</artifactId>			
+		</dependency>
+        <!-- 3rd party dependencies  -->
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>

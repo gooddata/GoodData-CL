@@ -27,19 +27,30 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.gooddata.cl</groupId>
-		<artifactId>GoodData-CL</artifactId>
-		<version>1.0-BETA</version>
+		<groupId>com.gooddata.cl</groupId>
+		<artifactId>gooddata-cl</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>gooddata-snap</artifactId>
-	<description>Snaplogic distribution module</description>
-    <name>gooddata-snap</name>
+	<artifactId>gooddata-cl-snap</artifactId>
+	<description>Builds the GoodData CL Snaplogic component distribution.</description>
+    <name>gooddata-cl-snap</name>
+
+
+    <licenses>
+        <license>
+            <name>The BSD License</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+            <distribution>repo</distribution>
+            <comments>The BSD License</comments>
+        </license>
+    </licenses>
 
 	<dependencies>
+        <!-- GoodData CL modules -->
 		<dependency>
-			<groupId>org.gooddata.cl</groupId>
-			<artifactId>gooddata-snaplogic</artifactId>			
+			<groupId>com.gooddata.cl</groupId>
+			<artifactId>gooddata-cl-snaplogic</artifactId>			
 		</dependency>               
 	</dependencies>
 	<build>

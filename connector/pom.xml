@@ -25,22 +25,33 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.gooddata.cl</groupId>
-		<artifactId>GoodData-CL</artifactId>
-		<version>1.0-BETA</version>
+		<groupId>com.gooddata.cl</groupId>
+		<artifactId>gooddata-cl</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>connector</artifactId>
-	<description>Connector module.</description>
-	<name>connector</name>
+
+	<artifactId>gooddata-cl-connector</artifactId>
+	<description>GoodData CL connector module. Implements various datasources connectors.</description>
+	<name>gooddata-cl-connector</name>
+
+    <licenses>
+        <license>
+            <name>The BSD License</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+            <distribution>repo</distribution>
+            <comments>The BSD License</comments>
+        </license>
+    </licenses>
+
 	<dependencies>
-		<!-- GDC DI modules -->
+		<!-- GoodData CL modules -->
 		<dependency>
-			<groupId>org.gooddata.cl</groupId>
-			<artifactId>backend</artifactId>
+			<groupId>com.gooddata.cl</groupId>
+			<artifactId>gooddata-cl-backend</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.gooddata.cl</groupId>
-			<artifactId>common</artifactId>
+			<groupId>com.gooddata.cl</groupId>
+			<artifactId>gooddata-cl-common</artifactId>
 		</dependency>
 		<!-- 3rd party dependencies -->
 		<dependency>

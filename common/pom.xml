@@ -26,16 +26,26 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.gooddata.cl</groupId>
-		<artifactId>GoodData-CL</artifactId>    
-		<version>1.0-BETA</version>
+		<groupId>com.gooddata.cl</groupId>
+		<artifactId>gooddata-cl</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>common</artifactId>
-	<description>Common module.</description>
-	<name>common</name>
+	<artifactId>gooddata-cl-common</artifactId>
+	<description>GoodData CL common module. Implements the common utils.</description>
+	<name>gooddata-cl-common</name>
+
+    <licenses>
+        <license>
+            <name>The BSD License</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+            <distribution>repo</distribution>
+            <comments>The BSD License</comments>
+        </license>
+    </licenses>
 
 	<dependencies>
+        <!-- 3rd party dependencies  -->
 		<dependency>
 			<groupId>net.sf.json-lib</groupId>
 			<artifactId>json-lib</artifactId>
