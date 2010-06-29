@@ -10,7 +10,7 @@
     </column>
     <column>
       <name>name</name>
-      <title>Name</title>
+      <title>Account Name</title>
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Account</folder>
     </column>
