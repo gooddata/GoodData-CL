@@ -40,10 +40,11 @@ import java.util.List;
 public class TestDIScriptParser extends TestCase {
 
     private static Logger l = Logger.getLogger(TestDIScriptParser.class);
+    final String ga =  getClass().getResource("/com/gooddata/processor/parser/ga.txt").getPath();
 
     public void testParseCmd() throws Exception {
         try {
-            Reader r = new FileReader("../cli-distro/examples/ga/ga.txt");
+            Reader r = new FileReader(ga);
             DIScriptParser parser = new DIScriptParser(r);
             List<Command> commands = parser.parse();
             assertEquals(commands.size(),8);

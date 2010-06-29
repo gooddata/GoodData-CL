@@ -68,7 +68,7 @@ TOKEN: /*RESERVED TOKENS FOR UQL */
 TOKEN : /* the keywords and comparators - QUOTEDVALUE accounts for escaped quotes as well */
 {
         <NAME: (["A"-"Z","a"-"z","0"-"9"])+ >
-|       <STRING: "\"" (~["\""])+ "\"" >
+|       <STRING: "\""(~["\""])*"\"" >
 |       <COMMENT: "#"(~["\n","\r"])* ("\n"|"\r"|"\r\n")? >
 }
 
