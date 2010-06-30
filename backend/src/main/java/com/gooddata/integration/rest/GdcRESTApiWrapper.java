@@ -568,8 +568,13 @@ public class GdcRESTApiWrapper {
             l.debug("Got report execution status uri="+link+" status="+false);
             return false;
         }
-            l.debug("Got report execution status uri="+link+" status="+true);
-            return true;    }
+        catch (HttpMethodNoContentException e) {
+            l.debug("Got report execution status uri="+link+" status=EMPTY");
+            return true;
+        }
+        l.debug("Got report execution status uri="+link+" status="+true);
+        return true;
+    }
 
     /**
      * Kicks the GDC platform to inform it that the FTP transfer is finished.
@@ -826,6 +831,8 @@ public class GdcRESTApiWrapper {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
                 throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
+            } else if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+                throw new HttpMethodNoContentException(method.getResponseBodyAsString());
             } else {
                 String msg = method.getStatusCode() + " " + method.getStatusText();
                 String body = method.getResponseBodyAsString();
