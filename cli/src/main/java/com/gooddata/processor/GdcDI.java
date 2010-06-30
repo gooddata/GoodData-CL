@@ -204,13 +204,13 @@ public class GdcDI implements Executor {
                 l.error("Error extracting data. Can't process the incoming data. Please check the CSV file " +
                         "separator and consistency (same number of columns in each row). Also, please make sure " +
                         "that the number of columns in your XML config file matches the number of rows in your " +
-                        "data source. More info: '"+c.getMessage()+
-                        "'");
+                        "data source. Make sure that your file is readable by other users (particularly the mysql user). " +
+                        "More info: '"+c.getMessage()+"'");
                 l.debug("Error extracting data. Can't process the incoming data. Please check the CSV file " +
                         "separator and consistency (same number of columns in each row). Also, please make sure " +
                         "that the number of columns in your XML config file matches the number of rows in your " +
-                        "data source. More info: '"+c.getMessage()+
-                        "'",c);
+                        "data source. Make sure that your file is readable by other users (particularly the mysql user). " +
+                        "More info: '"+c.getMessage()+"'",c);
             }
             else {
                 l.error("Internal error: "+e.getMessage());
