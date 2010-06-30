@@ -23,10 +23,7 @@
 
 package com.gooddata.integration.rest;
 
-import com.gooddata.exception.GdcLoginException;
-import com.gooddata.exception.GdcProjectAccessException;
-import com.gooddata.exception.GdcRestApiException;
-import com.gooddata.exception.HttpMethodException;
+import com.gooddata.exception.*;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.model.Project;
@@ -69,6 +66,8 @@ public class GdcRESTApiWrapper {
     private static final String PULL_URI = "/etl/pull";
     private static final String DLI_DESCRIPTOR_URI = "/descriptor";
     public static final String MAQL_EXEC_URI = "/ldm/manage";
+    public static final String REPORT_QUERY = "/query/reports";
+    public static final String EXECUTOR = "/gdc/xtab2/executor";
 
     public static final String DLI_MANIFEST_FILENAME = "upload_info.json";
 
@@ -398,6 +397,180 @@ public class GdcRESTApiWrapper {
         return list;
     }
 
+
+    /**
+     * Enumerates all reports on in a project
+     * @param projectId project Id
+     * @return LIst of report uris
+     */
+    public List<String> enumerateReports(String projectId) {
+        l.debug("Enumerating reports for project id="+projectId);
+        List<String> list = new ArrayList<String>();
+        String qUri = getProjectMdUrl(projectId) + REPORT_QUERY;
+        HttpMethod qGet = new GetMethod(qUri);
+        setJsonHeaders(qGet);
+        String qr = executeMethodOk(qGet);
+        JSONObject q = JSONObject.fromObject(qr);
+        if (q == null) {
+            l.debug("Enumerating reports for project id="+projectId+" failed.");
+            throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
+        }
+        JSONObject qry = q.getJSONObject("query");
+        if (qry == null) {
+            l.debug("Enumerating reports for project id="+projectId+" failed.");
+            throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
+        }
+        JSONArray entries = qry.getJSONArray("entries");
+        if (entries == null) {
+            l.debug("Enumerating reports for project id="+projectId+" failed.");
+            throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
+        }
+        for(Object oentry : entries) {
+            JSONObject entry = (JSONObject)oentry;
+            int deprecated = entry.getInt("deprecated");
+            if(deprecated == 0)
+                list.add(entry.getString("link"));
+        }
+        return list;
+    }
+
+    /**
+     * Gets a report definition from the report uri (/gdc/obj...)
+     * @param reportUri report uri (/gdc/obj...)
+     * @return report definition
+     */
+    public String getReportDefinition(String reportUri) {
+        l.debug("Getting report definition for report uri="+reportUri);
+        String qUri = config.getUrl() + reportUri;
+        HttpMethod qGet = new GetMethod(qUri);
+        setJsonHeaders(qGet);
+        String qr = executeMethodOk(qGet);
+        JSONObject q = JSONObject.fromObject(qr);
+        if (q == null) {
+            l.debug("Error getting report definition for report uri="+reportUri);
+            throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
+        }
+        JSONObject report = q.getJSONObject("report");
+        if (report == null) {
+            l.debug("Error getting report definition for report uri="+reportUri);
+            throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
+        }
+        JSONObject content = report.getJSONObject("content");
+        if (content == null) {
+            l.debug("Error getting report definition for report uri="+reportUri);
+            throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
+        }
+        JSONArray results = content.getJSONArray("results");
+        if (results == null) {
+            l.debug("Error getting report definition for report uri="+reportUri);
+            throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
+        }
+        if(results.size()>0) {
+            String lastResultUri = results.getString(results.size()-1);
+            qUri = config.getUrl() + lastResultUri;
+            qGet = new GetMethod(qUri);
+            setJsonHeaders(qGet);
+            qr = executeMethodOk(qGet);
+            q = JSONObject.fromObject(qr);
+            if (q == null) {
+                l.debug("Error getting report definition for result uri="+lastResultUri);
+                throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
+            }
+            JSONObject result = q.getJSONObject("reportResult");
+            if (result == null) {
+                l.debug("Error getting report definition for result uri="+lastResultUri);
+                throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
+            }
+            content = result.getJSONObject("content");
+            if (result == null) {
+                l.debug("Error getting report definition for result uri="+lastResultUri);
+                throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
+            }
+            return content.getString("reportDefinition");
+
+        }
+        l.debug("Error getting report definition for report uri="+reportUri+" . No report results!");
+        throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri+
+                " . No report results!");
+    }
+
+
+    /**
+     * Report definition to execute
+     * @param reportDefUri report definition to execute
+     */
+    public String executeReportDefinition(String reportDefUri) {
+        l.debug("Executing report definition uri="+reportDefUri);
+        PostMethod execPost = new PostMethod(config.getUrl() + EXECUTOR);
+        setJsonHeaders(execPost);
+        JSONObject execDef = new JSONObject();
+        //execDef.put("reportDefinition",reportDefUri);
+        execDef.put("report",reportDefUri);
+        JSONObject exec = new JSONObject();
+        exec.put("report_req", execDef);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(exec.toString().getBytes()));
+        execPost.setRequestEntity(request);
+        String taskLink = null;
+        try {
+            String task = executeMethodOk(execPost);
+            if(task != null && task.length()>0) {
+                task = task.substring(1,task.length()-1);
+                HttpMethod tg = new GetMethod(config.getUrl() + task);
+                setJsonHeaders(tg);
+                String t = executeMethodOk(tg);
+                JSONObject tr = JSONObject.fromObject(t);
+                if(tr == null) {
+                    l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
+                    throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
+                            "Returned invalid result result="+tr);                    
+                }
+                JSONObject reportResult = tr.getJSONObject("reportResult");
+                if(reportResult == null) {
+                    l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
+                    throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
+                            "Returned invalid result result="+tr);
+                }
+                JSONObject content = reportResult.getJSONObject("content");
+                if(content == null) {
+                    l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
+                    throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
+                            "Returned invalid result result="+tr);
+                }
+                return content.getString("dataResult");
+            }
+            else {
+                l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid task link uri="+task);
+                throw new GdcRestApiException("Executing report definition uri="+reportDefUri +
+                        " failed. Returned invalid task link uri="+task);                
+            }
+        } catch (HttpMethodException ex) {
+            l.debug("Executing report definition uri="+reportDefUri + " failed.", ex);
+            throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed.");
+        } finally {
+            execPost.releaseConnection();
+        }
+    }
+
+    /**
+     * Checks if the report execution is finished
+     *
+     * @param link the link returned exec report
+     * @return the loading status (true - finished, false - not yet)
+     */
+    public boolean getReportExecutionStatus(String link) throws HttpMethodException {
+        l.debug("Getting report execution status uri="+link);
+        HttpMethod ptm = new GetMethod(config.getUrl() + link);
+        setJsonHeaders(ptm);
+        try {
+            executeMethodOk(ptm);
+        }
+        catch (HttpMethodNotFinishedYetException e) {
+            l.debug("Got report execution status uri="+link+" status="+false);
+            return false;
+        }
+            l.debug("Got report execution status uri="+link+" status="+true);
+            return true;    }
+
     /**
      * Kicks the GDC platform to inform it that the FTP transfer is finished.
      *
@@ -643,13 +816,16 @@ public class GdcRESTApiWrapper {
     private String executeMethodOk(HttpMethod method, boolean reLoginOn401) throws HttpMethodException {
         try {
             client.executeMethod(method);
-
             if (method.getStatusCode() == HttpStatus.SC_OK) {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reLoginOn401) {
             	// retry
             	login();
             	return executeMethodOk(method, false);
+            } else if (method.getStatusCode() == HttpStatus.SC_CREATED) {
+                return method.getResponseBodyAsString();
+            } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
+                throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
             } else {
                 String msg = method.getStatusCode() + " " + method.getStatusText();
                 String body = method.getResponseBodyAsString();

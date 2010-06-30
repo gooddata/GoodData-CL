@@ -501,12 +501,22 @@ public class GdcDI implements Executor {
             else if(c.match( "Lock")) {
                 lock(c, cli, ctx);
             }
+            else if(c.match("getReports")) {
+                getReports(c, cli, ctx);
+            }
+            else if(c.match("ExecuteReports")) {
+                executeReports(c, cli, ctx);
+            }
             else {
                 l.debug("No match command "+c.getCommand());
                 return false;
             }
         }
         catch (IOException e) {
+            l.debug("Processing command "+c.getCommand()+" failed",e);
+            throw new ProcessingException(e);
+        }
+        catch (InterruptedException e) {
             l.debug("Processing command "+c.getCommand()+" failed",e);
             throw new ProcessingException(e);
         }
@@ -538,6 +548,59 @@ public class GdcDI implements Executor {
         String id = c.getParamMandatory("id");
         ctx.getRestApi(p).dropProject(id);
         l.info("Project id = '"+id+"' dropped.");
+    }
+
+
+    /**
+     * Enumerate reports
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void getReports(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String pid = ctx.getProjectId();
+        String fileName = c.getParamMandatory("fileName");
+        List<String> uris = ctx.getRestApi(p).enumerateReports(pid);
+        String result = "";
+        for(String uri : uris) {
+            if(result.length() > 0)
+                result += "\n" + uri;
+            else
+                result += uri;                
+        }
+        FileUtil.writeStringToFile(result, fileName);
+    }
+
+    /**
+     * Enumerate reports
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void executeReports(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
+        String pid = ctx.getProjectId();
+        String fileName = c.getParamMandatory("fileName");
+        String result = FileUtil.readStringFromFile(fileName).trim();
+        if(result != null && result.length()>0) {
+            String[] uris = result.split("\n");
+            for(String uri : uris) {
+                String defUri = ctx.getRestApi(p).getReportDefinition(uri.trim());
+                l.info("Executing report uri="+defUri);
+                String task = ctx.getRestApi(p).executeReportDefinition(defUri.trim());
+                boolean finished = false;
+                do {
+                    finished = ctx.getRestApi(p).getReportExecutionStatus(task);
+                    if(!finished)
+                        Thread.sleep(1500);
+                    l.info("Checking report " +defUri+ " execution finished status="+finished);
+                }
+                while(!finished);
+                l.info("Report " +defUri+ " execution finished.");
+            }
+        }
+        else {
+            throw new IOException("Invalid report list="+result);
+        }
     }
 
     /**

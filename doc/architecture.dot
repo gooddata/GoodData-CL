@@ -1,10 +1,17 @@
 digraph GoodDataCL {
-	CLI -> Connector;
-	Connector -> GdcRestAPIWrapper;
-	Connector -> GdcFtpAPIWrapper;
-	Connector -> MySqlConnectorBackend;
-	Connector -> DerbyConnectorBackend;
-	Connector -> MAQLGenerator;
+	CLI -> GoogleAnalyticsConnector;
+	CLI -> SalesforceConnector;
+	CLI -> JdbcConnector;
+	CLI -> CsvConnector;
+	GoogleAnalyticsConnector -> AbstractConnector;
+	SalesforceConnector  -> AbstractConnector;
+	JdbcConnector  -> AbstractConnector;
+	CsvConnector  -> AbstractConnector;	
+	AbstractConnector -> GdcRestAPIWrapper;
+	AbstractConnector -> GdcFtpAPIWrapper;
+	AbstractConnector -> MySqlConnectorBackend;
+	AbstractConnector -> DerbyConnectorBackend;
+	AbstractConnector -> MAQLGenerator;
 	MAQLGenerator -> SourceSchema;
 	MySqlConnectorBackend -> PdmSchema;
 	MySqlConnectorBackend -> MySqlDriver;
