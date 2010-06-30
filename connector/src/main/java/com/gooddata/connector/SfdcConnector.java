@@ -274,6 +274,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     public void extract() throws IOException {
         l.debug("Extracting SFDC data.");
         File dataFile = FileUtil.getTempFile();
+        l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
         SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
         List<SObject> result;
@@ -308,7 +309,9 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         }
         cw.flush();
         cw.close();
+        l.debug("Making file="+dataFile.getAbsolutePath()+" writable.");
         FileUtil.makeWritable(dataFile);
+        l.debug("Made file="+dataFile.getAbsolutePath()+" writable.");
         getConnectorBackend().extract(dataFile);
         FileUtil.recursiveDelete(dataFile);
         l.debug("Extracted SFDC data.");

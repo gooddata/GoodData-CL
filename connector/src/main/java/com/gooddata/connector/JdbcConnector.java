@@ -204,13 +204,16 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         try {
             con = connect();
             File dataFile = FileUtil.getTempFile();
+            l.debug("Extracting JDBC data to file="+dataFile.getAbsolutePath());
             CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
             s = con.createStatement();
             JdbcUtil.executeQuery(con, getSqlQuery(), new ResultSetCsvWriter(cw));
             l.debug("Finished retrieving JDBC data.");
             cw.flush();
             cw.close();
+            l.debug("Making file="+dataFile.getAbsolutePath()+" writable.");
             FileUtil.makeWritable(dataFile);
+            l.debug("Made file="+dataFile.getAbsolutePath()+" writable.");
             getConnectorBackend().extract(dataFile);
             FileUtil.recursiveDelete(dataFile);
         }
