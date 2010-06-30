@@ -33,7 +33,7 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
 6. build the client distribution
 
         $ cd cli-distro
-        $ mvn assembly:asembly
+        $ mvn assembly:assembly
 
 7. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
@@ -74,7 +74,7 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
 6. build the client distribution
 
         C:\>cd cli-distro
-        C:\>mvn assembly:asembly
+        C:\>mvn assembly:assembly
 
 7. unpack one of the distributions that have been built in the cli-distro/target subdirectory:
 
