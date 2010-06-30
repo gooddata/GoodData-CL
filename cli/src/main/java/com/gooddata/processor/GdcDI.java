@@ -599,7 +599,7 @@ public class GdcDI implements Executor {
             }
         }
         else {
-            throw new IOException("Invalid report list="+result);
+            throw new IOException("There are no reports to execute.");
         }
     }
 
