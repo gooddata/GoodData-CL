@@ -267,7 +267,7 @@ public class FileUtil {
     
     /**
      * Retrieves CSV headers from an URL
-     * @param is CSV stream
+     * @param url CSV url
      * @return the headers as String[]
      * @throws IOException in case of IO issues
      */
@@ -276,6 +276,19 @@ public class FileUtil {
         String headerLine = r.readLine();
         r.close();
         return headerLine.split(",");
+    }
+
+    /**
+     * Makes a directory writable on the Unix machines
+     * @param tmpDir the directory that will be made writable
+     */
+    public static void makeWritable(File tmpDir) {
+        try {
+            Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
+        }
+        catch (IOException e) {
+            //NOTHING HERE
+        }
     }
 
 

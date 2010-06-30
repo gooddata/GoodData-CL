@@ -308,6 +308,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         }
         cw.flush();
         cw.close();
+        FileUtil.makeWritable(dataFile);
         getConnectorBackend().extract(dataFile);
         FileUtil.recursiveDelete(dataFile);
         l.debug("Extracted SFDC data.");

@@ -335,7 +335,7 @@ public abstract class AbstractConnector implements Connector {
         int[] snapshots, boolean waitForFinish, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
         l.debug("Extracting data.");
         File tmpDir = FileUtil.createTempDir();
-        makeWritable(tmpDir);
+        FileUtil.makeWritable(tmpDir);
         File tmpZipDir = FileUtil.createTempDir();
         String archiveName = tmpDir.getName();
         String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
@@ -387,19 +387,6 @@ public abstract class AbstractConnector implements Connector {
         }
         else
             l.info("Data successfully loaded.");
-    }
-
-    /**
-     * Makes a directory writable on the Unix machines
-     * @param tmpDir the directory that will be made writable
-     */
-    private void makeWritable(File tmpDir) {
-        try {
-            Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
-        }
-        catch (IOException e) {
-            l.debug("CHMOD execution failed. No big deal perhaps you are running Windows.", e);
-        }
     }
 
 

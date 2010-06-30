@@ -210,6 +210,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             l.debug("Finished retrieving JDBC data.");
             cw.flush();
             cw.close();
+            FileUtil.makeWritable(dataFile);
             getConnectorBackend().extract(dataFile);
             FileUtil.recursiveDelete(dataFile);
         }
