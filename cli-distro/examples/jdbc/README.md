@@ -30,6 +30,7 @@ In order to set up access to your database, grab an appropriate **JDBC 4** drive
  - MySQL
  - PostgreSQL
  - Apache Derby
+ - jTDS (open source implementation of a JDBC connector for SQL Server and Sybase databases)
 
 Then copy the `fundamentals.txt` script to `myjdbc.txt` (or pick up a better name) and find the `LoadJdbc` command. Modify the `driver` and `url` parameters, the `driver` will refer to the JDBC driver's Java class and `url` will be a JDBC URL of the target database. 
 
@@ -49,6 +50,11 @@ If unsure, please consult your database administrator or the following list of c
 
    - driver: `org.apache.derby.jdbc.EmbeddedDriver`
    - sample url: jdbc:derby:/path/to/my/data/folder
+
+- SQL Server
+
+    - driver: `net.sourceforge.jtds.jdbc.Driver`
+    - sample url: jdbc:jtds:sqlserver://localhost:1433/AdventureWorks
 
 ### Define your data set
 
