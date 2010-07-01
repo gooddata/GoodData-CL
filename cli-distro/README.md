@@ -49,4 +49,4 @@ on the standard 3306 TCP port. Once you have the MySQL engine up and running, yo
 
 # Next Steps
 
-Please see the [GoodData CL examples and documentation](/gooddata-cl/).
+Please see the [GoodData CL examples and documentation](http://developer.gooddata.com/gooddata-cl/).
