@@ -44,8 +44,10 @@ import com.google.gdata.util.ServiceException;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -160,7 +162,9 @@ public class GaConnector extends AbstractConnector implements Connector {
             GaQuery gaq = getGoogleAnalyticsQuery();
             gaq.setMaxResults(5000);
             int cnt = 1;
-            CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
+
+            CSVWriter cw = new CSVWriter(new OutputStreamWriter(new FileOutputStream(dataFile), "utf-8"));
+            
             for(int startIndex = 1; cnt > 0; startIndex += cnt + 1) {
                 gaq.setStartIndex(startIndex);
                 DataFeed feed = as.getFeed(gaq.getUrl(), DataFeed.class);
