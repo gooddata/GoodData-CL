@@ -23,6 +23,14 @@
 
 package com.gooddata.connector.driver;
 
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.apache.log4j.Logger;
+
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
@@ -31,12 +39,6 @@ import com.gooddata.integration.model.DLIPart;
 import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.log4j.Logger;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * GoodData Derby SQL driver. Generates the DDL (tables and indexes), DML (transformation SQL) and other
@@ -70,10 +72,11 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
         String cols = getNonAutoincrementColumns(sourceTable);
         JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" DISABLE KEYS");
 
-        JdbcUtil.executeUpdate(c,
-            "LOAD DATA INFILE '" + file + "' INTO TABLE " + source + " CHARACTER SET UTF8 "+
-            "COLUMNS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' (" + cols + ")"
-        );
+        file = file.replace(File.separatorChar, '/'); // windows workaround
+        String sql = "LOAD DATA INFILE '" + file + "' INTO TABLE " + source + " CHARACTER SET UTF8 "+
+        "COLUMNS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' (" + cols + ")";
+        JdbcUtil.executeUpdate(c, sql);
+        
         JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" ENABLE KEYS");
         l.debug("Finished extracting data.");
     }
@@ -92,6 +95,7 @@ public class MySqlDriver extends AbstractSqlDriver implements SqlDriver {
         ResultSet rs = null;
         try {
             s = c.createStatement();
+            file = file.replace(File.separatorChar, '/'); // windows workaround
             String sql = "SELECT " + cols + " INTO OUTFILE '" + file +
 	            "' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' FROM " +
 	            dliTable + whereClause;
