@@ -96,18 +96,18 @@ public class DataTypeGuess {
      * @param t the tested String
      * @return true if the String is date, false otherwise
      */
-    public static boolean isDate(String t) {
+    public static String getDateFormat(String t) {
         for(SimpleDateFormat d : dtf) {
             try {
                 Date dt = d.parse(t);
                 if(t.equals(d.format(dt)))
-                    return true;
+                    return d.toPattern();
             }
             catch (ParseException e) {
                 //NOTHING HERE
             }
         }
-        return false;
+        return null;
     }
     
     /**
@@ -117,7 +117,7 @@ public class DataTypeGuess {
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
-    public static String[] guessCsvSchema(URL url, boolean hasHeader) throws IOException {
+    public static SourceColumn[] guessCsvSchema(URL url, boolean hasHeader) throws IOException {
     	return guessCsvSchema(url.openStream(), hasHeader);
     }
 
@@ -128,7 +128,7 @@ public class DataTypeGuess {
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
-    public static String[] guessCsvSchema(InputStream is, boolean hasHeader) throws IOException {
+    public static SourceColumn[] guessCsvSchema(InputStream is, boolean hasHeader) throws IOException {
     	CSVReader cr = new CSVReader(new InputStreamReader(is));
     	return guessCsvSchema(cr, hasHeader);
     }
@@ -140,7 +140,7 @@ public class DataTypeGuess {
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
-    public static String[] guessCsvSchema(CSVReader cr, boolean hasHeader) throws IOException {
+    public static SourceColumn[] guessCsvSchema(CSVReader cr, boolean hasHeader) throws IOException {
         String[] header = null;
         String[] row = cr.readNext();
 
@@ -155,13 +155,17 @@ public class DataTypeGuess {
             HashSet<String> allTypes = new HashSet<String>();
             excludedColumnTypes.add(allTypes);
         }
+        String[] dateFormats = new String[row.length];
         int countdown = 1000;
         while(row != null && countdown-- >0) {
             for(int i=0; i< row.length; i++) {
                 Set<String> types = excludedColumnTypes.get(i);
                 String value = row[i];
-                if(!isDate(value)) {
+                String dateFormat = getDateFormat(value);
+                if(dateFormat == null) {
                     types.add(SourceColumn.LDM_TYPE_DATE);
+                } else {
+                	dateFormats[i] = dateFormat;
                 }
                 if(!isDecimal(value)) {
                     types.add(SourceColumn.LDM_TYPE_FACT);
@@ -169,15 +173,22 @@ public class DataTypeGuess {
             }
             row = cr.readNext();
         }
-        String[] ret = new String[excludedColumnTypes.size()];
+        
+        SourceColumn[] ret = new SourceColumn[excludedColumnTypes.size()];
         for(int i=0; i < excludedColumnTypes.size(); i++) {
-            Set excludedColumnType = excludedColumnTypes.get(i);
+            Set<String> excludedColumnType = excludedColumnTypes.get(i);
+            final String ldmType;
             if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_DATE))
-                ret[i] = SourceColumn.LDM_TYPE_DATE;
+            	ldmType = SourceColumn.LDM_TYPE_DATE;
             else if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_FACT))
-                ret[i] = SourceColumn.LDM_TYPE_FACT;
-            else if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_ATTRIBUTE))
-                ret[i] = SourceColumn.LDM_TYPE_ATTRIBUTE;
+            	ldmType = SourceColumn.LDM_TYPE_FACT;
+            else
+            	ldmType = SourceColumn.LDM_TYPE_ATTRIBUTE;
+
+            ret[i] = new SourceColumn(null, ldmType, null);
+            if (SourceColumn.LDM_TYPE_DATE.equals(ldmType)) {
+            	ret[i].setFormat(dateFormats[i]);
+            }
         }
         return ret;
     }

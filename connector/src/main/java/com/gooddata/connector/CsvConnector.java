@@ -130,7 +130,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         	}
         });
         if (knownColumns < headers.length) {
-        	String[] guessed = DataTypeGuess.guessCsvSchema(dataUrl, true);
+        	SourceColumn[] guessed = DataTypeGuess.guessCsvSchema(dataUrl, true);
         	if (guessed.length != headers.length) {
         		throw new AssertionError("The size of data file header is different than the number of guessed fields");
         	}
@@ -142,7 +142,10 @@ public class CsvConnector extends AbstractConnector implements Connector {
 	            if (defaultLdmType != null) {
 	            	sc = new SourceColumn(identifier, defaultLdmType, title, folder);
 	            } else {
-		            sc = new SourceColumn(identifier, guessed[j], title, folder);
+		            sc = guessed[j];
+		            sc.setName(identifier);
+		            sc.setTitle(title);
+		            sc.setFolder(folder);
 	            }
 	            s.addColumn(sc);
 	            i++;
