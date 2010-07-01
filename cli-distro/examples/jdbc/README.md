@@ -39,7 +39,7 @@ If unsure, please consult your database administrator or the following list of c
  - MySQL
 
    - driver: `com.mysql.jdbc.Driver`
-   - sample url: jdbc:mysql:localhost/mydatabase
+   - sample url: jdbc:mysql://localhost/mydatabase
 
  - PostgreSQL:
 
