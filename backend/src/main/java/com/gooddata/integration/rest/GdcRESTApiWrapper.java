@@ -94,9 +94,6 @@ public class GdcRESTApiWrapper {
      */
     public String login() throws GdcLoginException {
         l.debug("Logging into GoodData.");
-        if (ssToken != null) {
-            return ssToken;
-        }
         JSONObject loginStructure = getLoginStructure();
         PostMethod loginPost = new PostMethod(config.getUrl() + LOGIN_URI);
         setJsonHeaders(loginPost);
