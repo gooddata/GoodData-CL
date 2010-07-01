@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.driver.Constants;
@@ -97,11 +98,13 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @throws IOException in case of IO issues
      */
     static SourceSchema guessSourceSchema (String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
-    	return guessSourceSchema(new FileInputStream(configFileName), new File(dataFileName).toURI().toURL(), defaultLdmType, folder);
+    	File configFile = new File(configFileName);
+    	InputStream configStream = configFile.exists() ? new FileInputStream(configFile) : null;
+    	return guessSourceSchema(configStream, new File(dataFileName).toURI().toURL(), defaultLdmType, folder);
     }
     
     static SourceSchema guessSourceSchema (InputStream configStream, URL dataUrl, String defaultLdmType, String folder) throws IOException {
-        String name = dataUrl.getFile().split("\\.")[0];
+        String name = URLDecoder.decode(FileUtil.getFileName(dataUrl).split("\\.")[0], "utf-8").trim();
         String[] headers = FileUtil.getCsvHeader(dataUrl);
         int i = 0;
         final SourceSchema s;

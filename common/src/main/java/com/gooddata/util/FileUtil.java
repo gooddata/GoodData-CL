@@ -335,5 +335,15 @@ public class FileUtil {
 		InputStream is = FileUtil.class.getResource(path).openStream();
 		return new CSVReader(new InputStreamReader(is));    	
 	}
+	
+	/**
+	 * returns the last element of the URL's path
+	 * @param url to parse
+	 * @return the last element of the URL's path
+	 */
+	public static String getFileName(URL url) {
+		String[] pathElements = url.getPath().split("/");
+		return pathElements[pathElements.length - 1];
+	}
 
 }
