@@ -43,6 +43,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.apache.log4j.Logger;
 
 /**
  * File utils
@@ -51,6 +52,8 @@ import au.com.bytecode.opencsv.CSVReader;
  * @version 1.0
  */
 public class FileUtil {
+
+    private static Logger l = Logger.getLogger(FileUtil.class);
 
     private static final int BUF_SIZE = 2048;
 
@@ -62,6 +65,7 @@ public class FileUtil {
      * @throws IOException
      */
     public static void compressDir(String dirPath, String archiveName) throws IOException {
+        l.debug("Compressing "+dirPath + " -> "+archiveName);
         File d = new File(dirPath);
         if (d.isDirectory()) {
             File[] files = d.listFiles();
@@ -81,6 +85,7 @@ public class FileUtil {
             File file = new File(archiveName);
         } else
             throw new IOException("The referenced directory isn't directory!");
+        l.debug("Compressed "+dirPath + " -> "+archiveName);
 
     }
 
@@ -115,6 +120,7 @@ public class FileUtil {
      * @throws IOException if there is an error creating the temporary directory
      */
     public static File createTempDir() throws IOException {
+        l.debug("Creating a new tmp directory.");
         final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
         File newTempDir;
         final int maxAttempts = 9;
@@ -132,6 +138,7 @@ public class FileUtil {
         } while (newTempDir.exists());
 
         if (newTempDir.mkdirs()) {
+            l.debug("Created new tmp directory="+newTempDir.getAbsolutePath());
             return newTempDir;
         } else {
             throw new IOException(
@@ -147,6 +154,7 @@ public class FileUtil {
      * @throws IOException if there is an error creating the temporary file
      */
     public static File getTempFile() throws IOException {
+        l.debug("Creating a new tmp file.");
         final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
         File newTempFile;
         final int maxAttempts = 9;
@@ -162,6 +170,7 @@ public class FileUtil {
             String fileName = UUID.randomUUID().toString() + ".csv";
             newTempFile = new File(sysTempDir, fileName);
         } while (newTempFile.exists());
+        l.debug("Created new tmp file="+newTempFile.getAbsolutePath());
         return newTempFile;
     }
 
@@ -172,6 +181,7 @@ public class FileUtil {
      * @return true if all files are successfully deleted
      */
     public static boolean recursiveDelete(File fileOrDir) {
+        l.debug("Deleting "+fileOrDir+" recursively.");
         if (fileOrDir.isDirectory()) {
             // recursively delete contents
             for (File innerFile : fileOrDir.listFiles()) {
@@ -180,7 +190,7 @@ public class FileUtil {
                 }
             }
         }
-
+        l.debug("Deleted"+fileOrDir+" recursively.");
         return fileOrDir.delete();
     }
 
@@ -287,7 +297,8 @@ public class FileUtil {
             Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
         }
         catch (IOException e) {
-            //NOTHING HERE
+            l.debug("Can't change file permissions file="+tmpDir.getAbsolutePath()+". This is not a big deal. " +
+                    "Perhaps you are using Windows.",e);
         }
     }
 

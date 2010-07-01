@@ -318,8 +318,14 @@ import java.util.List;
      * {@inheritDoc}
      */
     public void extract(File dataFile) {
+        l.debug("Extracting CSV file="+dataFile.getAbsolutePath());
+        if(!dataFile.exists()) {
+            l.error("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
+            throw new InternalErrorException("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
+        }
         Connection con = null;
         try {
+            l.debug("The file "+dataFile.getAbsolutePath()+" does exists size="+dataFile.length());
             con = connect();
             sg.executeExtractSql(con, getPdm(), dataFile.getAbsolutePath());
         }
@@ -332,9 +338,10 @@ import java.util.List;
                     con.close();
             }
             catch (SQLException e) {
-                e.printStackTrace();
+                l.debug("Can't close connection.",e);
             }
         }
+        l.debug("Extracted CSV file="+dataFile.getAbsolutePath());
     }
 
     /**

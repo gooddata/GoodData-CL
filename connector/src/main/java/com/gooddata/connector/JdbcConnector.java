@@ -201,22 +201,18 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         Connection con = null;
         Statement s = null;
         ResultSet rs = null;
+        File dataFile = FileUtil.getTempFile();
         try {
             con = connect();
-            File dataFile = FileUtil.getTempFile();
             l.debug("Extracting JDBC data to file="+dataFile.getAbsolutePath());
             CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
             s = con.createStatement();
-            JdbcUtil.executeQuery(con, getSqlQuery(), new ResultSetCsvWriter(cw));
-            l.debug("Finished retrieving JDBC data.");
+            ResultSetCsvWriter rw = new ResultSetCsvWriter(cw);
+            JdbcUtil.executeQuery(con, getSqlQuery(), rw);
+            l.debug("Finished retrieving JDBC data. Retrieved "+rw.rowCnt+" rows.");
             cw.flush();
             cw.close();
-            l.debug("Making file="+dataFile.getAbsolutePath()+" writable.");
-            FileUtil.makeWritable(dataFile);
-            l.debug("Made file="+dataFile.getAbsolutePath()+" writable.");
-            getConnectorBackend().extract(dataFile);
-            FileUtil.recursiveDelete(dataFile);
-        }
+            }
         catch (SQLException e) {
             l.debug("Error retrieving data from the JDBC source.", e);
             throw new InternalErrorException("Error retrieving data from the JDBC source.", e);
@@ -234,6 +230,11 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 l.error("Error closing JDBC connection.",e);
             }
         }
+        l.debug("Making file="+dataFile.getAbsolutePath()+" writable.");
+        FileUtil.makeWritable(dataFile);
+        l.debug("Made file="+dataFile.getAbsolutePath()+" writable.");
+        getConnectorBackend().extract(dataFile);
+        FileUtil.recursiveDelete(dataFile);
     }
 
     /**
@@ -421,6 +422,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     private static class ResultSetCsvWriter implements ResultSetHandler {
     	
     	private final CSVWriter cw;
+        protected int rowCnt = 0;
     	
     	public ResultSetCsvWriter(CSVWriter cw) {
     		this.cw = cw;
@@ -447,6 +449,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     			}
     		}
     		cw.writeNext(line);
+            rowCnt++;
     	}
     }
 }
