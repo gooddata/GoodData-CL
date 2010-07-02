@@ -220,7 +220,7 @@ public abstract class AbstractConnector implements Connector {
             else if(c.match("DropSnapshots")) {
                 dropSnapshots(c, cli, ctx);
             }
-            else if(c.match("TransferData")) {
+            else if(c.match("TransferData") || c.match("TransferAllSnapshots")) {
                 transferData(c, cli, ctx);
             }
             else if(c.match("TransferSnapshots")) {

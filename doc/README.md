@@ -6,7 +6,7 @@ The GoodData CL framework. The framework wraps various GoodData HTTP APIs (authe
 
 The framework contains following components:
 
-1. *CLI* the command line interface that processes a simple commands like `CreateProject`, `ExecuteMAQL`, `TransferData` etc. by translating them to the *Connector* function calls. The CLI also implements few generic commands (e.g. `CreateProject`, `DropProject` etc.)
+1. *CLI* the command line interface that processes a simple commands like `CreateProject`, `ExecuteMAQL`, `TransferLastSnapshot` etc. by translating them to the *Connector* function calls. The CLI also implements few generic commands (e.g. `CreateProject`, `DropProject` etc.)
 2. *Connector* represents a specific data source (e.g. [SalesForce](http://developer.gooddata.com/gooddata-cl/examples/sfdc/), [GoogleAnalytics](http://developer.gooddata.com/gooddata-cl/examples/ga/), [SQL database](http://developer.gooddata.com/gooddata-cl/examples/jdbc/), [data file](http://developer.gooddata.com/gooddata-cl/examples/quotes/) etc.) that can be loaded to a GoodData project. The *Connector* wraps functions that:
 
 	1. extract data from a particular source.

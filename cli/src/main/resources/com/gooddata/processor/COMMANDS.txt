@@ -50,7 +50,7 @@ Logical Model Management Commands:
 Data Transfer Commands:
 -----------------------
 
- TransferData([incremental=<true | false>] [, waitForFinish=<true | false>]) - upload data (all snapshots) to the GoodData server, must call CreateProject or OpenProject and Load<Connector> before
+ TransferAllSnapshots([incremental=<true | false>] [, waitForFinish=<true | false>]) - upload data (all snapshots) to the GoodData server, must call CreateProject or OpenProject and Load<Connector> before
   incremental - incremental transfer (true | false), default is false
   waitForFinish - waits for the server-side processing (true | false), default is true
 
@@ -64,7 +64,7 @@ Data Transfer Commands:
   incremental - incremental transfer (true | false), default is false
   waitForFinish - waits for the server-side processing (true | false), default is true
 
- TransferData([incremental=<true | false>] [, waitForFinish=<true | false>]) - uploads the lastSnapshot 
+ TransferAllSnapshots([incremental=<true | false>] [, waitForFinish=<true | false>]) - uploads all snapshots
   incremental - incremental transfer (true | false), default is false
   waitForFinish - waits for the server-side processing (true | false), default is true
 
