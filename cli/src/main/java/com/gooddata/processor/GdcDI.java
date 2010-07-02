@@ -106,23 +106,31 @@ public class GdcDI implements Executor {
             cliParams.setFtpConfig(new NamePasswordConfiguration(
                     cliParams.get(CLI_PARAM_PROTO[0]), cliParams.get(CLI_PARAM_FTP_HOST[0]),
                     cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
-            connectors = instantiateConnectors();
-            String execute = cliParams.get(CLI_PARAM_EXECUTE[0]);
-            String scripts = cliParams.get(CLI_PARAM_SCRIPT);
-            
-            if(execute!= null && scripts != null && execute.length()>0 && scripts.length()>0) {
-                throw new InvalidArgumentException("You can't execute a script and use the -e command line parameter at the same time.");
-            }
-            if(execute!= null && execute.length() > 0) {
-                l.debug("Executing arg="+execute);
-                execute(execute);
-            }
-            if(scripts!= null && scripts.length() > 0) {
-                String[] sas = scripts.split(",");
-                for(String script : sas) {
-                    l.debug("Executing file="+script);
-                    execute(new File(script));
-                }
+        	ConnectorBackend backend = null;
+            try {
+                backend = instantiateConnectorBackend();            	
+	            connectors = instantiateConnectors(backend);
+	            String execute = cliParams.get(CLI_PARAM_EXECUTE[0]);
+	            String scripts = cliParams.get(CLI_PARAM_SCRIPT);
+	            
+	            if(execute!= null && scripts != null && execute.length()>0 && scripts.length()>0) {
+	                throw new InvalidArgumentException("You can't execute a script and use the -e command line parameter at the same time.");
+	            }
+	            if(execute!= null && execute.length() > 0) {
+	                l.debug("Executing arg="+execute);
+	                execute(execute);
+	            }
+	            if(scripts!= null && scripts.length() > 0) {
+	                String[] sas = scripts.split(",");
+	                for(String script : sas) {
+	                    l.debug("Executing file="+script);
+	                    execute(new File(script));
+	                }
+	            }
+            } finally {
+            	if (backend != null) {
+            		backend.close();
+            	}
             }
         }
         catch (InvalidArgumentException e) {
@@ -249,8 +257,6 @@ public class GdcDI implements Executor {
             }
             l.debug("Unrecognized error: ",e);
         }
-
-
     }
 
     /**
@@ -653,20 +659,27 @@ public class GdcDI implements Executor {
     	lock.deleteOnExit();
     }
 
+    private ConnectorBackend instantiateConnectorBackend() throws IOException {
+        String b = cliParams.get(CLI_PARAM_BACKEND[0]);
+        final ConnectorBackend backend;
+        if("mysql".equalsIgnoreCase(b))
+            backend = MySqlConnectorBackend.create(cliParams.get(CLI_PARAM_DB_USERNAME[0]),
+                    cliParams.get(CLI_PARAM_DB_PASSWORD[0]));
+        else if("derby".equalsIgnoreCase(b))
+            backend = DerbyConnectorBackend.create();
+        else
+        	throw new IllegalStateException("Invalid backed '" + b + "'");
+
+        return backend;
+    }
+    
     /**
      * Instantiate all known connectors
      * TODO: this should be automated
      * @return array of all active connectors
      * @throws IOException in case of IO issues
      */
-    private Connector[] instantiateConnectors() throws IOException {
-        String b = cliParams.get(CLI_PARAM_BACKEND[0]);
-        ConnectorBackend backend = null;
-        if("mysql".equalsIgnoreCase(b))
-            backend = MySqlConnectorBackend.create(cliParams.get(CLI_PARAM_DB_USERNAME[0]),
-                    cliParams.get(CLI_PARAM_DB_PASSWORD[0]));
-        else if("derby".equalsIgnoreCase(b))
-            backend = DerbyConnectorBackend.create();
+    private Connector[] instantiateConnectors(ConnectorBackend backend) throws IOException {
         return new Connector[] {
             CsvConnector.createConnector(backend),
             GaConnector.createConnector(backend),

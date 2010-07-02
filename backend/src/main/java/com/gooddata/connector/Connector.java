@@ -122,7 +122,7 @@ public interface Connector extends Executor {
      */
     public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds) throws IOException;
 
-/**
+    /**
      * Get last snapshot number. Snapshot is each individual lad of data. Snapshots are numbered (0...N).
      * Sometimes when you call this method at the beginning of a process that creates new snapshot, you might want to
      * add one to the snapshot number.

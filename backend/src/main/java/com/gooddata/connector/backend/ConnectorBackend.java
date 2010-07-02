@@ -42,13 +42,13 @@ import java.util.List;
  * @version 1.0
 */
 public interface ConnectorBackend {
-    
+	   
     /**
      * Connects the database
      * @return JDBC connection
      * @throws java.sql.SQLException in case of a SQL error
      */
-    public Connection connect() throws SQLException;
+    public Connection getConnection() throws SQLException;
 
     /**
      * Perform the data normalization (generate lookups). The database must contain the required schema
@@ -158,5 +158,67 @@ public interface ConnectorBackend {
      * @param schema PDM schema
      */
     public void setPdm(PdmSchema schema);
+    
+    /**
+     * Executes the system DDL initialization. Creates functions, system tables etc.
+     * @param c JDBC connection
+     * @throws SQLException in case of db problems
+     */
+    public void executeSystemDdlSql(Connection c) throws SQLException;
+
+    /**
+     * Executes the DDL initialization. Creates the database schema that is required for the data normalization.
+     * The schema is specific for the incoming data.
+     * @param c JDBC connection
+     * @param schema the PDM schema
+     * @throws java.sql.SQLException in case of db problems
+     */
+    public void executeDdlSql(Connection c, PdmSchema schema) throws SQLException;
+
+    /**
+     * Executes the data normalization script
+     * @param c JDBC connection
+     * @param schema the PDM schema
+     * @throws SQLException in case of db problems
+     */
+    public void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException;
+
+    /**
+     * Extracts the data from a CSV file to the database for normalization
+     * @param c JDBC connection
+     * @param schema the PDM schema
+     * @param file extracted file
+     * @throws SQLException in case of db problems
+     */
+    public void executeExtractSql(Connection c, PdmSchema schema, String file) throws SQLException;
+
+    /**
+     * Executes the Derby SQL that unloads the normalized data from the database to a CSV
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @param part DLI part
+     * @param dir target directory
+     * @param snapshotIds specific snapshots IDs that will be integrated
+     * @throws SQLException in case of db problems
+     */
+    public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
+            throws SQLException;
+
+
+    /**
+     * Executes the copying of the referenced lookup tables. This is used for REFERENCE lookups that are copies of the
+     * associated CONNECTION POINT lookups.
+     * @param c JDBC connection
+     * @param schema the PDM schema
+     * @throws java.sql.SQLException in case of db problems
+     */
+    public void executeLookupReplicationSql(Connection c, PdmSchema schema) throws SQLException;
+
+
+    /**
+     * Frees all resources allocated by this connector
+     * @throws SQLException 
+     */
+    public void close();
 
 }

@@ -23,16 +23,26 @@
 
 package com.gooddata.connector.backend;
 
-import com.gooddata.connector.driver.MySqlDriver;
-import com.gooddata.exception.InternalErrorException;
-import com.gooddata.util.JdbcUtil;
-import org.apache.log4j.Logger;
-
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.apache.log4j.Logger;
+
+import com.gooddata.connector.driver.Constants;
+import com.gooddata.connector.model.PdmColumn;
+import com.gooddata.connector.model.PdmSchema;
+import com.gooddata.connector.model.PdmTable;
+import com.gooddata.exception.InternalErrorException;
+import com.gooddata.integration.model.Column;
+import com.gooddata.integration.model.DLIPart;
+import com.gooddata.naming.N;
+import com.gooddata.util.JdbcUtil;
+import com.gooddata.util.StringUtil;
 
 /**
  * GoodData  MySQL connector backend. This connector backend is the performance option. It provides reasonable
@@ -75,7 +85,11 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
      */
     protected MySqlConnectorBackend(String username, String password) throws IOException {
         super(username, password);
-        sg = new MySqlDriver();
+        // autoincrement syntax
+        SYNTAX_AUTOINCREMENT = "AUTO_INCREMENT";
+        SYNTAX_CONCAT_FUNCTION_PREFIX = "CONCAT(";
+        SYNTAX_CONCAT_FUNCTION_SUFFIX = ")";
+        SYNTAX_CONCAT_OPERATOR = ",'" + HASH_SEPARATOR + "',";
     }
 
     /**
@@ -92,21 +106,22 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
     /**
      * {@inheritDoc}
      */
-    public Connection connect() throws SQLException {
-        String protocol = "jdbc:mysql:";
-        Connection con;
-        try {
-            con = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
-        }
-        catch (SQLException e) {
-            con = DriverManager.getConnection(protocol + "//localhost/mysql", getUsername(), getPassword());
-            JdbcUtil.executeUpdate(con,
-                "CREATE DATABASE IF NOT EXISTS " + getProjectId() + " CHARACTER SET utf8"
-            );
-            con.close();
-            con = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
-        }
-        return con;
+    public Connection getConnection() throws SQLException {
+    	if (connection == null) {
+	        String protocol = "jdbc:mysql:";
+	        try {
+	        	connection = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
+	        }
+	        catch (SQLException e) {
+	        	connection = DriverManager.getConnection(protocol + "//localhost/mysql", getUsername(), getPassword());
+	            JdbcUtil.executeUpdate(connection,
+	                "CREATE DATABASE IF NOT EXISTS " + getProjectId() + " CHARACTER SET utf8"
+	            );
+	            connection.close();
+	            connection = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
+	        }
+    	}
+        return connection;
     }
 
 
@@ -118,7 +133,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         Connection con = null;
         Statement s = null;
         try {
-            con = connect();
+            con = getConnection();
             s = con.createStatement();
             s.execute("DROP DATABASE IF EXISTS " + getProjectId());
 
@@ -130,14 +145,122 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
             try  {
                 if(s != null)
                     s.close();
-                if(con != null && !con.isClosed())
-                    con.close();
             }
             catch (SQLException e) {
                 l.error("Can't close MySQL connection.", e);
             }
         }
         l.debug("Finished dropping MySQL snapshots "+getProjectId());
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void executeExtractSql(Connection c, PdmSchema schema, String file) throws SQLException {
+        l.debug("Extracting data.");
+        PdmTable sourceTable = schema.getSourceTable();
+        String source = sourceTable.getName();
+        String cols = getNonAutoincrementColumns(sourceTable);
+        JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" DISABLE KEYS");
+
+        file = file.replace(File.separatorChar, '/'); // windows workaround
+        String sql = "LOAD DATA INFILE '" + file + "' INTO TABLE " + source + " CHARACTER SET UTF8 "+
+        "COLUMNS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' (" + cols + ")";
+        JdbcUtil.executeUpdate(c, sql);
+        
+        JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" ENABLE KEYS");
+        l.debug("Finished extracting data.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
+            throws SQLException {
+        l.debug("Unloading data.");
+        String file = dir + System.getProperty("file.separator") + part.getFileName();
+        String cols = getLoadColumns(part, schema);
+        String whereClause = getLoadWhereClause(part, schema, snapshotIds);
+        String dliTable = getTableNameFromPart(part);
+        Statement s = null;
+        ResultSet rs = null;
+        try {
+            s = c.createStatement();
+            file = file.replace(File.separatorChar, '/'); // windows workaround
+            String sql = "SELECT " + cols + " INTO OUTFILE '" + file +
+	            "' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' FROM " +
+	            dliTable + whereClause;
+            rs = JdbcUtil.executeQuery(s, sql);
+        }
+        finally {
+            if (rs != null)
+                rs.close();
+            if (s != null)
+                s.close();
+        }
+        l.debug("Data unloading finished.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
+        if (cols.length() > 0)
+            cols += ",ATOD(" + table + "." +
+                    StringUtil.formatShortName(cl.getName())+")";
+        else
+            cols +=  "ATOD(" + table + "." +
+                    StringUtil.formatShortName(cl.getName())+")";
+        return cols;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void insertFactsToFactTable(Connection c, PdmSchema schema) throws SQLException {
+        PdmTable factTable = schema.getFactTable();
+        PdmTable sourceTable = schema.getSourceTable();
+        String fact = factTable.getName();
+        String source = sourceTable.getName();
+        String factColumns = "";
+        String sourceColumns = "";
+        for(PdmColumn column : factTable.getFactColumns()) {
+            factColumns += "," + column.getName();
+            sourceColumns += "," + column.getSourceColumn();
+        }
+
+        for(PdmColumn column : factTable.getDateColumns()) {
+            factColumns += "," + column.getName();
+            sourceColumns += ",IFNULL(DATEDIFF(STR_TO_DATE(" + column.getSourceColumn() + ",'" +
+                    StringUtil.convertJavaDateFormatToMySql(column.getFormat())+"'),'1900-01-01'),2147483646)+1";
+        }
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO "+fact+"("+N.ID+factColumns+") SELECT "+ N.SRC_ID + sourceColumns +
+            " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='"+fact+"')"
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void createFunctions(Connection c) throws SQLException {
+        l.debug("Creating system functions.");
+    	String sql = "CREATE FUNCTION ATOD(str varchar(255)) RETURNS DECIMAL(15,4) "
+			    + "RETURN CASE "
+			    + "      WHEN str = '' THEN NULL "
+			    + "      ELSE CAST( ";
+    	for (final String s : Constants.DISCARD_CHARS) {
+    		sql += "REPLACE(";
+    	}
+    	sql += "str";
+    	for (final String s : Constants.DISCARD_CHARS) {
+    		sql += ", '" + s + "', '')";
+    	}
+		sql +=  "           AS DECIMAL(15,4)) "
+			  + "   END";
+
+        JdbcUtil.executeUpdate(c, sql);
+        l.debug("System functions creation finished.");
     }
 
 }
