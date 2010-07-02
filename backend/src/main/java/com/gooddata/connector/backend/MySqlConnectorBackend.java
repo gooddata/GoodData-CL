@@ -164,8 +164,9 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" DISABLE KEYS");
 
         file = file.replace(File.separatorChar, '/'); // windows workaround
-        String sql = "LOAD DATA INFILE '" + file + "' INTO TABLE " + source + " CHARACTER SET UTF8 "+
-        "COLUMNS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' (" + cols + ")";
+        String sql = "LOAD DATA INFILE '" + file + "' INTO TABLE " + source + " CHARACTER SET UTF8 "
+        			+ "COLUMNS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' (" 
+        			+ cols + ")";
         JdbcUtil.executeUpdate(c, sql);
         
         JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" ENABLE KEYS");
