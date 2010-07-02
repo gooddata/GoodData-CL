@@ -328,8 +328,14 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         }
         l.debug("Extracted CSV file="+dataFile.getAbsolutePath());
     }
+    
+    protected abstract Connection getConnection() throws SQLException;
 
-    /**
+	protected abstract void executeLoadSql(Connection con, PdmSchema pdm, DLIPart p, String dir, int[] snapshotIds) throws SQLException;
+
+    protected abstract void executeExtractSql(Connection con, PdmSchema pdm, String absolutePath) throws SQLException;
+
+	/**
      * {@inheritDoc}
      */
     public void load(List<DLIPart> parts, String dir) {
@@ -353,14 +359,11 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             throw new InternalErrorException(e);
         }
     }
-    
 
-
-
-    /**
+	/**
      * {@inheritDoc}
      */
-    public void executeSystemDdlSql(Connection c) throws SQLException {
+    protected void executeSystemDdlSql(Connection c) throws SQLException {
         l.debug("Executing system DDL SQL.");
         createSnapshotTable(c);
         createFunctions(c);
@@ -370,7 +373,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     /**
      * {@inheritDoc}
      */
-    public void executeDdlSql(Connection c, PdmSchema schema) throws SQLException {
+    protected void executeDdlSql(Connection c, PdmSchema schema) throws SQLException {
         l.debug("Executing DDL SQL.");
         for(PdmTable table : schema.getTables()) {
         	if (!exists(c, table.getName())) {
@@ -404,7 +407,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     /**
      * {@inheritDoc}
      */
-    public void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException {
+    protected void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException {
         l.debug("Executing data normalization SQL.");
         //populate REFERENCEs lookups from the referenced lookups
         l.debug("Executing referenced lookups replication.");
@@ -437,7 +440,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     /**
      * {@inheritDoc}
      */
-    public void executeLookupReplicationSql(Connection c, PdmSchema schema) throws SQLException {
+    protected void executeLookupReplicationSql(Connection c, PdmSchema schema) throws SQLException {
         for (PdmLookupReplication lr : schema.getLookupReplications()) {
             JdbcUtil.executeUpdate(c,
                 "DELETE FROM " + lr.getReferencingLookup()
