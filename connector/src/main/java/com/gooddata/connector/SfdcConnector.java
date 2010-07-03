@@ -145,7 +145,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
              "QueryOptions", qo);
         try {
             QueryResult qr = binding.query(sfdcQuery);
-            while (qr.getSize()>0) {
+            if(qr.getSize()>0) {
                 SObject[] sObjects = qr.getRecords();
                 result.addAll(Arrays.asList(sObjects));
             }

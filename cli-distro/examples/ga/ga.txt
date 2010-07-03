@@ -6,7 +6,7 @@ CreateProject(name="GA");
 
 # Generate config file. This command is commented out as we have done that already.
 # If you change the GA metrics and dimensions you need to re-run the config file generation
-#GenerateGaConfig(name="GA",configFile="examples/ga/ga.config.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits");
+#GenerateGoogleAnalyticsConfig(name="GA",configFile="examples/ga/ga.config.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits");
 
 # Loads a new time dimension to the project
 LoadDateDimension(name="ga");
