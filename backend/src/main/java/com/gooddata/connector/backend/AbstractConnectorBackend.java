@@ -25,14 +25,7 @@ package com.gooddata.connector.backend;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,25 +35,25 @@ import org.apache.log4j.Logger;
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
+import com.gooddata.exception.ConnectorBackendException;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
-import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.util.FileUtil;
-import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 
 /**
  * GoodData abstract connector backend. This connector backend provides the base implementation that the specific
  * connector backends reuse.
- * Connector backend handles communication with the specific SQL database. Specifically it handles the DB connection
- * and other communication specifics of the DBMS. It uses the SQL driver that generates appropriate SQL dialect.
+ * <p>
+ * Connector backend handles communication with the specific storage, typically flat files or SQL database.
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
- */public abstract class AbstractConnectorBackend implements ConnectorBackend {
+ */
+public abstract class AbstractConnectorBackend implements ConnectorBackend {
 
     private static Logger l = Logger.getLogger(AbstractConnectorBackend.class);
 
@@ -149,19 +142,17 @@ import com.gooddata.util.StringUtil;
      * {@inheritDoc}
      */
     public void initialize() {
-        Connection con = null;
         try {
             l.debug("Initializing schema.");
-        	con = getConnection();
             if(!isInitialized()) {
                 l.debug("Initializing system schema.");
-                executeSystemDdlSql(con);
+                initializeLocalProject();
                 l.debug("System schema initialized.");
             }
-            executeDdlSql(con, getPdm());
+            initializeLocalDataSet(getPdm());
             l.debug("Schema initialized.");
         }
-        catch (SQLException e) {
+        catch (ConnectorBackendException e) {
             throw new InternalErrorException("Error initializing pdm schema '" + getPdm().getName() + "'", e);
         }
     }
@@ -170,54 +161,12 @@ import com.gooddata.util.StringUtil;
      * {@inheritDoc}
      */
     public void transform() {
-        Connection con = null;
         try {
-            con = getConnection();
-            executeNormalizeSql(con, getPdm());
+            createSnowflake(getPdm());
         }
-        catch (SQLException e) {
+        catch (ConnectorBackendException e) {
             throw new InternalErrorException("Error normalizing PDM Schema " + getPdm().getName() + " " + getPdm().getTables(), e);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String listSnapshots() {
-        String result = "ID        FROM ROWID        TO ROWID        TIME\n";
-              result += "------------------------------------------------\n";
-        Connection con = null;
-        Statement s = null;
-        ResultSet r = null;
-        try {
-            con = getConnection();
-            s = con.createStatement();
-            r = JdbcUtil.executeQuery(s, "SELECT id,firstid,lastid,tmstmp FROM snapshots");
-            for(boolean rc = r.next(); rc; rc = r.next()) {
-                int id = r.getInt(1);
-                int firstid = r.getInt(2);
-                int lastid = r.getInt(3);
-                long tmstmp = r.getLong(4);
-                Date tm = new Date(tmstmp);
-                result += id + "        " + firstid + "        " + lastid + "        " + tm + "\n";
-            }
-        }
-        catch (SQLException e) {
-            throw new InternalErrorException(e.getMessage());
-        }
-        finally {
-            try {
-                if(r != null)
-                    r.close();
-                if (s != null)
-                    s.close();
-            }
-            catch (SQLException ee) {
-               ee.printStackTrace();
-            }
-        }
-        l.debug("Current snapshots: \n"+result);
-        return result;
     }
 
     /**
@@ -246,22 +195,15 @@ import com.gooddata.util.StringUtil;
             l.error("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
             throw new InternalErrorException("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
         }
-        try {
-            l.debug("The file "+dataFile.getAbsolutePath()+" does exists size="+dataFile.length());
-            Connection con = getConnection();
-            executeExtractSql(con, getPdm(), dataFile.getAbsolutePath());
-        }
-        catch (SQLException e) {
-            throw new InternalErrorException(e);
-        }
+        l.debug("The file "+dataFile.getAbsolutePath()+" does exists size="+dataFile.length());
+        executeExtract(getPdm(), dataFile.getAbsolutePath());
+
         l.debug("Extracted CSV file="+dataFile.getAbsolutePath());
     }
     
-    protected abstract Connection getConnection() throws SQLException;
-
-	protected abstract void executeLoadSql(Connection con, PdmSchema pdm, DLIPart p, String dir, int[] snapshotIds) throws SQLException;
-
-    protected abstract void executeExtractSql(Connection con, PdmSchema pdm, String absolutePath) throws SQLException;
+	protected abstract void executeLoad(PdmSchema pdm, DLIPart p, String dir, int[] snapshotIds);
+	
+    protected abstract void executeExtract(PdmSchema pdm, String absolutePath);
 
 	/**
      * {@inheritDoc}
@@ -274,114 +216,9 @@ import com.gooddata.util.StringUtil;
      * {@inheritDoc}
      */
     public void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds) {
-        Connection con = null;
-        try {
-            con = getConnection();
-            // generate SELECT INTO CSV Derby SQL
-            // the required data structures are taken for each DLI part
-            for (DLIPart p : parts) {
-                executeLoadSql(con, getPdm(), p, dir, snapshotIds);
-            }
+        for (DLIPart p : parts) {
+            executeLoad(getPdm(), p, dir, snapshotIds);
         }
-        catch (SQLException e) {
-            throw new InternalErrorException(e);
-        }
-    }
-
-	/**
-     * {@inheritDoc}
-     */
-    protected abstract void executeSystemDdlSql(Connection c) throws SQLException;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected abstract void executeDdlSql(Connection c, PdmSchema schema) throws SQLException;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected abstract void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException;
-    
-    /**
-     * {@inheritDoc}
-     */
-    protected abstract void executeLookupReplicationSql(Connection c, PdmSchema schema) throws SQLException;
-    
-    /**
-     * {@inheritDoc}
-     * @throws SQLException 
-     */
-    protected boolean exists(Connection c, String tbl) throws SQLException {
-    	DatabaseMetaData md = c.getMetaData();
-    	ResultSet rs = md.getTables(null, null, tbl, null);
-    	try {
-	    	return rs.next();
-    	} finally {
-    		if (rs != null)
-    			rs.close();
-    	}
-    }
-
-    /**
-     * Returns true if the specified column of the specified table exists in the DB. Case sensitive!
-     * @param tbl table name
-     * @param col column name
-     * @return true if the table exists, false otherwise
-     * @throws IllegalArgumentException if the required table does not exist
-     * @throws SQLException if other database related problem occures 
-     */
-    protected boolean exists(Connection c, String tbl, String col) throws SQLException {
-    	if (!exists(c, tbl))
-    		throw new IllegalArgumentException("Table '" + tbl + "' does not exist.");
-    	String sql = "SELECT * FROM " + tbl + " WHERE 1=0";
-		Statement st = c.createStatement();
-		try {
-            ResultSet rs = st.executeQuery(sql);
-            try {
-	            ResultSetMetaData md = rs.getMetaData();
-	            int cols = md.getColumnCount();
-	            for (int i = 1; i <= cols; i++) {
-	            	if (col.equals(md.getColumnName(i)))
-	            		return true;
-	            }
-	            return false;
-    		} finally {
-    			if (rs != null)
-    				rs.close();
-    		}
-		} finally {
-			if (st != null)
-				st.close();
-		}
-    }
-
-
-    /**
-     * Indexes all table columns
-     * @param c JDBC connection
-     * @param table target table
-     * @throws SQLException in case of SQL issues
-     */
-    protected void indexAllTableColumns(Connection c, PdmTable table) throws SQLException {
-        for( PdmColumn column : table.getColumns()) {
-            indexTableColumn(c, table, column);
-        }
-    }
-
-    /**
-     * Indexes table's column
-     * @param c JDBC connection
-     * @param table target table
-     * @param column target table's columns
-     * @throws SQLException in case of SQL issues
-     */
-    private void indexTableColumn(Connection c, PdmTable table, PdmColumn column) throws SQLException {
-    	if(!column.isPrimaryKey() && !column.isUnique()) {
-            JdbcUtil.executeUpdate(c,"CREATE INDEX idx_" + table.getName()
-            		+ "_" + column.getName()
-            		+ " ON " + table.getName() + "("+column.getName()+")");
-    	}
     }
 
     /**
@@ -416,14 +253,6 @@ import com.gooddata.util.StringUtil;
     	}
     	return result;
     }
-
-    /**
-     * Inserts rows from the source table to the fact table
-     * @param c JDBC connection
-     * @param schema PDM schema
-     * @throws SQLException in case of a DB issue
-     */
-    protected abstract void insertFactsToFactTable(Connection c, PdmSchema schema) throws SQLException;
 
     /**
      * Get all columns that will be inserted (exclude autoincrements)
@@ -476,58 +305,6 @@ import com.gooddata.util.StringUtil;
     }
 
     /**
-     * Generates the where clause for unloading data to CSVs in the data loading package
-     * @param part DLI part
-     * @param schema PDM schema
-     * @param snapshotIds ids of snapshots to unload
-     * @return SQL where clause
-     */
-    protected String getLoadWhereClause(DLIPart part, PdmSchema schema, int[] snapshotIds) {
-        String dliTable = getTableNameFromPart(part);
-        PdmTable pdmTable = schema.getTableByName(dliTable);
-        String whereClause = "";
-        if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) && snapshotIds != null && snapshotIds.length > 0) {
-            String inClause = "";
-            for(int i : snapshotIds) {
-                if(inClause.length()>0)
-                    inClause += ","+i;
-                else
-                    inClause = "" + i;
-            }
-            whereClause = ",snapshots WHERE " + dliTable +
-                    ".ID BETWEEN snapshots.firstid and snapshots.lastid AND snapshots.id IN (" + inClause + ")";
-        }
-        return whereClause;
-    }
-
-    /**
-     * Generates the list of columns for unloading data to CSVs in the data loading package
-     * @param part DLI part
-     * @param schema PDM schema
-     * @return list of columns
-     */
-    protected String getLoadColumns(DLIPart part, PdmSchema schema)  {
-        String dliTable = getTableNameFromPart(part);
-        PdmTable pdmTable = schema.getTableByName(dliTable);
-        List<Column> columns = part.getColumns();
-        String cols = "";
-        for (Column cl : columns) {
-            PdmColumn col = pdmTable.getColumnByName(cl.getName());
-            // fact table fact columns
-            if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) &&
-                    SourceColumn.LDM_TYPE_FACT.equals(col.getLdmTypeReference()))
-                cols = decorateFactColumnForLoad(cols, cl, dliTable);
-            // lookup table name column
-            else if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(pdmTable.getType()) &&
-                    SourceColumn.LDM_TYPE_ATTRIBUTE.equals(col.getLdmTypeReference()))
-                cols = decorateLookupColumnForLoad(cols, cl, dliTable);
-            else
-                cols = decorateOtherColumnForLoad(cols, cl, dliTable);
-        }
-        return cols;
-    }
-
-    /**
      * Uses DBMS specific functions for decorating fact columns for unloading from DB to CSV
      * @param cols column list
      * @param cl column to add to cols
@@ -573,12 +350,6 @@ import com.gooddata.util.StringUtil;
         return StringUtil.formatShortName(part.getFileName().split("\\.")[0]);
     }
 
-    /**
-     * Creates the DBMS specific system functions
-     * @param c JDBC connection
-     * @throws SQLException in case of DB issues
-     */
-    protected abstract void createFunctions(Connection c) throws SQLException;
 
     /**
      * {@inheritDoc}
@@ -593,4 +364,20 @@ import com.gooddata.util.StringUtil;
     public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
+    
+	/**
+     * {@inheritDoc}
+     */
+    protected abstract void initializeLocalProject() throws ConnectorBackendException;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected abstract void initializeLocalDataSet(PdmSchema schema) throws ConnectorBackendException;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected abstract void createSnowflake(PdmSchema schema) throws ConnectorBackendException;
+
 }

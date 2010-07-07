@@ -43,6 +43,7 @@ import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmLookupReplication;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
+import com.gooddata.exception.ConnectorBackendException;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
@@ -181,20 +182,20 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
      * {@inheritDoc}
      */
     public void initialize() {
-        Connection con = null;
+        Connection con;
         try {
             l.debug("Initializing schema.");
         	con = getConnection();
             if(!isInitialized()) {
                 l.debug("Initializing system schema.");
-                executeSystemDdlSql(con);
+                initializeLocalProject();
                 l.debug("System schema initialized.");
             }
-            executeDdlSql(con, getPdm());
+            initializeLocalDataSet(getPdm());
             l.debug("Schema initialized.");
         }
         catch (SQLException e) {
-            throw new InternalErrorException("Error initializing pdm schema '" + getPdm().getName() + "'", e);
+            throw new ConnectorBackendException("Error initializing pdm schema '" + getPdm().getName() + "'", e);
         }
     }
 
@@ -202,14 +203,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
      * {@inheritDoc}
      */
     public void transform() {
-        Connection con = null;
-        try {
-            con = getConnection();
-            executeNormalizeSql(con, getPdm());
-        }
-        catch (SQLException e) {
-            throw new InternalErrorException("Error normalizing PDM Schema " + getPdm().getName() + " " + getPdm().getTables(), e);
-        }
+        createSnowflake(getPdm());
     }
 
     /**
@@ -235,7 +229,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             }
         }
         catch (SQLException e) {
-            throw new InternalErrorException(e.getMessage());
+            throw new ConnectorBackendException(e);
         }
         finally {
             try {
@@ -245,7 +239,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
                     s.close();
             }
             catch (SQLException ee) {
-               ee.printStackTrace();
+               l.warn("Error closing stuff: " + ee.getMessage(), ee);
             }
         }
         l.debug("Current snapshots: \n"+result);
@@ -307,31 +301,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 		}
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public void extract(File dataFile) {
-        l.debug("Extracting CSV file="+dataFile.getAbsolutePath());
-        if(!dataFile.exists()) {
-            l.error("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
-            throw new InternalErrorException("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
-        }
-        try {
-            l.debug("The file "+dataFile.getAbsolutePath()+" does exists size="+dataFile.length());
-            Connection con = getConnection();
-            executeExtractSql(con, getPdm(), dataFile.getAbsolutePath());
-        }
-        catch (SQLException e) {
-            throw new InternalErrorException(e);
-        }
-        l.debug("Extracted CSV file="+dataFile.getAbsolutePath());
-    }
-    
     protected abstract Connection getConnection() throws SQLException;
-
-	protected abstract void executeLoadSql(Connection con, PdmSchema pdm, DLIPart p, String dir, int[] snapshotIds) throws SQLException;
-
-    protected abstract void executeExtractSql(Connection con, PdmSchema pdm, String absolutePath) throws SQLException;
 
 	/**
      * {@inheritDoc}
@@ -340,97 +310,99 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         loadSnapshot(parts, dir, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void loadSnapshot(List<DLIPart> parts, String dir, int[] snapshotIds) {
-        Connection con = null;
-        try {
-            con = getConnection();
-            // generate SELECT INTO CSV Derby SQL
-            // the required data structures are taken for each DLI part
-            for (DLIPart p : parts) {
-                executeLoadSql(con, getPdm(), p, dir, snapshotIds);
-            }
-        }
-        catch (SQLException e) {
-            throw new InternalErrorException(e);
-        }
-    }
-
 	/**
      * {@inheritDoc}
      */
-    protected void executeSystemDdlSql(Connection c) throws SQLException {
-        l.debug("Executing system DDL SQL.");
-        createSnapshotTable(c);
-        createFunctions(c);
-        l.debug("System DDL SQL execution finished.");
+    protected void initializeLocalProject() {
+    	try {
+	        l.debug("Executing system DDL SQL.");
+	        Connection c = getConnection();
+	        createSnapshotTable(c);
+	        createFunctions(c);
+	        l.debug("System DDL SQL execution finished.");
+    	} catch (SQLException e) {
+    		throw new ConnectorBackendException(e);
+    	}
     }
 
     /**
      * {@inheritDoc}
      */
-    protected void executeDdlSql(Connection c, PdmSchema schema) throws SQLException {
+    protected void initializeLocalDataSet(PdmSchema schema) {
         l.debug("Executing DDL SQL.");
-        for(PdmTable table : schema.getTables()) {
-        	if (!exists(c, table.getName())) {
-        		createTable(c, table);
-        		if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(table.getType())) {
-        			prepopulateLookupTable(c, table);
-        		} else if (PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT.equals(table.getType())) {
-        			final List<Map<String,String>> rows = prepareInitialTableLoad(table);
-        			if (!rows.isEmpty()) {
-        				l.warn("Prepopulating of connection point tables is not suppported (table = " + table.getName() + ")");
-        			}
-        		}
-	            if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
-	                indexAllTableColumns(c, table);
-        	} else {
-        		for (PdmColumn column : table.getColumns()) {
-        			if (!exists(c, table.getName(), column.getName())) {
-        				addColumn(c, table, column);
-        				if (PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
-        					indexTableColumn(c, table, column);
-        			}
-        		}
-        	}
+        try {
+	        Connection c = getConnection();
+	        for(PdmTable table : schema.getTables()) {
+	        	if (!exists(c, table.getName())) {
+	        		createTable(c, table);
+	        		if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(table.getType())) {
+	        			prepopulateLookupTable(c, table);
+	        		} else if (PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT.equals(table.getType())) {
+	        			final List<Map<String,String>> rows = prepareInitialTableLoad(table);
+	        			if (!rows.isEmpty()) {
+	        				l.warn("Prepopulating of connection point tables is not suppported (table = " + table.getName() + ")");
+	        			}
+	        		}
+		            if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
+		                indexAllTableColumns(c, table);
+	        	} else {
+	        		for (PdmColumn column : table.getColumns()) {
+	        			if (!exists(c, table.getName(), column.getName())) {
+	        				addColumn(c, table, column);
+	        				if (PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
+	        					indexTableColumn(c, table, column);
+	        			}
+	        		}
+	        	}
+	        }
+	        JdbcUtil.executeUpdate(c,
+	            "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() + "',0,0,0)"
+	        );
+	        l.debug("DDL SQL Execution finished.");
+        } catch (SQLException e) {
+        	throw new ConnectorBackendException(e);
         }
-        JdbcUtil.executeUpdate(c,
-            "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() + "',0,0,0)"
-        );
-        l.debug("DDL SQL Execution finished.");
     }
 
     /**
      * {@inheritDoc}
      */
-    protected void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException {
-        l.debug("Executing data normalization SQL.");
-        //populate REFERENCEs lookups from the referenced lookups
-        l.debug("Executing referenced lookups replication.");
-        executeLookupReplicationSql(c, schema);
-        l.debug("Finished referenced lookups replication.");
-        l.debug("Executing lookup tables population.");
-        populateLookupTables(c, schema);
-        l.debug("Finished lookup tables population.");
-        l.debug("Executing connection point tables population.");
-        populateConnectionPointTables(c, schema);
-        l.debug("FInished connection point tables population.");
-        // nothing for the reference columns
-        l.debug("Inserting partial snapshot record.");
-        insertSnapshotsRecord(c, schema);
-        l.debug("Executing fact table population.");
-        insertFactsToFactTable(c, schema);
-        l.debug("FInished fact table population.");
-
-        l.debug("Executing fact table FK generation.");
-        updateFactTableFk(c, schema);
-        l.debug("Finished fact table FK generation.");
-
-        updateSnapshotsRecord(c, schema);
-        l.debug("Snapshot record updated.");
-        l.debug("Finished data normalization SQL.");
+    protected void createSnowflake(PdmSchema schema) {
+    	try {
+	    	Connection c = getConnection();
+	        l.debug("Executing data normalization SQL.");
+	        //populate REFERENCEs lookups from the referenced lookups
+	        l.debug("Executing referenced lookups replication.");	        
+	        executeLookupReplicationSql(c, schema);
+	        
+	        l.debug("Finished referenced lookups replication.");
+	        l.debug("Executing lookup tables population.");	        
+	        populateLookupTables(c, schema);
+	        
+	        l.debug("Finished lookup tables population.");
+	        l.debug("Executing connection point tables population.");
+	        populateConnectionPointTables(c, schema);
+	        
+	        l.debug("FInished connection point tables population.");
+	        // nothing for the reference columns
+	        l.debug("Inserting partial snapshot record.");
+	        insertSnapshotsRecord(c, schema);
+	        
+	        l.debug("Executing fact table population.");
+	        insertFactsToFactTable(c, schema);
+	        
+	        l.debug("FInished fact table population.");
+	        l.debug("Executing fact table FK generation.");
+	        updateFactTableFk(c, schema);	        
+	        
+	        l.debug("Finished fact table FK generation.");
+	        updateSnapshotsRecord(c, schema);
+	        
+	        l.debug("Snapshot record updated.");
+	        l.debug("Finished data normalization SQL.");
+    	} catch (SQLException e) {
+    		throw new ConnectorBackendException(e);
+    	}
     }
 
 

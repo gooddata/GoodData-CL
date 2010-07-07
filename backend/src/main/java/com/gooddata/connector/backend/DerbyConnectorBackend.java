@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
+import com.gooddata.exception.ConnectorBackendException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.naming.N;
@@ -121,35 +122,46 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
     /**
      * {@inheritDoc}
      */
-    public void executeExtractSql(Connection c, PdmSchema schema, String file) throws SQLException {
-        l.debug("Extracting data.");
-        PdmTable sourceTable = schema.getSourceTable();
-        String source = sourceTable.getName();
-        String cols = getNonAutoincrementColumns(sourceTable);
-        JdbcUtil.executeUpdate(c,
-            "CALL SYSCS_UTIL.SYSCS_IMPORT_DATA " +
-            "(NULL, '" + source.toUpperCase() + "', '" + cols.toUpperCase() +
-            "', null, '" + file + "', null, null, 'utf-8',0)"
-        );
-        l.debug("Finished extracting data.");
+    public void executeExtract(PdmSchema schema, String file) {
+    	try {
+	    	Connection c = getConnection();
+	    	
+	        l.debug("Extracting data.");
+	        PdmTable sourceTable = schema.getSourceTable();
+	        String source = sourceTable.getName();
+	        String cols = getNonAutoincrementColumns(sourceTable);
+	        JdbcUtil.executeUpdate(c,
+	            "CALL SYSCS_UTIL.SYSCS_IMPORT_DATA " +
+	            "(NULL, '" + source.toUpperCase() + "', '" + cols.toUpperCase() +
+	            "', null, '" + file + "', null, null, 'utf-8',0)"
+	        );
+	        l.debug("Finished extracting data.");
+    	} catch (SQLException e) {
+    		throw new ConnectorBackendException(e);
+    	}
     }
 
     /**
      * {@inheritDoc}
      */
-    public void executeLoadSql(Connection c, PdmSchema schema, DLIPart part, String dir, int[] snapshotIds)
-            throws SQLException {
-        l.debug("Unloading data.");
-        String file = dir + System.getProperty("file.separator") + part.getFileName();
-        String cols = getLoadColumns(part, schema);
-        String whereClause = getLoadWhereClause(part, schema, snapshotIds);
-        String dliTable = getTableNameFromPart(part);
-        JdbcUtil.executeUpdate(c,
-            "CALL SYSCS_UTIL.SYSCS_EXPORT_QUERY " +
-            "('SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause + "', '" + file +
-            "', null, null, 'utf-8')"
-        );
-        l.debug("Finished unloading data.");
+    public void executeLoad(PdmSchema schema, DLIPart part, String dir, int[] snapshotIds) {
+    	try {
+	    	Connection c = getConnection();
+	    	
+	        l.debug("Unloading data.");
+	        String file = dir + System.getProperty("file.separator") + part.getFileName();
+	        String cols = getLoadColumns(part, schema);
+	        String whereClause = getLoadWhereClause(part, schema, snapshotIds);
+	        String dliTable = getTableNameFromPart(part);
+	        JdbcUtil.executeUpdate(c,
+	            "CALL SYSCS_UTIL.SYSCS_EXPORT_QUERY " +
+	            "('SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause + "', '" + file +
+	            "', null, null, 'utf-8')"
+	        );
+	        l.debug("Finished unloading data.");
+    	} catch (SQLException e) {
+    		throw new ConnectorBackendException(e);
+    	}
     }
 
     /**
