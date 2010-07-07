@@ -23,15 +23,13 @@
 
 package com.gooddata.connector.backend;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * GoodData connector backend interface.
@@ -147,7 +145,6 @@ public interface ConnectorBackend {
 
     /**
      * Frees all resources allocated by this connector
-     * @throws SQLException 
      */
     public void close();
 

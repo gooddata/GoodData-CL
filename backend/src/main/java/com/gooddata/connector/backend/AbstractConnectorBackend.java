@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
+import com.gooddata.exception.ConnectorBackendException;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
@@ -155,10 +156,10 @@ import com.gooddata.util.StringUtil;
         	con = getConnection();
             if(!isInitialized()) {
                 l.debug("Initializing system schema.");
-                executeSystemDdlSql(con);
+                initializeLocalProject();
                 l.debug("System schema initialized.");
             }
-            executeDdlSql(con, getPdm());
+            initializeLocalDataSet(getPdm());
             l.debug("Schema initialized.");
         }
         catch (SQLException e) {
@@ -173,7 +174,7 @@ import com.gooddata.util.StringUtil;
         Connection con = null;
         try {
             con = getConnection();
-            executeNormalizeSql(con, getPdm());
+            createSnowflake(getPdm());
         }
         catch (SQLException e) {
             throw new InternalErrorException("Error normalizing PDM Schema " + getPdm().getName() + " " + getPdm().getTables(), e);
@@ -288,26 +289,6 @@ import com.gooddata.util.StringUtil;
         }
     }
 
-	/**
-     * {@inheritDoc}
-     */
-    protected abstract void executeSystemDdlSql(Connection c) throws SQLException;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected abstract void executeDdlSql(Connection c, PdmSchema schema) throws SQLException;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected abstract void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException;
-    
-    /**
-     * {@inheritDoc}
-     */
-    protected abstract void executeLookupReplicationSql(Connection c, PdmSchema schema) throws SQLException;
-    
     /**
      * {@inheritDoc}
      * @throws SQLException 
@@ -573,12 +554,6 @@ import com.gooddata.util.StringUtil;
         return StringUtil.formatShortName(part.getFileName().split("\\.")[0]);
     }
 
-    /**
-     * Creates the DBMS specific system functions
-     * @param c JDBC connection
-     * @throws SQLException in case of DB issues
-     */
-    protected abstract void createFunctions(Connection c) throws SQLException;
 
     /**
      * {@inheritDoc}
@@ -593,4 +568,20 @@ import com.gooddata.util.StringUtil;
     public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
+    
+	/**
+     * {@inheritDoc}
+     */
+    protected abstract void initializeLocalProject() throws ConnectorBackendException;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected abstract void initializeLocalDataSet(PdmSchema schema) throws ConnectorBackendException;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected abstract void createSnowflake(PdmSchema schema) throws ConnectorBackendException;
+
 }

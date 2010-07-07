@@ -166,6 +166,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         PdmTable sourceTable = schema.getSourceTable();
         String source = sourceTable.getName();
         String cols = getNonAutoincrementColumns(sourceTable);
+
         JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" DISABLE KEYS");
 
         file = file.replace(File.separatorChar, '/'); // windows workaround
@@ -188,6 +189,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         String cols = getLoadColumns(part, schema);
         String whereClause = getLoadWhereClause(part, schema, snapshotIds);
         String dliTable = getTableNameFromPart(part);
+        
         Statement s = null;
         ResultSet rs = null;
         try {
