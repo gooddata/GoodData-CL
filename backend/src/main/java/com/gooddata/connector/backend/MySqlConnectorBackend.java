@@ -30,6 +30,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -121,6 +122,10 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
 	            connection = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
 	        }
     	}
+    	Properties props = new Properties();
+    	props.setProperty("useUnicode", "true");
+    	props.setProperty("characterEncoding", "utf-8");
+    	connection.setClientInfo(props);
         return connection;
     }
 

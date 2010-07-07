@@ -25,11 +25,13 @@ package com.gooddata.modeling.model;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,7 +139,7 @@ public class SourceSchema {
     	XStream xstream = new XStream();
         xstream.alias("column", SourceColumn.class);
         xstream.alias("schema", SourceSchema.class);
-        Reader r = new InputStreamReader(is);
+        Reader r = new InputStreamReader(is, "utf8");
         SourceSchema schema = (SourceSchema)xstream.fromXML(r);
         r.close();
         return schema;
@@ -149,7 +151,7 @@ public class SourceSchema {
      * @throws IOException in case of an IO issue
      */
     public void writeConfig(File configFile) throws IOException {
-        FileWriter w = new FileWriter(configFile);
+        Writer w = new OutputStreamWriter(new FileOutputStream(configFile), "utf8");
         w.write(CONFIG_INITIAL_COMMENT + toXml());
         w.flush();
         w.close();

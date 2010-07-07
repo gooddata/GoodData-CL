@@ -205,7 +205,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         try {
             con = connect();
             l.debug("Extracting JDBC data to file="+dataFile.getAbsolutePath());
-            CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
+            CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);
             s = con.createStatement();
             ResultSetCsvWriter rw = new ResultSetCsvWriter(cw);
             JdbcUtil.executeQuery(con, getSqlQuery(), rw);

@@ -23,7 +23,21 @@
 
 package com.gooddata.connector;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.axis.message.MessageElement;
+import org.apache.log4j.Logger;
+
 import au.com.bytecode.opencsv.CSVWriter;
+
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.InvalidArgumentException;
@@ -36,18 +50,22 @@ import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import com.sforce.soap.partner.*;
-import com.sforce.soap.partner.fault.*;
+import com.sforce.soap.partner.DescribeSObjectResult;
+import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.FieldType;
+import com.sforce.soap.partner.LoginResult;
+import com.sforce.soap.partner.QueryOptions;
+import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.SessionHeader;
+import com.sforce.soap.partner.SforceServiceLocator;
+import com.sforce.soap.partner.SoapBindingStub;
+import com.sforce.soap.partner.fault.ApiQueryFault;
+import com.sforce.soap.partner.fault.ExceptionCode;
+import com.sforce.soap.partner.fault.InvalidIdFault;
+import com.sforce.soap.partner.fault.InvalidQueryLocatorFault;
+import com.sforce.soap.partner.fault.LoginFault;
+import com.sforce.soap.partner.fault.UnexpectedErrorFault;
 import com.sforce.soap.partner.sobject.SObject;
-import org.apache.axis.message.MessageElement;
-import org.apache.log4j.Logger;
-
-import javax.xml.rpc.ServiceException;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.*;
 
 /**
  * GoodData SFDC Connector
@@ -275,7 +293,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         l.debug("Extracting SFDC data.");
         File dataFile = FileUtil.getTempFile();
         l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
-        CSVWriter cw = new CSVWriter(new FileWriter(dataFile));
+        CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);
         SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
         List<SObject> result;
         try {

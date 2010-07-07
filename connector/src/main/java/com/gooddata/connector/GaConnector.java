@@ -163,7 +163,7 @@ public class GaConnector extends AbstractConnector implements Connector {
             gaq.setMaxResults(5000);
             int cnt = 1;
 
-            CSVWriter cw = new CSVWriter(new OutputStreamWriter(new FileOutputStream(dataFile), "utf-8"));
+            CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);
             
             for(int startIndex = 1; cnt > 0; startIndex += cnt + 1) {
                 gaq.setStartIndex(startIndex);

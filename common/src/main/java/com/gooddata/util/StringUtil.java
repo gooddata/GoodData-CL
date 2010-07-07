@@ -189,8 +189,8 @@ public class StringUtil {
     }
     
     public static void normalize(File in, File out, int skipRows) throws IOException {
-    	CSVReader csvIn  = new CSVReader(new FileReader(in));
-    	CSVWriter csvOut = new CSVWriter(new FileWriter(out));
+    	CSVReader csvIn  = FileUtil.createUtf8CsvReader(in);
+    	CSVWriter csvOut = FileUtil.createUtf8CsvWriter(out);
     	normalize(csvIn, csvOut, skipRows);
     	csvOut.close();
     }

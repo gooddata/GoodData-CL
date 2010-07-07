@@ -23,6 +23,35 @@
 
 package org.snaplogic.snap.gooddata;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.snaplogic.cc.Capabilities;
+import org.snaplogic.cc.Capability;
+import org.snaplogic.cc.InputView;
+import org.snaplogic.cc.OutputView;
+import org.snaplogic.cc.prop.SimpleProp;
+import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
+import org.snaplogic.common.ComponentResourceErr;
+import org.snaplogic.common.Field;
+import org.snaplogic.common.Record;
+import org.snaplogic.common.Field.SnapFieldType;
+import org.snaplogic.common.exceptions.SnapComponentException;
+import org.snaplogic.log.Log;
+import org.snaplogic.snapi.PropertyConstraint;
+import org.snaplogic.snapi.PropertyConstraint.Type;
+import org.snaplogic.util.ConvertUtils;
+
 import com.gooddata.exception.GdcProjectAccessException;
 import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.exception.GdcUploadErrorException;
@@ -34,31 +63,6 @@ import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.util.FileUtil;
-import org.snaplogic.cc.Capabilities;
-import org.snaplogic.cc.Capability;
-import org.snaplogic.cc.InputView;
-import org.snaplogic.cc.OutputView;
-import org.snaplogic.cc.prop.SimpleProp;
-import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
-import org.snaplogic.common.ComponentResourceErr;
-import org.snaplogic.common.Field;
-import org.snaplogic.common.Field.SnapFieldType;
-import org.snaplogic.common.Record;
-import org.snaplogic.common.exceptions.SnapComponentException;
-import org.snaplogic.log.Log;
-import org.snaplogic.snapi.PropertyConstraint;
-import org.snaplogic.snapi.PropertyConstraint.Type;
-import org.snaplogic.util.ConvertUtils;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
 
 public class GoodDataPut extends AbstractGoodDataComponent {
 
@@ -337,8 +341,8 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 					if (csvFile == null) {
 
 						csvFile = new File(tmpDir, viewName + ".csv");
-						info("Creting stage CSV file: " + csvFile.getAbsolutePath());
-						csvWriter = new BufferedWriter(new FileWriter(csvFile));
+						info("Creating stage CSV file: " + csvFile.getAbsolutePath());
+						csvWriter = FileUtil.createBufferedUtf8Writer(csvFile);
 						viewToCsvFile.put(viewName, csvFile);
 						viewToCsvWriter.put(viewName, csvWriter);
 					}

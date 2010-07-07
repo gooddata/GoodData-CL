@@ -39,6 +39,7 @@ import au.com.bytecode.opencsv.CSVReader;
 
 import com.gooddata.connector.driver.Constants;
 import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.util.FileUtil;
 
 /**
  * GoodData CSV data type guessing
@@ -129,7 +130,7 @@ public class DataTypeGuess {
      * @throws IOException in case of IO issue
      */
     public static SourceColumn[] guessCsvSchema(InputStream is, boolean hasHeader) throws IOException {
-    	CSVReader cr = new CSVReader(new InputStreamReader(is));
+    	CSVReader cr = FileUtil.createUtf8CsvReader(is);
     	return guessCsvSchema(cr, hasHeader);
     }
 
