@@ -56,7 +56,7 @@ import com.gooddata.util.StringUtil;
  * @version 1.0
  */
 
-public class MySqlConnectorBackend extends AbstractConnectorBackend implements ConnectorBackend {
+public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implements ConnectorBackend {
 
     private static Logger l = Logger.getLogger(MySqlConnectorBackend.class);
     

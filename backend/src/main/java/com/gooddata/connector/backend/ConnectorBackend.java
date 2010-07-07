@@ -122,13 +122,6 @@ public interface ConnectorBackend {
     public void extract(File dataFile);
 
     /**
-     * Returns true if the specified table exists in the DB
-     * @param tbl table name
-     * @return true if the table exists, false otherwise
-     */
-    public boolean exists(String tbl);
-
-    /**
      * Project id getter
      * @return project id
      */

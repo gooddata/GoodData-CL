@@ -49,7 +49,7 @@ import com.gooddata.util.StringUtil;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class DerbyConnectorBackend extends AbstractConnectorBackend implements ConnectorBackend {
+public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implements ConnectorBackend {
 
     private static Logger l = Logger.getLogger(DerbyConnectorBackend.class);
 

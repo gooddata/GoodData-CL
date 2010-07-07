@@ -27,19 +27,20 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.gooddata.connector.model.PdmColumn;
+import com.gooddata.connector.model.PdmLookupReplication;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
 import com.gooddata.exception.InternalErrorException;
@@ -48,9 +49,11 @@ import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.naming.N;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
+import com.gooddata.util.JdbcUtil.StatementHandler;
 
 /**
  * GoodData abstract connector backend. This connector backend provides the base implementation that the specific
@@ -60,9 +63,9 @@ import com.gooddata.util.StringUtil;
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
- */public abstract class AbstractConnectorBackend implements ConnectorBackend {
+ */public abstract class AbstractSqlConnectorBackend extends AbstractConnectorBackend implements ConnectorBackend {
 
-    private static Logger l = Logger.getLogger(AbstractConnectorBackend.class);
+    private static Logger l = Logger.getLogger(AbstractSqlConnectorBackend.class);
 
     // PDM schema
     private PdmSchema pdm;
@@ -70,14 +73,43 @@ import com.gooddata.util.StringUtil;
     // Project id
     private String projectId;
 
+    // database username
+    private String username;
+
+    // database password
+    private String password;
+    
+    // database connection
+    protected Connection connection = null;
+    
+    // autoincrement syntax
+    protected String SYNTAX_AUTOINCREMENT = "";
+
+    // SQL concat function prefix and suffix
+    protected String SYNTAX_CONCAT_FUNCTION_PREFIX = "";
+    protected String SYNTAX_CONCAT_FUNCTION_SUFFIX = "";
+    protected String SYNTAX_CONCAT_OPERATOR = "";
+
     // separates the different LABELs when we concatenate them to create an unique identifier out of them
     protected String HASH_SEPARATOR = "%";
+
+    /**
+     * Constructor
+     * @param username database backend username
+     * @param password database backend password 
+     * @throws IOException in case of an IO issue 
+     */
+    protected AbstractSqlConnectorBackend(String username, String password) throws IOException {
+        setUsername(username);
+        setPassword(password);
+    }
 
     /**
      * {@inheritDoc}
      */
     public abstract void dropSnapshots();
-        
+    
+    
 
     /**
      * {@inheritDoc}
@@ -223,7 +255,36 @@ import com.gooddata.util.StringUtil;
     /**
      * {@inheritDoc}
      */
-    public abstract int getLastSnapshotId();
+    public int getLastSnapshotId() {
+        Connection con = null;
+        Statement s = null;
+        ResultSet r = null;
+        try {
+            con = getConnection();
+            s = con.createStatement();
+            r = s.executeQuery("SELECT MAX(id) FROM snapshots");
+            for(boolean rc = r.next(); rc; rc = r.next()) {
+                int id = r.getInt(1);
+                l.debug("Last snapshot is "+id);
+                return id;
+            }
+        }
+        catch (SQLException e) {
+            throw new InternalErrorException(e.getMessage());
+        }
+        finally {
+            try {
+                if(r != null)
+                    r.close();
+                if(s != null)
+                    s.close();
+            }
+            catch (SQLException ee) {
+                ee.printStackTrace();
+            }
+        }
+        throw new InternalErrorException("Can't retrieve the last snapshot number.");
+    }
 
     /**
      * {@inheritDoc}
@@ -235,7 +296,16 @@ import com.gooddata.util.StringUtil;
     /**
      * {@inheritDoc}
      */
-    protected abstract boolean exists(String tbl);
+    public boolean exists(String tbl) {
+        Connection con = null;
+        try {
+            con = getConnection();
+            return exists(con, tbl);
+        }
+        catch (SQLException e) {
+        	throw new InternalErrorException(e);
+		}
+    }
     
     /**
      * {@inheritDoc}
@@ -291,22 +361,95 @@ import com.gooddata.util.StringUtil;
 	/**
      * {@inheritDoc}
      */
-    protected abstract void executeSystemDdlSql(Connection c) throws SQLException;
+    protected void executeSystemDdlSql(Connection c) throws SQLException {
+        l.debug("Executing system DDL SQL.");
+        createSnapshotTable(c);
+        createFunctions(c);
+        l.debug("System DDL SQL execution finished.");
+    }
 
     /**
      * {@inheritDoc}
      */
-    protected abstract void executeDdlSql(Connection c, PdmSchema schema) throws SQLException;
+    protected void executeDdlSql(Connection c, PdmSchema schema) throws SQLException {
+        l.debug("Executing DDL SQL.");
+        for(PdmTable table : schema.getTables()) {
+        	if (!exists(c, table.getName())) {
+        		createTable(c, table);
+        		if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(table.getType())) {
+        			prepopulateLookupTable(c, table);
+        		} else if (PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT.equals(table.getType())) {
+        			final List<Map<String,String>> rows = prepareInitialTableLoad(table);
+        			if (!rows.isEmpty()) {
+        				l.warn("Prepopulating of connection point tables is not suppported (table = " + table.getName() + ")");
+        			}
+        		}
+	            if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
+	                indexAllTableColumns(c, table);
+        	} else {
+        		for (PdmColumn column : table.getColumns()) {
+        			if (!exists(c, table.getName(), column.getName())) {
+        				addColumn(c, table, column);
+        				if (PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
+        					indexTableColumn(c, table, column);
+        			}
+        		}
+        	}
+        }
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO snapshots(name,firstid,lastid,tmstmp) VALUES ('" + schema.getFactTable().getName() + "',0,0,0)"
+        );
+        l.debug("DDL SQL Execution finished.");
+    }
 
     /**
      * {@inheritDoc}
      */
-    protected abstract void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException;
-    
+    protected void executeNormalizeSql(Connection c, PdmSchema schema) throws SQLException {
+        l.debug("Executing data normalization SQL.");
+        //populate REFERENCEs lookups from the referenced lookups
+        l.debug("Executing referenced lookups replication.");
+        executeLookupReplicationSql(c, schema);
+        l.debug("Finished referenced lookups replication.");
+        l.debug("Executing lookup tables population.");
+        populateLookupTables(c, schema);
+        l.debug("Finished lookup tables population.");
+        l.debug("Executing connection point tables population.");
+        populateConnectionPointTables(c, schema);
+        l.debug("FInished connection point tables population.");
+        // nothing for the reference columns
+        l.debug("Inserting partial snapshot record.");
+        insertSnapshotsRecord(c, schema);
+        l.debug("Executing fact table population.");
+        insertFactsToFactTable(c, schema);
+        l.debug("FInished fact table population.");
+
+        l.debug("Executing fact table FK generation.");
+        updateFactTableFk(c, schema);
+        l.debug("Finished fact table FK generation.");
+
+        updateSnapshotsRecord(c, schema);
+        l.debug("Snapshot record updated.");
+        l.debug("Finished data normalization SQL.");
+    }
+
+
+
     /**
      * {@inheritDoc}
      */
-    protected abstract void executeLookupReplicationSql(Connection c, PdmSchema schema) throws SQLException;
+    protected void executeLookupReplicationSql(Connection c, PdmSchema schema) throws SQLException {
+        for (PdmLookupReplication lr : schema.getLookupReplications()) {
+            JdbcUtil.executeUpdate(c,
+                "DELETE FROM " + lr.getReferencingLookup()
+            );
+            JdbcUtil.executeUpdate(c,
+                "INSERT INTO " + lr.getReferencingLookup() + "("+N.ID+"," + lr.getReferencingColumn() +","+N.HSH+")" +
+                " SELECT "+ N.ID+"," + lr.getReferencedColumn() + "," + lr.getReferencedColumn() + " FROM " +
+                lr.getReferencedLookup()
+            );
+        }
+    }
     
     /**
      * {@inheritDoc}
@@ -385,36 +528,141 @@ import com.gooddata.util.StringUtil;
     }
 
     /**
-     * TODO: PK to document
+     * Creates a new table
+     * @param c JDBC connection
      * @param table target table
-     * @return
+     * @throws SQLException in case of SQL issues
      */
-    protected final List<Map<String,String>> prepareInitialTableLoad(PdmTable table) {
-    	final List<Map<String,String>> result = new ArrayList<Map<String,String>>();
-    	final List<PdmColumn> toLoad = new ArrayList<PdmColumn>();
-    	int max = 0;
-    	for (final PdmColumn col : table.getColumns()) {
-    		if (col.getElements() != null && !col.getElements().isEmpty()) {
-    			int size = col.getElements().size();
-    			if (max == 0)
-    				max = size;
-    			else if (size != max)
-    				throw new IllegalStateException(
-    						"Column " + col.getName() + " of table " + table.getName()
-    						+ " has a different number of elements than: " + toLoad.toString());
-    			toLoad.add(col);
-    		}
+    protected void createTable(Connection c, PdmTable table) throws SQLException {
+        String pk = "";
+        String sql = "CREATE TABLE " + table.getName() + " (\n";
+        for( PdmColumn column : table.getColumns()) {
+            sql += " "+ column.getName() + " " + column.getType();
+            if(column.isUnique())
+                sql += " UNIQUE";
+            if(column.isAutoIncrement())
+                sql += " " + SYNTAX_AUTOINCREMENT;
+            if(column.isPrimaryKey())
+                if(pk != null && pk.length() > 0)
+                    pk += "," + column.getName();
+                else
+                    pk += column.getName();
+            sql += ",";
+        }
+        sql += " PRIMARY KEY (" + pk + "))";
+
+        JdbcUtil.executeUpdate(c, sql);
+    }
+
+    /**
+     * Fills the lookup table with the DISTINCT values from the source table
+     * @param c JDBC connection
+     * @param table target lookup table
+     * @throws SQLException in case of SQL issues
+     */
+    private void prepopulateLookupTable(Connection c, PdmTable table) throws SQLException {
+    	final List<Map<String,String>> rows = prepareInitialTableLoad(table);
+    	if (rows.isEmpty())
+    		return;
+    	
+    	// create the list to make sure consistent keys order in the following loop
+		final List<String> columns = new ArrayList<String>(rows.get(0).keySet());
+    	final String placeholders = StringUtil.join(", ", columns, "?");
+
+    	for (final Map<String,String> row : rows) {
+    		
+    		final String sql = "INSERT INTO " + table.getName() + " ("
+    						 + N.HSH + ", " + StringUtil.join(", ", columns)
+    						 + ") VALUES (?, " + placeholders + ")";
+    		
+    		JdbcUtil.executeUpdate(c, sql, new StatementHandler() {
+				public void prepare(PreparedStatement stmt) throws SQLException {
+					boolean first = true;
+					final StringBuffer hashbf = new StringBuffer();
+					int index = 2;
+					for (final String col : columns) {
+						if (first)
+							first = false;
+						else
+							hashbf.append(HASH_SEPARATOR);
+						hashbf.append(row.get(col));
+						stmt.setString(index++, row.get(col));
+					}
+					stmt.setString(1, hashbf.toString());
+				}
+			});
     	}
-    	if (!toLoad.isEmpty()) {    	
-	    	for (int i = 0; i < toLoad.get(0).getElements().size(); i++) {
-	    		final Map<String,String> row = new HashMap<String, String>();
-	    		for (final PdmColumn col : toLoad) {
-	    			row.put(col.getName(), col.getElements().get(i));
-	    		}
-	    		result.add(row);
-	    	}
-    	}
-    	return result;
+    }
+
+    /**
+     * Add column to the table (ALTER TABLE)
+     * @param c JDBC connection
+     * @param table target table
+     * @param column target column
+     * @throws SQLException in case of SQL issues
+     */
+    private void addColumn(Connection c, PdmTable table, PdmColumn column) throws SQLException {
+    	String sql = "ALTER TABLE " + table.getName() + " ADD COLUMN "
+    			   + column.getName() + " " + column.getType();
+    	if (column.isUnique())
+    		sql += " UNIQUE";
+    	JdbcUtil.executeUpdate(c, sql);
+    }
+
+    /**
+     * Creates the system snapshots table
+     * @param c JDBC connection
+     * @throws SQLException in case of a DB issue
+     */
+    protected void createSnapshotTable(Connection c) throws SQLException {
+        JdbcUtil.executeUpdate(c,
+            "CREATE TABLE snapshots (" +
+                " id INT " + SYNTAX_AUTOINCREMENT + "," +
+                " name VARCHAR(255)," +
+                " tmstmp BIGINT," +
+                " firstid INT," +
+                " lastid INT," +
+                " PRIMARY KEY (id)" +
+                ")"
+        );
+    }
+
+    /**
+     * Inserts new records to the snapshots table before the load
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void insertSnapshotsRecord(Connection c, PdmSchema schema) throws SQLException {
+        PdmTable factTable = schema.getFactTable();
+        String fact = factTable.getName();
+        Date dt = new Date();
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '"+fact+"',"+dt.getTime()+",MAX("+N.ID+")+1 FROM " + fact
+        );
+        // compensate for the fact that MAX returns NULL when there are no rows in the SELECT
+        JdbcUtil.executeUpdate(c,
+            "UPDATE snapshots SET firstid = 0 WHERE name = '"+fact+"' AND firstid IS NULL"
+        );
+    }
+
+    /**
+     * Updates the snapshots table after load
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void updateSnapshotsRecord(Connection c, PdmSchema schema) throws SQLException {
+        PdmTable factTable = schema.getFactTable();
+        String fact = factTable.getName();
+        JdbcUtil.executeUpdate(c,
+            "UPDATE snapshots SET lastid = (SELECT MAX("+N.ID+") FROM " + fact + ") WHERE name = '" +
+            fact + "' AND lastid IS NULL"
+        );
+        // compensate for the fact that MAX returns NULL when there are no rows in the SELECT
+        JdbcUtil.executeUpdate(c,
+            "UPDATE snapshots SET lastid = 0 WHERE name = '" + fact + "' AND lastid IS NULL"
+        );
     }
 
     /**
@@ -424,6 +672,142 @@ import com.gooddata.util.StringUtil;
      * @throws SQLException in case of a DB issue
      */
     protected abstract void insertFactsToFactTable(Connection c, PdmSchema schema) throws SQLException;
+
+    protected void populateLookupTables(Connection c, PdmSchema schema) throws SQLException {
+        for(PdmTable lookupTable : schema.getLookupTables()) {
+            populateLookupTable(c, lookupTable, schema);
+        }
+    }
+
+    /**
+     * Populates the connection point table
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void populateConnectionPointTables(Connection c, PdmSchema schema) throws SQLException {
+        for(PdmTable cpTable : schema.getConnectionPointTables())
+            populateConnectionPointTable(c, cpTable, schema);
+    }
+
+    private void updateFactTableFk(Connection c, PdmSchema schema) throws SQLException {
+        String fact = schema.getFactTable().getName();
+        String updateStatement = "";
+        for(PdmTable tbl : schema.getLookupTables())
+            if(updateStatement.length() > 0)
+                updateStatement += " , " + generateFactUpdateSetStatement(tbl, schema);
+            else
+                updateStatement += generateFactUpdateSetStatement(tbl, schema);
+        for(PdmTable tbl : schema.getReferenceTables())
+            if(updateStatement.length() > 0)
+                updateStatement += " , " + generateFactUpdateSetStatement(tbl, schema);
+            else
+                updateStatement += generateFactUpdateSetStatement(tbl, schema);
+        if(updateStatement.length()>0) {
+            updateStatement = "UPDATE " + fact + " SET " + updateStatement +
+                " WHERE "+N.ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name = '" + fact+"')";
+            JdbcUtil.executeUpdate(c, updateStatement);
+        }
+    }
+
+
+    /**
+     * Generates the UPDATE SET statement for individual lookup FK
+     * @param lookupTable lookup table
+     * @param schema PDM schema
+     * @return the column update clause
+     */
+    protected String generateFactUpdateSetStatement(PdmTable lookupTable, PdmSchema schema) {
+        String lookup = lookupTable.getName();
+        String fact = schema.getFactTable().getName();
+        String source = schema.getSourceTable().getName();
+        String associatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
+
+        return lookupTable.getAssociatedSourceColumn() + "_"+N.ID+" = (SELECT "+N.ID+" FROM " +
+              lookup + " d," + source + " o WHERE " + associatedSourceColumns + " = d."+N.HSH+" AND o."+N.SRC_ID+"= " +
+              fact + "."+N.ID+") ";
+    }
+
+    /**
+     * Populates lookup table
+     * @param c JDBC connection
+     * @param lookupTable lookup table
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void populateLookupTable(Connection c, PdmTable lookupTable, PdmSchema schema) throws SQLException {
+        String lookup = lookupTable.getName();
+        String fact = schema.getFactTable().getName();
+        String source = schema.getSourceTable().getName();
+        String insertColumns = N.HSH+"," + getInsertColumns(lookupTable);
+        String associatedSourceColumns = getAssociatedSourceColumns(lookupTable);
+        String concatAssociatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
+        String nestedSelectColumns = concatAssociatedSourceColumns+","+associatedSourceColumns;
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO " + lookup + "(" + insertColumns +
+            ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
+            " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
+            "') AND " + concatAssociatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " +
+            lookupTable.getName() + ")"
+        );
+    }
+
+    /**
+     * Populates connection point table
+     * @param c JDBC connection
+     * @param lookupTable connection point table
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void populateConnectionPointTable(Connection c, PdmTable lookupTable, PdmSchema schema) throws SQLException {
+        String lookup = lookupTable.getName();
+        String fact = schema.getFactTable().getName();
+        String source = schema.getSourceTable().getName();
+        String insertColumns = N.ID+","+N.HSH+"," + getInsertColumns(lookupTable);
+        String associatedSourceColumns = getAssociatedSourceColumns(lookupTable);
+        String concatAssociatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
+        String nestedSelectColumns = N.SRC_ID+","+concatAssociatedSourceColumns+","+associatedSourceColumns;
+        /*
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO " + lookup + "(" + insertColumns + ") SELECT DISTINCT " + nestedSelectColumns +
+            " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
+            "') AND " + associatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " + lookup + ")"
+        );
+        */
+        // TODO: when snapshotting, there are duplicate CONNECTION POINT VALUES
+        // we need to decide if we want to accumultae the connection point lookup or not
+        /*
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO " + lookup + "(" + insertColumns + ") SELECT DISTINCT " + nestedSelectColumns +
+            " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +"')"
+        );
+        */
+        String sql = "INSERT INTO " + lookup + "(" + insertColumns +
+	        ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
+	        " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
+	        "') AND " + concatAssociatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " +
+	        lookupTable.getName() + ")";
+        JdbcUtil.executeUpdate(c, sql);
+    }
+
+    /**
+     * Concats associated source columns with a DB specific concat method
+     * The concatenated columns are used as a unique ke (hash id) of each lookup row
+     * @param lookupTable lookup table
+     * @return the concatenated columns as String
+     */
+    protected String concatAssociatedSourceColumns(PdmTable lookupTable) {
+        String associatedColumns = "";
+        for(PdmColumn column : lookupTable.getAssociatedColumns()) {
+            // if there are LABELS, the lookup can't be added twice to the FROM clause
+            if(associatedColumns.length() > 0)
+                associatedColumns += SYNTAX_CONCAT_OPERATOR +  column.getSourceColumn();
+            else
+                associatedColumns = column.getSourceColumn();
+        }
+        associatedColumns = SYNTAX_CONCAT_FUNCTION_PREFIX + associatedColumns + SYNTAX_CONCAT_FUNCTION_SUFFIX;
+        return associatedColumns;
+    }
 
     /**
      * Get all columns that will be inserted (exclude autoincrements)
@@ -563,6 +947,16 @@ import com.gooddata.util.StringUtil;
             cols +=  table + "." + StringUtil.formatShortName(cl.getName());
         return cols;
     }
+    
+    public void close() {
+		try {
+			if (connection != null && !connection.isClosed()) {
+    			connection.close();
+    		}
+    	} catch (SQLException e) {
+			throw new InternalErrorException(e);
+		}
+    }
 
     /**
      * Get tab,e name from DLI part
@@ -579,6 +973,35 @@ import com.gooddata.util.StringUtil;
      * @throws SQLException in case of DB issues
      */
     protected abstract void createFunctions(Connection c) throws SQLException;
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     /**
      * {@inheritDoc}
