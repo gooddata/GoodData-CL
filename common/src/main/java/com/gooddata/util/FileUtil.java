@@ -456,7 +456,7 @@ public class FileUtil {
 	 * @throws IOException
 	 */
 	public static CSVReader createUtf8CsvReader(File file) throws IOException {
-		return createUtf8CsvReader(file);
+		return createUtf8CsvReader(new FileInputStream(file));
 	}
 	
 	/**
