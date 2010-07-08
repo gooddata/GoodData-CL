@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.gooddata.connector.model.PdmColumn;
@@ -114,8 +115,12 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
         l.debug("Dropping derby snapshots "+getProjectId());
         File derbyDir = new File (System.getProperty("derby.system.home") +
                 System.getProperty("file.separator") + getProjectId());
-        derbyDir.delete();
-        l.debug("Finished dropping derby snapshots "+getProjectId());
+        try {
+        	FileUtils.deleteDirectory(derbyDir);
+        	l.debug("Finished dropping derby snapshots "+getProjectId());
+        } catch (IOException e) {
+        	throw new ConnectorBackendException("Cannot delete derby snapshots from " + derbyDir.getAbsolutePath() + ": " + e.getMessage(), e);
+        }
     }
     
 
