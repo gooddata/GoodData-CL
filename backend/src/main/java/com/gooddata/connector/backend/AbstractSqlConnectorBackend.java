@@ -372,6 +372,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	    	Connection c = getConnection();
 	        l.debug("Executing data normalization SQL.");
 	        //populate REFERENCEs lookups from the referenced lookups
+
 	        l.debug("Executing referenced lookups replication.");	        
 	        executeLookupReplicationSql(c, schema);
 	        
