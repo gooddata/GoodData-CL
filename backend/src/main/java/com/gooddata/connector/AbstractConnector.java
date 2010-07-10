@@ -23,6 +23,16 @@
 
 package com.gooddata.connector;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.InvalidCommandException;
@@ -39,11 +49,6 @@ import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
 
 /**
  * GoodData abstract connector implements functionality that can be reused in several connectors.
@@ -297,23 +302,14 @@ public abstract class AbstractConnector implements Connector {
         // connector's schema name
         String ssn = StringUtil.formatShortName(cc.getSchema().getName());
         cc.initialize();
-        // retrieve the DLI
-        DLI dli = ctx.getRestApi(p).getDLIById("dataset." + ssn, pid);
-        List<DLIPart> parts= ctx.getRestApi(p).getDLIParts("dataset." + ssn, pid);
-        // target directories and ZIP names
-
-        String incremental = c.getParam("incremental");
-        if(incremental != null && incremental.length() > 0 && incremental.equalsIgnoreCase("true")) {
-            setIncremental(parts);
-            l.debug("Using incremental mode.");
-        }
+        
         boolean waitForFinish = true;
         if(c.checkParam("waitForFinish")) {
             String w = c.getParam( "waitForFinish");
             if(w != null && w.equalsIgnoreCase("false"))
                 waitForFinish = false;
         }
-        extractAndTransfer(c, pid, cc, dli, parts, null, waitForFinish, p, ctx);
+        extractAndTransfer(c, pid, cc, null, waitForFinish, p, ctx);
         l.debug("Data transfer finished.");
     }
 
@@ -331,8 +327,11 @@ public abstract class AbstractConnector implements Connector {
      * @throws IOException IO issues
      * @throws InterruptedException internal problem with making file writable
      */
-    private void extractAndTransfer(Command c, String pid, Connector cc, DLI dli, List<DLIPart> parts,
-        int[] snapshots, boolean waitForFinish, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
+    private void extractAndTransfer(Command c, String pid, Connector cc, int[] snapshots, boolean waitForFinish, CliParams p, ProcessingContext ctx)
+    	throws IOException, InterruptedException
+    {
+        // connector's schema name
+        String ssn = StringUtil.formatShortName(cc.getSchema().getName());
         l.debug("Extracting data.");
         File tmpDir = FileUtil.createTempDir();
         FileUtil.makeWritable(tmpDir);
@@ -344,6 +343,18 @@ public abstract class AbstractConnector implements Connector {
         cc.extract();
         // normalize the data in the Derby
         cc.transform();
+
+        // get information about the data loading package      
+        DLI dli = ctx.getRestApi(p).getDLIById("dataset." + ssn, pid);
+        List<DLIPart> parts= ctx.getRestApi(p).getDLIParts("dataset." +ssn, pid);
+
+        String incremental = c.getParam("incremental");
+        if(incremental != null && incremental.length() > 0 &&
+                incremental.equalsIgnoreCase("true")) {
+            l.debug("Using incremental mode.");
+            setIncremental(parts);
+        }
+        
         // load data from the Derby to the local GoodData data integration package
         cc.deploySnapshot(dli, parts, tmpDir.getAbsolutePath(), archivePath, snapshots);
         // transfer the data package to the GoodData server
@@ -402,27 +413,15 @@ public abstract class AbstractConnector implements Connector {
         l.debug("Transfering last snapshot.");
         Connector cc = ctx.getConnectorMandatory();
         String pid = ctx.getProjectIdMandatory();
-        // connector's schema name
-        String ssn = StringUtil.formatShortName(cc.getSchema().getName());
 
         cc.initialize();
-        // retrieve the DLI
-        DLI dli = ctx.getRestApi(p).getDLIById("dataset." + ssn, pid);
-        List<DLIPart> parts= ctx.getRestApi(p).getDLIParts("dataset." + ssn, pid);
-
-        String incremental = c.getParam("incremental");
-        if(incremental != null && incremental.length() > 0 &&
-                incremental.equalsIgnoreCase("true")) {
-            l.debug("Using incremental mode.");
-            setIncremental(parts);
-        }
         boolean waitForFinish = true;
         if(c.checkParam("waitForFinish")) {
             String w = c.getParam( "waitForFinish");
             if(w != null && w.equalsIgnoreCase("false"))
                 waitForFinish = false;
         }
-        extractAndTransfer(c, pid, cc, dli, parts, new int[] {cc.getLastSnapshotId()+1}, waitForFinish, p, ctx);
+        extractAndTransfer(c, pid, cc, new int[] {cc.getLastSnapshotId()+1}, waitForFinish, p, ctx);
         l.debug("Last Snapshot transfer finished.");
     }
 
@@ -466,22 +465,14 @@ public abstract class AbstractConnector implements Connector {
 
             cc.initialize();
             // retrieve the DLI
-            DLI dli = ctx.getRestApi(p).getDLIById("dataset." + ssn, pid);
-            List<DLIPart> parts= ctx.getRestApi(p).getDLIParts("dataset." +ssn, pid);
 
-            String incremental = c.getParam("incremental");
-            if(incremental != null && incremental.length() > 0 &&
-                    incremental.equalsIgnoreCase("true")) {
-                l.debug("Using incremental mode.");
-                setIncremental(parts);
-            }
             boolean waitForFinish = true;
             if(c.checkParam("waitForFinish")) {
                 String w = c.getParam( "waitForFinish");
                 if(w != null && w.equalsIgnoreCase("false"))
                     waitForFinish = false;
             }
-            extractAndTransfer(c, pid, cc, dli, parts, snapshots, waitForFinish, p, ctx);
+            extractAndTransfer(c, pid, cc, snapshots, waitForFinish, p, ctx);
             l.debug("Snapshots transfer finished.");
         }
         else
