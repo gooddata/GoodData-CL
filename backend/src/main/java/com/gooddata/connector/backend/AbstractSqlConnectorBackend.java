@@ -610,13 +610,15 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         PdmTable factTable = schema.getFactTable();
         String fact = factTable.getName();
         Date dt = new Date();
-        JdbcUtil.executeUpdate(c,
-            "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '"+fact+"',"+dt.getTime()+",MAX("+N.ID+")+1 FROM " + fact
-        );
-        // compensate for the fact that MAX returns NULL when there are no rows in the SELECT
-        JdbcUtil.executeUpdate(c,
-            "UPDATE snapshots SET firstid = 0 WHERE name = '"+fact+"' AND firstid IS NULL"
-        );
+        {
+	        final String sql1 = "INSERT INTO snapshots(name,tmstmp,firstid) SELECT '"+fact+"',"+dt.getTime()+",MAX("+N.ID+")+1 FROM " + fact;
+	        JdbcUtil.executeUpdate(c, sql1);
+        }
+        {
+	        // compensate for the fact that MAX returns NULL when there are no rows in the SELECT
+	        final String sql2 = "UPDATE snapshots SET firstid = 0 WHERE name = '"+fact+"' AND firstid IS NULL";
+	        JdbcUtil.executeUpdate(c, sql2);
+        }
     }
 
     /**
