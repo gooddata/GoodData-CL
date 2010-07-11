@@ -159,34 +159,6 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         l.debug("Finished dropping MySQL snapshots "+getProjectId());
     }
     
-    /**
-     * Drop all snapshots for given PDM schema
-     * @param c JDBC connection
-     * @param schema PDM schema
-     * @throws ConnectorBackendException in case of a DB issue
-     */
-    protected void dropSnapshots(PdmSchema schema) throws ConnectorBackendException {
-        PdmTable factTable = schema.getFactTable();
-        try {
-	        Connection c = getConnection();
-	        String fact = factTable.getName();
-	        {
-		        final String sql1 = "DELETE FROM snapshots WHERE name = '" + fact + "' AND lastid > 0";
-		        JdbcUtil.executeUpdate(c, sql1);
-	        }
-	        {
-		        final String sql2 = "DELETE FROM " + fact;
-		        JdbcUtil.executeUpdate(c, sql2);
-	        }
-	        {
-	        	final String src = schema.getSourceTable().getName();
-	        	final String sql3 = "TRUNCATE " + src;
-	        	JdbcUtil.executeUpdate(c, sql3);
-	        }
-        } catch (SQLException e) {
-        	throw new ConnectorBackendException(e);
-        }
-    }
     
     /**
      * {@inheritDoc}
