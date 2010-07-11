@@ -372,7 +372,7 @@ public class GdcDI implements Executor {
             cp.put(CLI_PARAM_BACKEND[0], Defaults.DEFAULT_BACKEND);
         }
         else {
-            String b = ln.getOptionValue(CLI_PARAM_BACKEND[0]).toLowerCase();
+            String b = cp.get(CLI_PARAM_BACKEND[0]).toLowerCase();
             if(!"mysql".equalsIgnoreCase(b) && !"derby".equalsIgnoreCase(b))
                 b = "derby";
             cp.put(CLI_PARAM_BACKEND[0], b);
