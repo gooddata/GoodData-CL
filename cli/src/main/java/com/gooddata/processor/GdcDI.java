@@ -23,30 +23,50 @@
 
 package com.gooddata.processor;
 
-import com.gooddata.connector.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import com.gooddata.connector.Connector;
+import com.gooddata.connector.CsvConnector;
+import com.gooddata.connector.DateDimensionConnector;
+import com.gooddata.connector.GaConnector;
+import com.gooddata.connector.JdbcConnector;
+import com.gooddata.connector.SfdcConnector;
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.backend.DerbyConnectorBackend;
 import com.gooddata.connector.backend.MySqlConnectorBackend;
-import com.gooddata.exception.*;
+import com.gooddata.exception.GdcException;
+import com.gooddata.exception.GdcLoginException;
+import com.gooddata.exception.GdcRestApiException;
+import com.gooddata.exception.HttpMethodException;
+import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.InvalidArgumentException;
+import com.gooddata.exception.InvalidCommandException;
+import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.exception.ModelException;
+import com.gooddata.exception.ProcessingException;
+import com.gooddata.exception.SfdcException;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.naming.N;
 import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
 import com.gooddata.util.FileUtil;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import org.apache.commons.cli.*;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
-import java.io.*;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * The GoodData Data Integration CLI processor.
@@ -72,6 +92,8 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_PROTO = {"proto","t"};
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
     public static String CLI_PARAM_SCRIPT = "script";
+    
+    private static String DEFAULT_PROPERTIES = "gdi.properties";
 
     // mandatory options
     public static Option[] mandatoryOptions = { };
@@ -97,9 +119,9 @@ public class GdcDI implements Executor {
 
     private static long  LOCK_EXPIRATION_TIME = 1000 * 3600; // 1 hour
 
-    private GdcDI(CommandLine ln) {
+    private GdcDI(CommandLine ln, Properties defaults) {
         try {
-            cliParams = parse(ln);
+            cliParams = parse(ln, defaults);
             cliParams.setHttpConfig(new NamePasswordConfiguration(
             		cliParams.get(CLI_PARAM_PROTO[0]), cliParams.get(CLI_PARAM_HOST[0]),
                     cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
@@ -278,14 +300,16 @@ public class GdcDI implements Executor {
      * @return parsed cli parameters wrapped in the CliParams
      * @throws InvalidArgumentException in case of nonexistent or incorrect cli args
      */
-    protected CliParams parse(CommandLine ln) throws InvalidArgumentException {
+    protected CliParams parse(CommandLine ln, Properties defaults) throws InvalidArgumentException {
         l.debug("Parsing cli "+ln);
         CliParams cp = new CliParams();
         for( Option o : mandatoryOptions) {
             String name = o.getLongOpt();
             if (ln.hasOption(name))
                 cp.put(name,ln.getOptionValue(name));
-            else {
+            else if (defaults.getProperty(name) != null) {
+            	cp.put(name, defaults.getProperty(name));
+            } else {
                 throw new InvalidArgumentException("Missing the '"+name+"' commandline parameter.");
             }
 
@@ -293,8 +317,11 @@ public class GdcDI implements Executor {
 
         for( Option o : optionalOptions) {
             String name = o.getLongOpt();
-            if (ln.hasOption(name))
+            if (ln.hasOption(name)) {
                 cp.put(name,ln.getOptionValue(name));
+            } else if (defaults.getProperty(name) != null) {
+            	cp.put(name, defaults.getProperty(name));
+            }
         }
 
         // use default host if there is no host in the CLI params
@@ -441,17 +468,19 @@ public class GdcDI implements Executor {
 
         checkJavaVersion();
         PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
+        Properties defaults = loadDefaults();
         try {
             Options o = getOptions();
             CommandLineParser parser = new GnuParser();
-            new GdcDI(parser.parse(o, args));
+            CommandLine cmdline = parser.parse(o, args);
+            new GdcDI(cmdline, defaults);
         } catch (org.apache.commons.cli.ParseException e) {
             l.error("Error parsing command line parameters: "+e.getMessage());
             l.debug("Error parsing command line parameters",e);
         }
     }
 
-    /**
+	/**
      * Parses the commands
      * @param cmd commands string
      * @return array of commands
@@ -688,5 +717,30 @@ public class GdcDI implements Executor {
             DateDimensionConnector.createConnector()    
         };
     }
+    
+    /**
+     * Loads default values of common parameters from a properties file searching
+     * the working directory and user's home.
+     * @return default configuration 
+     */
+    private static Properties loadDefaults() {
+		final String[] dirs = new String[]{ "user.dir", "user.home" };
+		final Properties props = new Properties();
+		for (final String d : dirs) {
+			String path = System.getProperty(d) + File.separator + DEFAULT_PROPERTIES;
+			File f = new File(path);
+			if (f.exists() && f.canRead()) {
+				try {
+					FileInputStream is = new FileInputStream(f);
+					props.load(is);
+					return props;
+				} catch (IOException e) {
+					l.warn("Readable gdi configuration '" + f.getAbsolutePath() + "' found be error occurred reading it.");
+					l.debug("Error reading gdi configuration '" + f.getAbsolutePath() + "': ", e);
+				}
+			}
+		}
+		return props;
+	}
 
 }
