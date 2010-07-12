@@ -23,11 +23,11 @@
 
 package com.gooddata.connector.model;
 
-import com.gooddata.exception.ModelException;
-import com.gooddata.modeling.model.SourceColumn;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.gooddata.exception.ModelException;
+import com.gooddata.modeling.model.SourceColumn;
 
 /**
  * GoodData PDM table
@@ -228,5 +228,16 @@ public class PdmTable {
     @Override
 	public String toString() {
 		return name + "(" + type + ")";
+	}
+
+	public PdmColumn getConnectionPointReferenceColumn() {
+		for (final PdmColumn col : getColumns()) {
+			if (!SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(this.type)) {
+				if (SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(col.getLdmTypeReference())) {
+					return col;
+				}
+			}
+		}
+		return null;
 	}
 }
