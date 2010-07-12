@@ -159,6 +159,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         l.debug("Finished dropping MySQL snapshots "+getProjectId());
     }
     
+    
     /**
      * {@inheritDoc}
      */

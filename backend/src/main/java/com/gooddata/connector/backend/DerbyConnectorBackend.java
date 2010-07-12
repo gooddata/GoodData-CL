@@ -123,7 +123,6 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
         }
     }
     
-
     /**
      * {@inheritDoc}
      */

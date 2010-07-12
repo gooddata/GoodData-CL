@@ -25,6 +25,7 @@ package com.gooddata.connector.backend;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +71,14 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      * {@inheritDoc}
      */
     public abstract void dropSnapshots();
-        
+    
+    /**
+     * Drop all snapshots for given PDM schema
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected abstract void dropSnapshots(PdmSchema schema);        
 
     /**
      * {@inheritDoc}
@@ -196,7 +204,17 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
             throw new InternalErrorException("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
         }
         l.debug("The file "+dataFile.getAbsolutePath()+" does exists size="+dataFile.length());
-        executeExtract(getPdm(), dataFile.getAbsolutePath());
+        
+        PdmSchema schema = getPdm();
+        if (!schema.getConnectionPointTables().isEmpty()) {
+        	// drop previous snapshot - we don't keep snapshots for data sets
+        	// with connection point
+        	l.debug("Schema " + schema.getName() + " has a connection point - dropping old snaphots");
+        	dropSnapshots(schema);
+        	l.debug("Old snapshots dropped");
+        }
+        
+        executeExtract(schema, dataFile.getAbsolutePath());
 
         l.debug("Extracted CSV file="+dataFile.getAbsolutePath());
     }
