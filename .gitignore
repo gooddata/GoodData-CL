@@ -1,5 +1,13 @@
 idea
 .idea
+
+.classpath
+.project
+bin
+
+*~
+**/~
+
 GoodData-CL.iml
 tmp/
 target/
