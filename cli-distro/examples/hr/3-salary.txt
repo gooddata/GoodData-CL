@@ -6,23 +6,23 @@
 # Retrieve the project ID saved by the first script
 RetrieveProject(fileName="examples/hr/pid");
 
-## Loads time dimension to the project
-#LoadDateDimension(name="Payment");
-#
-## Generate the date dimension MAQL script
-#GenerateMaql(maqlFile="examples/hr/payment_date.maql");
-#
-## Execute the date dimension MAQL
-#ExecuteMaql(maqlFile="examples/hr/payment_date.maql");
-#
-## Load the salary data file, using the XML file describing the data
+# Loads time dimension to the project
+LoadDateDimension(name="Payment");
+
+# Generate the date dimension MAQL script
+GenerateMaql(maqlFile="examples/hr/payment_date.maql");
+
+# Execute the date dimension MAQL
+ExecuteMaql(maqlFile="examples/hr/payment_date.maql");
+
+# Load the salary data file, using the XML file describing the data
 LoadCsv(csvDataFile="examples/hr/salary.csv",header="true",configFile="examples/hr/salary.xml");
-#
-## Generate the MAQL script describing data model for salary data
-#GenerateMaql(maqlFile="examples/hr/salary.maql");
-#
-## Execute the salary MAQL script on the server
-#ExecuteMaql(maqlFile="examples/hr/salary.maql");
-#
+
+# Generate the MAQL script describing data model for salary data
+GenerateMaql(maqlFile="examples/hr/salary.maql");
+
+# Execute the salary MAQL script on the server
+ExecuteMaql(maqlFile="examples/hr/salary.maql");
+
 # Transfer the salary data
 TransferLastSnapshot(incremental="false");
