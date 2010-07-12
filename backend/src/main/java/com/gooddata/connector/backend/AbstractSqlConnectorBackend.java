@@ -304,13 +304,6 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	/**
      * {@inheritDoc}
      */
-    public void load(List<DLIPart> parts, String dir) {
-        loadSnapshot(parts, dir, null);
-    }
-
-	/**
-     * {@inheritDoc}
-     */
     protected void initializeLocalProject() {
     	try {
 	        l.debug("Executing system DDL SQL.");
