@@ -25,6 +25,7 @@ package com.gooddata.connector.backend;
 
 import java.io.File;
 import java.io.IOException;
+import com.gooddata.exception.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,6 +114,9 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
             throws IOException {
         l.debug("Deploying snapshots ids "+snapshotIds);
+        if (snapshotIds.length > 1 && !getPdm().getConnectionPointTables().isEmpty()) {
+        	throw new InvalidParameterException("Only one snapshot of a data set defining a connection point may be transfered.");
+        }
         loadSnapshot(parts, dir, snapshotIds);
         String fn = dir + System.getProperty("file.separator") +
                 GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;

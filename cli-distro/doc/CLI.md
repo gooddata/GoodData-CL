@@ -67,11 +67,11 @@ The following paragraphs describe the specific GoodData CL commands.
 
 ## Data Transfer Commands
 
-* `TransferAllSnapshots`(\[incremental=&lt;true | false&gt;\] \[, waitForFinish=&lt;true | false&gt;\]) - upload data (all snapshots) to the server, must call CreateProject or OpenProject and Load&lt;Connector&gt; before
+* `TransferAllSnapshots`(\[incremental=&lt;true | false&gt;\] \[, waitForFinish=&lt;true | false&gt;\]) - upload data (all snapshots) to the server, must call CreateProject or OpenProject and Load&lt;Connector&gt; before. Not allowed for data set defining a connection point unless only one snapshot is present.
   - incremental - incremental transfer (true | false), default is false
   - waitForFinish - waits for the server-side processing (true | false), default is true
 
-* `TransferSnapshots`(firstSnapshot=snapshot-id, lastSnapshot=snapshot-id \[,incremental=&lt;true | false&gt;\] \[, waitForFinish=&lt;true | false&gt;\]) - uploads all snapshots between the firstSnapshot and the lastSnapshot (inclusive).
+* `TransferSnapshots`(firstSnapshot=snapshot-id, lastSnapshot=snapshot-id \[,incremental=&lt;true | false&gt;\] \[, waitForFinish=&lt;true | false&gt;\]) - uploads all snapshots between the firstSnapshot and the lastSnapshot (inclusive). Only one snapshot is allowed for data set defining a connection point.
   - firstSnapshot - the first transferred snapshot id
   - lastSnapshot - the last transferred snapshot id
   - incremental - incremental transfer (true | false), default is false
