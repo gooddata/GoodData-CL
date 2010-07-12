@@ -4,6 +4,9 @@
 # Create a new project
 CreateProject(name="Quotes");
 
+# Store the project ID to file for possible other scripts
+StoreProject(fileName="examples/quotes/pid");
+
 # Loads time dimension to the project
 LoadDateDimension(name="Quote");
 
