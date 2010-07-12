@@ -116,6 +116,8 @@ public class GdcDI implements Executor {
     private Connector[] connectors = null;
 
     private ProcessingContext context = new ProcessingContext();
+    
+    private boolean finishedSucessfuly = false;
 
     private static long  LOCK_EXPIRATION_TIME = 1000 * 3600; // 1 hour
 
@@ -149,6 +151,7 @@ public class GdcDI implements Executor {
 	                    execute(new File(script));
 	                }
 	            }
+	            finishedSucessfuly = true;
             } finally {
             	if (backend != null) {
             		backend.close();
@@ -473,7 +476,10 @@ public class GdcDI implements Executor {
             Options o = getOptions();
             CommandLineParser parser = new GnuParser();
             CommandLine cmdline = parser.parse(o, args);
-            new GdcDI(cmdline, defaults);
+            GdcDI gdi = new GdcDI(cmdline, defaults);
+            if (!gdi.finishedSucessfuly) {
+            	System.exit(1);
+            }
         } catch (org.apache.commons.cli.ParseException e) {
             l.error("Error parsing command line parameters: "+e.getMessage());
             l.debug("Error parsing command line parameters",e);
