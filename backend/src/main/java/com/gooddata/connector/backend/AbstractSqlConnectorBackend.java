@@ -108,37 +108,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     /**
      * {@inheritDoc}
      */
-    public abstract void dropSnapshots();
-    
-    /**
-     * Drop all snapshots for given PDM schema
-     * @param c JDBC connection
-     * @param schema PDM schema
-     * @throws ConnectorBackendException in case of a DB issue
-     */
-    protected void dropSnapshots(PdmSchema schema) throws ConnectorBackendException {
-        PdmTable factTable = schema.getFactTable();
-        try {
-	        Connection c = getConnection();
-	        String fact = factTable.getName();
-	        {
-		        final String sql1 = "DELETE FROM snapshots WHERE name = '" + fact + "' AND lastid > 0";
-		        JdbcUtil.executeUpdate(c, sql1);
-	        }
-	        {
-		        final String sql2 = "DELETE FROM " + fact;
-		        JdbcUtil.executeUpdate(c, sql2);
-	        }
-	        {
-	        	final String src = schema.getSourceTable().getName();
-	        	final String sql3 = "DROP TABLE " + src;
-	        	JdbcUtil.executeUpdate(c, sql3);
-	        }
-	        createTable(c, schema.getSourceTable());
-        } catch (SQLException e) {
-        	throw new ConnectorBackendException(e);
-        }
-    }
+    public abstract void dropSnapshots(); 
 
     /**
      * {@inheritDoc}
