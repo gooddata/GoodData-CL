@@ -36,18 +36,22 @@ public class GdcDI implements Executor {
 
     private static Logger l = Logger.getLogger(GdcDI.class);
 
+    private static String DEFAULT_PROPERTIES = "gdi.properties";
+    
     private String projectId = null;
     private Connector connector = null;
     private CliParams cliParams = null;
     private Connector[] connectors = null;
 
     private ProcessingContext context = new ProcessingContext();
+    
+    private boolean finishedSucessfuly = false;
 
     private static long  LOCK_EXPIRATION_TIME = 1000 * 3600; // 1 hour
 
-    private GdcDI(CommandLine ln) {
+    private GdcDI(CommandLine ln, Properties defaults) {
         try {
-            cliParams = CliParams.create(ln);
+            cliParams = CliParams.create(ln, defaults);
             connectors = instantiateConnectors();
             String execute = cliParams.get(CliParams.CLI_PARAM_EXECUTE[0]);
             String scripts = cliParams.get(CliParams.CLI_PARAM_SCRIPT);
@@ -66,6 +70,7 @@ public class GdcDI implements Executor {
                     execute(new File(script));
                 }
             }
+            finishedSucessfuly = true;
         }
         catch (InvalidArgumentException e) {
             l.error(e.getMessage());
@@ -129,10 +134,15 @@ public class GdcDI implements Executor {
     public static void main(String[] args) {
 
         PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
+        Properties defaults = loadDefaults();
         try {
             Options o = CliParams.getOptions();
             CommandLineParser parser = new GnuParser();
-            new GdcDI(parser.parse(o, args));
+            CommandLine cmdline = parser.parse(o, args);
+            GdcDI gdi = new GdcDI(cmdline, defaults);
+            if (!gdi.finishedSucessfuly) {
+            	System.exit(1);
+            }
         } catch (org.apache.commons.cli.ParseException e) {
             l.error("Error parsing command line parameters",e);
         }
@@ -278,7 +288,7 @@ public class GdcDI implements Executor {
      * @throws IOException in case of IO issues
      */
     private Connector[] instantiateConnectors() throws IOException {
-        String b = cliParams.get(CliParams.CLI_PARAM_BACKEND[0]);
+        String b = cliParams.get(CliParams.CLI_PARAM_BACKEND[0]).toLowerCase();
         ConnectorBackend backend = null;
         if("mysql".equalsIgnoreCase(b))
             backend = MySqlConnectorBackend.create(cliParams.get(CliParams.CLI_PARAM_DB_USERNAME[0]),
@@ -294,4 +304,28 @@ public class GdcDI implements Executor {
         };
     }
 
+    /**
+     * Loads default values of common parameters from a properties file searching
+     * the working directory and user's home.
+     * @return default configuration 
+     */
+    private static Properties loadDefaults() {
+		final String[] dirs = new String[]{ "user.dir", "user.home" };
+		final Properties props = new Properties();
+		for (final String d : dirs) {
+			String path = System.getProperty(d) + File.separator + DEFAULT_PROPERTIES;
+			File f = new File(path);
+			if (f.exists() && f.canRead()) {
+				try {
+					FileInputStream is = new FileInputStream(f);
+					props.load(is);
+					return props;
+				} catch (IOException e) {
+					l.warn("Readable gdi configuration '" + f.getAbsolutePath() + "' found be error occurred reading it.");
+					l.debug("Error reading gdi configuration '" + f.getAbsolutePath() + "': ", e);
+				}
+			}
+		}
+		return props;
+	}
 }

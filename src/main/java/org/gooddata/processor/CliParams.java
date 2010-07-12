@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * GoodData CLI parameters wrapper
@@ -61,8 +62,8 @@ public class CliParams extends HashMap<String,String> {
      * @param ln parsed command line
      * @throws InvalidArgumentException in case of nonexistent or incorrect cli args
      */
-    protected CliParams(CommandLine ln) throws InvalidArgumentException {
-        parse(ln);
+    protected CliParams(CommandLine ln, Properties defaults) throws InvalidArgumentException {
+        parse(ln, defaults);
     }
 
     /**
@@ -70,8 +71,8 @@ public class CliParams extends HashMap<String,String> {
      * @param ln parsed command line
      * @throws InvalidArgumentException in case of nonexistent or incorrect cli args
      */
-    public static CliParams create(CommandLine ln) throws InvalidArgumentException {
-        return new CliParams(ln);
+    public static CliParams create(CommandLine ln, Properties defaults) throws InvalidArgumentException {
+        return new CliParams(ln, defaults);
     }
 
     /**
@@ -92,13 +93,15 @@ public class CliParams extends HashMap<String,String> {
      * @param ln parsed command line
      * @throws InvalidArgumentException in case of nonexistent or incorrect cli args
      */
-    protected void parse(CommandLine ln) throws InvalidArgumentException {
+    protected void parse(CommandLine ln, Properties defaults) throws InvalidArgumentException {
         l.debug("Parsing cli "+ln);
         for( Option o : mandatoryOptions) {
             String name = o.getLongOpt();
-            if (ln.hasOption(name))
+            if (ln.hasOption(name)) {
                 this.put(name,ln.getOptionValue(name));
-            else {
+            } else if (defaults.getProperty(name) != null) {
+            	this.put(name, defaults.getProperty(name));
+            } else {
                 l.error("Missing the '"+name+"' commandline parameter.");
                 throw new InvalidArgumentException("Missing the '"+name+"' commandline parameter.");
             }
@@ -107,8 +110,11 @@ public class CliParams extends HashMap<String,String> {
 
         for( Option o : optionalOptions) {
             String name = o.getLongOpt();
-            if (ln.hasOption(name))
-                this.put(name,ln.getOptionValue(name));
+            if (ln.hasOption(name)) {
+                this.put(name,ln.getOptionValue(name)); 
+            } else if (defaults.getProperty(name) != null) {
+            	this.put(name, defaults.getProperty(name));
+            }
         }
 
         // use default host if there is no host in the CLI params

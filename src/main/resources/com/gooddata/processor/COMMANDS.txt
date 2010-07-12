@@ -58,15 +58,15 @@ Script Commands:
  RetrieveProject(fileName=<file>) - loads the current project identifier from the specified file
   fileName - file to load the project identifier from
   
- TransferData(incremental=<true|false>) - upload data to the server, must call OpenProject and LoadCsv before
+ TransferData(incremental=<true|false>) - upload data to the server, must call OpenProject and LoadCsv before. Not allowed for data set defining a connection point unless only one snapshot is present.
   incremental - incremental transfer (true | false)
 
- TransferSnapshots - ?
+ TransferSnapshots - upload specified snapshots to the server, must call OpenProject and LoadCsv before. Only one snapshot is allowed for data set defining a connection point.
   lastSnapshot - the last transferred snapshot id
   firstSnapshot - the first transferred snapshot id
   incremental - incremental transfer (true | false)
 
- TransferLastSnapshot - ?
+ TransferLastSnapshot - uploads last snapshot to the server, must call OpenProject and LoadCsv before
   incremental - incremental transfer (true | false)
   
  UploadDir(path=<directory-path>, dataset=<dataset-identifier>) - uploads a directory containing manually prepared CSV files to provided dataset.  Must call OpenProject before.  

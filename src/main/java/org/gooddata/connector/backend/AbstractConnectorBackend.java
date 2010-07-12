@@ -13,6 +13,7 @@ import java.util.List;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.GdcIntegrationErrorException;
 import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
@@ -116,6 +117,9 @@ import org.gooddata.connector.driver.SqlDriver;
     public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
             throws IOException {
         l.debug("Deploying snapshots ids "+snapshotIds);
+        if (snapshotIds.length > 1 && !getPdm().getConnectionPointTables().isEmpty()) {
+        	throw new InvalidParameterException("Only one snapshot of a data set defining a connection point may be transfered.");
+        }
         loadSnapshot(parts, dir, snapshotIds);
         String fn = dir + System.getProperty("file.separator") +
                 GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;

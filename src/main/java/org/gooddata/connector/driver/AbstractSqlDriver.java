@@ -399,16 +399,16 @@ public abstract class AbstractSqlDriver implements SqlDriver {
     private void updateFactTableFk(Connection c, PdmSchema schema) throws SQLException {
         String fact = schema.getFactTable().getName();
         String updateStatement = "";
-        for(PdmTable tbl : schema.getLookupTables())
+        List<PdmTable> tables = new ArrayList<PdmTable>();
+        tables.addAll(schema.getLookupTables());
+        tables.addAll(schema.getConnectionPointTables());
+        tables.addAll(schema.getReferenceTables());
+        for(PdmTable tbl : tables) {
             if(updateStatement.length() > 0)
                 updateStatement += " , " + generateFactUpdateSetStatement(tbl, schema);
             else
                 updateStatement += generateFactUpdateSetStatement(tbl, schema);
-        for(PdmTable tbl : schema.getReferenceTables())
-            if(updateStatement.length() > 0)
-                updateStatement += " , " + generateFactUpdateSetStatement(tbl, schema);
-            else
-                updateStatement += generateFactUpdateSetStatement(tbl, schema);
+    	}
         updateStatement = "UPDATE " + fact + " SET " + updateStatement +
                 " WHERE "+N.ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name = '" + fact+"')";
         JdbcUtil.executeUpdate(c, updateStatement);
@@ -600,20 +600,32 @@ public abstract class AbstractSqlDriver implements SqlDriver {
         List<Column> columns = part.getColumns();
         String cols = "";
         for (Column cl : columns) {
-            PdmColumn col = pdmTable.getColumnByName(cl.getName());
+        	PdmColumn col = null;
+        	if (isPrimaryKey(cl)) {
+        		col = pdmTable.getConnectionPointReferenceColumn();
+        	}
+        	if (col == null) {
+        		col = pdmTable.getColumnByName(cl.getName());
+        	}
             // fact table fact columns
             if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) &&
                     SourceColumn.LDM_TYPE_FACT.equals(col.getLdmTypeReference()))
-                cols = decorateFactColumnForLoad(cols, cl, dliTable);
+                cols = decorateFactColumnForLoad(cols, col, dliTable);
             // lookup table name column
             else if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(pdmTable.getType()) &&
                     SourceColumn.LDM_TYPE_ATTRIBUTE.equals(col.getLdmTypeReference()))
-                cols = decorateLookupColumnForLoad(cols, cl, dliTable);
+                cols = decorateLookupColumnForLoad(cols, col, dliTable);
             else
-                cols = decorateOtherColumnForLoad(cols, cl, dliTable);
+                cols = decorateOtherColumnForLoad(cols, col, dliTable);
         }
         return cols;
     }
+    
+    private static boolean isPrimaryKey(Column cl) {
+    	if (cl.getConstraints() == null)
+    		return false;
+		return cl.getConstraints().matches("(?i).*PRIMARY  *KEY.*");
+	}
 
     /**
      * Uses DBMS specific functions for decorating fact columns for unloading from DB to CSV
@@ -622,7 +634,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      * @param table table name
      * @return the amended list
      */
-    protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
+    protected String decorateFactColumnForLoad(String cols, PdmColumn cl, String table) {
         return decorateOtherColumnForLoad(cols, cl, table);
     }
 
@@ -633,7 +645,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      * @param table table name
      * @return the amended list
      */
-    protected String decorateLookupColumnForLoad(String cols, Column cl, String table) {
+    protected String decorateLookupColumnForLoad(String cols, PdmColumn cl, String table) {
         return decorateOtherColumnForLoad(cols, cl, table);
     }
 
@@ -644,7 +656,7 @@ public abstract class AbstractSqlDriver implements SqlDriver {
      * @param table table name
      * @return the amended list
      */
-    protected String decorateOtherColumnForLoad(String cols, Column cl, String table) {
+    protected String decorateOtherColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols != null && cols.length() > 0)
             cols += "," + table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
         else

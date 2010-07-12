@@ -206,4 +206,15 @@ public class PdmTable {
 	public String toString() {
 		return name + "(" + type + ")";
 	}
+    
+	public PdmColumn getConnectionPointReferenceColumn() {
+		for (final PdmColumn col : getColumns()) {
+			if (!SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(this.type)) {
+				if (SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(col.getLdmTypeReference())) {
+					return col;
+				}
+			}
+		}
+		return null;
+	}
 }
