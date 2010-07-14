@@ -1,5 +1,11 @@
 package com.gooddata.util;
 
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
+import com.ibm.icu.text.Transliterator;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,36 +38,7 @@ public class StringUtil {
      * @return converted string
      */
     public static String formatShortName(String s) {
-        for ( String r : DISCARD_CHARS ) {
-            s = s.replace(r,"");
-        }
-        s.replaceAll("^[0-9]*", "");
-        return s.toLowerCase().trim();
-    }
-
-    /**
-     * Checks if the string contains an character that shoukd be stripped from identifier name
-     * @param s the checked
-     * @return true if there are invalid chars, false otherwise
-     */
-    public static boolean containsInvvalidIdentifierChar(String s) {
-        for ( String r : DISCARD_CHARS )
-            if(s.indexOf(r)>=0)
-                return true;
-        return false;
-    }
-
-    /**
-     * Remove whitespace
-     * Currently only converts to the lowercase and replace spaces
-     * @param s the string to process
-     * @return converted string
-     */
-    public static String removeWhitespace(String s) {
-        for ( String r : WHITESPACE ) {
-            s = s.replace(r,"");
-        }
-        return s;
+        return convertToIdentifier(s, DISCARD_CHARS);
     }
 
     /**
@@ -74,15 +51,13 @@ public class StringUtil {
         return s.trim();
     }
 
-    /**
-     * Formats a CSV header
-     * @param s the string to convert to identifier
-     * @return converted string
-     */
-    public static String csvHeaderToIdentifier(String s) {
-        for ( String r : INVALID_CSV_HEADER_CHARS ) {
+     private static String convertToIdentifier(String s, String[] invalidChars) {
+        Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
+        s = t.transliterate(s);
+        for ( String r : invalidChars ) {
             s = s.replace(r,"");
         }
+        s = s.replaceAll("^[0-9]*", "");
         return s.toLowerCase().trim();
     }
 
@@ -91,7 +66,18 @@ public class StringUtil {
      * @param s the string to convert to identifier
      * @return converted string
      */
+    public static String csvHeaderToIdentifier(String s) {
+        return convertToIdentifier(s, INVALID_CSV_HEADER_CHARS);
+    }
+
+    /**
+     * Formats a CSV header
+     * @param s the string to convert to identifier
+     * @return converted string
+     */
     public static String csvHeaderToTitle(String s) {
+        Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
+        s = t.transliterate(s);
         for ( String r : INVALID_CSV_HEADER_CHARS ) {
             s = s.replace(r,"");
         }
@@ -156,5 +142,23 @@ public class StringUtil {
         // TODO proper CSV parsing
         String[] result = elements.trim().split("\\s*,\\s*");
         return Arrays.asList(result);
+    }
+
+    public static void normalize(File in, File out, int skipRows) throws IOException {
+    	CSVReader csvIn  = FileUtil.createUtf8CsvReader(in);
+    	CSVWriter csvOut = FileUtil.createUtf8CsvWriter(out);
+    	normalize(csvIn, csvOut, skipRows);
+    	csvOut.close();
+    }
+
+    public static void normalize(CSVReader in, CSVWriter out, int skipRows) throws IOException {
+    	String[] nextLine;
+    	int i = 0;
+    	while ((nextLine = in.readNext()) != null) {
+    		if (i >= skipRows) {
+    			out.writeNext(nextLine);
+    		}
+    		i++;
+	    }
     }
 }

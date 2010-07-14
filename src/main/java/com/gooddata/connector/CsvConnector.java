@@ -71,7 +71,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
     public static void saveConfigTemplate(String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
         File dataFile = new File(dataFileName);
         String name = dataFile.getName().split("\\.")[0];
-        String[] headers = FileUtil.getCsvHeader(dataFile);
+        String[] headers = FileUtil.getCsvHeader(dataFile.toURI().toURL());
         int i = 0;
         final SourceSchema s;
         File configFile = new File(configFileName);

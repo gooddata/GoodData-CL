@@ -94,14 +94,9 @@ import org.gooddata.connector.driver.SqlDriver;
         for(DLIPart part : parts) {
             String fn = part.getFileName();
             List<Column> cols = part.getColumns();
-            String header = "";
-            for(Column col : cols) {
-                if(header != null && header.length() > 0) {
-                    header += ","+col.getName();
-                }
-                else {
-                    header += col.getName();                    
-                }
+            String[] header = new String[cols.size()];
+            for(int i=0; i<cols.size(); i++) {
+                header[i] += cols.get(i).getName();
             }
             File original = new File(dir + System.getProperty("file.separator") + fn);
             File tmpFile = FileUtil.appendCsvHeader(header, original);
