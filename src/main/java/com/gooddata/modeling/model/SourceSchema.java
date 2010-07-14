@@ -82,31 +82,41 @@ public class SourceSchema {
     }
 
     /**
-     * Deserializes the schema from XML
-     * @param configFile  the file with the XML definition
-     * @throws IOException in case of an IO issue
-     */
-    protected static SourceSchema fromXml(File configFile) throws IOException {
-        XStream xstream = new XStream();
-        xstream.alias("column", SourceColumn.class);
-        xstream.alias("schema", SourceSchema.class);
-        FileReader r = new FileReader(configFile);
-        SourceSchema schema = (SourceSchema)xstream.fromXML(r);
-        r.close();
-        return schema;
-    }
+         * Deserializes the schema from XML
+         * @param configFile  the file with the XML definition
+         * @throws IOException in case of an IO issue
+         */
+        protected static SourceSchema fromXml(File configFile) throws IOException {
+            return fromXml(new FileInputStream(configFile));
+        }
 
-    /**
-     * Write the config file
-     * @param configFile  the config file
-     * @throws IOException in case of an IO issue
-     */
-    public void writeConfig(File configFile) throws IOException {
-        FileWriter w = new FileWriter(configFile);
-        w.write(CONFIG_INITIAL_COMMENT + toXml());
-        w.flush();
-        w.close();
-    }
+        /**
+         * Deserializes the schema from an XML stream
+         * @param is the stream of the XML definition
+         * @throws IOException in case of an IO issue
+         */
+        protected static SourceSchema fromXml(InputStream is) throws IOException {
+            XStream xstream = new XStream();
+            xstream.alias("column", SourceColumn.class);
+            xstream.alias("schema", SourceSchema.class);
+            Reader r = new InputStreamReader(is, "utf8");
+            SourceSchema schema = (SourceSchema)xstream.fromXML(r);
+            r.close();
+            return schema;
+        }
+
+        /**
+         * Write the config file
+         * @param configFile  the config file
+         * @throws IOException in case of an IO issue
+         */
+        public void writeConfig(File configFile) throws IOException {
+            Writer w = new OutputStreamWriter(new FileOutputStream(configFile), "utf8");
+            w.write(CONFIG_INITIAL_COMMENT + toXml());
+            w.flush();
+            w.close();
+        }
+    
 
     /**
      * Columns getter
