@@ -204,7 +204,7 @@ public class FileUtil {
      * @throws IOException
      */
     public static void writeStringToFile(String content, String fileName) throws IOException {
-        FileWriter fw = new FileWriter(fileName);
+        BufferedWriter fw = createBufferedUtf8Writer(fileName);
         fw.write(content);
         fw.flush();
         fw.close();
@@ -392,7 +392,7 @@ public class FileUtil {
 	 * Creates a {@link BufferedReader} on the top of the given {@link InputStream} using the
 	 * UTF-8 encoding
 	 * 
-	 * @param file file to be read
+	 * @param is file to be read
 	 * @return UTF8 BufferedReader of the <tt>file</tt>
 	 * @throws IOException
 	 */

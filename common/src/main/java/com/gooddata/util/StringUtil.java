@@ -99,6 +99,8 @@ public class StringUtil {
      * @return converted string
      */
     public static String csvHeaderToTitle(String s) {
+        Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
+        s = t.transliterate(s);
         for ( String r : INVALID_CSV_HEADER_CHARS ) {
             s = s.replace(r,"");
         }
