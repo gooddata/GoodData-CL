@@ -34,6 +34,7 @@ import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import com.ibm.icu.text.Transliterator;
 
 /**
  * GoodData
@@ -51,8 +52,6 @@ public class StringUtil {
             "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
             "[", "]","\\"};
 
-    private static String[] WHITESPACE = {"\n","\t"};
-
     private static String[][] DATE_FORMAT_CONVERSION = {{"MM","%m"},{"yyyy","%Y"},{"yy","%y"},{"dd","%d"}};
     
     /**
@@ -62,36 +61,7 @@ public class StringUtil {
      * @return converted string
      */
     public static String formatShortName(String s) {
-        for ( String r : DISCARD_CHARS ) {
-            s = s.replace(r,"");
-        }
-        s.replaceAll("^[0-9]*", "");
-        return s.toLowerCase().trim();
-    }
-
-    /**
-     * Checks if the string contains an character that shoukd be stripped from identifier name
-     * @param s the checked
-     * @return true if there are invalid chars, false otherwise
-     */
-    public static boolean containsInvvalidIdentifierChar(String s) {
-        for ( String r : DISCARD_CHARS )
-            if(s.indexOf(r)>=0)
-                return true;
-        return false;
-    }
-
-    /**
-     * Remove whitespace
-     * Currently only converts to the lowercase and replace spaces
-     * @param s the string to process
-     * @return converted string
-     */
-    public static String removeWhitespace(String s) {
-        for ( String r : WHITESPACE ) {
-            s = s.replace(r,"");
-        }
-        return s;
+        return convertToIdentifier(s, DISCARD_CHARS);
     }
 
     /**
@@ -104,16 +74,23 @@ public class StringUtil {
         return s.trim();
     }
 
+    private static String convertToIdentifier(String s, String[] invalidChars) {
+        Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
+        s = t.transliterate(s);
+        for ( String r : invalidChars ) {
+            s = s.replace(r,"");
+        }
+        s = s.replaceAll("^[0-9]*", "");
+        return s.toLowerCase().trim();
+    }
+
     /**
      * Formats a CSV header
      * @param s the string to convert to identifier
      * @return converted string
      */
     public static String csvHeaderToIdentifier(String s) {
-        for ( String r : INVALID_CSV_HEADER_CHARS ) {
-            s = s.replace(r,"");
-        }
-        return s.toLowerCase().trim();
+        return convertToIdentifier(s, INVALID_CSV_HEADER_CHARS);
     }
 
     /**

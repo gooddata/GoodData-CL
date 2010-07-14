@@ -118,32 +118,6 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         deploySnapshot(dli, parts, dir, archiveName, null);
     }
 
-    /**
-     * Adds CSV headers to all CSV files
-     * @param parts the Data Loading Interface parts
-     * @param dir target directory where the data package will be stored
-     * @throws IOException IO issues
-     */
-    protected void addHeaders(List<DLIPart> parts, String dir) throws IOException {
-        for(DLIPart part : parts) {
-            String fn = part.getFileName();
-            List<Column> cols = part.getColumns();
-            String header = "";
-            for(Column col : cols) {
-                if(header != null && header.length() > 0) {
-                    header += ","+col.getName();
-                }
-                else {
-                    header += col.getName();                    
-                }
-            }
-            File original = new File(dir + System.getProperty("file.separator") + fn);
-            File tmpFile = FileUtil.appendCsvHeader(header, original);
-            original.delete();
-            tmpFile.renameTo(original);
-        }
-    }
-
     
     /**
      * {@inheritDoc}

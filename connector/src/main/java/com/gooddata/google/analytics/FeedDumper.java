@@ -78,7 +78,7 @@ public class FeedDumper {
 
             for (String dataName : headers) {
                 final String valueIn = entry.stringValueOf(dataName);
-                final String valueOut;
+                String valueOut;
                 if (GaConnector.GA_DATE.equalsIgnoreCase(dataName)) {
                     valueOut = valueIn.substring(0, 4) + "-"
                             + valueIn.substring(4, 6) + "-"

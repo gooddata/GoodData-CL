@@ -320,8 +320,6 @@ public abstract class AbstractConnector implements Connector {
      * @param cc connector
      * @param p cli parameters
      * @param ctx current context
-     * @param dli data loading interface
-     * @param parts DLI parts
      * @param snapshots transferred snapshots
      * @param waitForFinish synchronous execution flag
      * @throws IOException IO issues
@@ -510,14 +508,15 @@ public abstract class AbstractConnector implements Connector {
      */
     private void generateUpdateMaql(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         l.debug("Updating MAQL.");
-    	final String configFile = c.getParamMandatory( "configFile");
-    	final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
+    	//final String configFile = c.getParamMandatory( "configFile");
+    	//final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
+        Connector cc = ctx.getConnectorMandatory();
+        SourceSchema schema = cc.getSchema();
 
     	final String pid = ctx.getProjectIdMandatory();
     	final String maqlFile = c.getParamMandatory( "maqlFile");
     	final String dataset = schema.getDatasetName();
 
-    	Connector cc = ctx.getConnectorMandatory();
         List<DLIPart> parts = ctx.getRestApi(p).getDLIParts(dataset, pid);
 
         final List<SourceColumn> newColumns = findNewAttributes(parts, schema);

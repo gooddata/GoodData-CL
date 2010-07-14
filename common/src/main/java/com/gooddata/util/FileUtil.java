@@ -224,7 +224,7 @@ public class FileUtil {
     /**
      * Reads the entire {@link InputStream} and returns its content as a single {@link String} 
      *
-     * @param fileName the file
+     * @param is the file
      * @return the file content as String
      * @throws IOException
      */
@@ -235,7 +235,7 @@ public class FileUtil {
     /**
      * Reads all content from the given {@link Reader} and returns it as a single {@link String} 
      *
-     * @param fileName the file
+     * @param br the file
      * @return the file content as String
      * @throws IOException
      */
@@ -250,64 +250,30 @@ public class FileUtil {
     /**
      * Appends the CSV header to the file.
      * Returns new tmp file
-     * @param header header without the trailing \n
+     * @param header header without the trailing
      * @param file  the CSV file
      * @throws IOException in case of IO issues
      */
-    public static File appendCsvHeader(String header, File file) throws IOException {
+    public static File appendCsvHeader(String[] header, File file) throws IOException {
         File tmpFile = getTempFile();
-        BufferedWriter bw = createBufferedUtf8Writer(tmpFile);
-        BufferedReader br = createBufferedUtf8Reader(file);
-        
-        bw.write(header+"\n");
-        for(String ln = br.readLine(); ln != null; ln = br.readLine()) {
-            bw.write(ln+"\n");
-        }
-        br.close();
-        bw.flush();
-        bw.close();
-        return tmpFile;
-    }
-
-    /**
-     * Strips the CSV header from the existing file
-     * Copies the CSV without headers to a new tmp file and returns it.
-     * 
-     * TODO use CSV parser to handle possibly multiline headers
-	 *
-     * @param file  the CSV file
-     * @throws IOException in case of IO issues
-     */
-    public static File stripCsvHeader(File file) throws IOException {
-        File tmpFile = getTempFile();
-        BufferedWriter bw = createBufferedUtf8Writer(tmpFile);
-        BufferedReader br = createBufferedUtf8Reader(file);
-        boolean hdrRow = true;
-        for(String ln = br.readLine(); ln != null; ln = br.readLine()) {
-            if(!hdrRow)
-                bw.write(ln+"\n");
-            hdrRow = false;
-        }
-        br.close();
-        bw.flush();
-        bw.close();
+        CSVReader csvIn  = FileUtil.createUtf8CsvReader(file);
+    	CSVWriter csvOut = FileUtil.createUtf8CsvWriter(tmpFile);
+        csvOut.writeNext(header);
+        StringUtil.normalize(csvIn,csvOut,0);
+        csvOut.close();
         return tmpFile;
     }
     
     /**
      * Retrieves CSV headers from an URL
      * 
-     * TODO use CSV parser to handle possibly multiline headers
-     * 
      * @param url CSV url
      * @return the headers as String[]
      * @throws IOException in case of IO issues
      */
     public static String[] getCsvHeader(URL url) throws IOException {
-        BufferedReader r = createBufferedUtf8Reader(url);
-        String headerLine = r.readLine();
-        r.close();
-        return headerLine.split(",");
+        CSVReader csvIn = new CSVReader(createBufferedUtf8Reader(url));        
+        return csvIn.readNext();
     }
 
     /**

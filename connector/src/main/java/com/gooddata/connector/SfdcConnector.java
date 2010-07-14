@@ -316,10 +316,9 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 MessageElement[] cols = row.get_any();
                 String[] vals = new String[cols.length];
                 for(int i=0; i<vals.length; i++) {
+                    vals[i] = cols[i].getValue();
                     if(colTypes[i].equals(SourceColumn.LDM_TYPE_DATE))
-                        vals[i] = cols[i].getValue().substring(0,10);
-                    else
-                        vals[i] = cols[i].getValue();
+                        vals[i] = vals[i].substring(0,10);
                 }
                 cw.writeNext(vals);
             }
