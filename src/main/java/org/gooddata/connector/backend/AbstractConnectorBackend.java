@@ -96,7 +96,7 @@ import org.gooddata.connector.driver.SqlDriver;
             List<Column> cols = part.getColumns();
             String[] header = new String[cols.size()];
             for(int i=0; i<cols.size(); i++) {
-                header[i] += cols.get(i).getName();
+                header[i] = cols.get(i).getName();
             }
             File original = new File(dir + System.getProperty("file.separator") + fn);
             File tmpFile = FileUtil.appendCsvHeader(header, original);
