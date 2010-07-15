@@ -123,27 +123,6 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
         }
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public void executeExtract(PdmSchema schema, String file) {
-    	try {
-	    	Connection c = getConnection();
-	    	
-	        l.debug("Extracting data.");
-	        PdmTable sourceTable = schema.getSourceTable();
-	        String source = sourceTable.getName();
-	        String cols = getNonAutoincrementColumns(sourceTable);
-	        JdbcUtil.executeUpdate(c,
-	            "CALL SYSCS_UTIL.SYSCS_IMPORT_DATA " +
-	            "(NULL, '" + source.toUpperCase() + "', '" + cols.toUpperCase() +
-	            "', null, '" + file + "', null, null, 'utf-8',0)"
-	        );
-	        l.debug("Finished extracting data.");
-    	} catch (SQLException e) {
-    		throw new ConnectorBackendException(e);
-    	}
-    }
 
     /**
      * {@inheritDoc}

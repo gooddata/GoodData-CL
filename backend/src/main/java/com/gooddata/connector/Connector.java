@@ -79,17 +79,6 @@ public interface Connector extends Executor {
     public void initialize();
 
     /**
-     * Drops all current snapshots. This is usually achieved by dropping the whole project database.
-     */    
-    public void dropSnapshots();
-
-    /**
-     * Lists the current snapshots
-     * @return list of snapshots as String
-     */
-    public String listSnapshots();
-
-    /**
      * Extracts the source data CSV to the database where it is going to be transformed
      * @throws IOException in case of IO issues
      */

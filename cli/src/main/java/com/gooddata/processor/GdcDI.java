@@ -132,7 +132,8 @@ public class GdcDI implements Executor {
                     cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
         	ConnectorBackend backend = null;
             try {
-                backend = instantiateConnectorBackend();            	
+                backend = instantiateConnectorBackend();
+                context.setConnectorBackend(backend);
 	            connectors = instantiateConnectors(backend);
 	            String execute = cliParams.get(CLI_PARAM_EXECUTE[0]);
 	            String scripts = cliParams.get(CLI_PARAM_SCRIPT);

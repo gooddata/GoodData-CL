@@ -135,20 +135,6 @@ public abstract class AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
-    public void dropSnapshots() {
-        getConnectorBackend().dropSnapshots();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String listSnapshots() {
-        return getConnectorBackend().listSnapshots();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public boolean isInitialized() {
         return getConnectorBackend().isInitialized();
     }
@@ -484,8 +470,8 @@ public abstract class AbstractConnector implements Connector {
      * @param ctx current context
      */
     private void dropSnapshots(Command c, CliParams p, ProcessingContext ctx) {
-        Connector cc = ctx.getConnectorMandatory();
-        cc.dropSnapshots();
+        setProjectId(ctx);
+        ctx.getConnectorBackend().dropSnapshots();
     }
 
     /**
@@ -495,8 +481,8 @@ public abstract class AbstractConnector implements Connector {
      * @param ctx current context
      */
     private void listSnapshots(Command c, CliParams p, ProcessingContext ctx) {
-        Connector cc = ctx.getConnectorMandatory();
-        l.info((cc.listSnapshots()));
+        setProjectId(ctx);
+        l.info(ctx.getConnectorBackend().listSnapshots());
     }
 
     /**
@@ -573,9 +559,6 @@ public abstract class AbstractConnector implements Connector {
         String pid = ctx.getProjectIdMandatory();
         if(pid != null && pid.length() > 0)
             this.getConnectorBackend().setProjectId(pid);
-        else
-            throw new InvalidCommandException("No project is active. Please activate project via CreateProject or " +
-                    "OpenProject command. ");
     }
 
 }

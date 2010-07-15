@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import au.com.bytecode.opencsv.CSVReader;
 import org.apache.log4j.Logger;
 
 import com.gooddata.connector.model.PdmColumn;
@@ -308,8 +309,10 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        				l.warn("Prepopulating of connection point tables is not suppported (table = " + table.getName() + ")");
 	        			}
 	        		}
+		            /*
 		            if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
 		                indexAllTableColumns(c, table);
+		            */
 	        	} else {
 	        		for (PdmColumn column : table.getColumns()) {
 	        			if (!exists(c, table.getName(), column.getName())) {
@@ -800,6 +803,23 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     }
 
     /**
+     * Returns the prepared statement quetionmarks
+     * @param tbl table
+     * @return prepared statement question column
+     */
+    protected String getPreparedStatementQuestionMarks(PdmTable tbl) {
+        String cols = "";
+        for (PdmColumn col : tbl.getColumns()) {
+            if(!col.isAutoIncrement())
+                if (cols != null && cols.length() > 0)
+                    cols += ",?";
+                else
+                    cols += "?";
+        }
+        return cols;
+    }
+
+    /**
      * Generates the where clause for unloading data to CSVs in the data loading package
      * @param part DLI part
      * @param schema PDM schema
@@ -968,4 +988,50 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void executeExtract(PdmSchema schema, String file) {
+        Connection c = null;
+        PreparedStatement s  = null;
+        try {
+	    	c = getConnection();
+
+	        l.debug("Extracting data.");
+	        PdmTable sourceTable = schema.getSourceTable();
+	        String source = sourceTable.getName();
+	        String cols = getNonAutoincrementColumns(sourceTable);
+            String qmrks = getPreparedStatementQuestionMarks(sourceTable);
+            s = c.prepareStatement("INSERT INTO "+source+"("+cols+") VALUES ("+qmrks+")");
+            CSVReader csvIn = new CSVReader(FileUtil.createBufferedUtf8Reader(file));
+            String[] nextLine;
+            while ((nextLine = csvIn.readNext()) != null) {
+                for(int i=1; i<=nextLine.length; i++)
+                    if(nextLine[i]!=null)
+                        s.setString(i,nextLine[i]);
+                    else
+                        s.setString(i,"");
+                s.addBatch();
+	        }
+            s.executeBatch();
+	        l.debug("Finished extracting data.");
+    	} catch (SQLException e) {
+    		throw new ConnectorBackendException(e);
+        } catch (IOException e) {
+    		throw new ConnectorBackendException(e);
+    	}
+        finally {
+            try  {
+                if(s != null)
+                    s.close();
+                if(c!=null)
+                    c.close();
+            }
+            catch (SQLException e) {
+                // nothing we can do
+            }
+        }
+    }
+
 }
