@@ -80,28 +80,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
             throws IOException {
         deploySnapshot(dli, parts, dir, archiveName, null);
     }
-
-    /**
-     * Adds CSV headers to all CSV files
-     * @param parts the Data Loading Interface parts
-     * @param dir target directory where the data package will be stored
-     * @throws IOException IO issues
-     */
-    protected void addHeaders(List<DLIPart> parts, String dir) throws IOException {
-        for(DLIPart part : parts) {
-            String fn = part.getFileName();
-            List<Column> cols = part.getColumns();
-            String[] header = new String[cols.size()];
-            for(int i=0; i<cols.size(); i++) {
-                header[i] += cols.get(i).getName();                    
-            }
-            File original = new File(dir + System.getProperty("file.separator") + fn);
-            File tmpFile = FileUtil.appendCsvHeader(header, original);
-            original.delete();
-            tmpFile.renameTo(original);
-        }
-    }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -117,7 +96,6 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
         String cn = dli.getDLIManifest(parts);
         FileUtil.writeStringToFile(cn, fn);
         l.debug("Manifest file written to file '"+fn+"'. Content: "+cn);
-        addHeaders(parts, dir);
         FileUtil.compressDir(dir, archiveName);
         l.debug("Snapshots ids "+snapshotIds+" deployed.");
     }
@@ -187,21 +165,34 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     /**
      * {@inheritDoc}
      */
-    public void extract(File dataFile) {
+    public void extract(File dataFile, boolean hasHeader) {
         l.debug("Extracting CSV file="+dataFile.getAbsolutePath());
         if(!dataFile.exists()) {
             l.error("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
             throw new InternalErrorException("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
         }
         l.debug("The file "+dataFile.getAbsolutePath()+" does exists size="+dataFile.length());
-        executeExtract(getPdm(), dataFile.getAbsolutePath());
+        executeExtract(getPdm(), dataFile.getAbsolutePath(), hasHeader);
 
         l.debug("Extracted CSV file="+dataFile.getAbsolutePath());
     }
-    
+
+    /**
+     * Execustes the load
+     * @param pdm PDM schema
+     * @param p DLI part
+     * @param dir target directory
+     * @param snapshotIds snapshot IDs to be loaded
+     */
 	protected abstract void executeLoad(PdmSchema pdm, DLIPart p, String dir, int[] snapshotIds);
-	
-    protected abstract void executeExtract(PdmSchema pdm, String absolutePath);
+
+    /**
+     * Execute the extract
+     * @param pdm PDM schema
+     * @param absolutePath extracted file absolutr path
+     * @param hasHeader true if the data file has header
+     */
+    protected abstract void executeExtract(PdmSchema pdm, String absolutePath, boolean hasHeader);
 
 	/**
      * {@inheritDoc}

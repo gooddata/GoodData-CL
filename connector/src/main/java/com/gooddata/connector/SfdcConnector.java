@@ -24,7 +24,6 @@
 package com.gooddata.connector;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ import java.util.Map;
 import org.apache.axis.message.MessageElement;
 import org.apache.log4j.Logger;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.gooddata.util.CSVWriter;
 
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.exception.InternalErrorException;
@@ -326,10 +325,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         }
         cw.flush();
         cw.close();
-        l.debug("Making file="+dataFile.getAbsolutePath()+" writable.");
-        FileUtil.makeWritable(dataFile);
-        l.debug("Made file="+dataFile.getAbsolutePath()+" writable.");
-        getConnectorBackend().extract(dataFile);
+        getConnectorBackend().extract(dataFile, false);
         FileUtil.recursiveDelete(dataFile);
         l.debug("Extracted SFDC data.");
     }

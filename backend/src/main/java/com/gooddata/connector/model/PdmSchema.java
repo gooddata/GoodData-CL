@@ -24,6 +24,7 @@
 package com.gooddata.connector.model;
 
 import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.MetadataFormatException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
@@ -31,6 +32,7 @@ import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -175,13 +177,18 @@ public class PdmSchema {
      * @return new PDm column
      */
     private static PdmColumn createLookupColumn(SourceColumn c) {
-        String name = StringUtil.formatShortName(c.getName());
-        PdmColumn pc = new PdmColumn(N.NM_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
-                N.SRC_PFX + name, c.getLdmType());
-        if (c.getElements() != null) {
-        	pc.setElements(StringUtil.parseLine(c.getElements()));
+        try {
+            String name = StringUtil.formatShortName(c.getName());
+            PdmColumn pc = new PdmColumn(N.NM_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
+                    N.SRC_PFX + name, c.getLdmType());
+            if (c.getElements() != null) {
+                pc.setElements(StringUtil.parseLine(c.getElements()));
+            }
+            return pc;
         }
-        return pc;
+        catch (IOException e) {
+            throw new MetadataFormatException("Invalid lookup column elements.",e);  
+        }
     }
 
     /**

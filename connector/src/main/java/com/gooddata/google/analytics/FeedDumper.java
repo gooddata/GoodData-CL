@@ -23,7 +23,7 @@
 
 package com.gooddata.google.analytics;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.gooddata.util.CSVWriter;
 import com.gooddata.connector.GaConnector;
 import com.google.gdata.data.analytics.DataEntry;
 import com.google.gdata.data.analytics.DataFeed;

@@ -116,8 +116,9 @@ public interface ConnectorBackend {
     /**
      * Extracts the source data CSV to the database where it is going to be transformed
      * @param dataFile the data file to extract
+     * @param hasHeader true if the CSV file has header
      */
-    public void extract(File dataFile);
+    public void extract(File dataFile, boolean hasHeader);
 
     /**
      * Project id getter

@@ -30,8 +30,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Properties;
 
+import com.gooddata.modeling.model.SourceColumn;
 import org.apache.log4j.Logger;
 
 import com.gooddata.connector.driver.Constants;
@@ -158,73 +160,11 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         }
         l.debug("Finished dropping MySQL snapshots "+getProjectId());
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void executeExtract(PdmSchema schema, String file) {
-    	try {
-	    	Connection c = getConnection();
-	    	
-	        l.debug("Extracting data.");
-	        PdmTable sourceTable = schema.getSourceTable();
-	        String source = sourceTable.getName();
-	        String cols = getNonAutoincrementColumns(sourceTable);
-	
-	        JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" DISABLE KEYS");
-	
-	        file = file.replace(File.separatorChar, '/'); // windows workaround
-	        String sql = "LOAD DATA INFILE '" + file + "' INTO TABLE " + source + " CHARACTER SET UTF8 "
-	        			+ "COLUMNS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' (" 
-	        			+ cols + ")";
-	        JdbcUtil.executeUpdate(c, sql);
-	        
-	        JdbcUtil.executeUpdate(c,"ALTER TABLE "+source+" ENABLE KEYS");
-	        l.debug("Finished extracting data.");
-    	} catch (SQLException e) {
-    		throw new ConnectorBackendException(e);
-    	}
-    }
 
     /**
      * {@inheritDoc}
      */
-    public void executeLoad(PdmSchema schema, DLIPart part, String dir, int[] snapshotIds) {
-    	try {
-	    	Connection c = getConnection();
-	    	
-	        l.debug("Unloading data.");
-	        String file = dir + System.getProperty("file.separator") + part.getFileName();
-	        String cols = getLoadColumns(part, schema);
-	        String whereClause = getLoadWhereClause(part, schema, snapshotIds);
-	        String dliTable = getTableNameFromPart(part);
-	        
-	        Statement s = null;
-	        ResultSet rs = null;
-	        try {
-	            s = c.createStatement();
-	            file = file.replace(File.separatorChar, '/'); // windows workaround
-	            String sql = "SELECT " + cols + " INTO OUTFILE '" + file +
-		            "' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\\n' FROM " +
-		            dliTable + whereClause;
-	            rs = JdbcUtil.executeQuery(s, sql);
-	        }
-	        finally {
-	            if (rs != null)
-	                rs.close();
-	            if (s != null)
-	                s.close();
-	        }
-	        l.debug("Data unloading finished.");
-    	} catch (SQLException e) {
-    		throw new ConnectorBackendException(e);
-    	}
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
+    protected String decorateFactColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols.length() > 0)
             cols += ",ATOD(" + table + "." +
                     StringUtil.formatShortName(cl.getName())+")";

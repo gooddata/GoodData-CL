@@ -23,7 +23,7 @@
 
 package com.gooddata.connector;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.gooddata.util.CSVWriter;
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.InvalidArgumentException;
@@ -44,13 +44,8 @@ import com.google.gdata.util.ServiceException;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * GoodData Google Analytics Connector
@@ -174,7 +169,7 @@ public class GaConnector extends AbstractConnector implements Connector {
             }
             cw.flush();
             cw.close();
-            getConnectorBackend().extract(dataFile);
+            getConnectorBackend().extract(dataFile,false);
             FileUtil.recursiveDelete(dataFile);
         }
         catch (AuthenticationException e) {

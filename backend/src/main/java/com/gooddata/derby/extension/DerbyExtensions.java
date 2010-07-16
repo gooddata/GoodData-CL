@@ -48,21 +48,22 @@ public class DerbyExtensions {
      * @param str String to convert
      * @return the converted as double
      */
-    public static double atod(String str) {
+    public static String atod(String str) {
         try {
-            return Double.parseDouble(str);
+            double d = Double.parseDouble(str);
+            return Double.toString(d);
         }
         catch (NumberFormatException e) {
             try {
                 for ( String r : Constants.DISCARD_CHARS ) {
                     str = str.replace(r,"");
                 }
-                Double.parseDouble(str);
+                double d = Double.parseDouble(str);
+                return Double.toString(d);
             }
             catch (NumberFormatException e1) {
-                return 0;
+                return null;
             }
-            return 0;
         }
     }
 

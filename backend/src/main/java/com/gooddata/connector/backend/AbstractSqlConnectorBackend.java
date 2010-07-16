@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import au.com.bytecode.opencsv.CSVReader;
+import com.gooddata.util.CSVWriter;
 import org.apache.log4j.Logger;
 
 import com.gooddata.connector.model.PdmColumn;
@@ -117,24 +118,6 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName)
             throws IOException {
         deploySnapshot(dli, parts, dir, archiveName, null);
-    }
-
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
-            throws IOException {
-        l.debug("Deploying snapshots ids "+snapshotIds);
-        loadSnapshot(parts, dir, snapshotIds);
-        String fn = dir + System.getProperty("file.separator") +
-                GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
-        String cn = dli.getDLIManifest(parts);
-        FileUtil.writeStringToFile(cn, fn);
-        l.debug("Manifest file written to file '"+fn+"'. Content: "+cn);
-        addHeaders(parts, dir);
-        FileUtil.compressDir(dir, archiveName);
-        l.debug("Snapshots ids "+snapshotIds+" deployed.");
     }
 
     /**
@@ -877,7 +860,21 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         return cols;
     }
 
-    private static boolean isPrimaryKey(Column cl) {
+    /**
+     * Returns the CSV header of the loaded data
+     * @param part DLI part
+     * @return list of columns
+     */
+    protected String[] getLoadHeader(DLIPart part)  {
+        List<Column> cols = part.getColumns();
+        String[] header = new String[cols.size()];
+        for(int i=0; i<cols.size(); i++) {
+            header[i] = cols.get(i).getName();
+        }
+        return header;
+    }
+
+    protected static boolean isPrimaryKey(Column cl) {
     	if (cl.getConstraints() == null)
     		return false;
 		return cl.getConstraints().matches("(?i).*PRIMARY  *KEY.*");
@@ -992,7 +989,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     /**
      * {@inheritDoc}
      */
-    public void executeExtract(PdmSchema schema, String file) {
+    public void executeExtract(PdmSchema schema, String file, boolean hasHeader) {
         Connection c = null;
         PreparedStatement s  = null;
         try {
@@ -1007,12 +1004,16 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             CSVReader csvIn = new CSVReader(FileUtil.createBufferedUtf8Reader(file));
             String[] nextLine;
             while ((nextLine = csvIn.readNext()) != null) {
-                for(int i=1; i<=nextLine.length; i++)
-                    if(nextLine[i]!=null)
-                        s.setString(i,nextLine[i]);
-                    else
-                        s.setString(i,"");
-                s.addBatch();
+                if(hasHeader)
+                    hasHeader = false;
+                else {
+                    for(int i=1; i<=nextLine.length; i++)
+                        if(nextLine[i-1]!=null)
+                            s.setString(i,nextLine[i-1]);
+                        else
+                            s.setString(i,"");
+                    s.addBatch();
+                }
 	        }
             s.executeBatch();
 	        l.debug("Finished extracting data.");
@@ -1025,13 +1026,62 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             try  {
                 if(s != null)
                     s.close();
-                if(c!=null)
-                    c.close();
             }
             catch (SQLException e) {
                 // nothing we can do
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void executeLoad(PdmSchema schema, DLIPart part, String dir, int[] snapshotIds) {
+    	Connection c = null;
+        try {
+	    	c = getConnection();
+	        l.debug("Unloading data.");
+	        final String file = dir + System.getProperty("file.separator") + part.getFileName();
+	        String cols = getLoadColumns(part, schema);
+	        String whereClause = getLoadWhereClause(part, schema, snapshotIds);
+	        String dliTable = getTableNameFromPart(part);
+	        String sql = "SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause;
+            String[] header = getLoadHeader(part);
+            CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(file));
+            cw.writeNext(header);
+            JdbcUtil.executeQuery(c, sql, new ResultSetCsvWriter(cw));
+            cw.close();
+	        l.debug("Finished unloading data.");
+    	} catch (SQLException e) {
+    		throw new ConnectorBackendException(e);
+        } catch (IOException e) {
+    		throw new ConnectorBackendException(e);
+    	}
+    }
+
+    private static class ResultSetCsvWriter implements JdbcUtil.ResultSetHandler {
+
+        private final CSVWriter cw;
+        protected int rowCnt = 0;
+
+        public ResultSetCsvWriter(CSVWriter cw) {
+            this.cw = cw;
+        }
+
+        public void handle(ResultSet rs) throws SQLException {
+            final int length = rs.getMetaData().getColumnCount();
+            final String[] line = new String[length];
+            for (int i = 1; i <= length; i++) {
+                final String value = rs.getString(i);
+                if (value == null)
+                    line[i - 1] = "\\N";
+                else {
+                    line[i - 1] = value.toString();
+                }
+            }
+            cw.writeNext(line, true);
+        }
+
     }
 
 }

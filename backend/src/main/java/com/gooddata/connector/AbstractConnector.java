@@ -318,7 +318,6 @@ public abstract class AbstractConnector implements Connector {
         String ssn = StringUtil.formatShortName(cc.getSchema().getName());
         l.debug("Extracting data.");
         File tmpDir = FileUtil.createTempDir();
-        FileUtil.makeWritable(tmpDir);
         File tmpZipDir = FileUtil.createTempDir();
         String archiveName = tmpDir.getName();
         String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +

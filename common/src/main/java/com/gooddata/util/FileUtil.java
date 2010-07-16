@@ -30,7 +30,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,7 +44,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.log4j.Logger;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
+import com.gooddata.util.CSVWriter;
 
 /**
  * File utils
@@ -246,23 +245,6 @@ public class FileUtil {
         br.close();
         return sbr.toString();
     }
-
-    /**
-     * Appends the CSV header to the file.
-     * Returns new tmp file
-     * @param header header without the trailing
-     * @param file  the CSV file
-     * @throws IOException in case of IO issues
-     */
-    public static File appendCsvHeader(String[] header, File file) throws IOException {
-        File tmpFile = getTempFile();
-        CSVReader csvIn  = FileUtil.createUtf8CsvReader(file);
-    	CSVWriter csvOut = FileUtil.createUtf8CsvWriter(tmpFile);
-        csvOut.writeNext(header);
-        StringUtil.normalize(csvIn,csvOut,0);
-        csvOut.close();
-        return tmpFile;
-    }
     
     /**
      * Retrieves CSV headers from an URL
@@ -275,21 +257,6 @@ public class FileUtil {
         CSVReader csvIn = new CSVReader(createBufferedUtf8Reader(url));        
         return csvIn.readNext();
     }
-
-    /**
-     * Makes a directory writable on the Unix machines
-     * @param tmpDir the directory that will be made writable
-     */
-    public static void makeWritable(File tmpDir) {
-        try {
-            Runtime.getRuntime().exec("chmod -R 777 "+tmpDir.getAbsolutePath());
-        }
-        catch (IOException e) {
-            l.debug("Can't change file permissions file="+tmpDir.getAbsolutePath()+". This is not a big deal. " +
-                    "Perhaps you are using Windows.",e);
-        }
-    }
-
 
     /**
      * Constructs a new File and optionally checks if it exists 

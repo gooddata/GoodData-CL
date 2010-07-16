@@ -24,7 +24,6 @@
 package com.gooddata.connector;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -37,7 +36,7 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.gooddata.util.CSVWriter;
 
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.driver.Constants;
@@ -230,10 +229,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 l.error("Error closing JDBC connection.",e);
             }
         }
-        l.debug("Making file="+dataFile.getAbsolutePath()+" writable.");
-        FileUtil.makeWritable(dataFile);
-        l.debug("Made file="+dataFile.getAbsolutePath()+" writable.");
-        getConnectorBackend().extract(dataFile);
+        getConnectorBackend().extract(dataFile, false);
         FileUtil.recursiveDelete(dataFile);
     }
 

@@ -25,9 +25,7 @@ package com.gooddata.connector.backend;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -36,7 +34,6 @@ import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
 import com.gooddata.exception.ConnectorBackendException;
-import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
@@ -123,37 +120,13 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
         }
     }
     
-
-    /**
-     * {@inheritDoc}
-     */
-    public void executeLoad(PdmSchema schema, DLIPart part, String dir, int[] snapshotIds) {
-    	try {
-	    	Connection c = getConnection();
-	    	
-	        l.debug("Unloading data.");
-	        String file = dir + System.getProperty("file.separator") + part.getFileName();
-	        String cols = getLoadColumns(part, schema);
-	        String whereClause = getLoadWhereClause(part, schema, snapshotIds);
-	        String dliTable = getTableNameFromPart(part);
-	        JdbcUtil.executeUpdate(c,
-	            "CALL SYSCS_UTIL.SYSCS_EXPORT_QUERY " +
-	            "('SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause + "', '" + file +
-	            "', null, null, 'utf-8')"
-	        );
-	        l.debug("Finished unloading data.");
-    	} catch (SQLException e) {
-    		throw new ConnectorBackendException(e);
-    	}
-    }
-
     /**
      * {@inheritDoc}
      */
     protected void createFunctions(Connection c) throws SQLException {
         l.debug("Creating system functions.");
         JdbcUtil.executeUpdate(c,
-            "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS DOUBLE\n" +
+            "CREATE FUNCTION ATOD(str VARCHAR(255)) RETURNS VARCHAR(255)\n" +
             " PARAMETER STYLE JAVA NO SQL LANGUAGE JAVA" +
             " EXTERNAL NAME 'com.gooddata.derby.extension.DerbyExtensions.atod'"
         );
@@ -190,7 +163,7 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
     /**
      * {@inheritDoc}
      */
-    protected String decorateFactColumnForLoad(String cols, Column cl, String table) {
+    protected String decorateFactColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols.length() > 0)
             cols += ",ATOD(" + table.toUpperCase() + "." +
                     StringUtil.formatShortName(cl.getName())+")";
@@ -203,7 +176,7 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
     /**
      * {@inheritDoc}
      */
-    protected String decorateLookupColumnForLoad(String cols, Column cl, String table) {
+    protected String decorateLookupColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols != null && cols.length() > 0)
             cols += ",CAST(" + table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName())+
                     " AS VARCHAR(128))";
@@ -216,7 +189,7 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
     /**
      * {@inheritDoc}
      */
-    protected String decorateOtherColumnForLoad(String cols, Column cl, String table) {
+    protected String decorateOtherColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols != null && cols.length() > 0)
             cols += "," + table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
         else

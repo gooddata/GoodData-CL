@@ -39,4 +39,8 @@ public class MetadataFormatException extends GdcException {
         super(msg);
     }
 
+    public MetadataFormatException(String msg, Throwable e) {
+        super(msg, e);
+    }
+
 }

@@ -23,17 +23,13 @@
 
 package com.gooddata.util;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
 import com.ibm.icu.text.Transliterator;
 
 /**
@@ -158,30 +154,12 @@ public class StringUtil {
      * @param elements CSV line
      * @return alements as String[]
      */
-    public static List<String> parseLine(String elements) {
+    public static List<String> parseLine(String elements) throws java.io.IOException {
         if (elements == null) {
             return new ArrayList<String>();
         }
-        // TODO proper CSV parsing
-        String[] result = elements.trim().split("\\s*,\\s*");
-        return Arrays.asList(result);
+        CSVReader cr = new CSVReader(new StringReader(elements));
+        return Arrays.asList(cr.readNext());
     }
-    
-    public static void normalize(File in, File out, int skipRows) throws IOException {
-    	CSVReader csvIn  = FileUtil.createUtf8CsvReader(in);
-    	CSVWriter csvOut = FileUtil.createUtf8CsvWriter(out);
-    	normalize(csvIn, csvOut, skipRows);
-    	csvOut.close();
-    }
-    
-    public static void normalize(CSVReader in, CSVWriter out, int skipRows) throws IOException {
-    	String[] nextLine;
-    	int i = 0;
-    	while ((nextLine = in.readNext()) != null) {
-    		if (i >= skipRows) {
-    			out.writeNext(nextLine);
-    		}
-    		i++;
-	    }
-    }
+
 }
