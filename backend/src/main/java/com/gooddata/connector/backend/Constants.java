@@ -21,7 +21,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.gooddata.connector.driver;
+package com.gooddata.connector.backend;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

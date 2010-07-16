@@ -70,9 +70,6 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 
     private static Logger l = Logger.getLogger(AbstractSqlConnectorBackend.class);
 
-    // PDM schema
-    private PdmSchema pdm;
-
     // Project id
     private String projectId;
 
@@ -123,20 +120,6 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     /**
      * {@inheritDoc}
      */
-    public PdmSchema getPdm() {
-        return pdm;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void setPdm(PdmSchema pdm) {
-        this.pdm = pdm;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void initialize() {
         Connection con;
         try {
@@ -153,13 +136,6 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         catch (SQLException e) {
             throw new ConnectorBackendException("Error initializing pdm schema '" + getPdm().getName() + "'", e);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void transform() {
-        createSnowflake(getPdm());
     }
 
     /**

@@ -25,7 +25,6 @@ package com.gooddata.csv;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,7 +36,7 @@ import java.util.Set;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-import com.gooddata.connector.driver.Constants;
+import com.gooddata.connector.backend.Constants;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.util.FileUtil;
 

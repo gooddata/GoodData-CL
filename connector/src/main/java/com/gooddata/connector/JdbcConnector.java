@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 import com.gooddata.util.CSVWriter;
 
 import com.gooddata.connector.backend.ConnectorBackend;
-import com.gooddata.connector.driver.Constants;
+import com.gooddata.connector.backend.Constants;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;

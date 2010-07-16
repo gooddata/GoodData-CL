@@ -59,7 +59,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     private static Logger l = Logger.getLogger(AbstractConnectorBackend.class);
 
     // PDM schema
-    private PdmSchema pdm;
+    protected PdmSchema pdm;
 
     // Project id
     private String projectId;

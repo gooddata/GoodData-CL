@@ -36,7 +36,6 @@ import java.util.Properties;
 import com.gooddata.modeling.model.SourceColumn;
 import org.apache.log4j.Logger;
 
-import com.gooddata.connector.driver.Constants;
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;

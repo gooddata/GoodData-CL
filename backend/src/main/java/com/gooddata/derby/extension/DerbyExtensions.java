@@ -23,11 +23,12 @@
 
 package com.gooddata.derby.extension;
 
-import com.gooddata.connector.driver.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import com.gooddata.connector.backend.Constants;
 
 /**
  * GoodData Derby SQL extension functions

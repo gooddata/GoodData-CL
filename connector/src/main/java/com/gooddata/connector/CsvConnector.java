@@ -31,7 +31,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 
 import com.gooddata.connector.backend.ConnectorBackend;
-import com.gooddata.connector.driver.Constants;
+import com.gooddata.connector.backend.Constants;
 import com.gooddata.csv.DataTypeGuess;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
