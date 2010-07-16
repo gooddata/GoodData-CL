@@ -171,14 +171,12 @@ public class CsvConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Extracts the source data CSV to the Derby database where it is going to be transformed
+     * Extracts the source data CSV to the internal database where it is going to be transformed
      * @throws IOException in case of IO issues
      */
     public void extract() throws IOException {
         File src = getDataFile();
-        File tmp = FileUtil.getTempFile();
-        getConnectorBackend().extract(tmp, getHasHeader());
-        tmp.delete();
+        getConnectorBackend().extract(src, getHasHeader());
     }
 
     /**

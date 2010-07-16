@@ -1071,14 +1071,8 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         public void handle(ResultSet rs) throws SQLException {
             final int length = rs.getMetaData().getColumnCount();
             final String[] line = new String[length];
-            for (int i = 1; i <= length; i++) {
-                final String value = rs.getString(i);
-                if (value == null)
-                    line[i - 1] = "\\N";
-                else {
-                    line[i - 1] = value.toString();
-                }
-            }
+            for (int i = 1; i <= length; i++)
+                line[i - 1] = rs.getString(i);
             cw.writeNext(line, true);
         }
 
