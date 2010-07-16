@@ -31,7 +31,7 @@ In each &lt;column&gt; entry, following tags can be used:
     * CONNECTION_POINT - this identifies a primary key of the whole schema that can be used for connecting to another schema
     * REFERENCE - a counterpart of CONNECTION_POINT in the other schema
 
-4. &lt;folder&gt; allows to specify what folder this column is organized into (on UI level)
-5. &lt;format&gt; only allowed (and required) for columns with ldmType DATE, this field specifies what the date format looks like
+4. &lt;folder&gt; allows to specify what folder this column is organized into (on UI level). 
+5. &lt;format&gt; only allowed (and required) for columns with ldmType DATE, this field specifies what the date format looks like. For a detailed specification of supported formats, please refer to the [Java SimpleDateFormat documentation](http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/java/text/SimpleDateFormat.html)
 6. &lt;reference&gt; - used with LABEL columns for pointing to the primary column; used with CONNECTION_POINT column and &lt;schemaReference&gt;
 7. &lt;schemaReference&gt; - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column
