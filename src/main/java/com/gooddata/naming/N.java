@@ -26,4 +26,9 @@ public class N {
 
     //public final static String FTP_SRV_SUFFIX = "-upload";
     public final static String FTP_SRV_SUFFIX = "-di";
+
+    // database name prefix
+    public final static String DB_PREFIX = "db_";
+    // database name suffix
+    public final static String DB_SUFFIX = "_gdi";
 }

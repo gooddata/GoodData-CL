@@ -1,6 +1,7 @@
 package com.gooddata.connector.backend;
 
 import com.gooddata.connector.driver.DerbySqlDriver;
+import com.gooddata.naming.N;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
 import org.gooddata.connector.backend.ConnectorBackend;
@@ -64,19 +65,21 @@ public class DerbyConnectorBackend extends AbstractConnectorBackend implements C
      * {@inheritDoc}
      */
     public Connection connect() throws SQLException {
+        String dbName = N.DB_PREFIX+getProjectId()+ N.DB_SUFFIX;
         String protocol = "jdbc:derby:";
-        return DriverManager.getConnection(protocol + getProjectId() + ";create=true");
+        return DriverManager.getConnection(protocol + dbName + ";create=true");
     }
 
     /**
      * {@inheritDoc}
      */
     public void dropSnapshots() {
-        l.debug("Dropping derby snapshots "+getProjectId());
+        String dbName = N.DB_PREFIX+getProjectId()+N.DB_SUFFIX;
+        l.debug("Dropping derby snapshots "+dbName);
         File derbyDir = new File (System.getProperty("derby.system.home") +
-                System.getProperty("file.separator") + getProjectId());
+                System.getProperty("file.separator") + dbName);
         derbyDir.delete();
-        l.debug("Finished dropping derby snapshots "+getProjectId());
+        l.debug("Finished dropping derby snapshots "+dbName);
     }
 
 }

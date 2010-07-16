@@ -1,6 +1,7 @@
 package com.gooddata.connector.backend;
 
 import com.gooddata.connector.driver.MySqlDriver;
+import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import org.apache.log4j.Logger;
 import org.gooddata.connector.backend.AbstractConnectorBackend;
@@ -67,18 +68,19 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
      * {@inheritDoc}
      */
     public Connection connect() throws SQLException {
+        String dbName = N.DB_PREFIX+getProjectId()+ N.DB_SUFFIX;
         String protocol = "jdbc:mysql:";
         Connection con = null;
         try {
-            con = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
+            con = DriverManager.getConnection(protocol + "//localhost/" + dbName, getUsername(), getPassword());
         }
         catch (SQLException e) {
             con = DriverManager.getConnection(protocol + "//localhost/mysql", getUsername(), getPassword());
             JdbcUtil.executeUpdate(con,
-                "CREATE DATABASE IF NOT EXISTS " + getProjectId() + " CHARACTER SET utf8"
+                "CREATE DATABASE IF NOT EXISTS " + dbName + " CHARACTER SET utf8"
             );
             con.close();
-            con = DriverManager.getConnection(protocol + "//localhost/" + getProjectId(), getUsername(), getPassword());
+            con = DriverManager.getConnection(protocol + "//localhost/" + dbName, getUsername(), getPassword());
         }
         return con;
     }
@@ -88,13 +90,14 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
      * {@inheritDoc}
      */
     public void dropSnapshots() {
-        l.debug("Dropping MySQL snapshots "+getProjectId());
+        String dbName = N.DB_PREFIX+getProjectId()+N.DB_SUFFIX;
+        l.debug("Dropping MySQL snapshots "+dbName);
         Connection con = null;
         Statement s = null;
         try {
             con = connect();
             s = con.createStatement();
-            s.execute("DROP DATABASE IF EXISTS " + getProjectId());
+            s.execute("DROP DATABASE IF EXISTS " + dbName);
 
         } catch (SQLException e) {
             l.error("Can't drop MySQL database.", e);
@@ -110,7 +113,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
                 l.error("Can't close MySQL connection.", e);    
             }
         }
-        l.debug("Finished dropping MySQL snapshots "+getProjectId());
+        l.debug("Finished dropping MySQL snapshots "+dbName);
     }
 
 }
