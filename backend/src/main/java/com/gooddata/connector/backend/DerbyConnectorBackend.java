@@ -98,9 +98,10 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
      * {@inheritDoc}
      */
     public Connection getConnection() throws SQLException {
+        String dbName = N.DB_PREFIX+getProjectId()+N.DB_SUFFIX;
     	if (connection == null) {
 	        String protocol = "jdbc:derby:";
-	        connection = DriverManager.getConnection(protocol + getProjectId() + ";create=true");
+	        connection = DriverManager.getConnection(protocol + dbName + ";create=true");
     	}
     	return connection;
     }
@@ -109,14 +110,16 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
      * {@inheritDoc}
      */
     public void dropSnapshots() {
-        l.debug("Dropping derby snapshots "+getProjectId());
+        String dbName = N.DB_PREFIX+getProjectId()+N.DB_SUFFIX;
+        l.debug("Dropping derby snapshots "+dbName);
         File derbyDir = new File (System.getProperty("derby.system.home") +
-                System.getProperty("file.separator") + getProjectId());
+                System.getProperty("file.separator") + dbName);
         try {
         	FileUtils.deleteDirectory(derbyDir);
-        	l.debug("Finished dropping derby snapshots "+getProjectId());
+        	l.debug("Finished dropping derby snapshots "+dbName);
         } catch (IOException e) {
-        	throw new ConnectorBackendException("Cannot delete derby snapshots from " + derbyDir.getAbsolutePath() + ": " + e.getMessage(), e);
+        	throw new ConnectorBackendException("Cannot delete derby snapshots from " + derbyDir.getAbsolutePath() +
+                    ": " + e.getMessage(), e);
         }
     }
     
