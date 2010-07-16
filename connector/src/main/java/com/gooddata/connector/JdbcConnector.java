@@ -388,6 +388,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
+        l.info("JDBC Connector successfully loaded.");
     }
 
     /**
@@ -413,6 +414,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         loadDriver(drv);
         File cf = new File(configFile);
         JdbcConnector.saveConfigTemplate(name, cf.getAbsolutePath(), usr, psw, drv, url, query);
+        l.info("JDBC Connector configuration successfully generated. See config file: "+configFile);
     }
 
     private static class ResultSetCsvWriter implements ResultSetHandler {

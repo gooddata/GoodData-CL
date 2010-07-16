@@ -250,6 +250,7 @@ public abstract class AbstractConnector implements Connector {
         String maqlFile = c.getParamMandatory("maqlFile");
         String maql = cc.generateMaql();
         FileUtil.writeStringToFile(maql, maqlFile);
+        l.info("MAQL script successfully generated into "+maqlFile);
     }
 
     /**
@@ -271,6 +272,7 @@ public abstract class AbstractConnector implements Connector {
 	        ctx.getRestApi(p).executeMAQL(pid, maql);
         }
         l.debug("Finished MAQL execution.");
+        l.info("MAQL script "+maqlFile+" successfully executed.");
     }
 
     /**
@@ -297,6 +299,7 @@ public abstract class AbstractConnector implements Connector {
         }
         extractAndTransfer(c, pid, cc, null, waitForFinish, p, ctx);
         l.debug("Data transfer finished.");
+        l.info("Data transfer finished.");
     }
 
     /**
@@ -393,7 +396,7 @@ public abstract class AbstractConnector implements Connector {
      * @throws InterruptedException internal problem with making file writable
      */
     private void transferLastSnapshot(Command c, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
-        l.debug("Transfering last snapshot.");
+        l.debug("Transferring last snapshot.");
         Connector cc = ctx.getConnectorMandatory();
         String pid = ctx.getProjectIdMandatory();
 
@@ -406,6 +409,7 @@ public abstract class AbstractConnector implements Connector {
         }
         extractAndTransfer(c, pid, cc, new int[] {cc.getLastSnapshotId()+1}, waitForFinish, p, ctx);
         l.debug("Last Snapshot transfer finished.");
+        l.info("Last snapshot successfully transferred.");
     }
 
     /**
@@ -421,7 +425,7 @@ public abstract class AbstractConnector implements Connector {
         String pid = ctx.getProjectIdMandatory();
         String firstSnapshot = c.getParamMandatory("firstSnapshot");
         String lastSnapshot = c.getParamMandatory("lastSnapshot");
-        l.debug("Transfering snapshots "+firstSnapshot+" - " + lastSnapshot);
+        l.debug("Transferring snapshots "+firstSnapshot+" - " + lastSnapshot);
         int fs,ls;
         try  {
             fs = Integer.parseInt(firstSnapshot);
@@ -457,6 +461,7 @@ public abstract class AbstractConnector implements Connector {
             }
             extractAndTransfer(c, pid, cc, snapshots, waitForFinish, p, ctx);
             l.debug("Snapshots transfer finished.");
+            l.info("Last snapshot successfully transferred.");
         }
         else
             throw new InvalidParameterException(c.getCommand()+": The firstSnapshot can't be higher than the lastSnapshot.");
@@ -471,6 +476,7 @@ public abstract class AbstractConnector implements Connector {
     private void dropSnapshots(Command c, CliParams p, ProcessingContext ctx) {
         setProjectId(ctx);
         ctx.getConnectorBackend().dropSnapshots();
+        l.info("All snapshots dropped.");
     }
 
     /**
@@ -510,6 +516,7 @@ public abstract class AbstractConnector implements Connector {
         	FileUtil.writeStringToFile(maql, maqlFile);
         }
         l.debug("MAQL update finished.");
+        l.info("MAQL update successfully finished.");
     }
 
     /**

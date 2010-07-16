@@ -284,6 +284,7 @@ public class GaConnector extends AbstractConnector implements Connector {
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
+        l.info("Google Analytics Connector successfully loaded.");
     }
 
     /**
@@ -307,6 +308,7 @@ public class GaConnector extends AbstractConnector implements Connector {
         gq.setDimensions(dimensions);
         gq.setMetrics(metrics);
         GaConnector.saveConfigTemplate(name, configFile, gq);
+        l.info("Google Analytics Connector configuration successfully generated. See config file: "+configFile);
     }
 
 }

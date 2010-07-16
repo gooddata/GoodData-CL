@@ -533,6 +533,7 @@ public class GdcDI implements Executor {
             else if(c.match("OpenProject")) {
                 ctx.setProjectId(c.getParamMandatory("id"));
                 l.debug("Opened project id="+ctx.getProjectId());
+                l.info("Opened project id="+ctx.getProjectId());
             }
             else if(c.match("StoreProject")) {
                 storeProject(c, cli, ctx);
@@ -611,6 +612,7 @@ public class GdcDI implements Executor {
                 result += uri;                
         }
         FileUtil.writeStringToFile(result, fileName);
+        l.info("Reports written into "+fileName);
     }
 
     /**
@@ -643,6 +645,7 @@ public class GdcDI implements Executor {
         else {
             throw new IOException("There are no reports to execute.");
         }
+        l.info("All reports executed.");
     }
 
     /**
@@ -657,6 +660,7 @@ public class GdcDI implements Executor {
         String pid = ctx.getProjectId();
         FileUtil.writeStringToFile(pid, fileName);
         l.debug("Stored project id="+pid+" to "+fileName);
+        l.info("Stored project id="+pid+" to "+fileName);
     }
 
     /**
@@ -670,6 +674,7 @@ public class GdcDI implements Executor {
         String fileName = c.getParamMandatory("fileName");
         ctx.setProjectId(FileUtil.readStringFromFile(fileName).trim());
         l.debug("Retrieved project id="+ctx.getProjectId()+" from "+fileName);
+        l.info("Retrieved project id="+ctx.getProjectId()+" from "+fileName);        
     }
 
     /**

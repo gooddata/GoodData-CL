@@ -551,6 +551,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
+        l.info("SFDC Connector successfully loaded.");
     }
 
     /**
@@ -569,5 +570,6 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         String query = c.getParamMandatory("query");
         
         SfdcConnector.saveConfigTemplate(name, configFile, usr, psw, token, query);
+        l.info("SFDC Connector configuration successfully generated. See config file: "+configFile);
     }
 }

@@ -42,6 +42,7 @@ import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.NameTransformer;
 import com.gooddata.util.StringUtil;
+import org.apache.log4j.Logger;
 
 /**
  * GoodData CSV Connector
@@ -51,7 +52,8 @@ import com.gooddata.util.StringUtil;
  */
 public class CsvConnector extends AbstractConnector implements Connector {
 
-    
+    private static Logger l = Logger.getLogger(CsvConnector.class);
+
     // data file
     private File dataFile;
     
@@ -237,6 +239,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
+        l.info("CSV Connector successfully loaded.");
     }
 
     /**
@@ -253,5 +256,6 @@ public class CsvConnector extends AbstractConnector implements Connector {
     	String folder = c.getParam( "defaultFolder");
         
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
+        l.info("CSV Connector configuration successfully generated. See config file: "+configFile);
     }
 }
