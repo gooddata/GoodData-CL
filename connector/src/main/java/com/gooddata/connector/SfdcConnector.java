@@ -116,9 +116,14 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             QueryResult qr = binding.query(sfdcQuery);
             do {
                 SObject[] sObjects = qr.getRecords();
-                result.addAll(Arrays.asList(sObjects));
-                if(!qr.isDone()) {
-                    qr = binding.queryMore(qr.getQueryLocator());
+                if(sObjects != null && sObjects.length >0) {
+                    result.addAll(Arrays.asList(sObjects));
+                    if(!qr.isDone()) {
+                        qr = binding.queryMore(qr.getQueryLocator());
+                    }
+                }
+                else {
+                    return null;
                 }
             } while(!qr.isDone());
         }
@@ -188,7 +193,10 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 		    throw new SfdcException("Failed to execute SFDC query.",e);
 	    }
         l.debug("Finihed SFDC query execution.");
-        return result.get(0);
+        if(result.size()>0)
+            return result.get(0);
+        else
+            return null;
     }
 
     /**
@@ -250,7 +258,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         }
         else {
             l.debug("The SFDC query hasn't returned any row.");
-            throw new InvalidArgumentException("The SFDC query hasn't returned any row.");
+            throw new SfdcException("The SFDC query hasn't returned any row.");
         }
         s.writeConfig(new File(configFileName));
         l.debug("Saved SFDC config template.");
@@ -322,12 +330,16 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 cw.writeNext(vals);
             }
             l.debug("Retrieved " + result.size() + " rows of SFDC data.");
+            cw.flush();
+            cw.close();
+            getConnectorBackend().extract(dataFile, false);
+            FileUtil.recursiveDelete(dataFile);
+            l.debug("Extracted SFDC data.");
         }
-        cw.flush();
-        cw.close();
-        getConnectorBackend().extract(dataFile, false);
-        FileUtil.recursiveDelete(dataFile);
-        l.debug("Extracted SFDC data.");
+        else {
+            l.debug("The SFDC query hasn't returned any row.");
+            throw new SfdcException("The SFDC query hasn't returned any row.");
+        }
     }
 
     /**

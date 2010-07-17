@@ -4,6 +4,9 @@
 # Create a new project
 CreateProject(name="FUNDAMENTALS");
 
+# Store the project ID to file for possible other scripts
+StoreProject(fileName="examples/jdbc/pid");
+
 # Generate config file. This command is commented out as we have done that already.
 # If you change the JDBC input data you need to re-generate the config file
 #GenerateJdbcConfig(name="FUNDAMENTALS",configFile="examples/jdbc/fundamentals.config.xml",driver="org.apache.derby.jdbc.EmbeddedDriver",url="jdbc:derby:../examples/jdbc/fundamentals",query="SELECT * FROM FUNDAMENTALS");
