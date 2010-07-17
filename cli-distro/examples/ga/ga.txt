@@ -4,6 +4,9 @@
 # Create a new project
 CreateProject(name="GA");
 
+# Store the project ID to file for possible other scripts
+StoreProject(fileName="examples/ga/pid");
+
 # Generate config file. This command is commented out as we have done that already.
 # If you change the GA metrics and dimensions you need to re-run the config file generation
 #GenerateGoogleAnalyticsConfig(name="GA",configFile="examples/ga/ga.config.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits");
