@@ -49,6 +49,11 @@ The following paragraphs describe the specific GoodData CL commands.
 
   - fileName - file to load the project identifier from
 
+* `InviteUser`(email=&lt;email&gt;, msg=&lt;msg&gt;) - invites a new user to the project
+
+  - email - the invited user's e-mail
+  - msg - optional invitation message
+
 * `Lock`(path=&lt;file&gt;) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 
 ## Logical Model Management Commands
@@ -108,8 +113,9 @@ The following paragraphs describe the specific GoodData CL commands.
 
 * `LoadGoogleAnalytics`(configFile=&lt;config&gt;, username=&lt;ga-username&gt;, password=&lt;ga-password&gt;, profileId=&lt;ga-profile-id&gt;, dimensions=&lt;pipe-separated-ga-dimensions&gt;, metrics=&lt;pipe-separated-ga-metrics&gt;, startDate=&lt;date&gt;, endDate=&lt;date&gt;, filters=&lt;ga-filter-string&gt;)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
   - configFile  - path to configuration file (will be overwritten)
-  - username - Google Analytics username
-  - password - Google Analytics password
+  - token - Google Analytics AuthSub token (you must specify either the token or username/password)
+  - username - Google Analytics username (you must specify either the token or username/password)
+  - password - Google Analytics password (you must specify either the token or username/password)
   - profileId - Google Analytics profile ID (this is a value of the id query parameter in the GA url)
   - dimensions - pipe (|) separated list of Google Analytics dimensions (see [GData Reference](http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html))
   - metrics - pipe (|) separated list of Google Analytics metrics (see [GData Reference](http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html))

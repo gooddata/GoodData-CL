@@ -28,6 +28,7 @@ import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import com.gooddata.util.JSONUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -68,6 +69,7 @@ public class GdcRESTApiWrapper {
     public static final String MAQL_EXEC_URI = "/ldm/manage";
     public static final String REPORT_QUERY = "/query/reports";
     public static final String EXECUTOR = "/gdc/xtab2/executor";
+    public static final String INVITATION_URI = "/invitations";
 
     public static final String DLI_MANIFEST_FILENAME = "upload_info.json";
 
@@ -996,5 +998,56 @@ public class GdcRESTApiWrapper {
     protected JSONObject getProfile() {
         return profile;
     }
+
+    /**
+     * Invites a new user to a project
+     * @param projectId project ID
+     * @param eMail invited user e-mail
+     * @param message invitation message
+     */
+    public void inviteUser(String projectId, String eMail, String message) {
+        l.debug("Executing inviteUser projectId="+projectId+" e-mail="+eMail+" message="+message);
+        PostMethod invitePost = new PostMethod(config.getUrl() + getProjectDeleteUri(projectId) + INVITATION_URI);
+        setJsonHeaders(invitePost);
+        JSONObject inviteStructure = getInviteStructure(projectId, eMail, message);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                inviteStructure.toString().getBytes()));
+        invitePost.setRequestEntity(request);
+        try {
+            executeMethodOk(invitePost);
+        } catch (HttpMethodException ex) {
+            l.debug("Failed executing inviteUser projectId="+projectId+" e-mail="+eMail+" message="+message);
+            throw new GdcRestApiException("Failed executing inviteUser projectId="+projectId+" e-mail="+eMail+" message="+message,ex);
+        } finally {
+            invitePost.releaseConnection();
+        }
+    }
+
+    /**
+     * Creates a new invitation structure
+     * @param pid project id
+     * @param eMail e-mail
+     * @param msg invitation message
+     * @return the new invitation structure
+     */
+    private JSONObject getInviteStructure(String pid, String eMail, String msg) {
+        JSONObject content = new JSONObject();
+        content.put("firstname","");
+        content.put("lastname","");
+        content.put("email",eMail);
+        JSONObject action = new JSONObject();
+        action.put("setMessage",msg);
+        content.put("action", action);
+        JSONObject invitation = new JSONObject();
+        invitation.put("content", content);
+        JSONObject invitations = new JSONObject();
+        JSONArray ia = new JSONArray();
+        JSONObject inve = new JSONObject();
+        inve.put("invitation", invitation);
+        ia.add(inve);
+        invitations.put("invitations", ia);
+        return invitations;
+    }
+    
 
 }

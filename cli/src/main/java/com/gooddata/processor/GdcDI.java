@@ -544,8 +544,11 @@ public class GdcDI implements Executor {
             else if(c.match( "Lock")) {
                 lock(c, cli, ctx);
             }
-            else if(c.match("getReports")) {
+            else if(c.match("GetReports")) {
                 getReports(c, cli, ctx);
+            }
+            else if(c.match("InviteUser")) {
+                inviteUser(c, cli, ctx);
             }
             else if(c.match("ExecuteReports")) {
                 executeReports(c, cli, ctx);
@@ -593,6 +596,19 @@ public class GdcDI implements Executor {
         l.info("Project id = '"+id+"' dropped.");
     }
 
+    /**
+     * Invite user to a project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void inviteUser(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String pid = ctx.getProjectId();
+        String email = c.getParamMandatory("email");
+        String msg = c.getParam("msg");
+        ctx.getRestApi(p).inviteUser(pid, email, (msg != null)?(msg):(""));
+        l.info("Succesfully imvited user "+email+" to the project "+pid);
+    }
 
     /**
      * Enumerate reports

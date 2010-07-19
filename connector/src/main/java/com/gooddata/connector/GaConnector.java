@@ -23,6 +23,7 @@
 
 package com.gooddata.connector;
 
+import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.exception.InternalErrorException;
@@ -63,6 +64,7 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     private String googleAnalyticsUsername;
     private String googleAnalyticsPassword;
+    private String googleAnalyticsToken;
     private GaQuery googleAnalyticsQuery;
 
     /**
@@ -152,7 +154,16 @@ public class GaConnector extends AbstractConnector implements Connector {
     public void extract() throws IOException {
         try {
             AnalyticsService as = new AnalyticsService(APP_NAME);
-		    as.setUserCredentials(getGoogleAnalyticsUsername(), getGoogleAnalyticsPassword(), ClientLoginAccountType.GOOGLE);
+            if(googleAnalyticsToken != null && googleAnalyticsToken.length() > 0) {
+                setGoogleAnalyticsToken(googleAnalyticsToken);
+            } else if(googleAnalyticsUsername != null && googleAnalyticsUsername.length() > 0 &&
+                  googleAnalyticsPassword != null && googleAnalyticsPassword.length() > 0) {
+                as.setUserCredentials(googleAnalyticsUsername, googleAnalyticsPassword, ClientLoginAccountType.GOOGLE);
+            }
+            else {
+                throw new InvalidCommandException("The LoadGoogleAnalytics commend requires either GA token or " +
+                    "username and password!");
+            }
             File dataFile = FileUtil.getTempFile();
             GaQuery gaq = getGoogleAnalyticsQuery();
             gaq.setMaxResults(5000);
@@ -266,14 +277,24 @@ public class GaConnector extends AbstractConnector implements Connector {
             throw new IllegalArgumentException(e.getMessage());
         }
         String configFile = c.getParamMandatory("configFile");
-        String usr = c.getParamMandatory("username");
-        String psw = c.getParamMandatory("password");
+        String usr = c.getParam("username");
+        String psw = c.getParam("password");
+        String token = c.getParam("token");
         String id = c.getParamMandatory("profileId");
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         gq.setIds(id);
-        setGoogleAnalyticsUsername(usr);
-        setGoogleAnalyticsPassword(psw);
+        if(token != null && token.length() > 0) {
+            setGoogleAnalyticsToken(token);
+        } else if(googleAnalyticsUsername != null && googleAnalyticsUsername.length() > 0 && 
+                  googleAnalyticsPassword != null && googleAnalyticsPassword.length() > 0) {
+            setGoogleAnalyticsUsername(usr);
+            setGoogleAnalyticsPassword(psw);
+        }
+        else {
+            throw new InvalidCommandException("The LoadGoogleAnalytics commend requires either GA token or " +
+                    "username and password!");            
+        }
         setGoogleAnalyticsQuery(gq);
         gq.setDimensions(c.getParamMandatory("dimensions").replace("|",","));
         gq.setMetrics(c.getParamMandatory("metrics").replace("|",","));
@@ -311,4 +332,11 @@ public class GaConnector extends AbstractConnector implements Connector {
         l.info("Google Analytics Connector configuration successfully generated. See config file: "+configFile);
     }
 
+    public String getGoogleAnalyticsToken() {
+        return googleAnalyticsToken;
+    }
+
+    public void setGoogleAnalyticsToken(String googleAnalyticsToken) {
+        this.googleAnalyticsToken = googleAnalyticsToken;
+    }
 }

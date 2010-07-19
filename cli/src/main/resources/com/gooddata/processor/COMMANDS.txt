@@ -32,6 +32,10 @@ Project Management Commands:
  RetrieveProject(fileName=<file>) - loads the current project identifier from the specified file
   fileName - file to load the project identifier from
 
+ InviteUser(email=<email>, msg=<msg>) - invites a new user to the project
+  email - the invited user's e-mail
+  msg - optional invitation message 
+
  Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 
 Logical Model Management Commands:
@@ -94,8 +98,9 @@ GenerateGoogleAnalyticsConfig(name=<name>, configFile=<config>, dimensions=<pipe
 
 LoadGoogleAnalytics(configFile=<config>, username=<ga-username>, password=<ga-password>, profileId=<ga-profile-id>, dimensions=<pipe-separated-ga-dimensions>, metrics=<pipe-separated-ga-metrics>, startDate=<date>, endDate=<date>, filters=<ga-filter-string>)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
   configFile  - path to configuration file (will be overwritten)
-  username - Google Analytics username
-  password - Google Analytics password
+  token - Google Analytics AuthSub token (you must specify either the token or username/password)
+  username - Google Analytics username (you must specify either the token or username/password)
+  password - Google Analytics password (you must specify either the token or username/password)
   profileId - Google Analytics profile ID (this is a value of the id query parameter in the GA url)
   dimensions - pipe (|) separated list of Google Analytics dimensions (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html)
   metrics - pipe (|) separated list of Google Analytics metrics (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html)
