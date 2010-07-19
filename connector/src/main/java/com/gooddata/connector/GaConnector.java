@@ -155,7 +155,7 @@ public class GaConnector extends AbstractConnector implements Connector {
         try {
             AnalyticsService as = new AnalyticsService(APP_NAME);
             if(googleAnalyticsToken != null && googleAnalyticsToken.length() > 0) {
-                setGoogleAnalyticsToken(googleAnalyticsToken);
+                as.setAuthSubToken(googleAnalyticsToken);
             } else if(googleAnalyticsUsername != null && googleAnalyticsUsername.length() > 0 &&
                   googleAnalyticsPassword != null && googleAnalyticsPassword.length() > 0) {
                 as.setUserCredentials(googleAnalyticsUsername, googleAnalyticsPassword, ClientLoginAccountType.GOOGLE);
