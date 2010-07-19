@@ -29,9 +29,11 @@ The following paragraphs describe the specific GoodData CL commands.
  
 ## Project Management Commands
 
-* `CreateProject`(name=&lt;project-name&gt;, desc=&lt;description&gt;) - create a new project on the &lt;hostname&gt; server
+* `CreateProject`(name=&lt;project-name&gt;, desc=&lt;description&gt;, templateUri=&lt;templateUri&gt;) - create a new project on the &lt;hostname&gt; server
   - project-name - name of the new project
   - description  - (optional) project description
+  - templateUri - (optional) project template to create the project from
+
 
 * `DropProject`(id=&lt;project-id&gt;) - drop the project on the &lt;hostname&gt; server
 

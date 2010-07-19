@@ -16,9 +16,10 @@ Either -e or file(s) must be specified.
 Project Management Commands:
 ----------------------------
 
- CreateProject(name=<project-name>, desc=<description>) - create a new project on the <hostname> server
+ CreateProject(name=<project-name>, desc=<description>, templateUri=<templateUri>) - create a new project on the <hostname> server
   project-name - name of the new project
   description  - (optional) project description
+  templateUri - (optional) project template to create the project from
 
  DropProject(id=<project-id>) - drop the project on the <hostname> server
   project-id - project id

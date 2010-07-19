@@ -579,7 +579,11 @@ public class GdcDI implements Executor {
      */
     private void createProject(Command c, CliParams p, ProcessingContext ctx) {
         String name = c.getParamMandatory("name");
-        ctx.setProjectId(ctx.getRestApi(p).createProject(name, name));
+        String desc = c.getParam("desc");
+        String pTempUri = c.getParam("templateUri");
+        if(desc == null || desc.length() <= 0)
+            desc = name;
+        ctx.setProjectId(ctx.getRestApi(p).createProject(name, desc, pTempUri));
         String pid = ctx.getProjectId();
         l.info("Project id = '"+pid+"' created.");
     }

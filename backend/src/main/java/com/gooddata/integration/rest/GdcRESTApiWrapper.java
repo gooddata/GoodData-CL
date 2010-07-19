@@ -641,14 +641,15 @@ public class GdcRESTApiWrapper {
      *
      * @param name project name
      * @param desc project description
+     * @param templateUri project template uri
      * @return the project Id
      * @throws GdcRestApiException
      */
-    public String createProject(String name, String desc) throws GdcRestApiException {
+    public String createProject(String name, String desc, String templateUri) throws GdcRestApiException {
         l.debug("Creating project name="+name);
         PostMethod createProjectPost = new PostMethod(config.getUrl() + PROJECTS_URI);
         setJsonHeaders(createProjectPost);
-        JSONObject createProjectStructure = getCreateProject(name, desc);
+        JSONObject createProjectStructure = getCreateProject(name, desc, templateUri);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 createProjectStructure.toString().getBytes()));
         createProjectPost.setRequestEntity(request);
@@ -699,12 +700,16 @@ public class GdcRESTApiWrapper {
      *
      * @param name project name
      * @param desc project description
+     * @param templateUri project template uri
      * @return the create project JSON structure
      */
-    private JSONObject getCreateProject(String name, String desc) {
+    private JSONObject getCreateProject(String name, String desc, String templateUri) {
         JSONObject meta = new JSONObject();
         meta.put("title", name);
         meta.put("summary", desc);
+        if(templateUri != null && templateUri.length() > 0) {
+            meta.put("projectTemplate", templateUri);            
+        }
         JSONObject content = new JSONObject();
         //content.put("state", "ENABLED");
         content.put("guidedNavigation","1");
