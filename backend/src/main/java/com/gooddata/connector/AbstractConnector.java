@@ -375,15 +375,24 @@ public abstract class AbstractConnector implements Connector {
             Thread.sleep(500);
         }
         l.debug("Data transfer finished with status "+status);
-        if(!status.equalsIgnoreCase("OK")) {
+        if(status.equalsIgnoreCase("OK")) {
+            l.info("Data successfully loaded.");
+        }
+        else if(status.equalsIgnoreCase("WARNING")) {   
+            l.info("Data loading succeeded with warnings. Status: "+status);
+            Map<String,String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
+            for(String file : result.keySet()) {
+                l.info(file+":\n"+result.get(file));
+            }
+        }
+        else {
             l.info("Data loading failed. Status: "+status);
             Map<String,String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
             for(String file : result.keySet()) {
                 l.info(file+":\n"+result.get(file));
             }
         }
-        else
-            l.info("Data successfully loaded.");
+
     }
 
 

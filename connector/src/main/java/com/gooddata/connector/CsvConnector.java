@@ -118,7 +118,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         final int knownColumns = s.getColumns().size();
         NameTransformer idGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
         	public String transform(String str) {
-        		String idorig = StringUtil.csvHeaderToIdentifier(str);
+        		String idorig = StringUtil.formatShortName(str);
         		int idmax = Constants.MAX_TABLE_NAME_LENGTH - s.getName().length() - 3; // good enough for 999 long names
         		if (idorig.length() <= idmax)
         			return idorig;
@@ -128,7 +128,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         });
         NameTransformer titleGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
         	public String transform(String str) {
-        		return StringUtil.csvHeaderToTitle(str);
+        		return StringUtil.formatLongName(str);
         	}
         });
         if (knownColumns < headers.length) {

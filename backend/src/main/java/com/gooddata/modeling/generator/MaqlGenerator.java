@@ -366,7 +366,7 @@ public class MaqlGenerator {
         public String generateMaqlDdl() {
             String folderStatement = "";
             String folder = column.getFolder();
-            String reference = StringUtil.formatShortName(column.getSchemaReference());
+            String reference = column.getSchemaReference();
             if (folder != null && folder.length() > 0) {
                 String sfn = StringUtil.formatShortName(folder);
                 folderStatement = ", FOLDER {ffld." + sfn + "}";
@@ -375,6 +375,7 @@ public class MaqlGenerator {
                     + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn + "_"+N.ID+"};\n"
                     + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+N.DT+"." + ssn + "." + scn + "};\n\n";
             if(reference != null && reference.length() > 0) {
+                reference = StringUtil.formatShortName(reference);
                 stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
                 stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() + 
                         "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";

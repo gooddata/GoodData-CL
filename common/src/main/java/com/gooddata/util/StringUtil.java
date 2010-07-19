@@ -44,11 +44,12 @@ public class StringUtil {
             "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
             "[", "]","\\"};
 
-    private static String[] INVALID_CSV_HEADER_CHARS = {"\"", "'", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
+    private static String[] DISCARD_LONGNAME_CHARS = {"\"", "'", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
             "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
             "[", "]","\\"};
 
-    private static String[][] DATE_FORMAT_CONVERSION = {{"MM","%m"},{"yyyy","%Y"},{"yy","%y"},{"dd","%d"}};
+    private static String[][] DATE_FORMAT_CONVERSION = {{"MM","%m"},{"yyyy","%Y"},{"yy","%y"},{"dd","%d"},{"hh","%h"},
+            {"HH","%H"},{"mm","%i"},{"ss","%s"}};
     
     /**
      * Formats a string as identifier
@@ -67,10 +68,19 @@ public class StringUtil {
      * @return converted string
      */
     public static String formatLongName(String s) {
+        if(s == null)
+            return s;
+        Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
+        s = t.transliterate(s);
+        for ( String r : DISCARD_LONGNAME_CHARS) {
+            s = s.replace(r,"");
+        }
         return s.trim();
     }
 
     private static String convertToIdentifier(String s, String[] invalidChars) {
+        if(s == null)
+            return s;
         Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
         s = t.transliterate(s);
         for ( String r : invalidChars ) {
@@ -78,29 +88,6 @@ public class StringUtil {
         }
         s = s.replaceAll("^[0-9]*", "");
         return s.toLowerCase().trim();
-    }
-
-    /**
-     * Formats a CSV header
-     * @param s the string to convert to identifier
-     * @return converted string
-     */
-    public static String csvHeaderToIdentifier(String s) {
-        return convertToIdentifier(s, INVALID_CSV_HEADER_CHARS);
-    }
-
-    /**
-     * Formats a CSV header
-     * @param s the string to convert to identifier
-     * @return converted string
-     */
-    public static String csvHeaderToTitle(String s) {
-        Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
-        s = t.transliterate(s);
-        for ( String r : INVALID_CSV_HEADER_CHARS ) {
-            s = s.replace(r,"");
-        }
-        return s.trim();
     }
 
     /**
