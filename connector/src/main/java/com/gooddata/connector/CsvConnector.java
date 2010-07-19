@@ -253,7 +253,11 @@ public class CsvConnector extends AbstractConnector implements Connector {
         String configFile = c.getParamMandatory("configFile");
         String csvHeaderFile = c.getParamMandatory("csvHeaderFile");
         String defaultLdmType = c.getParam( "defaultLdmType");
-    	String folder = c.getParam( "defaultFolder");
+    	String folder = c.getParam( "folder");
+        if (folder == null) {
+            // let's try a deprecated variant
+            folder = c.getParam("defaultFolder");
+        }
         
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
         l.info("CSV Connector configuration successfully generated. See config file: "+configFile);
