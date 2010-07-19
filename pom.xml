@@ -19,7 +19,7 @@
 
     <groupId>gooddata.ps</groupId>
     <artifactId>GoodDataDI</artifactId>
-    <version>0.6</version>
+    <version>0.7</version>
     <name>GoodData Data Integration Java API</name>
       <url>http://di.gooddata.com</url>
       <dependencies>
