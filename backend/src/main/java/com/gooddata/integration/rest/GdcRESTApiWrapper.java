@@ -674,6 +674,51 @@ public class GdcRESTApiWrapper {
         throw new GdcRestApiException("Error creating project.");
     }
 
+/**
+     * Returns the create project JSON structure
+     *
+     * @param name project name
+     * @param desc project description
+     * @param templateUri project template uri
+     * @return the create project JSON structure
+     */
+    private JSONObject getCreateProject(String name, String desc, String templateUri) {
+        JSONObject meta = new JSONObject();
+        meta.put("title", name);
+        meta.put("summary", desc);
+        if(templateUri != null && templateUri.length() > 0) {
+            meta.put("projectTemplate", templateUri);
+        }
+        JSONObject content = new JSONObject();
+        //content.put("state", "ENABLED");
+        content.put("guidedNavigation","1");
+        JSONObject project = new JSONObject();
+        project.put("meta", meta);
+        project.put("content", content);
+        JSONObject createStructure  = new JSONObject();
+        createStructure.put("project", project);
+        return createStructure;
+    }
+
+    /**
+     * Returns the project status
+     * @param projectId project ID
+     * @return current project status
+     */
+    public String getProjectStatus(String projectId) {
+        l.debug("Getting project status for project "+projectId);
+        String uri = getProjectDeleteUri(projectId);
+        HttpMethod ptm = new GetMethod(config.getUrl() + uri);
+        setJsonHeaders(ptm);
+        String response = executeMethodOk(ptm);
+        JSONObject jresp = JSONObject.fromObject(response);
+        JSONObject project = jresp.getJSONObject("project");
+        JSONObject content = project.getJSONObject("content");
+        String status = content.getString("state");
+        l.debug("Project "+projectId+" status="+status);
+        return status;
+    }
+
     /**
      * Drops a GoodData project
      *
@@ -693,32 +738,6 @@ public class GdcRESTApiWrapper {
             dropProjectDelete.releaseConnection();
         }
         l.debug("Dropped project id="+projectId);
-    }
-
-    /**
-     * Returns the create project JSON structure
-     *
-     * @param name project name
-     * @param desc project description
-     * @param templateUri project template uri
-     * @return the create project JSON structure
-     */
-    private JSONObject getCreateProject(String name, String desc, String templateUri) {
-        JSONObject meta = new JSONObject();
-        meta.put("title", name);
-        meta.put("summary", desc);
-        if(templateUri != null && templateUri.length() > 0) {
-            meta.put("projectTemplate", templateUri);            
-        }
-        JSONObject content = new JSONObject();
-        //content.put("state", "ENABLED");
-        content.put("guidedNavigation","1");
-        JSONObject project = new JSONObject();
-        project.put("meta", meta);
-        project.put("content", content);
-        JSONObject createStructure  = new JSONObject();
-        createStructure.put("project", project);
-        return createStructure;
     }
 
     /**

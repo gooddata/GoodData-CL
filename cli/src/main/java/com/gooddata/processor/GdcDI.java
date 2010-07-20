@@ -32,6 +32,7 @@ import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
@@ -578,14 +579,37 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void createProject(Command c, CliParams p, ProcessingContext ctx) {
-        String name = c.getParamMandatory("name");
-        String desc = c.getParam("desc");
-        String pTempUri = c.getParam("templateUri");
-        if(desc == null || desc.length() <= 0)
-            desc = name;
-        ctx.setProjectId(ctx.getRestApi(p).createProject(name, desc, pTempUri));
-        String pid = ctx.getProjectId();
-        l.info("Project id = '"+pid+"' created.");
+        try {
+            String name = c.getParamMandatory("name");
+            String desc = c.getParam("desc");
+            String pTempUri = c.getParam("templateUri");
+            if(desc == null || desc.length() <= 0)
+                desc = name;
+            ctx.setProjectId(ctx.getRestApi(p).createProject(name, desc, pTempUri));
+            String pid = ctx.getProjectId();
+            checkProjectCreationStatus(pid, p, ctx);
+            l.info("Project id = '"+pid+"' created.");
+        }
+        catch (InterruptedException e) {
+            throw new InternalErrorException(e);
+        }
+    }
+
+    /**
+     * Checks the project status. Waits till the status is LOADING
+     * @param projectId project ID
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws InterruptedException internal problem with making file writable
+     */
+    private void checkProjectCreationStatus(String projectId, CliParams p, ProcessingContext ctx) throws InterruptedException {
+        l.debug("Checking project "+projectId+" loading status.");
+        String status = "";
+        while(status.equalsIgnoreCase("LOADING")) {
+            status = ctx.getRestApi(p).getProjectStatus(projectId);
+            l.debug("Project "+projectId+" loading  status = "+status);
+            Thread.sleep(500);
+        }
     }
 
     /**
