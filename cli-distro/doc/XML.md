@@ -32,6 +32,13 @@ In each `<column>` entry, following tags can be used:
     * REFERENCE - a counterpart of CONNECTION_POINT in the other schema
 
 4. `<folder>` allows to specify what folder this column is organized into (on UI level). 
-5. `<format>` only allowed (and required) for columns with ldmType DATE, this field specifies what the date format looks like (`yyyy-MM-dd` by default). For a detailed specification of supported formats, please refer to the [Java SimpleDateFormat documentation](http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api/java/text/SimpleDateFormat.html)
+5. `<format>` only allowed (and required) for columns with ldmType DATE, this field specifies what the date format looks like (`yyyy-MM-dd` by default). We currently support following formatting characters:
+	- yyyy - year (e.g. 2010)
+	- MM - month (01 - 12)
+	- dd - day (01 - 31)
+	- HH - hour (01 - 12)
+	- hh - hour 24 format (00 - 23)
+	- mm - minutes (00 - 59)
+	- ss - seconds (00 - 59)
 6. `<reference>` - used with LABEL columns for pointing to the primary column; used with CONNECTION_POINT column and `<schemaReference>`
 7. `<schemaReference>` - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column
