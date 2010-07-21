@@ -21,11 +21,11 @@ public class StringUtil {
 
     private static String[] DISCARD_CHARS = {"\"", " ", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
             "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
-            "[", "]","\\"};
+            "[", "]","\\",":"};
 
     private static String[] INVALID_CSV_HEADER_CHARS = {"\"", "'", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
             "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
-            "[", "]","\\"};
+            "[", "]","\\",":"};
 
     private static String[] WHITESPACE = {"\n","\t"};
 
@@ -38,7 +38,7 @@ public class StringUtil {
      * @return converted string
      */
     public static String formatShortName(String s) {
-        return convertToIdentifier(s, DISCARD_CHARS);
+        return convertToIdentifier(s);
     }
 
     /**
@@ -51,13 +51,12 @@ public class StringUtil {
         return s.trim();
     }
 
-     private static String convertToIdentifier(String s, String[] invalidChars) {
+     private static String convertToIdentifier(String s) {
         Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
         s = t.transliterate(s);
-        for ( String r : invalidChars ) {
-            s = s.replace(r,"");
-        }
-        s = s.replaceAll("^[0-9]*", "");
+        s = s.replaceAll("[^a-zA-Z0-9]", "_");
+        s = s.replaceAll("^[0-9_]*", "");
+        s = s.replaceAll("[_]*$", "");
         return s.toLowerCase().trim();
     }
 
@@ -67,7 +66,7 @@ public class StringUtil {
      * @return converted string
      */
     public static String csvHeaderToIdentifier(String s) {
-        return convertToIdentifier(s, INVALID_CSV_HEADER_CHARS);
+        return convertToIdentifier(s);
     }
 
     /**
