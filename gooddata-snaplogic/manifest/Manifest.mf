@@ -1,2 +1,6 @@
 Manifest-Version: 1.0
-SnapLogic-Components: org.snaplogic.snap.gooddata.GoodDataConnection,org.snaplogic.snap.gooddata.GoodDataPut
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: haplm
+Build-Jdk: 1.6.0_20
+SnapLogic-Components: org.snaplogic.snap.gooddata.GoodDataConnection,org.snaplogic.snap.gooddata.GoodDataPut,org.snaplogic.snap.gooddata.GoodDataWizard

@@ -363,12 +363,15 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		ArrayList<String> projectArrayList = new ArrayList<String>();
 		projectArrayList.add(0, CREATE_NEW_PROJECT);
 
-		ResDef conResDef = getResourceObject(gdConnUri, null);
-		if (conResDef == null) {
+		ResDef conResDef;
+		if (CREATE_NEW_CONNECTION.equalsIgnoreCase(gdConnUri)) {
 			ExtendedSnapi snapi = ExtendedSnapi.getExtendedSnapi();
 			String serverUri = ComponentContainer.getServerUri();
 			conResDef = createConnectionObject(snapi, serverUri);
+		} else {
+			conResDef = getResourceObject(gdConnUri, null);
 		}
+
 		GdcRESTApiWrapper restApi;
 		try {
 			restApi = GoodDataConnection.login(conResDef, this);
@@ -574,12 +577,14 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 				break;
 			case 5:
 				try {
-					List stringDateFields = checkDateFormats(err);
+					List<String> stringDateFields = checkDateFormats(err);
 					if (stringDateFields.isEmpty()) {
+						// do nothing
 						nextStep();
+					} else {
+						getDateFormats(err, stringDateFields);
 						break;
 					}
-					getDateFormats(err, stringDateFields);
 				} catch (NumericFieldsCannotBeSpecifiedAsDatesException nfcbsade) {
 					return;
 				}
@@ -588,9 +593,10 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 					List stringLabelFields = checkLabels(err);
 					if (stringLabelFields.isEmpty()) {
 						nextStep();
+					} else {
+						getLabels(err, stringLabelFields);
 						break;
 					}
-					getLabels(err, stringLabelFields);
 				} catch (NumericFieldsCannotBeSpecifiedAsDatesException nfcbsade) {
 					return;
 				}
