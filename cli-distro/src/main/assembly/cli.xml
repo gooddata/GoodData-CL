@@ -48,6 +48,12 @@
 	  </includes>
     </fileSet>
     <fileSet>
+	  <directory>${project.basedir}/tests</directory>
+	  <includes>
+	   <include>**/*.*</include>
+	  </includes>
+    </fileSet>
+    <fileSet>
 	  <directory>${project.basedir}/db</directory>
 	  <includes>
 	   <include>**/*.*</include>

@@ -50,7 +50,6 @@ import com.gooddata.exception.InternalErrorException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
-import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.naming.N;
 import com.gooddata.util.FileUtil;
@@ -887,9 +886,9 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
      */
     protected String decorateOtherColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols != null && cols.length() > 0)
-            cols += "," + table + "." + StringUtil.formatShortName(cl.getName());
+            cols += "," + table + "." + StringUtil.toIdentifier(cl.getName());
         else
-            cols +=  table + "." + StringUtil.formatShortName(cl.getName());
+            cols +=  table + "." + StringUtil.toIdentifier(cl.getName());
         return cols;
     }
     
@@ -909,7 +908,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
      * @return table name
      */
     protected String getTableNameFromPart(DLIPart part) {
-        return StringUtil.formatShortName(part.getFileName().split("\\.")[0]);
+        return StringUtil.toIdentifier(part.getFileName().split("\\.")[0]);
     }
 
     /**

@@ -71,7 +71,7 @@ public class PdmSchema {
      */
     public static PdmSchema createSchema(SourceSchema srcSchema) throws ModelException {
         srcSchema.validate();
-        String schemaName = StringUtil.formatShortName(srcSchema.getName());
+        String schemaName = StringUtil.toIdentifier(srcSchema.getName());
         PdmSchema schema = new PdmSchema(schemaName);
 
         PdmTable sourceTable = createSourceTable(schemaName);
@@ -126,7 +126,7 @@ public class PdmSchema {
         // we need to process LABELs later when all lookups are created
         // LABEL definition can precede it's primary attribute definition
         for(SourceColumn column: labels) {
-            String pkName = StringUtil.formatShortName(column.getReference());
+            String pkName = StringUtil.toIdentifier(column.getReference());
             PdmTable lookup = schema.getTableByName(createLookupTableName(schemaName, pkName));
             lookup.addColumn(createLookupColumn(column));
         }
@@ -141,7 +141,7 @@ public class PdmSchema {
      * @param tblType table type
      */
     private static void addLookupColumn(PdmSchema s, SourceColumn c, String tblType) {
-        String cName = StringUtil.formatShortName(c.getName());
+        String cName = StringUtil.toIdentifier(c.getName());
         String sName = s.getName();
         String tableName = createLookupTableName(sName, cName);
         if(!s.contains(tableName))
@@ -163,9 +163,9 @@ public class PdmSchema {
      */
     private static void createTableReplication(PdmSchema s, SourceColumn c) {
         String sName = s.getName();
-        String cName = StringUtil.formatShortName(c.getName());
-        String tcn = StringUtil.formatShortName(c.getReference());
-                String tsn = StringUtil.formatShortName(c.getSchemaReference());
+        String cName = StringUtil.toIdentifier(c.getName());
+        String tcn = StringUtil.toIdentifier(c.getReference());
+                String tsn = StringUtil.toIdentifier(c.getSchemaReference());
                 s.addLookupReplication(new PdmLookupReplication(createLookupTableName(tsn,tcn),
                         N.NM_PFX + tcn, createLookupTableName(sName,cName),
                         N.NM_PFX + cName));
@@ -178,7 +178,7 @@ public class PdmSchema {
      */
     private static PdmColumn createLookupColumn(SourceColumn c) {
         try {
-            String name = StringUtil.formatShortName(c.getName());
+            String name = StringUtil.toIdentifier(c.getName());
             PdmColumn pc = new PdmColumn(N.NM_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
                     N.SRC_PFX + name, c.getLdmType());
             if (c.getElements() != null) {
@@ -249,7 +249,7 @@ public class PdmSchema {
      * @return new PDM column
      */
     private static PdmColumn createSourceColumn(SourceColumn c) {
-        String name = StringUtil.formatShortName(c.getName());
+        String name = StringUtil.toIdentifier(c.getName());
         return new PdmColumn(N.SRC_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT);
     }
 
@@ -260,7 +260,7 @@ public class PdmSchema {
      * @return new PDM column
      */
     private static PdmColumn createFactColumn(SourceColumn c, String schemaName) {
-        String name = StringUtil.formatShortName(c.getName());
+        String name = StringUtil.toIdentifier(c.getName());
         String type = c.getLdmType();
         if(type.equals(SourceColumn.LDM_TYPE_ATTRIBUTE) || type.equals(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
                 type.equals(SourceColumn.LDM_TYPE_REFERENCE))

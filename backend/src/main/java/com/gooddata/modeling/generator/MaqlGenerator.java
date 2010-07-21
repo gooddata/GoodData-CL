@@ -54,8 +54,8 @@ public class MaqlGenerator {
 
     public MaqlGenerator(SourceSchema schema) {
         this.schema = schema;
-        this.ssn = StringUtil.formatShortName(schema.getName());
-        this.lsn = StringUtil.formatLongName(schema.getName());
+        this.ssn = StringUtil.toIdentifier(schema.getName());
+        this.lsn = StringUtil.toTitle(schema.getName());
         this.factsOfAttrMaqlDdl = createFactOfMaqlDdl(schema.getName());
     }
 
@@ -92,8 +92,8 @@ public class MaqlGenerator {
      * @return the attribute table name
      */
 	public static String createAttributeTableName(SourceSchema schema, SourceColumn sc) {
-		final String ssn = StringUtil.formatShortName(schema.getName());
-		return "d_" + ssn + "_" + StringUtil.formatShortName(sc.getName()); 
+		final String ssn = StringUtil.toIdentifier(schema.getName());
+		return "d_" + ssn + "_" + StringUtil.toIdentifier(sc.getName());
 	}
 
     /**
@@ -181,16 +181,16 @@ public class MaqlGenerator {
             script += "# CREATE THE FOLDERS THAT GROUP ATTRIBUTES AND FACTS\n";
         // Generate statements for the ATTRIBUTE folders
         for (String folder : attributeFolders) {
-            String sfn = StringUtil.formatShortName(folder);
-            String lfn = StringUtil.formatLongName(folder);
+            String sfn = StringUtil.toIdentifier(folder);
+            String lfn = StringUtil.toTitle(folder);
             script += "CREATE FOLDER {dim." + sfn + "} VISUAL(TITLE \"" + lfn + "\") TYPE ATTRIBUTE;\n";
         }
         script += "\n";
 
         // Generate statements for the FACT folders
         for (String folder : factFolders) {
-            String sfn = StringUtil.formatShortName(folder);
-            String lfn = StringUtil.formatLongName(folder);
+            String sfn = StringUtil.toIdentifier(folder);
+            String lfn = StringUtil.toTitle(folder);
             script += "CREATE FOLDER {ffld." + sfn + "} VISUAL(TITLE \"" + lfn + "\") TYPE FACT;\n";
         }
 
@@ -252,7 +252,7 @@ public class MaqlGenerator {
      * @return facts of attribute MAQL DDL
      */
     private static String createFactOfMaqlDdl(String schemaName) {
-    	return "{attr." + StringUtil.formatShortName(schemaName) + "." + N.FACTS_OF + "}";
+    	return "{attr." + StringUtil.toIdentifier(schemaName) + "." + N.FACTS_OF + "}";
 	}
     
     // columns
@@ -263,8 +263,8 @@ public class MaqlGenerator {
 
         Column(SourceColumn column) {
             this.column = column;
-            this.scn = StringUtil.formatShortName(column.getName());
-            this.lcn = StringUtil.formatLongName(column.getTitle());
+            this.scn = StringUtil.toIdentifier(column.getName());
+            this.lcn = StringUtil.toTitle(column.getTitle());
         }
 
         protected String createForeignKeyMaqlDdl() {
@@ -296,7 +296,7 @@ public class MaqlGenerator {
             String folderStatement = "";
             String folder = column.getFolder();
             if (folder != null && folder.length() > 0) {
-                String sfn = StringUtil.formatShortName(folder);
+                String sfn = StringUtil.toIdentifier(folder);
                 folderStatement = ", FOLDER {dim." + sfn + "}";
             }
 
@@ -322,7 +322,7 @@ public class MaqlGenerator {
             String folderStatement = "";
             String folder = column.getFolder();
             if (folder != null && folder.length() > 0) {
-                String sfn = StringUtil.formatShortName(folder);
+                String sfn = StringUtil.toIdentifier(folder);
                 folderStatement = ", FOLDER {ffld." + sfn + "}";
             }
 
@@ -341,7 +341,7 @@ public class MaqlGenerator {
 
         @Override
         public String generateMaqlDdl() {
-            String scnPk = StringUtil.formatShortName(column.getReference());
+            String scnPk = StringUtil.toIdentifier(column.getReference());
             Attribute attr = attributes.get(scnPk);
             
             if (attr == null) {
@@ -368,14 +368,14 @@ public class MaqlGenerator {
             String folder = column.getFolder();
             String reference = column.getSchemaReference();
             if (folder != null && folder.length() > 0) {
-                String sfn = StringUtil.formatShortName(folder);
+                String sfn = StringUtil.toIdentifier(folder);
                 folderStatement = ", FOLDER {ffld." + sfn + "}";
             }
             String stat = "CREATE FACT {"+N.DT+"." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
                     + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn + "_"+N.ID+"};\n"
                     + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+N.DT+"." + ssn + "." + scn + "};\n\n";
             if(reference != null && reference.length() > 0) {
-                reference = StringUtil.formatShortName(reference);
+                reference = StringUtil.toIdentifier(reference);
                 stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
                 stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() + 
                         "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";

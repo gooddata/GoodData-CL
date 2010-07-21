@@ -87,7 +87,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
             throws IOException {
         l.debug("Deploying snapshots ids "+snapshotIds);
-        if (snapshotIds.length > 1 && !getPdm().getConnectionPointTables().isEmpty()) {
+        if (snapshotIds != null && snapshotIds.length > 1 && !getPdm().getConnectionPointTables().isEmpty()) {
         	throw new InvalidParameterException("Only one snapshot of a data set defining a connection point may be transfered.");
         }
         loadSnapshot(parts, dir, snapshotIds);
@@ -325,9 +325,9 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      */
     protected String decorateOtherColumnForLoad(String cols, Column cl, String table) {
         if (cols != null && cols.length() > 0)
-            cols += "," + table + "." + StringUtil.formatShortName(cl.getName());
+            cols += "," + table + "." + StringUtil.toIdentifier(cl.getName());
         else
-            cols +=  table + "." + StringUtil.formatShortName(cl.getName());
+            cols +=  table + "." + StringUtil.toIdentifier(cl.getName());
         return cols;
     }
 
@@ -337,7 +337,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      * @return table name
      */
     protected String getTableNameFromPart(DLIPart part) {
-        return StringUtil.formatShortName(part.getFileName().split("\\.")[0]);
+        return StringUtil.toIdentifier(part.getFileName().split("\\.")[0]);
     }
 
 

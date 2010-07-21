@@ -73,8 +73,8 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
     public String generateMaql() {
         l.debug("Generating time dimension MAQL with context "+ctx);
         if(ctx != null && ctx.trim().length()>0) {
-            String idp = StringUtil.formatShortName(ctx);
-            String ts = StringUtil.formatLongName(ctx);
+            String idp = StringUtil.toIdentifier(ctx);
+            String ts = StringUtil.toTitle(ctx);
             l.debug("Generated time dimension MAQL with context "+ctx);
             return "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\" MODIFY (IDENTIFIER \""+idp+"\", TITLE \""+ts+"\");";
         }

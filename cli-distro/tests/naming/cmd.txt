@@ -1,0 +1,7 @@
+CreateProject(name="23$#@nami ng&^%?");
+StoreProject(fileName="tests/naming/pid");
+GenerateCsvConfig(csvHeaderFile="tests/naming/data.csv", configFile="tests/naming/config.xml", folder="67643nm%^*&@08");
+LoadCsv(csvDataFile="tests/naming/data.csv",header="true",configFile="tests/naming/config.xml");
+GenerateMaql(maqlFile="tests/naming/naming.maql");
+ExecuteMaql(maqlFile="tests/naming/naming.maql");
+TransferLastSnapshot();

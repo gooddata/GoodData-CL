@@ -124,7 +124,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             rsm = rs.getMetaData();
             int cnt = rsm.getColumnCount();
             for(int i=1; i <= cnt; i++) {
-                String cnm = StringUtil.formatShortName(rsm.getColumnName(i));
+                String cnm = StringUtil.toIdentifier(rsm.getColumnName(i));
                 String cdsc = rsm.getColumnName(i);
                 String type = getColumnType(rsm.getColumnType(i));
                 SourceColumn column = new SourceColumn(cnm, type, cdsc);

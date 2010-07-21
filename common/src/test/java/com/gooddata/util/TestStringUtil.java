@@ -40,7 +40,6 @@ import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 
 /**
  * GoodData
@@ -48,14 +47,16 @@ import java.io.InputStream;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
+
+
 public class TestStringUtil extends TestCase {
 
     private static Logger l = Logger.getLogger(TestStringUtil.class);
 
     public void testformatShortName() throws Exception {
         BufferedReader in =  FileUtil.createBufferedUtf8Reader(getClass().getResourceAsStream("/com/gooddata/util/test1.txt"));
-        assertEquals(StringUtil.formatShortName(in.readLine()),"aiiarsiarsiaeaeieaeeareisariseaiarsreuireiurieufdnfmdfdnm323232322");
-        assertEquals(StringUtil.formatShortName(in.readLine()),"siarsiaeaeieaedffg");
+        assertEquals(StringUtil.toIdentifier(in.readLine()),"aiiarsiarsiaeaeieaeeareisariseaiarsreuireiurieufdnfmdfdnm323232322");
+        assertEquals(StringUtil.toIdentifier(in.readLine()),"siarsiaeaeieaedffg");
     }
 
 

@@ -40,14 +40,6 @@ import com.ibm.icu.text.Transliterator;
  */
 public class StringUtil {
 
-    private static String[] DISCARD_CHARS = {"\"", " ", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
-            "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
-            "[", "]","\\"};
-
-    private static String[] DISCARD_LONGNAME_CHARS = {"\"", "'", "!", "?", "%", "&", "#", "*", "+", "-", "=", "/", ",", ".", ">", "<",
-            "$", "%", ",", "(", ")", "Û", "£", "´","@", "{" ,"}",
-            "[", "]","\\"};
-
     private static String[][] DATE_FORMAT_CONVERSION = {{"MM","%m"},{"yyyy","%Y"},{"yy","%y"},{"dd","%d"},{"hh","%h"},
             {"HH","%H"},{"mm","%i"},{"ss","%s"}};
     
@@ -57,8 +49,8 @@ public class StringUtil {
      * @param s the string to convert to identifier
      * @return converted string
      */
-    public static String formatShortName(String s) {
-        return convertToIdentifier(s, DISCARD_CHARS);
+    public static String toIdentifier(String s) {
+        return convertToIdentifier(s);
     }
 
     /**
@@ -67,26 +59,22 @@ public class StringUtil {
      * @param s the string to convert to a title
      * @return converted string
      */
-    public static String formatLongName(String s) {
+    public static String toTitle(String s) {
         if(s == null)
             return s;
         Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
         s = t.transliterate(s);
-        for ( String r : DISCARD_LONGNAME_CHARS) {
-            s = s.replace(r,"");
-        }
+        s = s.replaceAll("\"","");
         return s.trim();
     }
 
-    private static String convertToIdentifier(String s, String[] invalidChars) {
-        if(s == null)
-            return s;
+    private static String convertToIdentifier(String s) {
         Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
         s = t.transliterate(s);
-        for ( String r : invalidChars ) {
-            s = s.replace(r,"");
-        }
-        s = s.replaceAll("^[0-9]*", "");
+        s = s.replaceAll("[^a-zA-Z0-9_]", "");
+        s = s.replaceAll("^[0-9_]*", "");
+        //s = s.replaceAll("[_]*$", "");
+        //s = s.replaceAll("[_]+", "_");
         return s.toLowerCase().trim();
     }
 

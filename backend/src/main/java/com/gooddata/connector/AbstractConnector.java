@@ -35,7 +35,6 @@ import org.apache.log4j.Logger;
 
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.model.PdmSchema;
-import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.integration.model.DLI;
@@ -49,6 +48,7 @@ import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
+import org.apache.log4j.MDC;
 
 /**
  * GoodData abstract connector implements functionality that can be reused in several connectors.
@@ -288,7 +288,7 @@ public abstract class AbstractConnector implements Connector {
         Connector cc = ctx.getConnectorMandatory();
         String pid = ctx.getProjectIdMandatory();
         // connector's schema name
-        String ssn = StringUtil.formatShortName(cc.getSchema().getName());
+        String ssn = StringUtil.toIdentifier(cc.getSchema().getName());
         cc.initialize();
         
         boolean waitForFinish = true;
@@ -318,11 +318,12 @@ public abstract class AbstractConnector implements Connector {
     	throws IOException, InterruptedException
     {
         // connector's schema name
-        String ssn = StringUtil.formatShortName(cc.getSchema().getName());
+        String ssn = StringUtil.toIdentifier(cc.getSchema().getName());
         l.debug("Extracting data.");
         File tmpDir = FileUtil.createTempDir();
         File tmpZipDir = FileUtil.createTempDir();
         String archiveName = tmpDir.getName();
+        MDC.put("GdcDataPackageDir",archiveName);
         String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
             archiveName + ".zip";
         // loads the CSV data to the embedded Derby SQL
@@ -354,6 +355,7 @@ public abstract class AbstractConnector implements Connector {
         l.debug("Cleaning the temporary files.");
         FileUtil.recursiveDelete(tmpDir);
         FileUtil.recursiveDelete(tmpZipDir);
+        MDC.remove("GdcDataPackageDir");
         l.debug("Data extract finished.");
     }
 
@@ -457,7 +459,7 @@ public abstract class AbstractConnector implements Connector {
                 snapshots[i] = fs + i;
             }
             // connector's schema name
-            String ssn = StringUtil.formatShortName(cc.getSchema().getName());
+            String ssn = StringUtil.toIdentifier(cc.getSchema().getName());
 
             cc.initialize();
             // retrieve the DLI
