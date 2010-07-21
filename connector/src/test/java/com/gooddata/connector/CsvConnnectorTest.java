@@ -70,6 +70,7 @@ public class CsvConnnectorTest extends TestCase {
 		for (int i = 0; i < expected.getColumns().size(); i++) {
 			SourceColumn expCol = expected.getColumns().get(i);
 			SourceColumn gueCol = guessed.getColumns().get(i);
+			System.out.println(i);
 			assertEquals(expCol.getLdmType(), gueCol.getLdmType());
 			assertEquals(expCol.getName(), gueCol.getName());
 			// date format guessing not supported yet

@@ -276,7 +276,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
     private static Set<String> getColumnNames(List<SourceColumn> columns) {
     	Set<String> result = new HashSet<String>();
 		for (final SourceColumn col : columns) {
-			result.add(col.getName());
+			result.add(StringUtil.toIdentifier(col.getName()));
 		}
 		return result;
 	}

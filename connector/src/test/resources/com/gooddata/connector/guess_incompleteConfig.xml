@@ -8,7 +8,7 @@
       <ldmType>CONNECTION_POINT</ldmType>
     </column>
     <column>
-      <name>COMPANY</name>
+      <name>COM PANY</name>
       <title>Company</title>
         <ldmType>LABEL</ldmType>
         <reference>SYMBOL</reference>
