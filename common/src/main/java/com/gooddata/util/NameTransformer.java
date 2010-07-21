@@ -21,9 +21,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * 
- */
 package com.gooddata.util;
 
 import java.util.HashSet;
@@ -35,12 +32,21 @@ public class NameTransformer {
 	private final String separator;
 	
 	public NameTransformer(NameTransformerCallback cb) {
-		this(cb, " ");
+		this(cb, null);
 	}
 	
-	public NameTransformer(NameTransformerCallback cb, String separator) {
+	public NameTransformer(NameTransformerCallback cb, Set<String> seen) {
+		this(cb, seen, " ");
+	}
+	
+	public NameTransformer(NameTransformerCallback cb, Set<String> seen, String separator) {
 		this.cb = cb;
 		this.separator = separator;
+		if (seen != null) {
+			for (final String s : seen) {
+				this.seen.add(s.toLowerCase());
+			}
+		}
 	}
 	
 	public String transform(String str) {
@@ -52,8 +58,9 @@ public class NameTransformer {
 				result += separator + index;
 			}
 			index++;
-			if (!seen.contains(result)) {
-				seen.add(result);
+			String lc = result.toLowerCase();
+			if (!seen.contains(lc)) {
+				seen.add(lc);
 				return result;
 			}
 		}

@@ -1,0 +1,89 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+<schema>
+  <name>Quotes</name>
+  <columns>
+    <column>
+      <name>ID</name>
+      <title>Id</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+    </column>
+    <column>
+      <name>COMPANY</name>
+      <title>Company</title>
+        <ldmType>LABEL</ldmType>
+        <reference>SYMBOL</reference>
+    </column>
+    <column>
+      <name>symbol</name>
+      <title>Symbol</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
+      <name>sector</name>
+      <title>Sector</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
+      <name>industry</name>
+      <title>Industry</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
+      <name>market</name>
+      <title>Market</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
+      <name>quote_date</name>
+      <title>Quote Date</title>
+      <ldmType>DATE</ldmType>
+      <format>yyyy-MM-dd</format>
+      <schemaReference>quote</schemaReference>
+    </column>
+    <column>
+      <name>open_price</name>
+      <title>Open Price</title>
+      <ldmType>FACT</ldmType>
+    </column>
+    <column>
+      <name>high_price</name>
+      <title>High Price</title>
+      <ldmType>FACT</ldmType>
+    </column>
+    <column>
+      <name>low_price</name>
+      <title>Low Price</title>
+      <ldmType>FACT</ldmType>
+    </column>
+    <column>
+      <name>close_price</name>
+      <title>Close Price</title>
+      <ldmType>FACT</ldmType>
+    </column>
+    <column>
+      <name>volume</name>
+      <title>Volume</title>
+      <ldmType>FACT</ldmType>
+    </column>
+    <column>
+      <name>adjusted_close_price</name>
+      <title>Adjusted Close Price</title>
+      <ldmType>FACT</ldmType>
+    </column>
+    <column>
+      <name>company 1</name>
+      <title>Company</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    <column>
+      <name>mrkev</name>
+      <title>Mrkev</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>  
+    <column>
+      <name>company 2</name>
+      <title>Company</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>  
+  </columns>
+</schema>

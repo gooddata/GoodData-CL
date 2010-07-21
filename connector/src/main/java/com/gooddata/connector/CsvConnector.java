@@ -29,6 +29,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.backend.Constants;
@@ -42,7 +47,6 @@ import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.NameTransformer;
 import com.gooddata.util.StringUtil;
-import org.apache.log4j.Logger;
 
 /**
  * GoodData CSV Connector
@@ -109,23 +113,24 @@ public class CsvConnector extends AbstractConnector implements Connector {
         String name = URLDecoder.decode(FileUtil.getFileName(dataUrl).split("\\.")[0], "utf-8").trim();
         String[] headers = FileUtil.getCsvHeader(dataUrl);
         int i = 0;
-        final SourceSchema s;
+        final SourceSchema srcSchm;
         if (configStream != null) {
-        	s = SourceSchema.createSchema(configStream);
+        	srcSchm = SourceSchema.createSchema(configStream);
         } else {
-        	s = SourceSchema.createSchema(name);
+        	srcSchm = SourceSchema.createSchema(name);
         }
-        final int knownColumns = s.getColumns().size();
+        final int knownColumns = srcSchm.getColumns().size();
+        Set<String> srcColumnNames = getColumnNames(srcSchm.getColumns());
         NameTransformer idGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
         	public String transform(String str) {
         		String idorig = StringUtil.formatShortName(str);
-        		int idmax = Constants.MAX_TABLE_NAME_LENGTH - s.getName().length() - 3; // good enough for 999 long names
+        		int idmax = Constants.MAX_TABLE_NAME_LENGTH - srcSchm.getName().length() - 3; // good enough for 999 long names
         		if (idorig.length() <= idmax)
         			return idorig;
         		return idorig.substring(0, idmax);
         		
         	}
-        });
+        }, srcColumnNames);
         NameTransformer titleGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
         	public String transform(String str) {
         		return StringUtil.formatLongName(str);
@@ -149,11 +154,11 @@ public class CsvConnector extends AbstractConnector implements Connector {
 		            sc.setTitle(title);
 		            sc.setFolder(folder);
 	            }
-	            s.addColumn(sc);
+	            srcSchm.addColumn(sc);
 	            i++;
 	        }
         } 
-        return s;
+        return srcSchm;
     }
 
     /**
@@ -262,4 +267,17 @@ public class CsvConnector extends AbstractConnector implements Connector {
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
         l.info("CSV Connector configuration successfully generated. See config file: "+configFile);
     }
+    
+    /**
+     * Extracts column names from the list
+     * @param columns
+     * @return
+     */
+    private static Set<String> getColumnNames(List<SourceColumn> columns) {
+    	Set<String> result = new HashSet<String>();
+		for (final SourceColumn col : columns) {
+			result.add(col.getName());
+		}
+		return result;
+	}
 }
