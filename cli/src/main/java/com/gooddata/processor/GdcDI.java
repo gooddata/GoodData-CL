@@ -51,6 +51,7 @@ import com.gooddata.connector.SfdcConnector;
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.backend.DerbyConnectorBackend;
 import com.gooddata.connector.backend.MySqlConnectorBackend;
+import com.gooddata.connector.backend.StreamConnectorBackend;
 import com.gooddata.exception.GdcException;
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.GdcRestApiException;
@@ -89,6 +90,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_BACKEND = {"backend","b"};
     public static String[] CLI_PARAM_DB_USERNAME = {"dbusername","d"};
     public static String[] CLI_PARAM_DB_PASSWORD = {"dbpassword","c"};
+    public static String[] CLI_PARAM_STREAM_ROOT = {"streamroot","r"};
     public static String[] CLI_PARAM_PROTO = {"proto","t"};
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
     public static String CLI_PARAM_SCRIPT = "script";
@@ -107,7 +109,8 @@ public class GdcDI implements Executor {
         new Option(CLI_PARAM_PROJECT[1], CLI_PARAM_PROJECT[0], true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)"),
         new Option(CLI_PARAM_BACKEND[1], CLI_PARAM_BACKEND[0], true, "Database backend DERBY or MYSQL"),
         new Option(CLI_PARAM_DB_USERNAME[1], CLI_PARAM_DB_USERNAME[0], true, "Database backend username (not required for the local Derby SQL)"),
-        new Option(CLI_PARAM_DB_PASSWORD[1], CLI_PARAM_DB_PASSWORD[0], true, "Database backend password (not required for the local Derby SQL)"),
+        new Option(CLI_PARAM_STREAM_ROOT[1], CLI_PARAM_STREAM_ROOT[0], true, "Stream backend root directory (not required for SQL backends)"),
+        new Option(CLI_PARAM_BACKEND[1], CLI_PARAM_BACKEND[0], true, "Database backend DERBY or MYSQL"),
         new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS"),
         new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files")
     };
@@ -706,10 +709,13 @@ public class GdcDI implements Executor {
         if("mysql".equalsIgnoreCase(b))
             backend = MySqlConnectorBackend.create(cliParams.get(CLI_PARAM_DB_USERNAME[0]),
                     cliParams.get(CLI_PARAM_DB_PASSWORD[0]));
-        else if("derby".equalsIgnoreCase(b))
+        else if("derby".equalsIgnoreCase(b)) {
             backend = DerbyConnectorBackend.create();
-        else
+        } else if("stream".equalsIgnoreCase(b)) {
+        	backend = StreamConnectorBackend.create(cliParams.get(CLI_PARAM_STREAM_ROOT[0]));
+        } else {
         	throw new IllegalStateException("Invalid backed '" + b + "'");
+        }
 
         return backend;
     }

@@ -65,7 +65,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     private String projectId;
 
     // separates the different LABELs when we concatenate them to create an unique identifier out of them
-    protected String HASH_SEPARATOR = "%";
+    static final String HASH_SEPARATOR = "%";
 
     /**
      * {@inheritDoc}

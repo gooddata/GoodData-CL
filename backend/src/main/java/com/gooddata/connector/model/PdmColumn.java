@@ -322,4 +322,63 @@ public class PdmColumn {
 	public String toString() {
 		return name + "(" + type + ")";
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((constraints == null) ? 0 : constraints.hashCode());
+		result = prime * result + ((format == null) ? 0 : format.hashCode());
+		result = prime
+				* result
+				+ ((ldmTypeReference == null) ? 0 : ldmTypeReference.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result
+				+ ((sourceColumn == null) ? 0 : sourceColumn.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PdmColumn other = (PdmColumn) obj;
+		if (constraints == null) {
+			if (other.constraints != null)
+				return false;
+		} else if (!constraints.equals(other.constraints))
+			return false;
+		if (format == null) {
+			if (other.format != null)
+				return false;
+		} else if (!format.equals(other.format))
+			return false;
+		if (ldmTypeReference == null) {
+			if (other.ldmTypeReference != null)
+				return false;
+		} else if (!ldmTypeReference.equals(other.ldmTypeReference))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (sourceColumn == null) {
+			if (other.sourceColumn != null)
+				return false;
+		} else if (!sourceColumn.equals(other.sourceColumn))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
+	}
 }

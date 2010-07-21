@@ -93,9 +93,6 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     protected String SYNTAX_CONCAT_FUNCTION_SUFFIX = "";
     protected String SYNTAX_CONCAT_OPERATOR = "";
 
-    // separates the different LABELs when we concatenate them to create an unique identifier out of them
-    protected String HASH_SEPARATOR = "%";
-
     /**
      * Constructor
      * @param username database backend username
