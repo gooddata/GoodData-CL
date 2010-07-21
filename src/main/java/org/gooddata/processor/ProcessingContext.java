@@ -6,6 +6,7 @@ import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.gooddata.connector.Connector;
 
 /**
@@ -33,6 +34,8 @@ public class ProcessingContext {
     }
 
     public void setProjectId(String projectId) {
+		MDC.remove("GdcProjectId");
+        MDC.put("GdcProjectId", projectId);
         this.projectId = projectId;
     }
 

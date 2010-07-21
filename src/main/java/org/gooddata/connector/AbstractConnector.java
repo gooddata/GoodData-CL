@@ -15,6 +15,7 @@ import org.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.gooddata.connector.backend.ConnectorBackend;
 
 import java.io.File;
@@ -315,6 +316,7 @@ public abstract class AbstractConnector implements Connector {
         makeWritable(tmpDir);
         File tmpZipDir = FileUtil.createTempDir();
         String archiveName = tmpDir.getName();
+		MDC.put("GdcDataPackageDir",archiveName);
         String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
             archiveName + ".zip";
         // loads the CSV data to the embedded Derby SQL
@@ -334,6 +336,7 @@ public abstract class AbstractConnector implements Connector {
         l.debug("Cleaning the temporary files.");
         FileUtil.recursiveDelete(tmpDir);
         FileUtil.recursiveDelete(tmpZipDir);
+		MDC.remove("GdcDataPackageDir");
         l.debug("Data extract finished.");
     }
 
