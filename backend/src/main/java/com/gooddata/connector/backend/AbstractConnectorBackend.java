@@ -325,9 +325,9 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      */
     protected String decorateOtherColumnForLoad(String cols, Column cl, String table) {
         if (cols != null && cols.length() > 0)
-            cols += "," + table + "." + StringUtil.formatShortName(cl.getName());
+            cols += "," + table + "." + StringUtil.toIdentifier(cl.getName());
         else
-            cols +=  table + "." + StringUtil.formatShortName(cl.getName());
+            cols +=  table + "." + StringUtil.toIdentifier(cl.getName());
         return cols;
     }
 
@@ -337,7 +337,7 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      * @return table name
      */
     protected String getTableNameFromPart(DLIPart part) {
-        return StringUtil.formatShortName(part.getFileName().split("\\.")[0]);
+        return StringUtil.toIdentifier(part.getFileName().split("\\.")[0]);
     }
 
 

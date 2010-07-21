@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -585,7 +586,7 @@ public class GdcDI implements Executor {
             String pTempUri = c.getParam("templateUri");
             if(desc == null || desc.length() <= 0)
                 desc = name;
-            ctx.setProjectId(ctx.getRestApi(p).createProject(name, desc, pTempUri));
+            ctx.setProjectId(ctx.getRestApi(p).createProject(StringUtil.toTitle(name), StringUtil.toTitle(desc), pTempUri));
             String pid = ctx.getProjectId();
             checkProjectCreationStatus(pid, p, ctx);
             l.info("Project id = '"+pid+"' created.");

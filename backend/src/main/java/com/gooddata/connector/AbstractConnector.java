@@ -35,7 +35,6 @@ import org.apache.log4j.Logger;
 
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.model.PdmSchema;
-import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.integration.model.DLI;
@@ -288,7 +287,7 @@ public abstract class AbstractConnector implements Connector {
         Connector cc = ctx.getConnectorMandatory();
         String pid = ctx.getProjectIdMandatory();
         // connector's schema name
-        String ssn = StringUtil.formatShortName(cc.getSchema().getName());
+        String ssn = StringUtil.toIdentifier(cc.getSchema().getName());
         cc.initialize();
         
         boolean waitForFinish = true;
@@ -318,7 +317,7 @@ public abstract class AbstractConnector implements Connector {
     	throws IOException, InterruptedException
     {
         // connector's schema name
-        String ssn = StringUtil.formatShortName(cc.getSchema().getName());
+        String ssn = StringUtil.toIdentifier(cc.getSchema().getName());
         l.debug("Extracting data.");
         File tmpDir = FileUtil.createTempDir();
         File tmpZipDir = FileUtil.createTempDir();
@@ -457,7 +456,7 @@ public abstract class AbstractConnector implements Connector {
                 snapshots[i] = fs + i;
             }
             // connector's schema name
-            String ssn = StringUtil.formatShortName(cc.getSchema().getName());
+            String ssn = StringUtil.toIdentifier(cc.getSchema().getName());
 
             cc.initialize();
             // retrieve the DLI

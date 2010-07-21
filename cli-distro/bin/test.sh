@@ -15,11 +15,11 @@ function drop() {
 
 for backend in MYSQL DERBY ; do
     echo 'Running quotes demo'
-    bin/gdi.sh --backend "$backend" examples/quotes/quotes.txt
+    bin/gdi.sh --backend "$backend" examples/quotes/cmd.txt
 
     echo 'Updating the data set in the quotes demo'
     echo "RetrieveProject(fileName = \"examples/quotes/pid\");" > "$tmp"
-    grep '^\(LoadCsv\|Transfer\)' examples/quotes/quotes.txt >> "$tmp"   
+    grep '^\(LoadCsv\|Transfer\)' examples/quotes/cmd.txt >> "$tmp"
     bin/gdi.sh --backend "$backend" "$tmp"
 
     echo 'Dropping the quotes project and snapshots'
@@ -55,5 +55,11 @@ for backend in MYSQL DERBY ; do
 
     echo 'Dropping the ga project and snapshots'
     drop "`cat examples/ga/pid`"
+
+    echo 'Running naming test'
+    bin/gdi.sh --backend "$backend" tests/naming/cmd.txt
+
+    echo 'Dropping the naming test project and snapshots'
+    drop "`cat tests/naming/pid`"
 
 done

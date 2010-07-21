@@ -23,26 +23,19 @@
 
 package com.gooddata.connector.backend;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import java.util.Properties;
 
-import com.gooddata.modeling.model.SourceColumn;
 import org.apache.log4j.Logger;
 
 import com.gooddata.connector.model.PdmColumn;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.connector.model.PdmTable;
-import com.gooddata.exception.ConnectorBackendException;
 import com.gooddata.exception.InternalErrorException;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.DLIPart;
 import com.gooddata.naming.N;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
@@ -168,10 +161,10 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
     protected String decorateFactColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols.length() > 0)
             cols += ",ATOD(" + table + "." +
-                    StringUtil.formatShortName(cl.getName())+")";
+                    StringUtil.toIdentifier(cl.getName())+")";
         else
             cols +=  "ATOD(" + table + "." +
-                    StringUtil.formatShortName(cl.getName())+")";
+                    StringUtil.toIdentifier(cl.getName())+")";
         return cols;
     }
 

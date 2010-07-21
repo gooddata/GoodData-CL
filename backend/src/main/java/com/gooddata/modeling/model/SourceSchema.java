@@ -106,7 +106,7 @@ public class SourceSchema {
      * @return
      */
     public String getDatasetName() {
-    	return "dataset." + StringUtil.formatShortName(getName());
+    	return "dataset." + StringUtil.toIdentifier(getName());
     }
 
     /**

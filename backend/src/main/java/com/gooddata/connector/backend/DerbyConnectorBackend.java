@@ -169,10 +169,10 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
     protected String decorateFactColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols.length() > 0)
             cols += ",ATOD(" + table.toUpperCase() + "." +
-                    StringUtil.formatShortName(cl.getName())+")";
+                    StringUtil.toIdentifier(cl.getName())+")";
         else
             cols +=  "ATOD(" + table.toUpperCase() + "." +
-                    StringUtil.formatShortName(cl.getName())+")";
+                    StringUtil.toIdentifier(cl.getName())+")";
         return cols;
     }
 
@@ -181,10 +181,10 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
      */
     protected String decorateLookupColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols != null && cols.length() > 0)
-            cols += ",CAST(" + table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName())+
+            cols += ",CAST(" + table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName())+
                     " AS VARCHAR(128))";
         else
-            cols +=  "CAST("+table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName())+
+            cols +=  "CAST("+table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName())+
                     " AS VARCHAR(128))";
         return cols;
     }
@@ -194,9 +194,9 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
      */
     protected String decorateOtherColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols != null && cols.length() > 0)
-            cols += "," + table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
+            cols += "," + table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName());
         else
-            cols +=  table.toUpperCase() + "." + StringUtil.formatShortName(cl.getName());
+            cols +=  table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName());
         return cols;
     }
 
