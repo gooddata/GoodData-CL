@@ -57,6 +57,7 @@ public class StringUtil {
         s = s.replaceAll("[^a-zA-Z0-9]", "_");
         s = s.replaceAll("^[0-9_]*", "");
         s = s.replaceAll("[_]*$", "");
+        s = s.replaceAll("[_]+", "_");
         return s.toLowerCase().trim();
     }
 
