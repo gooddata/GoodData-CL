@@ -71,10 +71,10 @@ public class StringUtil {
     private static String convertToIdentifier(String s) {
         Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
         s = t.transliterate(s);
-        s = s.replaceAll("[^a-zA-Z0-9]", "_");
+        s = s.replaceAll("[^a-zA-Z0-9_]", "");
         s = s.replaceAll("^[0-9_]*", "");
-        s = s.replaceAll("[_]*$", "");
-        s = s.replaceAll("[_]+", "_");
+        //s = s.replaceAll("[_]*$", "");
+        //s = s.replaceAll("[_]+", "_");
         return s.toLowerCase().trim();
     }
 
