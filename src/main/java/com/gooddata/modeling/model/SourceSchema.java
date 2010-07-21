@@ -61,6 +61,16 @@ public class SourceSchema {
     }
     
     /**
+     * Creates a new SourceSchema from the XML config steam
+     * @param configStream the config stream
+     * @return new SourceSchema
+     * @throws IOException in case of an IO issue 
+     */
+    public static SourceSchema createSchema(InputStream configStream) throws IOException {
+        return fromXml(configStream);
+    }
+    
+    /**
      * Get a dataset name that should be used for a server-side dataset corresponding
      * to this schema
      * @return
