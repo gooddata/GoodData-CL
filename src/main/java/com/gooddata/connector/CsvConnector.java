@@ -2,6 +2,9 @@ package com.gooddata.connector;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.gooddata.connector.AbstractConnector;
 import org.gooddata.connector.Connector;
@@ -73,24 +76,25 @@ public class CsvConnector extends AbstractConnector implements Connector {
         String name = dataFile.getName().split("\\.")[0];
         String[] headers = FileUtil.getCsvHeader(dataFile.toURI().toURL());
         int i = 0;
-        final SourceSchema s;
+        final SourceSchema srcSchm;
         File configFile = new File(configFileName);
         if (configFile.exists()) {
-        	s = SourceSchema.createSchema(configFile);
+        	srcSchm = SourceSchema.createSchema(configFile);
         } else {
-        	s = SourceSchema.createSchema(name);
+        	srcSchm = SourceSchema.createSchema(name);
         }
-        final int knownColumns = s.getColumns().size();
+        final int knownColumns = srcSchm.getColumns().size();
+        Set<String> srcColumnNames = getColumnNames(srcSchm.getColumns());
         NameTransformer idGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
         	public String transform(String str) {
         		String idorig = StringUtil.csvHeaderToIdentifier(str);
-        		int idmax = Constants.MAX_TABLE_NAME_LENGTH - s.getName().length() - 3; // good enough for 999 long names
+        		int idmax = Constants.MAX_TABLE_NAME_LENGTH - srcSchm.getName().length() - 3; // good enough for 999 long names
         		if (idorig.length() <= idmax)
         			return idorig;
         		return idorig.substring(0, idmax);
         		
         	}
-        });
+        }, srcColumnNames);
         NameTransformer titleGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
         	public String transform(String str) {
         		return StringUtil.csvHeaderToTitle(str);
@@ -118,13 +122,13 @@ public class CsvConnector extends AbstractConnector implements Connector {
 	                	throw new AssertionError("i % 3 outside {0, 1, 2} - this cannot happen");
 	            }
             }
-            s.addColumn(sc);
+            srcSchm.addColumn(sc);
             i++;
         }
-        s.writeConfig(new File(configFileName));
+        srcSchm.writeConfig(new File(configFileName));
     }
 
-    /**
+	/**
      * Data CSV file getter
      * @return the data CSV file
      */
@@ -226,4 +230,17 @@ public class CsvConnector extends AbstractConnector implements Connector {
         File csvf = FileUtil.getFile(csvHeaderFile);
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile);
     }
+    
+    /**
+     * Extracts column names from the list
+     * @param columns
+     * @return
+     */
+    private static Set<String> getColumnNames(List<SourceColumn> columns) {
+    	Set<String> result = new HashSet<String>();
+		for (final SourceColumn col : columns) {
+			result.add(col.getName());
+		}
+		return result;
+	}
 }
