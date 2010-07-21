@@ -159,10 +159,6 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 		}
 	}
 
-	private String getProjectLabel(Project project) {
-		return project.getName() + " (" + project.getId() + ")";
-	}
-
 	@Override
 	public void suggestResourceValues(ComponentResourceErr err) {
 		info("Auto-Fill for GoodDataSnap started...");
@@ -296,7 +292,7 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 		HashMap<String, Project> projNames = new HashMap<String, Project>();
 		for (Project proj : projects) {
 			info("  Adding project to the list of available projects: " + proj.getName());
-			projNames.put(getProjectLabel(proj), proj);
+			projNames.put(GoodDataApiHelper.getProjectLabel(proj), proj);
 		}
 		return projNames;
 	}

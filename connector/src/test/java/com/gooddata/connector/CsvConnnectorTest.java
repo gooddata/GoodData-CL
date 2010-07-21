@@ -56,4 +56,26 @@ public class CsvConnnectorTest extends TestCase {
 			// }
 		}
 	}
+	
+	public void testSaveConfigTemplateDuplicity() throws IOException {
+		final InputStream incompleteConfig =  getClass().getResourceAsStream("/com/gooddata/connector/guess_incompleteConfig.xml");
+		final InputStream expectedConfig = getClass().getResourceAsStream("/com/gooddata/connector/guess_expected_dups.xml");
+		final URL csvUrl = getClass().getResource("/com/gooddata/connector/guess_dups.csv");
+		
+		SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, null);
+		SourceSchema expected = SourceSchema.createSchema(expectedConfig);
+		
+		assertEquals(expected.getColumns().size(), guessed.getColumns().size());
+		
+		for (int i = 0; i < expected.getColumns().size(); i++) {
+			SourceColumn expCol = expected.getColumns().get(i);
+			SourceColumn gueCol = guessed.getColumns().get(i);
+			assertEquals(expCol.getLdmType(), gueCol.getLdmType());
+			assertEquals(expCol.getName(), gueCol.getName());
+			// date format guessing not supported yet
+			// if (SourceColumn.LDM_TYPE_DATE.equals(expCol.getLdmType())) {
+			// 	assertEquals(expCol.getFormat(), gueCol.getFormat());
+			// }
+		}
+	}
 }

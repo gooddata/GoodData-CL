@@ -27,8 +27,6 @@ import com.gooddata.exception.GdcLoginException;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.naming.N;
-import com.gooddata.processor.Defaults;
 import org.snaplogic.cc.*;
 import org.snaplogic.cc.prop.SimpleProp;
 import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
@@ -101,56 +99,66 @@ public class GoodDataConnection extends ComponentAPI {
             }
         };
     }
+    
+    public static final String GOODDATA_CONNECTION_CATEGORY = "connection.gooddata";
 
     private static List<String> _CONNECTION_CATEGORIES = new ArrayList<String>();
 
     static {
-        _CONNECTION_CATEGORIES.add("connection.gooddata");
+        _CONNECTION_CATEGORIES.add(GOODDATA_CONNECTION_CATEGORY);
     }
 
     public static List<String> CONNECTION_CATEGORIES = Collections.unmodifiableList(_CONNECTION_CATEGORIES);
 
     @Override
     public void createResourceTemplate() {
+        createGDConnectionResourceTemplate(this);
+    }
 
-        setPropertyDef(PROP_USERNAME, new SimpleProp("Login", SimplePropType.SnapString, "Username", true));
+    /**
+     * This is refactored out of
+     * {@link GoodDataConnection#createResourceTemplate()} because this has its
+     * usage in the {@link GoodDataWizard} as well as in
+     * {@link GoodDataConnection}. Care must be taken when implementing <A href="https://www.snaplogic.org/trac/wiki/Documentation/2.2/UserGuide/CreateComponentJava#Upgrade"
+     * >upgrades</a>, however.
+     * 
+     * The reason it is refactored this way is that currently {@link AbstractGoodDataComponent} 
+     * is intended to be an abstract implementation of components that are not connections (that
+     * is, they all have a reference to the connection instead). The clearer way of doing this
+     * of course, is to define one more level of inheritance - AbstractGoodDataComponent having
+     * this method, and underneath, AbstractGoodDataWorkerComponent (or some such name) having
+     * the connection reference. But this is not something I have time for at this point -
+     * Greg grisha@snaplogic.com
+     * 
+     * @param comp Instance of {@link ComponentAPI} to set properties for. 
+     */
+    static void createGDConnectionResourceTemplate(ComponentAPI comp) {
+        comp.setPropertyDef(GoodDataConnection.PROP_USERNAME, new SimpleProp("Login", SimplePropType.SnapString,
+                "Username", true));
         
         PropertyConstraint passwdConstraint = new PropertyConstraint(Type.OBFUSCATE, 0);
         SimpleProp passwdProp = new SimpleProp("Password", SimplePropType.SnapString, "Password", passwdConstraint,
                 true);
-        setPropertyDef(PROP_PASSWORD, passwdProp);
-        
-        PropertyConstraint protocolConstraint = new PropertyConstraint(Type.LOV, new String[] {"http","https"});   
-        setPropertyDef(PROP_PROTOCOL, new SimpleProp("Protocol", 
-                SimplePropType.SnapString, 
-                "Connection Protocol", 
-                protocolConstraint, 
-                true));
-        setPropertyValue(PROP_PROTOCOL, Defaults.DEFAULT_PROTO);
-        
-        setPropertyDef(PROP_HOSTNAME, new SimpleProp("Hostname", SimplePropType.SnapString, "Hostname of GoodData server", true));
-        setPropertyValue(PROP_HOSTNAME, Defaults.DEFAULT_HOST);
-        
-        setPropertyDef(PROP_HOSTNAME, new SimpleProp("FTP host", SimplePropType.SnapString, "FTP server where to upload the data", true));
-        String hostname = (String)getPropertyValue(PROP_HOSTNAME);
-        String[] hcs = hostname.split("\\.");
-        if(hcs != null && hcs.length > 0) {
-            String ftpHost = "";
-            for(int i=0; i<hcs.length; i++) {
-                if(i>0)
-                    ftpHost += "." + hcs[i];
-                else
-                    ftpHost = hcs[i] + N.FTP_SRV_SUFFIX;
-            }
-            setPropertyValue(PROP_HOSTNAME_FTP, ftpHost);
-        }
-        else {
-            throw new IllegalArgumentException("Invalid format of the GoodData REST API host: " +
-                    hostname);
-        }
+        comp.setPropertyDef(GoodDataConnection.PROP_PASSWORD, passwdProp);
 
-        
-        setCategories(CONNECTION_CATEGORIES, false);
+        PropertyConstraint protocolConstraint = new PropertyConstraint(Type.LOV, new String[] { "http", "https" });
+        comp.setPropertyDef(GoodDataConnection.PROP_PROTOCOL, new SimpleProp("Protocol", SimplePropType.SnapString,
+                "Connection Protocol", protocolConstraint, true));
+        comp.setPropertyValue(GoodDataConnection.PROP_PROTOCOL, "https");
+
+        comp.setPropertyDef(GoodDataConnection.PROP_HOSTNAME, new SimpleProp("Hostname", SimplePropType.SnapString,
+                "Hostname of GoodData server", true));
+        comp.setPropertyValue(GoodDataConnection.PROP_HOSTNAME, "secure.gooddata.com");
+
+        comp.setPropertyDef(GoodDataConnection.PROP_HOSTNAME_FTP, new SimpleProp("FTP host", SimplePropType.SnapString,
+                "FTP server where to upload the data", true));
+        comp.setPropertyValue(GoodDataConnection.PROP_HOSTNAME_FTP, "secure-upload.gooddata.com");
+
+        comp.setCategories(GoodDataConnection.CONNECTION_CATEGORIES, false);
+    
+        // Remove for production
+        comp.setPropertyValue(PROP_USERNAME, "grisha@snaplogic.com");
+        comp.setPropertyValue(PROP_PASSWORD, "snaplogic");
     }
 
     /**

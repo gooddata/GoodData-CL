@@ -25,13 +25,18 @@ package org.snaplogic.snap.gooddata;
 
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
+import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import org.snaplogic.cc.ComponentAPI;
 import org.snaplogic.cc.InputView;
 import org.snaplogic.cc.OutputView;
+import org.snaplogic.cc.prop.SimpleProp;
+import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
 import org.snaplogic.common.ComponentResourceErr;
 import org.snaplogic.common.exceptions.SnapComponentException;
+import org.snaplogic.snapi.PropertyConstraint;
 import org.snaplogic.snapi.ResDef;
+import org.snaplogic.snapi.PropertyConstraint.Type;
 
 import java.util.Map;
 
@@ -111,6 +116,4 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
         }
         return null;
     }
-
-
 }
