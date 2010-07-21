@@ -72,7 +72,7 @@ public class MySqlConnectorBackend extends AbstractConnectorBackend implements C
         String protocol = "jdbc:mysql:";
         Connection con = null;
         try {
-            con = DriverManager.getConnection(protocol + "//localhost/" + dbName, getUsername(), getPassword());
+            con = DriverManager.getConnection(protocol + "//localhost/" + dbName + "?jdbcCompliantTruncation=false", getUsername(), getPassword());
         }
         catch (SQLException e) {
             con = DriverManager.getConnection(protocol + "//localhost/mysql", getUsername(), getPassword());
