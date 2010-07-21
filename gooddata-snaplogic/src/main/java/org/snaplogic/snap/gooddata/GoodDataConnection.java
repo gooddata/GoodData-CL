@@ -152,13 +152,13 @@ public class GoodDataConnection extends ComponentAPI {
 
         comp.setPropertyDef(GoodDataConnection.PROP_HOSTNAME_FTP, new SimpleProp("FTP host", SimplePropType.SnapString,
                 "FTP server where to upload the data", true));
-        comp.setPropertyValue(GoodDataConnection.PROP_HOSTNAME_FTP, "secure-upload.gooddata.com");
+        comp.setPropertyValue(GoodDataConnection.PROP_HOSTNAME_FTP, "secure-di.gooddata.com");
 
         comp.setCategories(GoodDataConnection.CONNECTION_CATEGORIES, false);
     
         // Remove for production
-        comp.setPropertyValue(PROP_USERNAME, "grisha@snaplogic.com");
-        comp.setPropertyValue(PROP_PASSWORD, "snaplogic");
+        comp.setPropertyValue(PROP_USERNAME, "username");
+        comp.setPropertyValue(PROP_PASSWORD, "password");
     }
 
     /**

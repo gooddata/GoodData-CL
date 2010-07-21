@@ -1,5 +1,6 @@
 package org.snaplogic.snap.gooddata;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.snaplogic.cc.Capabilities;
 import org.snaplogic.cc.Capability;
@@ -31,6 +33,9 @@ import org.snaplogic.snapi.ResDef;
 import org.snaplogic.snapi.Snapi;
 import org.snaplogic.snapi.PropertyConstraint.Type;
 
+import com.gooddata.connector.CsvConnector;
+import com.gooddata.connector.backend.DerbyConnectorBackend;
+import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
@@ -91,6 +96,18 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	private static final String CREATE_NEW_PROJECT = "Create new...";
 	private static final String PROP_DLI_NAME = "dli_name";
 	public static String PROP_LABEL_DEFINITION = "labels_definition";
+	
+	private static final String DLI_SPEC_KEY_FIELD_NAME = "field_name";
+
+	private static final String DLI_SPEC_KEY_LDM_TYPE = "ldm_type";
+
+	private static final String DATE_FORMAT_KEY_FIELD_NAME = "field_name";
+
+	private static final String DATE_FORMAT_KEY_FORMAT = "format";
+
+	private static final String PROP_NEW_PROJECT_NAME = "new_project_name";
+
+	private static final String PROP_NEW_PROJECT_DESCR = "new_project_descr";
 
 	@Override
 	public String getDescription() {
@@ -311,13 +328,6 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		return resdef;
 	}
 
-	private static final String DLI_SPEC_KEY_FIELD_NAME = "field_name";
-
-	private static final String DLI_SPEC_KEY_LDM_TYPE = "ldm_type";
-
-	private static final String DATE_FORMAT_KEY_FIELD_NAME = "field_name";
-
-	private static final String DATE_FORMAT_KEY_FORMAT = "format";
 
 	/**
 	 * Step 4 of wizard - show a DLI based on the view picked in previous step. User can edit this of course. This will
@@ -351,6 +361,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			dliSpecValue.add(fieldSpec);
 		}
 		setPropertyValue(PROP_DLI_DEFINITION, dliSpecValue);
+		setPropertyDef("dli_name", new SimpleProp("DLI Name", SimpleProp.SimplePropType.SnapString, "DLI Name", true));
 	}
 
 	private void getProjects(ComponentResourceErr err) {
@@ -381,7 +392,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 				throw new SnapComponentException(gdcle);
 			}
 			err.getResourceRefErr(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF).setMessage(
-					"Could not validate connection reference: %s", new Object[] { gdcle });
+					"Could not validate connection reference (wrong username/password?): %s", new Object[] { gdcle });
 			return;
 		}
 
@@ -419,6 +430,12 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		}
 		setPropertyValue(PROP_DATE_FORMAT_DEFINITION, formatSpecValue);
 	}
+	
+	private void setEmptyHiddenProperty(String name) {
+		setPropertyDef(name, new SimpleProp(name, SimplePropType.SnapString, "",
+				new PropertyConstraint(Type.HIDDEN, true), false));
+		setPropertyValue(name, null);
+	}
 
 	/**
 	 * This is to be run in step 4. The logic is this: If there are fields that have type
@@ -432,12 +449,14 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	 * @throws NumericFieldsCannotBeSpecifiedAsDatesException
 	 *             if any fields of type {@link SnapNumber} are
 	 */
-	private List<String> checkDateFormats(ComponentResourceErr err)
-			throws NumericFieldsCannotBeSpecifiedAsDatesException {
-		List<String> result = new ArrayList<String>();
+	private List<String> checkDateFormats(ComponentResourceErr err) {
+		// Get result of the DLI specification
 		List<Map> dliSpecValue = (List<Map>) getListPropertyValue(PROP_DLI_DEFINITION);
+
+		// Not really used, but might be handy
 		Map<String, Object> resdefAndFields = getResDefandFieldsFromSourceView();
 		List<List<String>> fields = (List<List<String>>) resdefAndFields.get("fields");
+
 		List<String> fieldsSpecedAsDate = new ArrayList<String>();
 		// Look for fields speced as LDM_TYPE_DATE
 		for (Map<String, String> fieldSpecs : dliSpecValue) {
@@ -448,43 +467,8 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			}
 			fieldsSpecedAsDate.add(specedFieldName);
 		}
-		// Look for fields that are strings that were speced as Date
-		// If there are fields that speced as date but were numbers,
-		// we will error out
-		String notStringOrDatetimeFieldSpecedAsDates = "";
-		int fieldIdx = -1;
-		for (List<String> field : fields) {
-			fieldIdx++;
-			String fieldName = field.get(0);
-			if (fieldsSpecedAsDate.indexOf(fieldName) < 0) {
-				continue;
-			}
-			String snapTypeStr = field.get(1);
-			if (snapTypeStr.equals(SnapFieldType.SnapDateTime.toString())) {
-				continue;
-			} else if (snapTypeStr.equals(SnapFieldType.SnapString.toString())) {
-				result.add(fieldName);
-			} else {
-				if (notStringOrDatetimeFieldSpecedAsDates.length() > 0) {
-					notStringOrDatetimeFieldSpecedAsDates += ",";
-				}
-				notStringOrDatetimeFieldSpecedAsDates += "'" + fieldName + "'";
-			}
 
-		}
-		if (notStringOrDatetimeFieldSpecedAsDates.length() > 0) {
-			ListPropErr listPropErr = (ListPropErr) err.getPropertyErr(PROP_DLI_DEFINITION);
-			// TODO It appears Java SnAPI implementation is missing
-			// functionality to
-			// target the errors to a particular list item...
-			// So we resort to concatenating things
-			String errMsg = "The following field(s) are not of type '" + SnapFieldType.SnapString + "' or '"
-					+ SnapFieldType.SnapDateTime + "', but are specified as " + SourceColumn.LDM_TYPE_DATE + ": "
-					+ notStringOrDatetimeFieldSpecedAsDates;
-			listPropErr.setMessage(errMsg);
-			throw new NumericFieldsCannotBeSpecifiedAsDatesException(err);
-		}
-		return result;
+		return fieldsSpecedAsDate;
 	}
 
 	private void confirmationScreen() {
@@ -570,28 +554,34 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 				getProjects(err);
 				break;
 			case 3:
+				String projectName = getStringPropertyValue(GoodDataPut.PROP_PROJECT_NAME);
+				if (CREATE_NEW_PROJECT.equals(projectName)) {
+					// Need to display request for connection properties
+					gatherProjectProperties(err);
+					break;
+				} else {
+					nextStep();
+				}
+			case 4:
 				getViewCandidates(err);
 				break;
-			case 4:
+			case 5:
 				getDLIConfig(err);
 				break;
-			case 5:
-				try {
-					List<String> stringDateFields = checkDateFormats(err);
-					if (stringDateFields.isEmpty()) {
-						// do nothing
-						nextStep();
-					} else {
-						getDateFormats(err, stringDateFields);
-						break;
-					}
-				} catch (NumericFieldsCannotBeSpecifiedAsDatesException nfcbsade) {
-					return;
-				}
 			case 6:
+				List<String> stringDateFields = checkDateFormats(err);
+				if (stringDateFields.isEmpty()) {
+					setEmptyHiddenProperty(PROP_DATE_FORMAT_DEFINITION);
+					nextStep();
+				} else {
+					getDateFormats(err, stringDateFields);
+					break;
+				}
+			case 7:
 				try {
-					List stringLabelFields = checkLabels(err);
+					List<String> stringLabelFields = checkLabels(err);
 					if (stringLabelFields.isEmpty()) {
+						setEmptyHiddenProperty(PROP_LABEL_DEFINITION);
 						nextStep();
 					} else {
 						getLabels(err, stringLabelFields);
@@ -600,7 +590,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 				} catch (NumericFieldsCannotBeSpecifiedAsDatesException nfcbsade) {
 					return;
 				}
-			case 7:
+			case 8:
 				confirmationScreen();
 				return;
 			}
@@ -610,22 +600,49 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		}
 	}
 
+	private void gatherProjectProperties(ComponentResourceErr err) {
+		nextStep();
+		setPropertyDef(PROP_NEW_PROJECT_DESCR, new SimpleProp("New Project Description", SimplePropType.SnapString, true));
+		setPropertyDef(PROP_NEW_PROJECT_NAME, new SimpleProp("New Project Name", SimplePropType.SnapString, true));
+	}
+
 	@Override
 	public void execute(Map<String, InputView> inputViews, Map<String, OutputView> outputViews) {
 		ExtendedSnapi snapi = ExtendedSnapi.getExtendedSnapi();
 		String gdUriPrefix = getStringPropertyValue(PROP_GD_URI_PREFIX);
 		String serverUri = ComponentContainer.getServerUri();
 		String gdConnUri = getStringPropertyValue(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF);
+		
+		// Either create a new connection or reuse existing
+		ResDef connResDef;
 		if (gdConnUri.equals(CREATE_NEW_CONNECTION)) {
 			gdConnUri = gdUriPrefix + "/GoodDataConnection";
-			ResDef connResDef = createConnectionObject(snapi, serverUri);
+			connResDef = createConnectionObject(snapi, serverUri);
 			connResDef.save(gdConnUri);
+		} else {
+			connResDef = getResourceObject(gdConnUri, null);
+		}
+		
+		// Login to GoodData
+		GdcRESTApiWrapper restApi;
+		try {
+			restApi = GoodDataConnection.login(connResDef, this);
+		} catch (GdcLoginException gdcle) {
+			elog(gdcle);
+			throw new SnapComponentException(gdcle);
 		}
 
+		// Either create a new project, or parse project URL to get it
 		String projectName = getStringPropertyValue(GoodDataPut.PROP_PROJECT_NAME);
+		String projectId;
 		if (CREATE_NEW_PROJECT.equals(projectName)) {
 			// Create a new project
-
+			String newProjectName = getStringPropertyValue(PROP_NEW_PROJECT_NAME);
+			String newProjectDescr = getStringPropertyValue(PROP_NEW_PROJECT_DESCR);
+			projectId = restApi.createProject(newProjectName, newProjectDescr, null);
+		} else {
+			//Get Project ID
+			projectId = parseProjectName(projectName);
 		}
 
 		String dliName = getStringPropertyValue(PROP_DLI_NAME);
@@ -647,21 +664,31 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			String ldmType = (String) entry.get(DLI_SPEC_KEY_LDM_TYPE);
 			SourceColumn column = new SourceColumn(fieldName, ldmType, fieldName);
 
-			if (dateFormats.containsKey(fieldName)) {
+			if (dateFormats != null && dateFormats.containsKey(fieldName)) {
 				column.setFormat((String) dateFormats.get(fieldName));
 			}
 
-			if (labelParents.containsKey(fieldName)) {
+			if (labelParents != null && labelParents.containsKey(fieldName)) {
 				column.setReference((String) labelParents.get(fieldName));
 			}
 			ss.addColumn(column);
 		}
 
-		System.out.println(ss.toString());
+		try {
+			PdmSchema pdm = PdmSchema.createSchema(ss);
+			DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
+			derbyConnectorBackend.setProjectId(projectId);
+			derbyConnectorBackend.setPdm(pdm);
+			CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
+			csvConnector.setSchema(ss);
+			csvConnector.initialize();
+			String maql = csvConnector.generateMaql();
+			System.out.println(maql);
 
-		// Create the model XML
-		String xml = "";
-		// TODO add code to actually create the model here.
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		String gdInput = getStringPropertyValue(PROP_GD_INPUT);
 		String[] uriAndView = gdInput.split("::");
@@ -720,6 +747,15 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		// pipe.save(gdUriPrefix + "/Pipeline");
 	}
 
+	private String parseProjectName(String projectName) {
+		StringTokenizer t = new StringTokenizer(projectName, " ");
+		String result = null;
+		while (t.hasMoreElements()) {
+			result = t.nextToken();
+		}
+		return result;
+	}
+
 	private ResDef createConnectionObject(ExtendedSnapi snapi, String serverUri) {
 		ResDef connResDef = snapi.createResourceObject(serverUri, GoodDataConnection.class.getName(), null);
 		String[] connProps = { GoodDataConnection.PROP_HOSTNAME, GoodDataConnection.PROP_HOSTNAME_FTP,
@@ -732,6 +768,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	}
 
 	private HashMap<String, String> propertySheetToHash(List<Object> list, String key_key, String value_key) {
+		if (list == null) return null;
 		HashMap<String, String> result = new HashMap<String, String>();
 		for (Iterator localIterator = list.iterator(); localIterator.hasNext();) {
 			Object item = localIterator.next();
