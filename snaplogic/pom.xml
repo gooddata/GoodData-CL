@@ -29,7 +29,7 @@
     <parent>
         <groupId>com.gooddata.cl</groupId>
         <artifactId>gooddata-cl</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.5-BETA</version>
     </parent>
 
     <artifactId>gooddata-cl-snaplogic-lib</artifactId>
