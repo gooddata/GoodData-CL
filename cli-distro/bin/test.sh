@@ -62,4 +62,10 @@ for backend in MYSQL DERBY ; do
     echo 'Dropping the naming test project and snapshots'
     drop "`cat tests/naming/pid`"
 
+    echo 'Running empty_lines test'
+    bin/gdi.sh --backend "$backend" tests/empty_lines/cmd.txt
+
+    echo 'Dropping the empty_lines test project and snapshots'
+    drop "`cat tests/empty_lines/pid`"
+
 done
