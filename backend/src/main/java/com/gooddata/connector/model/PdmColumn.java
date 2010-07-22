@@ -37,7 +37,7 @@ public class PdmColumn {
 
     // data types
     public static final String PDM_COLUMN_TYPE_TEXT = "VARCHAR(128)";
-    public static final String PDM_COLUMN_TYPE_LONG_TEXT = "VARCHAR(768)";
+    public static final String PDM_COLUMN_TYPE_LONG_TEXT = "VARCHAR(499)";
     public static final String PDM_COLUMN_TYPE_DATE = "INT";
     public static final String PDM_COLUMN_TYPE_INT = "INT";
     public static final String PDM_COLUMN_TYPE_LONG = "BIGINT";
