@@ -19,7 +19,7 @@ for backend in MYSQL DERBY ; do
 
     echo 'Updating the data set in the quotes demo'
     echo "RetrieveProject(fileName = \"examples/quotes/pid\");" > "$tmp"
-    grep '^\(LoadCsv\|Transfer\)' examples/quotes/cmd.txt >> "$tmp"
+    grep '^\(LoadCsv\|Transfer\)' examples/quotes/quotes.txt >> "$tmp"
     bin/gdi.sh --backend "$backend" "$tmp"
 
     echo 'Dropping the quotes project and snapshots'
