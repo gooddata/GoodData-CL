@@ -15,7 +15,7 @@ function drop() {
 
 for backend in MYSQL DERBY ; do
     echo 'Running quotes demo'
-    bin/gdi.sh --backend "$backend" examples/quotes/cmd.txt
+    bin/gdi.sh --backend "$backend" examples/quotes/quotes.txt
 
     echo 'Updating the data set in the quotes demo'
     echo "RetrieveProject(fileName = \"examples/quotes/pid\");" > "$tmp"
