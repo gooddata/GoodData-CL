@@ -475,7 +475,7 @@ public class GdcRESTApiWrapper {
                 l.debug("Error getting report definition for result uri="+lastResultUri);
                 throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
             }
-            JSONObject result = q.getJSONObject("reportResult");
+            JSONObject result = q.getJSONObject("reportResult2");
             if (result == null) {
                 l.debug("Error getting report definition for result uri="+lastResultUri);
                 throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
@@ -486,7 +486,6 @@ public class GdcRESTApiWrapper {
                 throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
             }
             return content.getString("reportDefinition");
-
         }
         l.debug("Error getting report definition for report uri="+reportUri+" . No report results!");
         throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri+
