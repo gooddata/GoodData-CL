@@ -18,7 +18,6 @@ import org.snaplogic.cc.InputView;
 import org.snaplogic.cc.OutputView;
 import org.snaplogic.cc.prop.DictProp;
 import org.snaplogic.cc.prop.ListProp;
-import org.snaplogic.cc.prop.ListPropErr;
 import org.snaplogic.cc.prop.SimpleProp;
 import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
 import org.snaplogic.common.ComponentResourceErr;
@@ -108,6 +107,14 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	private static final String PROP_NEW_PROJECT_NAME = "new_project_name";
 
 	private static final String PROP_NEW_PROJECT_DESCR = "new_project_descr";
+
+	private static final String PROP_GD_COMP_NAME = "component_name";
+
+	private static final Object DEFAULT_GD_COMP_NAME = "GoodDataUpload";
+
+	private static final String PROP_GD_CONN_NAME = "new_connection_name";
+
+	private static final Object DEFAULT_GD_CONN_NAME = "GoodDataConnection";
 
 	@Override
 	public String getDescription() {
@@ -219,6 +226,9 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 		setPropertyDef(PROP_GD_URI_PREFIX, new SimpleProp("URI prefix", SimplePropType.SnapString, "URI prefix", true));
 		setPropertyValue(PROP_GD_URI_PREFIX, DEFAULT_GD_URI_PREFIX);
+		
+		setPropertyDef(PROP_GD_COMP_NAME, new SimpleProp("Component Name", SimplePropType.SnapString, "Component Name", true));
+		setPropertyValue(PROP_GD_COMP_NAME, DEFAULT_GD_COMP_NAME);
 
 		// TODO we should add another property, "overwrite" to control whether
 		// to overwrite
@@ -233,6 +243,10 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	 */
 	private void gatherConnectionProps(ComponentResourceErr err) {
 		nextStep();
+		
+		setPropertyDef(PROP_GD_CONN_NAME, new SimpleProp("Connection Name", SimplePropType.SnapString, "Connection Name", true));
+		setPropertyValue(PROP_GD_CONN_NAME, DEFAULT_GD_CONN_NAME);
+		
 		GoodDataConnection.createGDConnectionResourceTemplate(this);
 	}
 
@@ -616,9 +630,12 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		// Either create a new connection or reuse existing
 		ResDef connResDef;
 		if (gdConnUri.equals(CREATE_NEW_CONNECTION)) {
-			gdConnUri = gdUriPrefix + "/GoodDataConnection";
+			String connectionName = getStringPropertyValue(PROP_GD_CONN_NAME);
+			info("Creating new connection: " + connectionName);
+			gdConnUri = gdUriPrefix + "/" + connectionName;
 			connResDef = createConnectionObject(snapi, serverUri);
 			connResDef.save(gdConnUri);
+			info("Connection " + gdConnUri + " created");
 		} else {
 			connResDef = getResourceObject(gdConnUri, null);
 		}
@@ -633,16 +650,22 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		}
 
 		// Either create a new project, or parse project URL to get it
-		String projectName = getStringPropertyValue(GoodDataPut.PROP_PROJECT_NAME);
+		String idNameCompound = getStringPropertyValue(GoodDataPut.PROP_PROJECT_NAME);
+		String projectName;
 		String projectId;
-		if (CREATE_NEW_PROJECT.equals(projectName)) {
+		if (CREATE_NEW_PROJECT.equals(idNameCompound)) {
 			// Create a new project
 			String newProjectName = getStringPropertyValue(PROP_NEW_PROJECT_NAME);
 			String newProjectDescr = getStringPropertyValue(PROP_NEW_PROJECT_DESCR);
+			info("Creating new project in GoodData: " + newProjectName);
 			projectId = restApi.createProject(newProjectName, newProjectDescr, null);
+			info("Project " + newProjectName + " created, its ID is " + projectId);
+			// We will need this later
+			projectName = newProjectName;
 		} else {
 			//Get Project ID
-			projectId = parseProjectName(projectName);
+			projectId = parseProjectId(idNameCompound);
+			projectName = parseProjectName(idNameCompound);
 		}
 
 		String dliName = getStringPropertyValue(PROP_DLI_NAME);
@@ -675,21 +698,30 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		}
 
 		try {
+			// PdmSchema is a representation of SourceSchema in the ConnectorBackend
 			PdmSchema pdm = PdmSchema.createSchema(ss);
+			//TODO Replace the Derby backend with stream backend
+			// Initialize embedded DB backend
 			DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
 			derbyConnectorBackend.setProjectId(projectId);
 			derbyConnectorBackend.setPdm(pdm);
+			// Setup CSV connector that will be used for reading the data
 			CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
 			csvConnector.setSchema(ss);
 			csvConnector.initialize();
+			// Generate MAQL for Source Schema
 			String maql = csvConnector.generateMaql();
-			System.out.println(maql);
-
+			// Execute the MAQL (creates DLI)
+			info("Going to create a new DLI " + dliName + " in project " + projectName);
+			restApi.executeMAQL(projectId, maql);
+			info("DLI " + dliName + " created");
+			// We are done here, project is set up in GoodData
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			elog(e);
+			throw new SnapComponentException(e);
 		}
 
+		info("Parsing output view of the source component...");
 		String gdInput = getStringPropertyValue(PROP_GD_INPUT);
 		String[] uriAndView = gdInput.split("::");
 		String uri = uriAndView[0];
@@ -697,20 +729,20 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 		Map<String, Object> resdefAndFields = getResDefandFieldsFromSourceView();
 		ResDef srcResDef = (ResDef) resdefAndFields.get(Keys.RESDEF);
+		info("Source component understood");
 
-		String gdPutUri = gdUriPrefix + "/GoodDataUpload";
-		ResDef putResDef = snapi.createResourceObject(serverUri, GoodDataPut.class.getName(), null);
+		String componentName = getStringPropertyValue(PROP_GD_COMP_NAME);
+		String gdPutUri = gdUriPrefix + "/" + componentName;
+		info("Creating new GoodDataPutDelimited component '" + componentName + "'. Its URI will be " + gdPutUri);
+		ResDef putResDef = snapi.createResourceObject(serverUri, GoodDataPutDenormalized.class.getName(), null);
 		putResDef.setResourceRef(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF, gdConnUri);
-		// Ideally do suggest and then set the DLI and project values
-		// But to do that, the model has to already have been created
-		// it will have to correspond to the view we will link down the
-		// road here.
-		putResDef = putResDef.suggestValues(null);
-		// We remove the suggested view for now because we haven't created the
-		// model
-		// and haven't set the proper values after suggest so therefore
-		// suggested view is probably wrong - but in reality it should be
-		// the same as srcResDef's output view
+		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_NAME,projectName);
+		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_ID,projectId);
+		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_DLI,dliName);
+		info("Component '" + componentName + "' created and its basic properties were set.");
+
+		info("Transferring output view of the source component to component '" + componentName + "' (as Input View).");
+		// Let's remove possible existing views and insert the right one
 		Collection<String> inViews = putResDef.listInputViewNames();
 		String inViewName = "Input";
 		if (inViews.size() > 0) {
@@ -731,7 +763,9 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			i++;
 		}
 		putResDef.addRecordInputView(inViewName, fields, "", true);
+		info("View duplicated");
 		putResDef.save(gdPutUri);
+		info("Component '" + componentName + "' saved to Snaplogic");
 
 		// This part is pending the fix of
 		// https://www.snaplogic.org/trac/ticket/2571
@@ -747,11 +781,21 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		// pipe.save(gdUriPrefix + "/Pipeline");
 	}
 
-	private String parseProjectName(String projectName) {
-		StringTokenizer t = new StringTokenizer(projectName, " ");
+	private String parseProjectId(String idNameCompound) {
+		StringTokenizer t = new StringTokenizer(idNameCompound, " ");
 		String result = null;
 		while (t.hasMoreElements()) {
 			result = t.nextToken();
+		}
+		return result;
+	}
+	
+	private String parseProjectName(String idNameCompound) {
+		StringTokenizer t = new StringTokenizer(idNameCompound, " ");
+		String result = null;
+		int tokenCount = t.countTokens();
+		for (int i = 0; i < tokenCount - 2; i++) {
+			result += t.nextToken();
 		}
 		return result;
 	}
