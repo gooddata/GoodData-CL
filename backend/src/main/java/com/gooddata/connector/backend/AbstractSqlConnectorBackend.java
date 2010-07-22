@@ -761,6 +761,19 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     }
 
     /**
+     * Returns non-autoincrement columns count
+     * @param tbl table
+     * @return non-autoincrement columns count
+     */
+    protected int getNonAutoincrementColumnsCount(PdmTable tbl) {
+        int cnt =0;
+        for (PdmColumn col : tbl.getColumns())
+            if(!col.isAutoIncrement())
+                cnt++;
+        return cnt;
+    }
+
+    /**
      * Returns the prepared statement quetionmarks
      * @param tbl table
      * @return prepared statement question column
@@ -776,6 +789,8 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         }
         return cols;
     }
+
+
 
     /**
      * Generates the where clause for unloading data to CSVs in the data loading package
@@ -975,19 +990,28 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        String source = sourceTable.getName();
 	        String cols = getNonAutoincrementColumns(sourceTable);
             String qmrks = getPreparedStatementQuestionMarks(sourceTable);
+            int cnt = getNonAutoincrementColumnsCount(sourceTable);
             s = c.prepareStatement("INSERT INTO "+source+"("+cols+") VALUES ("+qmrks+")");
             CSVReader csvIn = new CSVReader(FileUtil.createBufferedUtf8Reader(file));
             String[] nextLine;
+            int rowCnt = 0;
             while ((nextLine = csvIn.readNext()) != null) {
+                rowCnt++;
                 if(hasHeader)
                     hasHeader = false;
                 else {
-                    for(int i=1; i<=nextLine.length; i++)
-                        if(nextLine[i-1]!=null)
-                            s.setString(i,nextLine[i-1]);
-                        else
-                            s.setString(i,"");
-                    s.addBatch();
+                    if(nextLine.length == cnt) {
+                        for(int i=1; i<=nextLine.length; i++)
+                            if(nextLine[i-1]!=null)
+                                s.setString(i,nextLine[i-1]);
+                            else
+                                s.setString(i,"");
+                        s.addBatch();
+                    }
+                    else {
+                        l.warn("Skipping row "+file+":"+rowCnt+" as it has "+nextLine.length+
+                                " columns. Expecting "+cnt+" columns.");
+                    }
                 }
 	        }
             s.executeBatch();
