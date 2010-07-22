@@ -339,12 +339,12 @@ public class GdcRESTApiWrapper {
         setJsonHeaders(interfacesGet);
         String response = executeMethodOk(interfacesGet);
         JSONObject responseObject = JSONObject.fromObject(response);
-        if (responseObject == null) {
+        if (responseObject.isNullObject()) {
             l.debug("The project id=" + projectId + " doesn't exist!");
             throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
         }
         JSONObject interfaceQuery = responseObject.getJSONObject("about");
-        if (interfaceQuery == null) {
+        if (interfaceQuery.isNullObject()) {
             l.debug("The project id=" + projectId + " doesn't exist!");
             throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
         }
@@ -378,12 +378,12 @@ public class GdcRESTApiWrapper {
         setJsonHeaders(dliGet);
         String response = executeMethodOk(dliGet);
         JSONObject partsResponseObject = JSONObject.fromObject(response);
-        if (partsResponseObject == null) {
+        if (partsResponseObject.isNullObject()) {
             l.debug("No DLI parts DLI id = "+dliId+" from project id="+projectId);
             throw new GdcProjectAccessException("No DLI parts DLI id = "+dliId+" from project id="+projectId);
         }
         JSONObject dli = partsResponseObject.getJSONObject("dataSetDLI");
-        if (dli == null) {
+        if (dli.isNullObject()) {
             l.debug("No DLI parts DLI id = "+dliId+" from project id="+projectId);
             throw new GdcProjectAccessException("No DLI parts DLI id = "+dliId+" from project id="+projectId);
         }
@@ -410,12 +410,12 @@ public class GdcRESTApiWrapper {
         setJsonHeaders(qGet);
         String qr = executeMethodOk(qGet);
         JSONObject q = JSONObject.fromObject(qr);
-        if (q == null) {
+        if (q.isNullObject()) {
             l.debug("Enumerating reports for project id="+projectId+" failed.");
             throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
         }
         JSONObject qry = q.getJSONObject("query");
-        if (qry == null) {
+        if (qry.isNullObject()) {
             l.debug("Enumerating reports for project id="+projectId+" failed.");
             throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
         }
@@ -445,17 +445,17 @@ public class GdcRESTApiWrapper {
         setJsonHeaders(qGet);
         String qr = executeMethodOk(qGet);
         JSONObject q = JSONObject.fromObject(qr);
-        if (q == null) {
+        if (q.isNullObject()) {
             l.debug("Error getting report definition for report uri="+reportUri);
             throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
         }
         JSONObject report = q.getJSONObject("report");
-        if (report == null) {
+        if (report.isNullObject()) {
             l.debug("Error getting report definition for report uri="+reportUri);
             throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
         }
         JSONObject content = report.getJSONObject("content");
-        if (content == null) {
+        if (content.isNullObject()) {
             l.debug("Error getting report definition for report uri="+reportUri);
             throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
         }
@@ -471,17 +471,17 @@ public class GdcRESTApiWrapper {
             setJsonHeaders(qGet);
             qr = executeMethodOk(qGet);
             q = JSONObject.fromObject(qr);
-            if (q == null) {
+            if (q.isNullObject()) {
                 l.debug("Error getting report definition for result uri="+lastResultUri);
                 throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
             }
             JSONObject result = q.getJSONObject("reportResult2");
-            if (result == null) {
+            if (result.isNullObject()) {
                 l.debug("Error getting report definition for result uri="+lastResultUri);
                 throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
             }
             content = result.getJSONObject("content");
-            if (result == null) {
+            if (result.isNullObject()) {
                 l.debug("Error getting report definition for result uri="+lastResultUri);
                 throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
             }
@@ -517,19 +517,19 @@ public class GdcRESTApiWrapper {
                 setJsonHeaders(tg);
                 String t = executeMethodOk(tg);
                 JSONObject tr = JSONObject.fromObject(t);
-                if(tr == null) {
+                if(tr.isNullObject()) {
                     l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
                     throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
                             "Returned invalid result result="+tr);                    
                 }
                 JSONObject reportResult = tr.getJSONObject("reportResult");
-                if(reportResult == null) {
+                if(reportResult.isNullObject()) {
                     l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
                     throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
                             "Returned invalid result result="+tr);
                 }
                 JSONObject content = reportResult.getJSONObject("content");
-                if(content == null) {
+                if(content.isNullObject()) {
                     l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
                     throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
                             "Returned invalid result result="+tr);
@@ -751,17 +751,17 @@ public class GdcRESTApiWrapper {
         setJsonHeaders(req);
         String resp = executeMethodOk(req);
         JSONObject parsedResp = JSONObject.fromObject(resp);
-        if(parsedResp == null) {
+        if(parsedResp.isNullObject()) {
             l.debug("Can't get project from "+uri);
             throw new GdcRestApiException("Can't get project from "+uri);
         }
         JSONObject project = parsedResp.getJSONObject("project");
-        if(project == null) {
+        if(project.isNullObject()) {
             l.debug("Can't get project from "+uri);
             throw new GdcRestApiException("Can't get project from "+uri);
         }
         JSONObject links = project.getJSONObject("links");
-        if(links == null) {
+        if(links.isNullObject()) {
             l.debug("Can't get project from "+uri);
             throw new GdcRestApiException("Can't get project from "+uri);
         }
