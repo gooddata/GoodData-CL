@@ -24,6 +24,7 @@
 package org.snaplogic.snap.gooddata;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -34,8 +35,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Map.Entry;
 
+import org.apache.log4j.MDC;
 import org.snaplogic.cc.Capabilities;
 import org.snaplogic.cc.Capability;
 import org.snaplogic.cc.InputView;
@@ -49,11 +52,14 @@ import org.snaplogic.common.Field.SnapFieldType;
 import org.snaplogic.common.exceptions.SnapComponentException;
 import org.snaplogic.log.Log;
 import org.snaplogic.snapi.PropertyConstraint;
+import org.snaplogic.snapi.ResDef;
 import org.snaplogic.snapi.PropertyConstraint.Type;
 import org.snaplogic.util.ConvertUtils;
 
+import com.gooddata.connector.Connector;
 import com.gooddata.connector.CsvConnector;
 import com.gooddata.connector.backend.DerbyConnectorBackend;
+import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.GdcProjectAccessException;
 import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.exception.GdcUploadErrorException;
@@ -64,7 +70,13 @@ import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
+import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
+import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
+import com.gooddata.util.StringUtil;
 
 public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 
@@ -109,6 +121,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 	public static final String PROP_INCREMENTAL = "overwrite";
 	private static final String PROP_TRANSFER_SNAPSHOTS = "transfer_snapshots";
 	private static final String PROP_WAIT_FINISH = "wait_finish";
+	public static final String PROP_SOURCE_SCHEMA = "put_comp_source_schema";
 
 	@Override
 	public String getAPIVersion() {
@@ -125,7 +138,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 
 	private SimpleProp projNameProp = new SimpleProp("Project Name", SimplePropType.SnapString, "Project name",
 			projNameLovConstraint, true);
-	
+
 	private SimpleProp projIdProp = new SimpleProp("Project Id", SimplePropType.SnapString, "Project id",
 			projIdLovConstraint, true);
 
@@ -140,21 +153,25 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 		setPropertyDef(PROP_PROJECT_NAME, projNameProp);
 		setPropertyDef(PROP_PROJECT_ID, projIdProp);
 		setPropertyDef(PROP_DLI, dliProp);
-		
+
 		setPropertyDef(PROP_INCREMENTAL, new SimpleProp("Incremental", SimplePropType.SnapBoolean,
 				"Append if true, replace if false", true));
 		setPropertyValue(PROP_INCREMENTAL, true);
-		
+
 		setPropertyDef(PROP_WAIT_FINISH, new SimpleProp("Wait  for Finish", SimplePropType.SnapBoolean,
 				"waits for the server-side processing", true));
 		setPropertyValue(PROP_WAIT_FINISH, true);
-		
-		PropertyConstraint transferSnapshotConstrain = new PropertyConstraint(Type.LOV, new String[] {LAST_SNAPSHOT, ALL_SNAPSHOTS});
-		SimpleProp transferSnProp = new SimpleProp("Transfer Snapshots", SimplePropType.SnapString, "Snapshots to transfer to GoodData",
-				transferSnapshotConstrain, true);
+
+		PropertyConstraint transferSnapshotConstrain = new PropertyConstraint(Type.LOV, new String[] { LAST_SNAPSHOT,
+				ALL_SNAPSHOTS });
+		SimpleProp transferSnProp = new SimpleProp("Transfer Snapshots", SimplePropType.SnapString,
+				"Snapshots to transfer to GoodData", transferSnapshotConstrain, true);
 		setPropertyDef(PROP_TRANSFER_SNAPSHOTS, transferSnProp);
-		
-		
+
+		setPropertyDef(PROP_SOURCE_SCHEMA, new SimpleProp(PROP_SOURCE_SCHEMA, SimplePropType.SnapString, "",
+				new PropertyConstraint(Type.HIDDEN, true), true));
+		setPropertyValue(PROP_SOURCE_SCHEMA, "");
+
 	}
 
 	@Override
@@ -347,15 +364,38 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 	public void execute(Map<String, InputView> inputViews, Map<String, OutputView> outputViews) {
 
 		info("Staged CSVs will be uploaded to GoodData. Logging in...");
-		GdcRESTApiWrapper restApi = login();
-		GdcFTPApiWrapper ftpApi = ftpLogin();
+		//First we need connection to GoodData
+		ResDef gdConnection = getConnectionReference(null);
+		NamePasswordConfiguration httpConfiguration = GoodDataConnection.getHttpConfiguration(gdConnection);
+		NamePasswordConfiguration ftpConfiguration = GoodDataConnection.getFtpConfiguration(gdConnection);
+		
+		// And extract its parameters
+		CliParams cliParams = new CliParams();
+		cliParams.setHttpConfig(httpConfiguration);
+		cliParams.setFtpConfig(ftpConfiguration);
 
+		// All the properties set by the wizard and the user...
 		String projectName = (String) getPropertyValue(PROP_PROJECT_NAME);
 		String projectId = getStringPropertyValue(PROP_PROJECT_ID);
 		String dliName = (String) getPropertyValue(PROP_DLI);
 		String transferSnapshots = getStringPropertyValue(PROP_TRANSFER_SNAPSHOTS);
 		Boolean incremental = (Boolean) getPropertyValue(PROP_INCREMENTAL);
 		boolean waitForFinish = getBooleanPropertyValue(PROP_WAIT_FINISH);
+		String sourceSchemaString = getStringPropertyValue(PROP_SOURCE_SCHEMA);
+		
+		// Properties for GdcDI Commands
+		Properties props = new Properties();
+		props.setProperty("incremental", incremental.toString());
+		props.setProperty("waitForFinish", new Boolean(waitForFinish).toString());
+
+		// SourceSchema was serialized into string by the wizard, let's get it
+		SourceSchema sourceSchema;
+		try {
+			sourceSchema = SourceSchema.createSchema(new ByteArrayInputStream(sourceSchemaString.getBytes()));
+		} catch (IOException e) {
+			elog(e);
+			throw new SnapComponentException(e);
+		}
 
 		if (projectId == null || dliName == null)
 			throw new SnapComponentException("Project or DLI is not specified!");
@@ -366,20 +406,47 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 		String archivePath = null;
 
 		try {
+			// Transform data flowing into our input view into CSV file
 			File tmpDir = FileUtil.createTempDir();
 			stagedCSVs = stageInputsAsCsv(inputViews, true, false, tmpDir);
-			
+
 			if (stagedCSVs.size() == 1) {
 				// One file - exactly what's expected
+				// Setup backend
 				DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
+				derbyConnectorBackend.setProjectId(projectId);
+				derbyConnectorBackend.setPdm(PdmSchema.createSchema(sourceSchema));
+
+				// setup CSV connector
 				CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
+				csvConnector.setSchema(sourceSchema);
+				csvConnector.initialize();
 				csvConnector.setHasHeader(false);
 				csvConnector.setDataFile(stagedCSVs.entrySet().iterator().next().getValue());
-				// Nastavit project ID
+
+				// Setup processing context
+				ProcessingContext context = new ProcessingContext();
+				context.setConnector(csvConnector);
+				context.setConnectorBackend(derbyConnectorBackend);
+				context.setProjectId(projectId);
+								
+				// Finally, do the job
+				if (transferSnapshots.equals(LAST_SNAPSHOT)) {
+					Command cmd = new Command("TransferLastSnapshot");
+					cmd.setParameters(props);
+					csvConnector.processCommand(cmd, cliParams, context);
+				} else if (transferSnapshots.equals(ALL_SNAPSHOTS)) {
+					Command cmd = new Command("TransferAllSnapshots");
+					cmd.setParameters(props);
+					csvConnector.processCommand(cmd, cliParams, context);
+				}
+				
 			} else {
 				error("Unexpected number of staged files: " + stagedCSVs.size());
 				throw new SnapComponentException("Unexpected number of staged files: " + stagedCSVs.size());
 			}
+			
+			info("Data for project " + projectId + " updated");
 
 		} catch (HttpMethodException e) {
 			elog(e);

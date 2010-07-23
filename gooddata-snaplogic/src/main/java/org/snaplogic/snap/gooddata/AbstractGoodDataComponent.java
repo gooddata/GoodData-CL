@@ -68,15 +68,7 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
     }
 
     protected GdcRESTApiWrapper login(ComponentResourceErr err) {
-        ResDef conResDef = getReferencedResDef(GOODDATA_CONNECTION_REF);
-        if (conResDef == null) {
-            if (err == null) {
-                throw new SnapComponentException("Could not find connection reference");
-            } else {
-                err.getResourceRefErr(GOODDATA_CONNECTION_REF).setMessage("Connection reference not found");
-                return null;
-            }
-        }
+        ResDef conResDef = getConnectionReference(err);
         try {
 
             GdcRESTApiWrapper restApi = GoodDataConnection.login(conResDef, this);
@@ -91,9 +83,10 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
         }
         return null;
     }
-    
-    protected GdcFTPApiWrapper ftpLogin(ComponentResourceErr err) {
-        ResDef conResDef = getReferencedResDef(GOODDATA_CONNECTION_REF);
+
+
+	protected ResDef getConnectionReference(ComponentResourceErr err) {
+		ResDef conResDef = getReferencedResDef(GOODDATA_CONNECTION_REF);
         if (conResDef == null) {
             if (err == null) {
                 throw new SnapComponentException("Could not find connection reference");
@@ -102,6 +95,11 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
                 return null;
             }
         }
+		return conResDef;
+	}
+    
+    protected GdcFTPApiWrapper ftpLogin(ComponentResourceErr err) {
+        ResDef conResDef = getConnectionReference(err);
         try {
 
             GdcFTPApiWrapper ftpApi = GoodDataConnection.getFtpWrapper(conResDef, this);

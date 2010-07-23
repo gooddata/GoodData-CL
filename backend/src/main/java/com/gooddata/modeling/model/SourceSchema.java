@@ -156,6 +156,16 @@ public class SourceSchema {
         w.flush();
         w.close();
     }
+    
+    /**
+     * Return the config file
+     * 
+     * @return string representation of the config file
+     * @throws IOException in case of an IO issue
+     */
+    public String getConfig() throws IOException {
+    	return toXml();
+    }
 
     /**
      * Columns getter
