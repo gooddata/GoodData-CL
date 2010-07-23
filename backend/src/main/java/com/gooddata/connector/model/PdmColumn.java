@@ -45,6 +45,7 @@ public class PdmColumn {
 
     // constraints
     public static final String PDM_CONSTRAINT_INDEX_UNIQUE = "UNIQUE";
+    public static final String PDM_CONSTRAINT_INDEX_NON_UNIQUE = "NON UNIQUE";
     public static final String PDM_CONSTRAINT_INDEX_MULTIPLE = "MULTIPLE";
     public static final String PDM_CONSTRAINT_AUTOINCREMENT = "AUTOINCREMENT";
     public static final String PDM_CONSTRAINT_PK = "PRIMARY KEY";
@@ -282,6 +283,17 @@ public class PdmColumn {
     public boolean isUnique() {
         for(String constraint : getConstraints())
             if(PDM_CONSTRAINT_INDEX_UNIQUE.equals(constraint))
+                return true;
+        return false;
+    }
+
+    /**
+     * True if the column is UNIQUE
+     * @return true if the column is UNIQUE
+     */
+    public boolean isNonUniqueIndexed() {
+        for(String constraint : getConstraints())
+            if(PDM_CONSTRAINT_INDEX_NON_UNIQUE.equals(constraint))
                 return true;
         return false;
     }

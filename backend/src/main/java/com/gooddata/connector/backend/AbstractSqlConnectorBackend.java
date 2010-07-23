@@ -179,6 +179,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         return result;
     }
 
+
     /**
      * {@inheritDoc}
      */
@@ -270,15 +271,17 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        			}
 	        		}
 		            /*
-		            if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
+                    if(PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
 		                indexAllTableColumns(c, table);
-		            */
+                    */
 	        	} else {
 	        		for (PdmColumn column : table.getColumns()) {
 	        			if (!exists(c, table.getName(), column.getName())) {
 	        				addColumn(c, table, column);
+                            /*
 	        				if (PdmTable.PDM_TABLE_TYPE_SOURCE.equals(table.getType()))
 	        					indexTableColumn(c, table, column);
+	        		        */
 	        			}
 	        		}
 	        	}
@@ -453,6 +456,12 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         sql += " PRIMARY KEY (" + pk + "))";
 
         JdbcUtil.executeUpdate(c, sql);
+        for( PdmColumn column : table.getColumns()) {
+            if(column.isNonUniqueIndexed()) {
+                indexTableColumn(c, table, column);   
+            }
+        }
+
     }
 
     /**
@@ -608,7 +617,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     	}
         if(updateStatement.length()>0) {
             updateStatement = "UPDATE " + fact + " SET " + updateStatement +
-                " WHERE "+N.ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name = '" + fact+"')";
+                " WHERE "+N.ID+" > "+getLastId(c,fact);
             JdbcUtil.executeUpdate(c, updateStatement);
         }
     }
@@ -649,11 +658,57 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         JdbcUtil.executeUpdate(c,
             "INSERT INTO " + lookup + "(" + insertColumns +
             ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
-            " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
-            "') AND " + concatAssociatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " +
-            lookupTable.getName() + ")"
+            " WHERE "+N.SRC_ID+" > "+getLastId(c,fact)
+        );
+        JdbcUtil.executeUpdate(c,
+            "CREATE TABLE delete_ids("+N.HSH+" "+PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT+", "+N.ID+" INT, PRIMARY KEY(id))"
+        );
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO delete_ids SELECT "+N.HSH+",max("+N.ID+") FROM "+lookup+
+                    " GROUP by "+N.HSH+" HAVING count("+N.ID+") > 1"
+        );
+        JdbcUtil.executeUpdate(c,
+            "DELETE FROM "+lookup+" WHERE "+N.ID+" IN (SELECT "+N.ID+" FROM delete_ids)"
+        );
+        JdbcUtil.executeUpdate(c,
+            "DROP TABLE delete_ids"
         );
     }
+
+    /**
+     * Gets the last id in the snapshot table
+     * @param factTable the fact table
+     * @return the last id
+     */
+    public int getLastId(Connection c, String factTable) {
+        Statement s = null;
+        ResultSet r = null;
+        try {
+            s = c.createStatement();
+            r = s.executeQuery("SELECT MAX(lastid) FROM snapshots WHERE name='" + factTable +"'");
+            for(boolean rc = r.next(); rc; rc = r.next()) {
+                int id = r.getInt(1);
+                l.debug("Last is is "+id);
+                return id;
+            }
+        }
+        catch (SQLException e) {
+            throw new InternalErrorException(e.getMessage());
+        }
+        finally {
+            try {
+                if(r != null)
+                    r.close();
+                if(s != null)
+                    s.close();
+            }
+            catch (SQLException ee) {
+                ee.printStackTrace();
+            }
+        }
+        throw new InternalErrorException("Can't retrieve the last id number.");
+    }
+
 
     /**
      * Populates connection point table
@@ -685,13 +740,25 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +"')"
         );
         */
-        String sql = "INSERT INTO " + lookup + "(" + insertColumns +
-	        ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
-	        " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
-	        "') AND " + concatAssociatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " +
-	        lookupTable.getName() + ")";
-        JdbcUtil.executeUpdate(c, sql);
-    }
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO " + lookup + "(" + insertColumns +
+            ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
+            " WHERE "+N.SRC_ID+" > "+getLastId(c,fact)
+        );
+        JdbcUtil.executeUpdate(c,
+            "CREATE TABLE delete_ids("+N.HSH+" "+PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT+", "+N.ID+" INT, PRIMARY KEY(id))"
+        );
+        JdbcUtil.executeUpdate(c,
+            "INSERT INTO delete_ids SELECT "+N.HSH+",max("+N.ID+") FROM "+lookup+
+                    " GROUP by "+N.HSH+" HAVING count("+N.ID+") > 1"
+        );
+        JdbcUtil.executeUpdate(c,
+            "DELETE FROM "+lookup+" WHERE "+N.ID+" IN (SELECT "+N.ID+" FROM delete_ids)"
+        );
+        JdbcUtil.executeUpdate(c,
+            "DROP TABLE delete_ids"
+        );
+     }
 
     /**
      * Concats associated source columns with a DB specific concat method

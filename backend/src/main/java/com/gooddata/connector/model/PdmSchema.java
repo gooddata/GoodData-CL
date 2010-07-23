@@ -203,7 +203,7 @@ public class PdmSchema {
         lookup.addColumn(new PdmColumn(N.ID, PdmColumn.PDM_COLUMN_TYPE_INT,
             new String[] {PdmColumn.PDM_CONSTRAINT_AUTOINCREMENT, PdmColumn.PDM_CONSTRAINT_PK}));
         lookup.addColumn(new PdmColumn(N.HSH, PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT,
-            new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_UNIQUE}));
+            new String[] {PdmColumn.PDM_CONSTRAINT_INDEX_NON_UNIQUE}));
         return lookup;
     }
 
