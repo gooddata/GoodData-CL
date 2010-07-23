@@ -739,6 +739,13 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_NAME,projectName);
 		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_ID,projectId);
 		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_DLI,dliName);
+		try {
+			// since the component will need the Source Schema, we need to serialize it into the string and save it
+			putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_SOURCE_SCHEMA, ss.getConfig());
+		} catch (IOException e) {
+			elog(e);
+			throw new SnapComponentException(e);
+		}
 		info("Component '" + componentName + "' created and its basic properties were set.");
 
 		info("Transferring output view of the source component to component '" + componentName + "' (as Input View).");

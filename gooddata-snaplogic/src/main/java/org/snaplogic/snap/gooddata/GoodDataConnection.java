@@ -200,14 +200,7 @@ public class GoodDataConnection extends ComponentAPI {
             throw new SnapComponentException("Incorrect ResDef for this operation: " + goodDataCon.getComponentName());
         }
 
-        String username = (String) goodDataCon.getPropertyValue(PROP_USERNAME);
-        String passwd = (String) goodDataCon.getPropertyValue(PROP_PASSWORD);
-        String protocol = (String) goodDataCon.getPropertyValue(PROP_PROTOCOL);
-        String hostname = (String) goodDataCon.getPropertyValue(PROP_HOSTNAME);
-        if (comp != null) {
-            comp.debug("Logging in as %s", username);
-        }
-        NamePasswordConfiguration config = new NamePasswordConfiguration(protocol, hostname, username, passwd);
+        NamePasswordConfiguration config = getHttpConfiguration(goodDataCon);
         GdcRESTApiWrapper restApi = new GdcRESTApiWrapper(config);
         restApi.login();
         if (comp != null) {
@@ -222,21 +215,27 @@ public class GoodDataConnection extends ComponentAPI {
             throw new SnapComponentException("Incorrect ResDef for this operation: " + goodDataCon.getComponentName());
         }
 
+        NamePasswordConfiguration config = getFtpConfiguration(goodDataCon);
+        GdcFTPApiWrapper restApi = new GdcFTPApiWrapper(config);
+        return restApi;
+    }
+    
+    public static NamePasswordConfiguration getFtpConfiguration(ResDef goodDataCon) {
         String username = (String) goodDataCon.getPropertyValue(PROP_USERNAME);
         String passwd = (String) goodDataCon.getPropertyValue(PROP_PASSWORD);
         String protocol = (String) goodDataCon.getPropertyValue(PROP_PROTOCOL);
         String hostname = (String) goodDataCon.getPropertyValue(PROP_HOSTNAME_FTP);
-        if (comp != null) {
-            comp.debug("Logging in as %s", username);
-        }
         NamePasswordConfiguration config = new NamePasswordConfiguration(protocol, hostname, username, passwd);
-        GdcFTPApiWrapper restApi = new GdcFTPApiWrapper(config);
-        if (comp != null) {
-            comp.debug("FTP API instantiated for %s", username);
-        }
-        
-        return restApi;
+        return config;
     }
     
+    public static NamePasswordConfiguration getHttpConfiguration(ResDef goodDataCon) {
+        String username = (String) goodDataCon.getPropertyValue(PROP_USERNAME);
+        String passwd = (String) goodDataCon.getPropertyValue(PROP_PASSWORD);
+        String protocol = (String) goodDataCon.getPropertyValue(PROP_PROTOCOL);
+        String hostname = (String) goodDataCon.getPropertyValue(PROP_HOSTNAME);
+        NamePasswordConfiguration config = new NamePasswordConfiguration(protocol, hostname, username, passwd);
+        return config;
+    }
     
 }
