@@ -67,6 +67,8 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
  * @version 1.0
  */public abstract class AbstractSqlConnectorBackend extends AbstractConnectorBackend implements ConnectorBackend {
 
+    private static final int BATCH_SIZE = 1000;
+
     private static Logger l = Logger.getLogger(AbstractSqlConnectorBackend.class);
 
     // Project id
@@ -991,7 +993,6 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        String cols = getNonAutoincrementColumns(sourceTable);
             String qmrks = getPreparedStatementQuestionMarks(sourceTable);
             int cnt = getNonAutoincrementColumnsCount(sourceTable);
-            s = c.prepareStatement("INSERT INTO "+source+"("+cols+") VALUES ("+qmrks+")");
             CSVReader csvIn = new CSVReader(FileUtil.createBufferedUtf8Reader(file));
             String[] nextLine;
             int rowCnt = 0;
@@ -1000,6 +1001,9 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
                 if(hasHeader)
                     hasHeader = false;
                 else {
+                    if(s == null) {
+                        s = c.prepareStatement("INSERT INTO "+source+"("+cols+") VALUES ("+qmrks+")");
+                    }
                     if(nextLine.length == cnt) {
                         for(int i=1; i<=nextLine.length; i++)
                             if(nextLine[i-1]!=null)
@@ -1012,9 +1016,16 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
                         l.warn("Skipping row "+file+":"+rowCnt+" as it has "+nextLine.length+
                                 " columns. Expecting "+cnt+" columns.");
                     }
+                    if(rowCnt % BATCH_SIZE == 0) {
+                        s.executeBatch();
+                        s.close();
+                        s = null;
+                    }
                 }
 	        }
-            s.executeBatch();
+            if(s != null) {
+                s.executeBatch();
+            }
 	        l.debug("Finished extracting data.");
     	} catch (SQLException e) {
     		throw new ConnectorBackendException(e);
