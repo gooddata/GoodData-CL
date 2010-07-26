@@ -82,6 +82,12 @@ CSV Connector Commands:
   defaultLdmType - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
   folder - folder where to place new attributes
 
+ UpdateConfig(csvHeaderFile=<headers>, configFile=<config>, defaultLdmType=<type>, defaultFolder=<folder>) - adds new columns in the CSV headers file into the configFile
+  headers - path to CSV header file (only the first header row will be used)
+  config  - path to configuration file (will be overwritten with a version extended with new columns)
+  type - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
+  folder - folder where to place new attributes
+
  LoadCsv(csvDataFile=<data>, configFile=<config>, header=<true | false>) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
   csvDataFile    - path to CSV datafile
   configFile  - path to XML configuration file (see the GenerateCsvConfig command that generates the config file template)

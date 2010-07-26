@@ -213,6 +213,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
             else if(c.match("LoadCsv")) {
                 loadCsv(c, cli, ctx);
             }           
+            else if (c.match( "UpdateConfig")) {
+                generateCsvConfig(c, cli, ctx);
+            }
             else
                 return super.processCommand(c, cli, ctx);
         }
