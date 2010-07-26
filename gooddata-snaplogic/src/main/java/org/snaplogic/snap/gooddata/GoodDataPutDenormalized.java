@@ -133,8 +133,8 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 		return "1.0";
 	}
 
-	private PropertyConstraint projNameLovConstraint = new PropertyConstraint();
-	private PropertyConstraint projIdLovConstraint = new PropertyConstraint();
+	private PropertyConstraint projNameLovConstraint = new PropertyConstraint(Type.UNMODIFIABLE, true);
+	private PropertyConstraint projIdLovConstraint = new PropertyConstraint(Type.UNMODIFIABLE, true);
 
 	private SimpleProp projNameProp = new SimpleProp("Project Name", SimplePropType.SnapString, "Project name",
 			projNameLovConstraint, true);
@@ -142,7 +142,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 	private SimpleProp projIdProp = new SimpleProp("Project Id", SimplePropType.SnapString, "Project id",
 			projIdLovConstraint, true);
 
-	private PropertyConstraint dlisLovConstraint = new PropertyConstraint();
+	private PropertyConstraint dlisLovConstraint = new PropertyConstraint(Type.UNMODIFIABLE, true);
 
 	private SimpleProp dliProp = new SimpleProp("DLI", SimplePropType.SnapString, "Data Loading Interface",
 			dlisLovConstraint, true);

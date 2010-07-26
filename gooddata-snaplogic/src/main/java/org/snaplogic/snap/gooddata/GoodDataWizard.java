@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,7 +96,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	private static final String CREATE_NEW_PROJECT = "Create new...";
 	private static final String PROP_DLI_NAME = "dli_name";
 	public static String PROP_LABEL_DEFINITION = "labels_definition";
-	
+
 	private static final String DLI_SPEC_KEY_FIELD_NAME = "field_name";
 
 	private static final String DLI_SPEC_KEY_LDM_TYPE = "ldm_type";
@@ -206,7 +207,8 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		// when it does, this should be changed for better user experience.
 		// This is not a connection reference here, but we'll reuse the same
 		// property name
-		List<String> availableGDConnections = getResourcesMatchingCategory(GoodDataConnection.CONNECTION_CATEGORIES);
+		List<String> connections = getResourcesMatchingCategory(GoodDataConnection.CONNECTION_CATEGORIES);
+		List<String> availableGDConnections = cutServerUrl(connections);
 		availableGDConnections.add(0, CREATE_NEW_CONNECTION);
 		// TODO PropertyConstraint constructor should be lenient enough to take
 		// a Collection
@@ -226,8 +228,9 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 		setPropertyDef(PROP_GD_URI_PREFIX, new SimpleProp("URI prefix", SimplePropType.SnapString, "URI prefix", true));
 		setPropertyValue(PROP_GD_URI_PREFIX, DEFAULT_GD_URI_PREFIX);
-		
-		setPropertyDef(PROP_GD_COMP_NAME, new SimpleProp("Component Name", SimplePropType.SnapString, "Component Name", true));
+
+		setPropertyDef(PROP_GD_COMP_NAME, new SimpleProp("Component Name", SimplePropType.SnapString, "Component Name",
+				true));
 		setPropertyValue(PROP_GD_COMP_NAME, DEFAULT_GD_COMP_NAME);
 
 		// TODO we should add another property, "overwrite" to control whether
@@ -238,15 +241,30 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		setPropertyValue(PROP_WIZARD_STEP, new BigDecimal(1));
 	}
 
+	private List<String> cutServerUrl(List<String> links) {
+		String serverUri = ComponentContainer.getServerUri();
+		List<String> result = new LinkedList<String>();
+		for (String link : links) {
+			result.add(link.replace(serverUri, ""));
+		}
+		return result;
+	}
+
+	private String enrichWithServerUrl(String link) {
+		String serverUri = ComponentContainer.getServerUri();
+		return serverUri + link;
+	}
+
 	/**
 	 * Step 2 of wizard - gather properties to create a {@link GoodDataConnection} if existing one hasn't been picked
 	 */
 	private void gatherConnectionProps(ComponentResourceErr err) {
 		nextStep();
-		
-		setPropertyDef(PROP_GD_CONN_NAME, new SimpleProp("Connection Name", SimplePropType.SnapString, "Connection Name", true));
+
+		setPropertyDef(PROP_GD_CONN_NAME, new SimpleProp("Connection Name", SimplePropType.SnapString,
+				"Connection Name", true));
 		setPropertyValue(PROP_GD_CONN_NAME, DEFAULT_GD_CONN_NAME);
-		
+
 		GoodDataConnection.createGDConnectionResourceTemplate(this);
 	}
 
@@ -290,7 +308,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			for (String outViewName : outViews) {
 				Map<String, Object> outView = resdef.getOutputView(outViewName);
 				if (outView.get(0) == null) {
-					candidates.add(absUri + "::" + outViewName);
+					candidates.add(relUri + "::" + outViewName);
 				} else {
 					continue;
 				}
@@ -316,7 +334,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	// TODO "fields" should be part of Keys
 	private Map<String, Object> getResDefandFieldsFromSourceView() {
 		Snapi snapi = Snapi.getSnapi();
-		String gdInput = getStringPropertyValue(PROP_GD_INPUT);
+		String gdInput = enrichWithServerUrl(getStringPropertyValue(PROP_GD_INPUT));
 		String[] uriAndView = gdInput.split("::");
 		String uri = uriAndView[0];
 		String view = uriAndView[1];
@@ -341,7 +359,6 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		ResDef resdef = new ResDef(resdefMap);
 		return resdef;
 	}
-
 
 	/**
 	 * Step 4 of wizard - show a DLI based on the view picked in previous step. User can edit this of course. This will
@@ -369,6 +386,8 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			String snapTypeStr = field.get(1);
 			if (snapTypeStr.equals(SnapFieldType.SnapDateTime.toString())) {
 				fieldSpec.put(DLI_SPEC_KEY_LDM_TYPE, SourceColumn.LDM_TYPE_DATE);
+			} else if (snapTypeStr.equals(SnapFieldType.SnapNumber.toString())) {
+				fieldSpec.put(DLI_SPEC_KEY_LDM_TYPE, SourceColumn.LDM_TYPE_FACT);
 			} else {
 				fieldSpec.put(DLI_SPEC_KEY_LDM_TYPE, SourceColumn.LDM_TYPE_ATTRIBUTE);
 			}
@@ -394,7 +413,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			String serverUri = ComponentContainer.getServerUri();
 			conResDef = createConnectionObject(snapi, serverUri);
 		} else {
-			conResDef = getResourceObject(gdConnUri, null);
+			conResDef = getResourceObject(enrichWithServerUrl(gdConnUri), null);
 		}
 
 		GdcRESTApiWrapper restApi;
@@ -416,6 +435,8 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 		projNameLovConstraint.put(PropertyConstraint.Type.LOV, projectArrayList.toArray(new String[0]));
 		setPropertyDef(GoodDataPut.PROP_PROJECT_NAME, projNameProp);
+		
+		setPropertyValue(GoodDataPut.PROP_PROJECT_NAME, projectArrayList.get(0));
 	}
 
 	/*
@@ -444,10 +465,10 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		}
 		setPropertyValue(PROP_DATE_FORMAT_DEFINITION, formatSpecValue);
 	}
-	
+
 	private void setEmptyHiddenProperty(String name) {
-		setPropertyDef(name, new SimpleProp(name, SimplePropType.SnapString, "",
-				new PropertyConstraint(Type.HIDDEN, true), false));
+		setPropertyDef(name, new SimpleProp(name, SimplePropType.SnapString, "", new PropertyConstraint(Type.HIDDEN,
+				true), false));
 		setPropertyValue(name, null);
 	}
 
@@ -616,8 +637,9 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 	private void gatherProjectProperties(ComponentResourceErr err) {
 		nextStep();
-		setPropertyDef(PROP_NEW_PROJECT_DESCR, new SimpleProp("New Project Description", SimplePropType.SnapString, true));
-		setPropertyDef(PROP_NEW_PROJECT_NAME, new SimpleProp("New Project Name", SimplePropType.SnapString, true));
+		setPropertyDef(PROP_NEW_PROJECT_DESCR, new SimpleProp("New Project Description", SimplePropType.SnapString,
+				true));
+		setPropertyDef(PROP_NEW_PROJECT_NAME, new SimpleProp(" New Project Name", SimplePropType.SnapString, true));
 	}
 
 	@Override
@@ -626,7 +648,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		String gdUriPrefix = getStringPropertyValue(PROP_GD_URI_PREFIX);
 		String serverUri = ComponentContainer.getServerUri();
 		String gdConnUri = getStringPropertyValue(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF);
-		
+
 		// Either create a new connection or reuse existing
 		ResDef connResDef;
 		if (gdConnUri.equals(CREATE_NEW_CONNECTION)) {
@@ -637,9 +659,10 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			connResDef.save(gdConnUri);
 			info("Connection " + gdConnUri + " created");
 		} else {
+			gdConnUri = enrichWithServerUrl(gdConnUri);
 			connResDef = getResourceObject(gdConnUri, null);
 		}
-		
+
 		// Login to GoodData
 		GdcRESTApiWrapper restApi;
 		try {
@@ -663,7 +686,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			// We will need this later
 			projectName = newProjectName;
 		} else {
-			//Get Project ID
+			// Get Project ID
 			projectId = parseProjectId(idNameCompound);
 			projectName = parseProjectName(idNameCompound);
 		}
@@ -700,7 +723,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		try {
 			// PdmSchema is a representation of SourceSchema in the ConnectorBackend
 			PdmSchema pdm = PdmSchema.createSchema(ss);
-			//TODO Replace the Derby backend with stream backend
+			// TODO Replace the Derby backend with stream backend
 			// Initialize embedded DB backend
 			DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
 			derbyConnectorBackend.setProjectId(projectId);
@@ -722,7 +745,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		}
 
 		info("Parsing output view of the source component...");
-		String gdInput = getStringPropertyValue(PROP_GD_INPUT);
+		String gdInput = enrichWithServerUrl(getStringPropertyValue(PROP_GD_INPUT));
 		String[] uriAndView = gdInput.split("::");
 		String uri = uriAndView[0];
 		String outViewName = uriAndView[1];
@@ -736,9 +759,9 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		info("Creating new GoodDataPutDelimited component '" + componentName + "'. Its URI will be " + gdPutUri);
 		ResDef putResDef = snapi.createResourceObject(serverUri, GoodDataPutDenormalized.class.getName(), null);
 		putResDef.setResourceRef(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF, gdConnUri);
-		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_NAME,projectName);
-		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_ID,projectId);
-		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_DLI,dliName);
+		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_NAME, projectName);
+		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_ID, projectId);
+		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_DLI, dliName);
 		try {
 			// since the component will need the Source Schema, we need to serialize it into the string and save it
 			putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_SOURCE_SCHEMA, ss.getConfig());
@@ -796,7 +819,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		}
 		return result;
 	}
-	
+
 	private String parseProjectName(String idNameCompound) {
 		StringTokenizer t = new StringTokenizer(idNameCompound, " ");
 		String result = null;
@@ -819,7 +842,8 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	}
 
 	private HashMap<String, String> propertySheetToHash(List<Object> list, String key_key, String value_key) {
-		if (list == null) return null;
+		if (list == null)
+			return null;
 		HashMap<String, String> result = new HashMap<String, String>();
 		for (Iterator localIterator = list.iterator(); localIterator.hasNext();) {
 			Object item = localIterator.next();
