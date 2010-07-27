@@ -23,6 +23,8 @@
 
 package com.gooddata.connector.model;
 
+import com.gooddata.connector.backend.Constants;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class PdmColumn {
 
 
     // data types
-    public static final String PDM_COLUMN_TYPE_TEXT = "VARCHAR(128)";
+    public static final String PDM_COLUMN_TYPE_TEXT = "VARCHAR("+ Constants.LABEL_MAX_LENGTH+")";
     public static final String PDM_COLUMN_TYPE_LONG_TEXT = "VARCHAR(333)";
     public static final String PDM_COLUMN_TYPE_DATE = "INT";
     public static final String PDM_COLUMN_TYPE_INT = "INT";

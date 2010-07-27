@@ -1074,7 +1074,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
                     if(nextLine.length == cnt) {
                         for(int i=1; i<=nextLine.length; i++)
                             if(nextLine[i-1]!=null)
-                                s.setString(i,nextLine[i-1]);
+                                s.setString(i,nextLine[i-1].substring(0,Constants.LABEL_MAX_LENGTH));
                             else
                                 s.setString(i,"");
                         s.addBatch();
