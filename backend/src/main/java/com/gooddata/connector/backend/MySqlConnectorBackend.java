@@ -115,7 +115,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
 	                "CREATE DATABASE IF NOT EXISTS " + dbName + " CHARACTER SET utf8"
 	            );
 	            connection.close();
-	            connection = DriverManager.getConnection(protocol + "//localhost/" + dbName, getUsername(), getPassword());
+	            connection = DriverManager.getConnection(protocol + "//localhost/" + dbName + "?jdbcCompliantTruncation=false", getUsername(), getPassword());
 	        }
     	}
     	Properties props = new Properties();

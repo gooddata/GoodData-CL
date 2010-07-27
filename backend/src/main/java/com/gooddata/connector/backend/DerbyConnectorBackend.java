@@ -182,10 +182,10 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
     protected String decorateLookupColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols != null && cols.length() > 0)
             cols += ",CAST(" + table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName())+
-                    " AS VARCHAR(128))";
+                    " AS VARCHAR("+Constants.LABEL_MAX_LENGTH+"))";
         else
             cols +=  "CAST("+table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName())+
-                    " AS VARCHAR(128))";
+                    " AS VARCHAR("+Constants.LABEL_MAX_LENGTH+"))";
         return cols;
     }
 

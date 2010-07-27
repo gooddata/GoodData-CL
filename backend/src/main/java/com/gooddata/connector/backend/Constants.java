@@ -36,4 +36,6 @@ public class Constants {
 	public final static String DEFAULT_DATE_FMT_STRING = "yyyy-MM-dd";
 	public final static DateFormat DEFAULT_DATE_FMT = new SimpleDateFormat(DEFAULT_DATE_FMT_STRING);
 
+    public final static int LABEL_MAX_LENGTH = 128;
+
 }
