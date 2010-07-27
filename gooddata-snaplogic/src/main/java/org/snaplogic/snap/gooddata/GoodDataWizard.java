@@ -116,6 +116,16 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	private static final String PROP_GD_CONN_NAME = "new_connection_name";
 
 	private static final Object DEFAULT_GD_CONN_NAME = "GoodDataConnection";
+	
+	private static final String PROP_GD_INPUT = "gd_input";
+
+	private static final String PROP_REFERENCE_DEFINITION = "reference_definition";
+
+	private static final String REFERENCE_KEY_FIELD_NAME = "field_name";
+
+	private static final String REFERENCE_KEY_TARGET = "reference_target";
+
+	private static final Object SAMPLE_REFERENCE = "Dataset:Column";
 
 	@Override
 	public String getDescription() {
@@ -280,8 +290,6 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		setPropertyValue(PROP_WIZARD_STEP, new BigDecimal(curStep));
 	}
 
-	private static final String PROP_GD_INPUT = "gd_input";
-
 	/**
 	 * Step 3 of wizard -- get output views of existing resources that can serve as input to the {@link GoodDataPut} to
 	 * be created.
@@ -435,7 +443,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 		projNameLovConstraint.put(PropertyConstraint.Type.LOV, projectArrayList.toArray(new String[0]));
 		setPropertyDef(GoodDataPut.PROP_PROJECT_NAME, projNameProp);
-		
+
 		setPropertyValue(GoodDataPut.PROP_PROJECT_NAME, projectArrayList.get(0));
 	}
 
@@ -563,7 +571,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		for (Map<String, String> fieldSpecs : dliSpecValue) {
 			String specedFieldName = (String) fieldSpecs.get("field_name");
 			String specedLdmType = (String) fieldSpecs.get("ldm_type");
-			if (!specedLdmType.equals("LABEL")) {
+			if (!specedLdmType.equals(SourceColumn.LDM_TYPE_LABEL)) {
 				continue;
 			}
 			result.add(specedFieldName);
@@ -626,6 +634,15 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 					return;
 				}
 			case 8:
+				List<String> stringReferenceFields = checkReferences(err);
+				if (stringReferenceFields.isEmpty()) {
+					setEmptyHiddenProperty(PROP_REFERENCE_DEFINITION);
+					nextStep();
+				} else {
+					getReferences(err, stringReferenceFields);
+					break;
+				}
+			case 9:
 				confirmationScreen();
 				return;
 			}
@@ -633,6 +650,42 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			err.setMessage("Error occurred: %s", e);
 			elog(e);
 		}
+	}
+
+	private void getReferences(ComponentResourceErr err, List<String> referenceFields) {
+		nextStep();
+		SimpleProp stringProp = new SimpleProp("Field", SimplePropType.SnapString, "");
+		DictProp fieldDefProp = new DictProp("Field definition", stringProp, "", 2, 2, true, true);
+		fieldDefProp
+				.put(REFERENCE_KEY_FIELD_NAME, new SimpleProp("Field name", SimplePropType.SnapString, "string1"));
+		PropertyConstraint ldmTypeConstraint = new PropertyConstraint(Type.LOV, LDM_TYPES);
+		fieldDefProp.put(REFERENCE_KEY_TARGET, new SimpleProp("Target", SimplePropType.SnapString, "", null, true));
+		ListProp dateFormatSpec = new ListProp("References", fieldDefProp, "", referenceFields.size(), referenceFields
+				.size(), true);
+		setPropertyDef(PROP_REFERENCE_DEFINITION, dateFormatSpec);
+		List formatSpecValue = new ArrayList();
+		for (String field : referenceFields) {
+			Map fieldSpec = new HashMap();
+			fieldSpec.put(REFERENCE_KEY_FIELD_NAME, field);
+			fieldSpec.put(REFERENCE_KEY_TARGET, SAMPLE_REFERENCE);
+			formatSpecValue.add(fieldSpec);
+		}
+		setPropertyValue(PROP_REFERENCE_DEFINITION, formatSpecValue);
+	}
+
+	private List<String> checkReferences(ComponentResourceErr err) {
+		List<String> result = new ArrayList<String>();
+		List<Map> dliSpecValue = getListPropertyValue(PROP_DLI_DEFINITION);
+
+		for (Map<String, String> fieldSpecs : dliSpecValue) {
+			String specedFieldName = (String) fieldSpecs.get("field_name");
+			String specedLdmType = (String) fieldSpecs.get("ldm_type");
+			if (!specedLdmType.equals(SourceColumn.LDM_TYPE_REFERENCE)) {
+				continue;
+			}
+			result.add(specedFieldName);
+		}
+		return result;
 	}
 
 	private void gatherProjectProperties(ComponentResourceErr err) {
@@ -695,10 +748,12 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 		List dliColumnTypes = getListPropertyValue(PROP_DLI_DEFINITION);
 		List dateFormatsList = getListPropertyValue(PROP_DATE_FORMAT_DEFINITION);
+		List referenceList = getListPropertyValue(PROP_REFERENCE_DEFINITION);
 		HashMap<String, String> dateFormats = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME,
 				DATE_FORMAT_KEY_FORMAT);
 		List labelFields = getListPropertyValue(PROP_LABEL_DEFINITION);
 		HashMap<String, String> labelParents = propertySheetToHash(labelFields, LABEL_KEY_FIELD_NAME, LABEL_KEY_PARENT);
+		HashMap<String, String> references = propertySheetToHash(referenceList, REFERENCE_KEY_FIELD_NAME, REFERENCE_KEY_TARGET);
 
 		SourceSchema ss = SourceSchema.createSchema(dliName);
 
@@ -717,6 +772,17 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			if (labelParents != null && labelParents.containsKey(fieldName)) {
 				column.setReference((String) labelParents.get(fieldName));
 			}
+			
+			if (references != null && references.containsKey(fieldName)) {
+				String[] ref = references.get(fieldName).split(":");
+				if (ref.length != 2) {
+					elog(new Throwable("Error in reference format: " + references.get(fieldName)));
+					throw new SnapComponentException("Error in reference format: " + references.get(fieldName));
+				}
+				column.setSchemaReference(ref[0]);
+				column.setReference(ref[1]);
+			}
+			
 			ss.addColumn(column);
 		}
 
