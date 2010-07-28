@@ -749,7 +749,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             "CREATE TABLE delete_ids("+N.HSH+" "+PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT+", "+N.ID+" INT, PRIMARY KEY(id))"
         );
         JdbcUtil.executeUpdate(c,
-            "INSERT INTO delete_ids SELECT "+N.HSH+",max("+N.ID+") FROM "+lookup+
+            "INSERT INTO delete_ids SELECT "+N.HSH+",min("+N.ID+") FROM "+lookup+
                     " GROUP by "+N.HSH+" HAVING count("+N.ID+") > 1"
         );
         JdbcUtil.executeUpdate(c,
@@ -1093,7 +1093,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             if(s != null) {
                 s.executeBatch();
             }
-	        l.debug("Finished extracting data.");
+	        l.debug("Finished extracting data. Extracted "+rowCnt+" rows.");
     	} catch (SQLException e) {
     		throw new ConnectorBackendException(e);
         } catch (IOException e) {
