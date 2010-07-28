@@ -92,6 +92,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_DB_USERNAME = {"dbusername","d"};
     public static String[] CLI_PARAM_DB_PASSWORD = {"dbpassword","c"};
     public static String[] CLI_PARAM_PROTO = {"proto","t"};
+    public static String[] CLI_PARAM_INSECURE = {"insecure","s"};
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
     public static String CLI_PARAM_SCRIPT = "script";
     
@@ -110,7 +111,8 @@ public class GdcDI implements Executor {
         new Option(CLI_PARAM_BACKEND[1], CLI_PARAM_BACKEND[0], true, "Database backend DERBY or MYSQL"),
         new Option(CLI_PARAM_DB_USERNAME[1], CLI_PARAM_DB_USERNAME[0], true, "Database backend username (not required for the local Derby SQL)"),
         new Option(CLI_PARAM_DB_PASSWORD[1], CLI_PARAM_DB_PASSWORD[0], true, "Database backend password (not required for the local Derby SQL)"),
-        new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS"),
+        new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
+        new Option(CLI_PARAM_INSECURE[1], CLI_PARAM_INSECURE[0], false, "Disable encryption"),
         new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files")
     };
 
@@ -127,10 +129,12 @@ public class GdcDI implements Executor {
         try {
             cliParams = parse(ln, defaults);
             cliParams.setHttpConfig(new NamePasswordConfiguration(
-            		cliParams.get(CLI_PARAM_PROTO[0]), cliParams.get(CLI_PARAM_HOST[0]),
+                    cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
+                    cliParams.get(CLI_PARAM_HOST[0]),
                     cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
             cliParams.setFtpConfig(new NamePasswordConfiguration(
-                    cliParams.get(CLI_PARAM_PROTO[0]), cliParams.get(CLI_PARAM_FTP_HOST[0]),
+                    cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "ftp" : "ftps",
+                    cliParams.get(CLI_PARAM_FTP_HOST[0]),
                     cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
         	ConnectorBackend backend = null;
             try {
@@ -359,19 +363,21 @@ public class GdcDI implements Executor {
 
         l.debug("Using FTP host "+cp.get(CLI_PARAM_FTP_HOST[0]));
 
-        // use default protocol if there is no host in the CLI params
-        if(!cp.containsKey(CLI_PARAM_PROTO[0])) {
-            cp.put(CLI_PARAM_PROTO[0], Defaults.DEFAULT_PROTO);
-        }
-        else {
+        // Default to secure protocol if there is no host in the CLI params
+        // Assume insecure protocol if user specifies "HTTPS", for backwards compatibility
+        if(cp.containsKey(CLI_PARAM_PROTO[0])) {
             String proto = ln.getOptionValue(CLI_PARAM_PROTO[0]).toLowerCase();
             if(!"http".equalsIgnoreCase(proto) && !"https".equalsIgnoreCase(proto)) {
                 throw new InvalidArgumentException("Invalid '"+CLI_PARAM_PROTO[0]+"' parameter. Use HTTP or HTTPS.");
             }
-            cp.put(CLI_PARAM_PROTO[0], proto);
+            if ("http".equalsIgnoreCase(proto)) {
+                cp.put(CLI_PARAM_INSECURE[0], "true");
+            }
         }
+        if(cp.containsKey(CLI_PARAM_INSECURE[0]))
+            cp.put(CLI_PARAM_INSECURE[0], "true");
 
-        l.debug("Using protocol "+cp.get(CLI_PARAM_PROTO[0]));
+        l.debug("Using " + (cp.containsKey(CLI_PARAM_INSECURE[0]) ? "in" : "") + "secure protocols");
 
         // use default backend if there is no host in the CLI params
         if(!cp.containsKey(CLI_PARAM_BACKEND[0])) {

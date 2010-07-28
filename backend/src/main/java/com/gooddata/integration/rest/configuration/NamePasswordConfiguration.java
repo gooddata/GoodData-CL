@@ -39,10 +39,6 @@ public class NamePasswordConfiguration {
      * default GDC host
      */
     public static final String DEFAULT_GDC_HOST = Defaults.DEFAULT_HOST;
-    /**
-     * default Gdc protocol
-     */
-    public static final String DEFAULT_GCD_PROTO = Defaults.DEFAULT_PROTO;
 
     // GDC protocol
     private String protocol;
@@ -52,16 +48,6 @@ public class NamePasswordConfiguration {
     private String username;
     // GDC password
     private String password;
-
-    /**
-     * Constructor
-     * @param username GoodData username
-     * @param password GoodData password
-     */
-    public NamePasswordConfiguration(String username, String password) {
-        this(DEFAULT_GCD_PROTO, DEFAULT_GDC_HOST, username, password);
-
-    }
 
     /**
      * Constructor
@@ -89,6 +75,14 @@ public class NamePasswordConfiguration {
         } catch (MalformedURLException ex) {
             return null;
         }
+    }
+
+    /**
+     * GoodData protocol getter
+     * @return GoodData protocol
+     */
+    public String getProtocol() {
+        return protocol;
     }
 
     /**

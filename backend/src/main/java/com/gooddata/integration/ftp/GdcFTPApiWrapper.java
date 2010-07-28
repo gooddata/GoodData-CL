@@ -27,12 +27,14 @@ import com.gooddata.exception.GdcUploadErrorException;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.util.FileUtil;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * GoodData FTP API Java wrapper
@@ -56,9 +58,17 @@ public class GdcFTPApiWrapper {
      */
     public GdcFTPApiWrapper(NamePasswordConfiguration config) {
         this.config = config;
-        client = new FTPClient();
+        if (config.getProtocol().equals("ftps")) {
+            try {
+                client = new FTPSClient();
+            } catch (NoSuchAlgorithmException e) {
+                throw new GdcUploadErrorException ("Failed to initialize secure FTP client");
+            }
+        } else {
+            l.debug("Using insecure FTP transfer");
+            client = new FTPClient();
+        }
     }
-
 
     /**
      * FTP transfers a local directory to the remote GDC FTP server
