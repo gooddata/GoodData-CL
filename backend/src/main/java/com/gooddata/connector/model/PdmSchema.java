@@ -267,7 +267,7 @@ public class PdmSchema {
             return new PdmColumn(name+"_"+N.ID, PdmColumn.PDM_COLUMN_TYPE_INT,
                         N.LKP_PFX + schemaName + "_"+name +"." + N.ID, type);
         else if(type.equals(SourceColumn.LDM_TYPE_FACT))
-            return new PdmColumn(N.FCT_PFX + name, PdmColumn.PDM_COLUMN_TYPE_TEXT,
+            return new PdmColumn(StringUtil.toFactColumnName(name), PdmColumn.PDM_COLUMN_TYPE_TEXT,
                     N.SRC_PFX + name, type);
         else if(type.equals(SourceColumn.LDM_TYPE_DATE))
             return new PdmColumn(N.DT_PFX + name + "_"+N.ID,

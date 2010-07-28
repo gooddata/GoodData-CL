@@ -37,6 +37,7 @@ import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
+import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.generator.MaqlGenerator;
@@ -521,7 +522,7 @@ public abstract class AbstractConnector implements Connector {
 
         List<DLIPart> parts = ctx.getRestApi(p).getDLIParts(dataset, pid);
 
-        final List<SourceColumn> newColumns = findNewAttributes(parts, schema);
+        final List<SourceColumn> newColumns = findNewColumns(parts, schema);
         if (!newColumns.isEmpty()) {
         	final String maql = cc.generateMaql(newColumns);
         	FileUtil.writeStringToFile(maql, maqlFile);
@@ -531,15 +532,28 @@ public abstract class AbstractConnector implements Connector {
     }
 
     /**
-     * Finds the attributes with no appropriate part.
-     * TODO: a generic detector of new facts, labels etc could be added too
+     * Finds the attributes and facts with no appropriate part or part column
+     * TODO: a generic detector of new labels etc could be added too
      * @param parts DLI parts
      * @param schema former source schema
      * @return list of new columns
      */
-    private List<SourceColumn> findNewAttributes(List<DLIPart> parts, SourceSchema schema) {
+    private List<SourceColumn> findNewColumns(List<DLIPart> parts, SourceSchema schema) {
     	Set<String> fileNames = new HashSet<String>();
+    	Set<String> factColumns = new HashSet<String>();
+    	DLIPart factPart = null;
     	for (final DLIPart part : parts) {
+    		if (part.getFileName().startsWith(N.FCT_PFX)) {
+    			if (factPart == null) {
+    				factPart = part;
+    				for (Column col : factPart.getColumns()) {
+    					factColumns.add(col.getName());
+    				}
+    			} else {
+    				throw new IllegalStateException("Two fact tables detected on the server: "
+    						+ factPart.getFileName() + " and " + part.getFileName());
+    			}
+    		}
     		fileNames.add(part.getFileName());
     	}
 
@@ -548,6 +562,11 @@ public abstract class AbstractConnector implements Connector {
     		if (SourceColumn.LDM_TYPE_ATTRIBUTE.equals(sc.getLdmType())) {
     			final String filename = MaqlGenerator.createAttributeTableName(schema, sc) + ".csv";
     			if (!fileNames.contains(filename)) {
+    				result.add(sc);
+    			}
+    		} else if (SourceColumn.LDM_TYPE_FACT.equals(sc.getLdmType())) {
+    			final String factColumn = StringUtil.toFactColumnName(sc.getName());
+    			if (!factColumns.contains(factColumn)) {
     				result.add(sc);
     			}
     		}
