@@ -577,6 +577,57 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         );
     }
 
+
+/**
+     * Updates the snapshots table after load
+     * @param c JDBC connection
+     * @param schema PDM schema
+     * @throws SQLException in case of a DB issue
+     */
+    protected void deleteFailedSnapshots(Connection c, PdmSchema schema) throws SQLException {
+        l.debug("Looking for unfinished snapshots.");
+        PdmTable factTable = schema.getFactTable();
+        String fact = factTable.getName();        
+        PdmTable sourceTable = schema.getSourceTable();
+        String source = sourceTable.getName();
+
+        Statement s = null;
+        ResultSet r = null;
+        try {
+            s = c.createStatement();
+            r = s.executeQuery("SELECT MIN(firstid) FROM snapshots WHERE lastid IS NULL AND name='" + fact +"'");
+            if(r.next()) {
+                int id = r.getInt(1);
+                l.debug("Found unfinished snapshot with starting ID="+id);
+                if(id>0) {
+                    JdbcUtil.executeUpdate(c, "DELETE FROM "+source+" WHERE "+N.SRC_ID+" >= "+id);
+                    l.debug("Deleted all IDs >="+id+" from the "+source);
+                    JdbcUtil.executeUpdate(c, "DELETE FROM snapshots WHERE lastid IS NULL AND name='" + fact +"'");
+                    l.debug("Deleted failed snapshot record.");                    
+                }
+            }
+            else {
+                l.debug("No unfinished snapshots found.");
+            }
+        }
+        catch (SQLException e) {
+            l.debug("Failed removing corrupted snapshots");
+            throw new InternalErrorException("Failed removing corrupted snapshots",e);
+        }
+        finally {
+            try {
+                if(r != null)
+                    r.close();
+                if(s != null)
+                    s.close();
+            }
+            catch (SQLException ee) {
+                ee.printStackTrace();
+            }
+        }
+    }
+
+
     /**
      * Inserts rows from the source table to the fact table
      * @param c JDBC connection
@@ -1053,7 +1104,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         PreparedStatement s  = null;
         try {
 	    	c = getConnection();
-
+            deleteFailedSnapshots(c, schema);
 	        l.debug("Extracting data.");
 	        PdmTable sourceTable = schema.getSourceTable();
 	        String source = sourceTable.getName();
@@ -1140,15 +1191,17 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 
         private final CSVWriter cw;
         protected int rowCnt = 0;
+        protected int colCnt = 0;
 
         public ResultSetCsvWriter(CSVWriter cw) {
             this.cw = cw;
         }
 
         public void handle(ResultSet rs) throws SQLException {
-            final int length = rs.getMetaData().getColumnCount();
-            final String[] line = new String[length];
-            for (int i = 1; i <= length; i++)
+            if(colCnt<=0)
+                colCnt = rs.getMetaData().getColumnCount();
+            final String[] line = new String[colCnt];
+            for (int i = 1; i <= colCnt; i++)
                 line[i - 1] = rs.getString(i);
             cw.writeNext(line, true);
         }
