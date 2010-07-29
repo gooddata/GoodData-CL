@@ -68,4 +68,10 @@ for backend in MYSQL DERBY ; do
     echo 'Dropping the empty_lines test project and snapshots'
     drop "`cat tests/empty_lines/pid`"
 
+    echo 'Running empty_dates test'
+    bin/gdi.sh --backend "$backend" tests/empty_dates/cmd.txt
+
+    echo 'Dropping the empty_dates test project and snapshots'
+    drop "`cat tests/empty_dates/pid`"
+
 done
