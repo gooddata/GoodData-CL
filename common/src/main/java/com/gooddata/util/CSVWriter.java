@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class CSVWriter implements Closeable {
 
-    public static final int INITIAL_STRING_SIZE = 128;
+    public static final int INITIAL_STRING_SIZE = 256;
 
 	private Writer rawWriter;
 
