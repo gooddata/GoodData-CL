@@ -26,8 +26,8 @@ In each `<column>` entry, following tags can be used:
 
     * ATTRIBUTE - a generic column containing data that is used as labels - either strings or numbers that cannot be added (ex. Name, social security number, id)
     * FACT - a column containing numeric values that can be added 
-    * LABEL - a secondary value of an attribute column (ex. column containing 01, 02, 03 and column containing Jan, Feb, Mar or full name column "John Doe" vs. "J. Doe" etc.) Requires <reference>, see below
-    * DATE - a column containing a date (<format> field required, see below). We will add a date dimension to this column, allowing you to aggregate by weeks, months, dates of week etc.
+    * LABEL - a secondary value of an attribute column (ex. column containing 01, 02, 03 and column containing Jan, Feb, Mar or full name column "John Doe" vs. "J. Doe" etc.) Requires `<reference>`, see below
+    * DATE - a column containing a date (`<format>` field required, see below). We will add a date dimension to this column, allowing you to aggregate by weeks, months, dates of week etc.
     * CONNECTION_POINT - this identifies a primary key of the whole schema that can be used for connecting to another schema
     * REFERENCE - a counterpart of CONNECTION_POINT in the other schema
 
