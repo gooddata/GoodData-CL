@@ -31,7 +31,7 @@ public class Constants {
 	// TODO native2ascii
 	public final static String[] DISCARD_CHARS = {"$", "%", ",", "(", ")", "Û", "£", "´"};
 	
-	public final static int MAX_TABLE_NAME_LENGTH = 44;
+	public final static int MAX_TABLE_NAME_LENGTH = 36;
 	
 	public final static String DEFAULT_DATE_FMT_STRING = "yyyy-MM-dd";
 	public final static DateFormat DEFAULT_DATE_FMT = new SimpleDateFormat(DEFAULT_DATE_FMT_STRING);
