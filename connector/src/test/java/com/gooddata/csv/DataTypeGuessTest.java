@@ -30,7 +30,7 @@ import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.util.FileUtil;
 
 import junit.framework.TestCase;
-import au.com.bytecode.opencsv.CSVReader;
+import com.gooddata.util.CSVReader;
 
 /**
  * GoodData
