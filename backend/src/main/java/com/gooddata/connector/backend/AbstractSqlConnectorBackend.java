@@ -1114,13 +1114,14 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             CSVReader csvIn = new CSVReader(FileUtil.createBufferedUtf8Reader(file));
             String[] nextLine;
             int rowCnt = 0;
+            s = c.prepareStatement("INSERT INTO "+source+"("+cols+") VALUES ("+qmrks+")");
             while ((nextLine = csvIn.readNext()) != null) {
                 rowCnt++;
                 if(hasHeader)
                     hasHeader = false;
                 else {
                     if(s == null) {
-                        s = c.prepareStatement("INSERT INTO "+source+"("+cols+") VALUES ("+qmrks+")");
+                        
                     }
                     if(nextLine.length == cnt) {
                         for(int i=1; i<=nextLine.length; i++)
@@ -1136,8 +1137,6 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
                     }
                     if(rowCnt % BATCH_SIZE == 0) {
                         s.executeBatch();
-                        s.close();
-                        s = null;
                     }
                 }
 	        }
