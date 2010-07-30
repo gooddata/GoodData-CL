@@ -253,8 +253,8 @@ public class FileUtil {
      * @return the headers as String[]
      * @throws IOException in case of IO issues
      */
-    public static String[] getCsvHeader(URL url) throws IOException {
-        CSVReader csvIn = new CSVReader(createBufferedUtf8Reader(url));        
+    public static String[] getCsvHeader(URL url, char separator) throws IOException {
+        CSVReader csvIn = new CSVReader(createBufferedUtf8Reader(url), separator);        
         return csvIn.readNext();
     }
 
@@ -391,7 +391,31 @@ public class FileUtil {
 	public static CSVReader createUtf8CsvReader(File file) throws IOException {
 		return createUtf8CsvReader(new FileInputStream(file));
 	}
-	
+
+    /**
+	 * Creates a UTF-8 {@link CSVReader} of the given <tt>file</tt>.
+	 *
+	 * @param file
+     * @param separator field separator
+	 * @return
+	 * @throws IOException
+	 */
+	public static CSVReader createUtf8CsvReader(File file, char separator) throws IOException {
+		return createUtf8CsvReader(new FileInputStream(file), separator);
+	}
+
+    /**
+	 * Creates a UTF-8 {@link CSVReader} of the given <tt>inputStream</tt>.
+	 *
+	 * @param inputStream
+     * @param separator field separator
+	 * @return
+	 * @throws IOException
+	 */
+	public static CSVReader createUtf8CsvReader(InputStream inputStream, char separator) throws IOException {
+		return new CSVReader(new InputStreamReader(inputStream, "utf8"), separator);
+	}
+
 	/**
 	 * Creates a UTF-8 {@link CSVReader} of the given <tt>inputStream</tt>.
 	 * 

@@ -94,16 +94,18 @@ The following paragraphs describe the specific GoodData CL commands.
 
 ## CSV Connector Commands
 
-* `GenerateCsvConfig`(csvHeaderFile=&lt;file&gt;, configFile=&lt;config&gt; \[, defaultLdmType=&lt;type&gt;\] \[, folder=&lt;folder&gt;\]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
+* `GenerateCsvConfig`(csvHeaderFile=&lt;file&gt;, configFile=&lt;config&gt; \[, defaultLdmType=&lt;type&gt;\] \[, folder=&lt;folder&gt;\], \[separator = &lt;separator-char&gt;\]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
   - csvHeaderFile - path to CSV file (only the first header row will be used)
   - configFile  - path to configuration file (will be overwritten)
   - defaultLdmType - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
   - folder - folder where to place new attributes
+  - separator - optional field separator, the default is ','
 
-* `LoadCsv`(csvDataFile=&lt;data&gt;, configFile=&lt;config&gt;, header=&lt;true | false&gt;) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
+* `LoadCsv`(csvDataFile=&lt;data&gt;, configFile=&lt;config&gt;, header=&lt;true | false&gt;, \[separator = &lt;separator-char&gt;\]) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
   - csvDataFile    - path to CSV datafile
   - configFile  - path to XML configuration file (see the GenerateCsvConfig command that generates the config file template)
-  - header - true if the CSV file has header in the first row, false otherwise 
+  - header - true if the CSV file has header in the first row, false otherwise
+  - separator - optional field separator, the default is ','
 
 ## GoogleAnalytics Connector Commands
 

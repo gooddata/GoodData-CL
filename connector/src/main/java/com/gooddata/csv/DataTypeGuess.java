@@ -114,22 +114,24 @@ public class DataTypeGuess {
      * Guesses the CSV schema
      * @param f CSV file
      * @param hasHeader
+     * @param separator field separator
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
-    public static SourceColumn[] guessCsvSchema(URL url, boolean hasHeader) throws IOException {
-    	return guessCsvSchema(url.openStream(), hasHeader);
+    public static SourceColumn[] guessCsvSchema(URL url, boolean hasHeader, char separator) throws IOException {
+    	return guessCsvSchema(url.openStream(), hasHeader, separator);
     }
 
     /**
      * Guesses the CSV schema
      * @param is CSV stream
      * @param hasHeader
+     * @param separator field separator 
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
-    public static SourceColumn[] guessCsvSchema(InputStream is, boolean hasHeader) throws IOException {
-    	CSVReader cr = FileUtil.createUtf8CsvReader(is);
+    public static SourceColumn[] guessCsvSchema(InputStream is, boolean hasHeader, char separator) throws IOException {
+    	CSVReader cr = FileUtil.createUtf8CsvReader(is, separator);
     	return guessCsvSchema(cr, hasHeader);
     }
 

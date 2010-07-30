@@ -1099,7 +1099,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     /**
      * {@inheritDoc}
      */
-    public void executeExtract(PdmSchema schema, String file, boolean hasHeader) {
+    public void executeExtract(PdmSchema schema, String file, boolean hasHeader, char separator) {
         Connection c = null;
         PreparedStatement s  = null;
         try {
@@ -1111,7 +1111,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        String cols = getNonAutoincrementColumns(sourceTable);
             String qmrks = getPreparedStatementQuestionMarks(sourceTable);
             int cnt = getNonAutoincrementColumnsCount(sourceTable);
-            CSVReader csvIn = new CSVReader(FileUtil.createBufferedUtf8Reader(file));
+            CSVReader csvIn = new CSVReader(FileUtil.createBufferedUtf8Reader(file), separator);
             String[] nextLine;
             int rowCnt = 0;
             s = c.prepareStatement("INSERT INTO "+source+"("+cols+") VALUES ("+qmrks+")");

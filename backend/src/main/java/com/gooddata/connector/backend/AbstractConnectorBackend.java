@@ -165,14 +165,14 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     /**
      * {@inheritDoc}
      */
-    public void extract(File dataFile, boolean hasHeader) {
+    public void extract(File dataFile, boolean hasHeader, char separator) {
         l.debug("Extracting CSV file="+dataFile.getAbsolutePath());
         if(!dataFile.exists()) {
             l.error("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
             throw new InternalErrorException("The file "+dataFile.getAbsolutePath()+" doesn't exists!");
         }
         l.debug("The file "+dataFile.getAbsolutePath()+" does exists size="+dataFile.length());
-        executeExtract(getPdm(), dataFile.getAbsolutePath(), hasHeader);
+        executeExtract(getPdm(), dataFile.getAbsolutePath(), hasHeader, separator);
 
         l.debug("Extracted CSV file="+dataFile.getAbsolutePath());
     }
@@ -191,8 +191,9 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      * @param pdm PDM schema
      * @param absolutePath extracted file absolutr path
      * @param hasHeader true if the data file has header
+     * @param separator the file separator
      */
-    protected abstract void executeExtract(PdmSchema pdm, String absolutePath, boolean hasHeader);
+    protected abstract void executeExtract(PdmSchema pdm, String absolutePath, boolean hasHeader, char separator);
 
 	/**
      * {@inheritDoc}

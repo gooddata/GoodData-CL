@@ -41,7 +41,7 @@ public class CsvConnnectorTest extends TestCase {
 		final InputStream expectedConfig = getClass().getResourceAsStream("/com/gooddata/connector/guess_expectedConfig.xml");
 		final URL csvUrl = getClass().getResource("/com/gooddata/connector/guess_quotes.csv");
 		
-		SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, null);
+		SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, null,',');
 		SourceSchema expected = SourceSchema.createSchema(expectedConfig);
 		
 		assertEquals(expected.getColumns().size(), guessed.getColumns().size());
@@ -62,7 +62,7 @@ public class CsvConnnectorTest extends TestCase {
 		final InputStream expectedConfig = getClass().getResourceAsStream("/com/gooddata/connector/guess_expected_dups.xml");
 		final URL csvUrl = getClass().getResource("/com/gooddata/connector/guess_dups.csv");
 		
-		SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, null);
+		SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, null,',');
 		SourceSchema expected = SourceSchema.createSchema(expectedConfig);
 		
 		assertEquals(expected.getColumns().size(), guessed.getColumns().size());

@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.gooddata.exception.InvalidParameterException;
 import org.apache.log4j.Logger;
 
 import com.gooddata.connector.backend.ConnectorBackend;
@@ -64,6 +65,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
      //hasheader flag
     private boolean hasHeader;
 
+    // field separator
+    private char separator;
+
     /**
      * Creates GoodData CSV connector
      * @param backend connector backend
@@ -87,10 +91,11 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @param dataFileName the data file
      * @param defaultLdmType default LDM type
      * @param folder default folder
+     * @param separator field separator
      * @throws IOException in case of an IO issue
      */
-    public static void saveConfigTemplate(String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
-    	SourceSchema s = guessSourceSchema(configFileName, dataFileName, defaultLdmType, folder);
+    public static void saveConfigTemplate(String configFileName, String dataFileName, String defaultLdmType, String folder, char separator) throws IOException {
+    	SourceSchema s = guessSourceSchema(configFileName, dataFileName, defaultLdmType, folder, separator);
         s.writeConfig(new File(configFileName));
     }
     
@@ -100,18 +105,19 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @param dataFileName CSV data file name
      * @param defaultLdmType default LDM type
      * @param folder folder
+     * @param separator field separator
      * @return new SourceSchema
      * @throws IOException in case of IO issues
      */
-    static SourceSchema guessSourceSchema (String configFileName, String dataFileName, String defaultLdmType, String folder) throws IOException {
+    static SourceSchema guessSourceSchema (String configFileName, String dataFileName, String defaultLdmType, String folder, char separator) throws IOException {
     	File configFile = new File(configFileName);
     	InputStream configStream = configFile.exists() ? new FileInputStream(configFile) : null;
-    	return guessSourceSchema(configStream, new File(dataFileName).toURI().toURL(), defaultLdmType, folder);
+    	return guessSourceSchema(configStream, new File(dataFileName).toURI().toURL(), defaultLdmType, folder, separator);
     }
     
-    static SourceSchema guessSourceSchema (InputStream configStream, URL dataUrl, String defaultLdmType, String folder) throws IOException {
+    static SourceSchema guessSourceSchema (InputStream configStream, URL dataUrl, String defaultLdmType, String folder, char separator) throws IOException {
         String name = URLDecoder.decode(FileUtil.getFileName(dataUrl).split("\\.")[0], "utf-8").trim();
-        String[] headers = FileUtil.getCsvHeader(dataUrl);
+        String[] headers = FileUtil.getCsvHeader(dataUrl, separator);
         int i = 0;
         final SourceSchema srcSchm;
         if (configStream != null) {
@@ -137,7 +143,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         	}
         });
         if (knownColumns < headers.length) {
-        	SourceColumn[] guessed = DataTypeGuess.guessCsvSchema(dataUrl, true);
+        	SourceColumn[] guessed = DataTypeGuess.guessCsvSchema(dataUrl, true, separator);
         	if (guessed.length != headers.length) {
         		throw new AssertionError("The size of data file header is different than the number of guessed fields");
         	}
@@ -183,7 +189,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
      */
     public void extract() throws IOException {
         File src = getDataFile();
-        getConnectorBackend().extract(src, getHasHeader());
+        getConnectorBackend().extract(src, getHasHeader(),getSeparator());
     }
 
     /**
@@ -238,6 +244,15 @@ public class CsvConnector extends AbstractConnector implements Connector {
         boolean hasHeader = false;
         if(hdr.equalsIgnoreCase("true"))
             hasHeader = true;
+        String sep = c.getParam("separator");
+        if(sep != null) {
+            if(sep.length() == 0 || sep.length() > 1)
+                throw new InvalidParameterException("The CSV separator be non-empty, one character only.");
+            setSeparator(sep.charAt(0));
+        }
+        else {
+            setSeparator(',');
+        }
         initSchema(conf.getAbsolutePath());
         setDataFile(new File(csvf.getAbsolutePath()));
         setHasHeader(hasHeader);
@@ -263,8 +278,15 @@ public class CsvConnector extends AbstractConnector implements Connector {
             // let's try a deprecated variant
             folder = c.getParam("defaultFolder");
         }
-        
-        CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder);
+        char spr = ',';
+        String sep = c.getParam("separator");
+        if(sep != null) {
+            if(sep.length() == 0 || sep.length() > 1)
+                throw new InvalidParameterException("The CSV separator be non-empty, one character only.");
+            spr = sep.charAt(0);
+        }
+
+        CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, folder, spr);
         l.info("CSV Connector configuration successfully generated. See config file: "+configFile);
     }
     
@@ -280,4 +302,12 @@ public class CsvConnector extends AbstractConnector implements Connector {
 		}
 		return result;
 	}
+
+    public char getSeparator() {
+        return separator;
+    }
+
+    public void setSeparator(char separator) {
+        this.separator = separator;
+    }
 }

@@ -180,7 +180,7 @@ public class GaConnector extends AbstractConnector implements Connector {
             }
             cw.flush();
             cw.close();
-            getConnectorBackend().extract(dataFile,false);
+            getConnectorBackend().extract(dataFile,false,',');
             FileUtil.recursiveDelete(dataFile);
         }
         catch (AuthenticationException e) {
