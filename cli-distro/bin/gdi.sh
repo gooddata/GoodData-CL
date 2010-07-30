@@ -87,4 +87,5 @@ done
 
 TMPDIR=/tmp
 
-"$JAVACMD" -Xmx512M -Dlog4j.configuration="$PROJECT_DIR/log4j.configuration" -Dderby.system.home="$PROJECT_DIR/db" -Djava.io.tmpdir="$TMPDIR" -cp "${CLSPTH}" com.gooddata.processor.GdcDI "$@"
+"$JAVACMD" -Xmx1024M -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:CMSInitiatingOccupancyFraction=50 -Dlog4j.configuration="$PROJECT_DIR/log4j.configuration" -Dderby.system.home="$PROJECT_DIR/db" -Djava.io.tmpdir="$TMPDIR" -cp "${CLSPTH}" com.gooddata.processor.GdcDI "$@"
+
