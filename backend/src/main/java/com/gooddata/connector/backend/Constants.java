@@ -26,12 +26,17 @@ package com.gooddata.connector.backend;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import com.gooddata.naming.N;
+
 public class Constants {
 
 	// TODO native2ascii
 	public final static String[] DISCARD_CHARS = {"$", "%", ",", "(", ")", "Û", "£", "´"};
 	
 	public final static int MAX_TABLE_NAME_LENGTH = 44;
+
+	// use this after the server-side bug with table lenght is fixed
+	// public final static int MAX_TABLE_NAME_LENGTH = 64 - "_".length() - N.ID.length();
 	
 	public final static String DEFAULT_DATE_FMT_STRING = "yyyy-MM-dd";
 	public final static DateFormat DEFAULT_DATE_FMT = new SimpleDateFormat(DEFAULT_DATE_FMT_STRING);
