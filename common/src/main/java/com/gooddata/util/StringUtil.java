@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.gooddata.util.CSVReader;
 
 import com.gooddata.naming.N;
 import com.ibm.icu.text.Transliterator;

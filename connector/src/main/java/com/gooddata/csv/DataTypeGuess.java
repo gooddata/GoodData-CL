@@ -34,7 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.gooddata.util.CSVReader;
 
 import com.gooddata.connector.backend.Constants;
 import com.gooddata.modeling.model.SourceColumn;

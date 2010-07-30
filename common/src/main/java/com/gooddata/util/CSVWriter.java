@@ -32,7 +32,9 @@ import java.util.List;
  */
 public class CSVWriter implements Closeable {
 
-    public static final int INITIAL_STRING_SIZE = 256;
+    public static final int INITIAL_STRING_SIZE = 512;
+    
+    private final StringBuilder writeStringBuilder;
 
 	private Writer rawWriter;
 
@@ -171,6 +173,7 @@ public class CSVWriter implements Closeable {
         this.quotechar = quotechar;
         this.escapechar = escapechar;
         this.lineEnd = lineEnd;
+        this.writeStringBuilder = new StringBuilder(INITIAL_STRING_SIZE);
     }
 
     /**
@@ -240,7 +243,8 @@ public class CSVWriter implements Closeable {
     	if (nextLine == null)
     		return;
 
-        StringBuilder sb = new StringBuilder(INITIAL_STRING_SIZE);
+        StringBuilder sb = writeStringBuilder;
+        sb.delete(0, sb.length());
         for (int i = 0; i < nextLine.length; i++) {
 
             if (i != 0) {
@@ -260,7 +264,10 @@ public class CSVWriter implements Closeable {
             boolean doQuote = alwaysQuoted || containsSeparator || containsSpecial;
 
             quote(sb, doQuote);
-            sb.append(containsSpecial ? processLine(nextElement) : nextElement);
+            if (containsSpecial)
+            	processLine(nextElement, sb);
+            else
+            	sb.append(nextElement); 
             quote(sb, doQuote);
         }
 
@@ -281,9 +288,8 @@ public class CSVWriter implements Closeable {
 	    return line.indexOf(quotechar) != -1 || line.indexOf(escapechar) != -1;
     }
 
-	protected StringBuilder processLine(String nextElement)
+	protected StringBuilder processLine(String nextElement, StringBuilder sb)
     {
-		StringBuilder sb = new StringBuilder(INITIAL_STRING_SIZE);
 	    for (int j = 0; j < nextElement.length(); j++) {
 	        char nextChar = nextElement.charAt(j);
 	        if (escapechar != NO_ESCAPE_CHARACTER && nextChar == quotechar) {

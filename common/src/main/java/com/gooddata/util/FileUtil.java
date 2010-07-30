@@ -43,7 +43,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 
 /**

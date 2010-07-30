@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import org.apache.log4j.Logger;
 
@@ -1111,7 +1111,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        String cols = getNonAutoincrementColumns(sourceTable);
             String qmrks = getPreparedStatementQuestionMarks(sourceTable);
             int cnt = getNonAutoincrementColumnsCount(sourceTable);
-            CSVReader csvIn = new CSVReader(FileUtil.createBufferedUtf8Reader(file));
+            CSVReader csvIn = FileUtil.createUtf8CsvReader(new File(file));
             String[] nextLine;
             int rowCnt = 0;
             s = c.prepareStatement("INSERT INTO "+source+"("+cols+") VALUES ("+qmrks+")");
@@ -1191,6 +1191,8 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         private final CSVWriter cw;
         protected int rowCnt = 0;
         protected int colCnt = 0;
+        
+        private String[] line = null;
 
         public ResultSetCsvWriter(CSVWriter cw) {
             this.cw = cw;
@@ -1199,7 +1201,8 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         public void handle(ResultSet rs) throws SQLException {
             if(colCnt<=0)
                 colCnt = rs.getMetaData().getColumnCount();
-            final String[] line = new String[colCnt];
+            if (line == null)
+            	line = new String[colCnt];
             for (int i = 1; i <= colCnt; i++)
                 line[i - 1] = rs.getString(i);
             cw.writeNext(line, true);
