@@ -111,6 +111,7 @@ public class JdbcUtil {
     public static ResultSet executeQuery(Statement s, String sql) throws SQLException {
         ResultSet rs = null;
         try {
+    		s.setFetchSize(Integer.MIN_VALUE);        	
             l.debug("Executing SQL: statement='" + sql + "'");
             rs = s.executeQuery(sql);
             l.debug("Executed SQL: statement='" + sql + "'");
