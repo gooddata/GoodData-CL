@@ -169,7 +169,9 @@ public class MaqlGenerator {
                     if (!attributeFolders.contains(folder))
                         attributeFolders.add(folder);
                 }
-                if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT)) {
+                if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT) ||
+                		column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
+                {
                     if (!factFolders.contains(folder))
                         factFolders.add(folder);
                 }
