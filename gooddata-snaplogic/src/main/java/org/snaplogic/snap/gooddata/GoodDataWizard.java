@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -34,6 +35,7 @@ import org.snaplogic.snapi.Snapi;
 import org.snaplogic.snapi.PropertyConstraint.Type;
 
 import com.gooddata.connector.CsvConnector;
+import com.gooddata.connector.DateDimensionConnector;
 import com.gooddata.connector.backend.DerbyConnectorBackend;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.GdcLoginException;
@@ -41,6 +43,8 @@ import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.processor.Command;
+import com.gooddata.processor.ProcessingContext;
 
 /**
  * For information on the usage of this see {@link GoodDataWizard#checkDateFormats} method
@@ -126,6 +130,16 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	private static final String REFERENCE_KEY_TARGET = "reference_target";
 
 	private static final Object SAMPLE_REFERENCE = "Dataset:Column";
+
+	private static final String DATE_FORMAT_KEY_DIMENSION = "df_dimension";
+
+	private static final String DATE_FORMAT_CREATE_DD = "Create new...";
+
+	private static final String DATE_FORMAT_CONNECT_DD = "Reuse existing...";
+
+	private static final String DATE_FORMAT_REF_OR_NAME = "df_ref_or_name";
+
+	private static final Object DATE_FORMAT_REF_NAME_SAMPLE = "";
 
 	@Override
 	public String getDescription() {
@@ -456,11 +470,12 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	private void getDateFormats(ComponentResourceErr err, List<String> fieldsToFormat) {
 		nextStep();
 		SimpleProp stringProp = new SimpleProp("Field", SimplePropType.SnapString, "");
-		DictProp fieldDefProp = new DictProp("Field definition", stringProp, "", 2, 2, true, true);
-		fieldDefProp
-				.put(DATE_FORMAT_KEY_FIELD_NAME, new SimpleProp("Field name", SimplePropType.SnapString, "string1"));
-		PropertyConstraint ldmTypeConstraint = new PropertyConstraint(Type.LOV, LDM_TYPES);
-		fieldDefProp.put(DATE_FORMAT_KEY_FORMAT, new SimpleProp("Format", SimplePropType.SnapString, "", null, true));
+		DictProp fieldDefProp = new DictProp("Field definition", stringProp, "", 4, 4, true, true);
+		fieldDefProp.put(DATE_FORMAT_KEY_FIELD_NAME, new SimpleProp(" Field name", SimplePropType.SnapString, "string1"));
+		fieldDefProp.put(DATE_FORMAT_KEY_FORMAT, new SimpleProp(" Format", SimplePropType.SnapString, "", null, true));
+		PropertyConstraint schemaConstrain = new PropertyConstraint(Type.LOV, new String[] { DATE_FORMAT_CREATE_DD, DATE_FORMAT_CONNECT_DD});
+		fieldDefProp.put(DATE_FORMAT_KEY_DIMENSION, new SimpleProp("Create Schema", SimplePropType.SnapString, "Create a new Date Dimension, or connect an existing one?", schemaConstrain, true));
+		fieldDefProp.put(DATE_FORMAT_REF_OR_NAME, new SimpleProp("Name/Reference", SimplePropType.SnapString, "", null, true));
 		ListProp dateFormatSpec = new ListProp("Date formats", fieldDefProp, "", fieldsToFormat.size(), fieldsToFormat
 				.size(), true);
 		setPropertyDef(PROP_DATE_FORMAT_DEFINITION, dateFormatSpec);
@@ -469,6 +484,8 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			Map fieldSpec = new HashMap();
 			fieldSpec.put(DATE_FORMAT_KEY_FIELD_NAME, field);
 			fieldSpec.put(DATE_FORMAT_KEY_FORMAT, DEFAULT_LDM_DATE_FORMAT);
+			fieldSpec.put(DATE_FORMAT_KEY_DIMENSION, DATE_FORMAT_CREATE_DD);
+			fieldSpec.put(DATE_FORMAT_REF_OR_NAME, DATE_FORMAT_REF_NAME_SAMPLE);
 			formatSpecValue.add(fieldSpec);
 		}
 		setPropertyValue(PROP_DATE_FORMAT_DEFINITION, formatSpecValue);
@@ -751,9 +768,34 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		List referenceList = getListPropertyValue(PROP_REFERENCE_DEFINITION);
 		HashMap<String, String> dateFormats = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME,
 				DATE_FORMAT_KEY_FORMAT);
+		HashMap<String, String> dateDimensions = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME, DATE_FORMAT_KEY_DIMENSION);
+		HashMap<String, String> ddNames = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME, DATE_FORMAT_REF_OR_NAME);
 		List labelFields = getListPropertyValue(PROP_LABEL_DEFINITION);
 		HashMap<String, String> labelParents = propertySheetToHash(labelFields, LABEL_KEY_FIELD_NAME, LABEL_KEY_PARENT);
 		HashMap<String, String> references = propertySheetToHash(referenceList, REFERENCE_KEY_FIELD_NAME, REFERENCE_KEY_TARGET);
+		
+		//handle DD
+		for(Map.Entry<String,String> dd : dateDimensions.entrySet()) {
+			if (dd.getValue().equalsIgnoreCase(DATE_FORMAT_CREATE_DD)) {
+				// Create new TD
+				String ddName = ddNames.get(dd.getKey());
+				info("Creating date dimension " + ddName);
+				DateDimensionConnector ddConnector = DateDimensionConnector.createConnector();
+				Command c = new Command("LoadDateDimension");
+				Properties prop = new Properties();
+				prop.put("name", ddName);
+				c.setParameters(prop);
+				ProcessingContext ctx = new ProcessingContext();
+				ctx.setProjectId(projectId);
+				ddConnector.processCommand(c, null, ctx);
+				String ddMaql = ddConnector.generateMaql();
+				restApi.executeMAQL(projectId, ddMaql);
+				info("Date dimension " + ddName + " created.");
+			} else if (dd.getValue().equalsIgnoreCase(DATE_FORMAT_CONNECT_DD)){
+				// nothing to do at the moment
+				// dimensions are connected in schema creation part
+			}
+		}
 
 		SourceSchema ss = SourceSchema.createSchema(dliName);
 
@@ -766,7 +808,9 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			SourceColumn column = new SourceColumn(fieldName, ldmType, fieldName);
 
 			if (dateFormats != null && dateFormats.containsKey(fieldName)) {
+				//setup date dimension
 				column.setFormat((String) dateFormats.get(fieldName));
+				column.setSchemaReference(ddNames.get(fieldName));
 			}
 
 			if (labelParents != null && labelParents.containsKey(fieldName)) {
