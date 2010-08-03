@@ -105,13 +105,14 @@ public class JdbcUtil {
      * Execute query
      * @param s JDBC statement
      * @param sql sql statement
+     * @param fetchSize max fetch size
      * @return Jdbc ResultSet
      * @throws SQLException in case of a db issue 
      */
-    public static ResultSet executeQuery(Statement s, String sql) throws SQLException {
+    private static ResultSet executeQuery(Statement s, String sql, int fetchSize) throws SQLException {
         ResultSet rs = null;
         try {
-    		s.setFetchSize(Integer.MIN_VALUE);        	
+    		s.setFetchSize(fetchSize);        	
             l.debug("Executing SQL: statement='" + sql + "'");
             rs = s.executeQuery(sql);
             l.debug("Executed SQL: statement='" + sql + "'");
@@ -128,18 +129,19 @@ public class JdbcUtil {
      * @param c JDBC connection
      * @param sql sql statement
      * @param handler Jdbc ResultSet handler
+     * @param limit maximum number of rows to process
+     * @param fetchSize max fetch size  
      * @throws SQLException in case of a db issue 
      */
-    public static void executeQuery(Connection c, String sql, ResultSetHandler handler) throws SQLException {
+    public static void executeQuery(Connection c, String sql, ResultSetHandler handler, int limit, int fetchSize) throws SQLException {
     	Statement st = null;
     	ResultSet rs = null;
     	try {
     		st = c.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
     	              			   java.sql.ResultSet.CONCUR_READ_ONLY);
-    		st.setFetchSize(Integer.MIN_VALUE);
             l.debug("Executing SQL: statement='" + st.toString() + "'");
-    		rs = executeQuery(st, sql);
-    		while (rs.next()) {
+    		rs = executeQuery(st, sql, fetchSize);
+    		while (rs.next() && limit-- > 0) {
     			handler.handle(rs);
     		}
     	} finally {
@@ -149,9 +151,21 @@ public class JdbcUtil {
     			st.close();
     	}
     }
-    
+
     /**
-     * Result set handler callback interface for {@link JdbcUtil#executeQuery(Connection, String, ResultSetHandler)}
+     * Execute query an passes the ResultSet to the given handler on each record
+     * @param c JDBC connection
+     * @param sql sql statement
+     * @param handler Jdbc ResultSet handler
+     * @param fetchSize max fetch size
+     * @throws SQLException in case of a db issue
+     */
+    public static void executeQuery(Connection c, String sql, ResultSetHandler handler, int fetchSize) throws SQLException {
+    	executeQuery(c,sql,handler,Integer.MAX_VALUE, fetchSize);
+    }
+
+    /**
+     * Result set handler callback interface for {@link JdbcUtil#executeQuery(Connection, String, ResultSetHandler, int)}
      */
     public static interface ResultSetHandler {
     	public void handle(ResultSet rs) throws SQLException;

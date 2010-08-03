@@ -86,6 +86,8 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     // autoincrement syntax
     protected String SYNTAX_AUTOINCREMENT = "";
 
+    protected int FETCH_SIZE = 256;
+
     // SQL concat function prefix and suffix
     protected String SYNTAX_CONCAT_FUNCTION_PREFIX = "";
     protected String SYNTAX_CONCAT_FUNCTION_SUFFIX = "";
@@ -143,40 +145,28 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
      * {@inheritDoc}
      */
     public String listSnapshots() {
-        String result = "ID        FROM ROWID        TO ROWID        TIME\n";
-              result += "------------------------------------------------\n";
+        final StringBuffer result = new StringBuffer("ID        FROM ROWID        TO ROWID        TIME\n");
+        result.append("------------------------------------------------\n");
         Connection con = null;
-        Statement s = null;
-        ResultSet r = null;
         try {
             con = getConnection();
-            s = con.createStatement();
-            r = JdbcUtil.executeQuery(s, "SELECT id,firstid,lastid,tmstmp FROM snapshots");
-            for(boolean rc = r.next(); rc; rc = r.next()) {
-                int id = r.getInt(1);
-                int firstid = r.getInt(2);
-                int lastid = r.getInt(3);
-                long tmstmp = r.getLong(4);
-                Date tm = new Date(tmstmp);
-                result += id + "        " + firstid + "        " + lastid + "        " + tm + "\n";
-            }
+            JdbcUtil.ResultSetHandler rh = new JdbcUtil.ResultSetHandler() {
+                public void handle(ResultSet r) throws SQLException {
+                    int id = r.getInt(1);
+                    int firstid = r.getInt(2);
+                    int lastid = r.getInt(3);
+                    long tmstmp = r.getLong(4);
+                    Date tm = new Date(tmstmp);
+                    result.append(id + "        " + firstid + "        " + lastid + "        " + tm + "\n");
+                }
+            };
+            JdbcUtil.executeQuery(con, "SELECT id,firstid,lastid,tmstmp FROM snapshots", rh, FETCH_SIZE);
         }
         catch (SQLException e) {
             throw new ConnectorBackendException(e);
         }
-        finally {
-            try {
-                if(r != null)
-                    r.close();
-                if (s != null)
-                    s.close();
-            }
-            catch (SQLException ee) {
-               l.warn("Error closing stuff: " + ee.getMessage(), ee);
-            }
-        }
         l.debug("Current snapshots: \n"+result);
-        return result;
+        return result.toString();
     }
 
 
@@ -1176,7 +1166,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             String[] header = getLoadHeader(part);
             CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(file));
             cw.writeNext(header);
-            JdbcUtil.executeQuery(c, sql, new ResultSetCsvWriter(cw));
+            JdbcUtil.executeQuery(c, sql, new ResultSetCsvWriter(cw), FETCH_SIZE);
             cw.close();
 	        l.debug("Finished unloading data.");
     	} catch (SQLException e) {

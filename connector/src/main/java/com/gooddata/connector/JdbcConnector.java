@@ -67,6 +67,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     private String jdbcPassword;
     private String sqlQuery;
 
+    protected int FETCH_SIZE = 256;
+
     /**
      * Creates a new JDBC connector
      * @param connectorBackend connector backend
@@ -111,36 +113,30 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             l.error("Can't load JDBC driver.", e);
         }
         l.debug("JDBC driver "+jdbcDriver+" loaded.");
-        SourceSchema s = SourceSchema.createSchema(name);
+        final SourceSchema s = SourceSchema.createSchema(name);
         Connection con = null;
-        Statement st = null;
-        ResultSet rs = null;
-        ResultSetMetaData rsm;
         try {
             con = connect(jdbcUrl, jdbcUsr, jdbcPsw);
-            st = con.createStatement();
-            rs = JdbcUtil.executeQuery(st, query);
-            rs.next();
-            rsm = rs.getMetaData();
-            int cnt = rsm.getColumnCount();
-            for(int i=1; i <= cnt; i++) {
-                String cnm = StringUtil.toIdentifier(rsm.getColumnName(i));
-                String cdsc = rsm.getColumnName(i);
-                String type = getColumnType(rsm.getColumnType(i));
-                SourceColumn column = new SourceColumn(cnm, type, cdsc);
-                if (SourceColumn.LDM_TYPE_DATE.equals(type)) {
-                	column.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
+            JdbcUtil.ResultSetHandler rh = new JdbcUtil.ResultSetHandler() {
+                public void handle(ResultSet rs) throws SQLException {
+                    ResultSetMetaData rsm = rs.getMetaData();
+                    int cnt = rsm.getColumnCount();
+                    for(int i=1; i <= cnt; i++) {
+                        String cnm = StringUtil.toIdentifier(rsm.getColumnName(i));
+                        String cdsc = rsm.getColumnName(i);
+                        String type = getColumnType(rsm.getColumnType(i));
+                        SourceColumn column = new SourceColumn(cnm, type, cdsc);
+                        if (SourceColumn.LDM_TYPE_DATE.equals(type)) {
+                	        column.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
+                        }
+                        s.addColumn(column);
+                    }
                 }
-                s.addColumn(column);
-                
-            }
+            };
+            JdbcUtil.executeQuery(con, query, rh,1);
             s.writeConfig(new File(configFileName));
         }
         finally {
-            if(rs != null)
-                rs.close();
-            if(st != null)
-                st.close();
             if(con != null && !con.isClosed())
                 con.close();
         }
@@ -207,7 +203,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);
             s = con.createStatement();
             ResultSetCsvWriter rw = new ResultSetCsvWriter(cw);
-            JdbcUtil.executeQuery(con, getSqlQuery(), rw);
+            JdbcUtil.executeQuery(con, getSqlQuery(), rw, FETCH_SIZE);
             l.debug("Finished retrieving JDBC data. Retrieved "+rw.rowCnt+" rows.");
             cw.flush();
             cw.close();

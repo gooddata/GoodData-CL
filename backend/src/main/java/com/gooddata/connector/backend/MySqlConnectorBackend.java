@@ -86,6 +86,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         SYNTAX_CONCAT_FUNCTION_PREFIX = "CONCAT(";
         SYNTAX_CONCAT_FUNCTION_SUFFIX = ")";
         SYNTAX_CONCAT_OPERATOR = ",'" + HASH_SEPARATOR + "',";
+        FETCH_SIZE = Integer.MIN_VALUE;
     }
 
     /**
