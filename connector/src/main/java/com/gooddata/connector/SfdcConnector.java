@@ -299,7 +299,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         l.debug("Extracting SFDC data.");
         File dataFile = FileUtil.getTempFile();
         l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
-        CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);
+        CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
         SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
         List<SObject> result;
         try {

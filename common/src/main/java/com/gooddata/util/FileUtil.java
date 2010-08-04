@@ -457,7 +457,7 @@ public class FileUtil {
 	 * @return
 	 * @throws IOException
 	 */
-	public static CSVWriter createUtf8CsvNoEscapingWriter(File file) throws IOException {
+	public static CSVWriter createUtf8CsvEscapingWriter(File file) throws IOException {
 		return new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), "utf8"),',','"',
                 '\\');
 	}
