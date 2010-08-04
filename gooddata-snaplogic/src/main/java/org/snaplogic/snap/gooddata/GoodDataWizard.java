@@ -39,6 +39,7 @@ import com.gooddata.connector.DateDimensionConnector;
 import com.gooddata.connector.backend.DerbyConnectorBackend;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.GdcLoginException;
+import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.modeling.model.SourceColumn;
@@ -120,7 +121,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	private static final String PROP_GD_CONN_NAME = "new_connection_name";
 
 	private static final Object DEFAULT_GD_CONN_NAME = "GoodDataConnection";
-	
+
 	private static final String PROP_GD_INPUT = "gd_input";
 
 	private static final String PROP_REFERENCE_DEFINITION = "reference_definition";
@@ -471,11 +472,15 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		nextStep();
 		SimpleProp stringProp = new SimpleProp("Field", SimplePropType.SnapString, "");
 		DictProp fieldDefProp = new DictProp("Field definition", stringProp, "", 4, 4, true, true);
-		fieldDefProp.put(DATE_FORMAT_KEY_FIELD_NAME, new SimpleProp(" Field name", SimplePropType.SnapString, "string1"));
+		fieldDefProp.put(DATE_FORMAT_KEY_FIELD_NAME,
+				new SimpleProp(" Field name", SimplePropType.SnapString, "string1"));
 		fieldDefProp.put(DATE_FORMAT_KEY_FORMAT, new SimpleProp(" Format", SimplePropType.SnapString, "", null, true));
-		PropertyConstraint schemaConstrain = new PropertyConstraint(Type.LOV, new String[] { DATE_FORMAT_CREATE_DD, DATE_FORMAT_CONNECT_DD});
-		fieldDefProp.put(DATE_FORMAT_KEY_DIMENSION, new SimpleProp("Create Schema", SimplePropType.SnapString, "Create a new Date Dimension, or connect an existing one?", schemaConstrain, true));
-		fieldDefProp.put(DATE_FORMAT_REF_OR_NAME, new SimpleProp("Name/Reference", SimplePropType.SnapString, "", null, true));
+		PropertyConstraint schemaConstrain = new PropertyConstraint(Type.LOV, new String[] { DATE_FORMAT_CREATE_DD,
+				DATE_FORMAT_CONNECT_DD });
+		fieldDefProp.put(DATE_FORMAT_KEY_DIMENSION, new SimpleProp("Create Schema", SimplePropType.SnapString,
+				"Create a new Date Dimension, or connect an existing one?", schemaConstrain, true));
+		fieldDefProp.put(DATE_FORMAT_REF_OR_NAME, new SimpleProp("Name/Reference", SimplePropType.SnapString, "", null,
+				true));
 		ListProp dateFormatSpec = new ListProp("Date formats", fieldDefProp, "", fieldsToFormat.size(), fieldsToFormat
 				.size(), true);
 		setPropertyDef(PROP_DATE_FORMAT_DEFINITION, dateFormatSpec);
@@ -673,8 +678,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		nextStep();
 		SimpleProp stringProp = new SimpleProp("Field", SimplePropType.SnapString, "");
 		DictProp fieldDefProp = new DictProp("Field definition", stringProp, "", 2, 2, true, true);
-		fieldDefProp
-				.put(REFERENCE_KEY_FIELD_NAME, new SimpleProp("Field name", SimplePropType.SnapString, "string1"));
+		fieldDefProp.put(REFERENCE_KEY_FIELD_NAME, new SimpleProp("Field name", SimplePropType.SnapString, "string1"));
 		PropertyConstraint ldmTypeConstraint = new PropertyConstraint(Type.LOV, LDM_TYPES);
 		fieldDefProp.put(REFERENCE_KEY_TARGET, new SimpleProp("Target", SimplePropType.SnapString, "", null, true));
 		ListProp dateFormatSpec = new ListProp("References", fieldDefProp, "", referenceFields.size(), referenceFields
@@ -714,199 +718,211 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 	@Override
 	public void execute(Map<String, InputView> inputViews, Map<String, OutputView> outputViews) {
-		ExtendedSnapi snapi = ExtendedSnapi.getExtendedSnapi();
-		String gdUriPrefix = getStringPropertyValue(PROP_GD_URI_PREFIX);
-		String serverUri = ComponentContainer.getServerUri();
-		String gdConnUri = getStringPropertyValue(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF);
-
-		// Either create a new connection or reuse existing
-		ResDef connResDef;
-		if (gdConnUri.equals(CREATE_NEW_CONNECTION)) {
-			String connectionName = getStringPropertyValue(PROP_GD_CONN_NAME);
-			info("Creating new connection: " + connectionName);
-			gdConnUri = gdUriPrefix + "/" + connectionName;
-			connResDef = createConnectionObject(snapi, serverUri);
-			connResDef.save(gdConnUri);
-			info("Connection " + gdConnUri + " created");
-		} else {
-			gdConnUri = enrichWithServerUrl(gdConnUri);
-			connResDef = getResourceObject(gdConnUri, null);
-		}
-
-		// Login to GoodData
-		GdcRESTApiWrapper restApi;
 		try {
-			restApi = GoodDataConnection.login(connResDef, this);
-		} catch (GdcLoginException gdcle) {
-			elog(gdcle);
-			throw new SnapComponentException(gdcle);
-		}
+			ExtendedSnapi snapi = ExtendedSnapi.getExtendedSnapi();
+			String gdUriPrefix = getStringPropertyValue(PROP_GD_URI_PREFIX);
+			String serverUri = ComponentContainer.getServerUri();
+			String gdConnUri = getStringPropertyValue(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF);
 
-		// Either create a new project, or parse project URL to get it
-		String idNameCompound = getStringPropertyValue(GoodDataPut.PROP_PROJECT_NAME);
-		String projectName;
-		String projectId;
-		if (CREATE_NEW_PROJECT.equals(idNameCompound)) {
-			// Create a new project
-			String newProjectName = getStringPropertyValue(PROP_NEW_PROJECT_NAME);
-			String newProjectDescr = getStringPropertyValue(PROP_NEW_PROJECT_DESCR);
-			info("Creating new project in GoodData: " + newProjectName);
-			projectId = restApi.createProject(newProjectName, newProjectDescr, null);
-			info("Project " + newProjectName + " created, its ID is " + projectId);
-			// We will need this later
-			projectName = newProjectName;
-		} else {
-			// Get Project ID
-			projectId = parseProjectId(idNameCompound);
-			projectName = parseProjectName(idNameCompound);
-		}
-
-		String dliName = getStringPropertyValue(PROP_DLI_NAME);
-
-		List dliColumnTypes = getListPropertyValue(PROP_DLI_DEFINITION);
-		List dateFormatsList = getListPropertyValue(PROP_DATE_FORMAT_DEFINITION);
-		List referenceList = getListPropertyValue(PROP_REFERENCE_DEFINITION);
-		HashMap<String, String> dateFormats = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME,
-				DATE_FORMAT_KEY_FORMAT);
-		HashMap<String, String> dateDimensions = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME, DATE_FORMAT_KEY_DIMENSION);
-		HashMap<String, String> ddNames = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME, DATE_FORMAT_REF_OR_NAME);
-		List labelFields = getListPropertyValue(PROP_LABEL_DEFINITION);
-		HashMap<String, String> labelParents = propertySheetToHash(labelFields, LABEL_KEY_FIELD_NAME, LABEL_KEY_PARENT);
-		HashMap<String, String> references = propertySheetToHash(referenceList, REFERENCE_KEY_FIELD_NAME, REFERENCE_KEY_TARGET);
-		
-		//handle DD
-		for(Map.Entry<String,String> dd : dateDimensions.entrySet()) {
-			if (dd.getValue().equalsIgnoreCase(DATE_FORMAT_CREATE_DD)) {
-				// Create new TD
-				String ddName = ddNames.get(dd.getKey());
-				info("Creating date dimension " + ddName);
-				DateDimensionConnector ddConnector = DateDimensionConnector.createConnector();
-				Command c = new Command("LoadDateDimension");
-				Properties prop = new Properties();
-				prop.put("name", ddName);
-				c.setParameters(prop);
-				ProcessingContext ctx = new ProcessingContext();
-				ctx.setProjectId(projectId);
-				ddConnector.processCommand(c, null, ctx);
-				String ddMaql = ddConnector.generateMaql();
-				restApi.executeMAQL(projectId, ddMaql);
-				info("Date dimension " + ddName + " created.");
-			} else if (dd.getValue().equalsIgnoreCase(DATE_FORMAT_CONNECT_DD)){
-				// nothing to do at the moment
-				// dimensions are connected in schema creation part
-			}
-		}
-
-		SourceSchema ss = SourceSchema.createSchema(dliName);
-
-		for (Iterator localIterator1 = dliColumnTypes.iterator(); localIterator1.hasNext();) {
-			Object columnType = localIterator1.next();
-
-			HashMap entry = (HashMap) columnType;
-			String fieldName = (String) entry.get(DLI_SPEC_KEY_FIELD_NAME);
-			String ldmType = (String) entry.get(DLI_SPEC_KEY_LDM_TYPE);
-			SourceColumn column = new SourceColumn(fieldName, ldmType, fieldName);
-
-			if (dateFormats != null && dateFormats.containsKey(fieldName)) {
-				//setup date dimension
-				column.setFormat((String) dateFormats.get(fieldName));
-				column.setSchemaReference(ddNames.get(fieldName));
+			// Either create a new connection or reuse existing
+			ResDef connResDef;
+			if (gdConnUri.equals(CREATE_NEW_CONNECTION)) {
+				String connectionName = getStringPropertyValue(PROP_GD_CONN_NAME);
+				info("Creating new connection: " + connectionName);
+				gdConnUri = gdUriPrefix + "/" + connectionName;
+				connResDef = createConnectionObject(snapi, serverUri);
+				connResDef.save(gdConnUri);
+				info("Connection " + gdConnUri + " created");
+			} else {
+				gdConnUri = enrichWithServerUrl(gdConnUri);
+				connResDef = getResourceObject(gdConnUri, null);
 			}
 
-			if (labelParents != null && labelParents.containsKey(fieldName)) {
-				column.setReference((String) labelParents.get(fieldName));
+			// Login to GoodData
+			GdcRESTApiWrapper restApi;
+			try {
+				restApi = GoodDataConnection.login(connResDef, this);
+			} catch (GdcLoginException gdcle) {
+				elog(gdcle);
+				throw new SnapComponentException(gdcle);
 			}
-			
-			if (references != null && references.containsKey(fieldName)) {
-				String[] ref = references.get(fieldName).split(":");
-				if (ref.length != 2) {
-					elog(new Throwable("Error in reference format: " + references.get(fieldName)));
-					throw new SnapComponentException("Error in reference format: " + references.get(fieldName));
+
+			// Either create a new project, or parse project URL to get it
+			String idNameCompound = getStringPropertyValue(GoodDataPut.PROP_PROJECT_NAME);
+			String projectName;
+			String projectId;
+			if (CREATE_NEW_PROJECT.equals(idNameCompound)) {
+				// Create a new project
+				String newProjectName = getStringPropertyValue(PROP_NEW_PROJECT_NAME);
+				String newProjectDescr = getStringPropertyValue(PROP_NEW_PROJECT_DESCR);
+				info("Creating new project in GoodData: " + newProjectName);
+				projectId = restApi.createProject(newProjectName, newProjectDescr, null);
+				info("Project " + newProjectName + " created, its ID is " + projectId);
+				// We will need this later
+				projectName = newProjectName;
+			} else {
+				// Get Project ID
+				projectId = parseProjectId(idNameCompound);
+				projectName = parseProjectName(idNameCompound);
+			}
+
+			String dliName = getStringPropertyValue(PROP_DLI_NAME);
+
+			List dliColumnTypes = getListPropertyValue(PROP_DLI_DEFINITION);
+			List dateFormatsList = getListPropertyValue(PROP_DATE_FORMAT_DEFINITION);
+			List referenceList = getListPropertyValue(PROP_REFERENCE_DEFINITION);
+			HashMap<String, String> dateFormats = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME,
+					DATE_FORMAT_KEY_FORMAT);
+			HashMap<String, String> dateDimensions = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME,
+					DATE_FORMAT_KEY_DIMENSION);
+			HashMap<String, String> ddNames = propertySheetToHash(dateFormatsList, DATE_FORMAT_KEY_FIELD_NAME,
+					DATE_FORMAT_REF_OR_NAME);
+			List labelFields = getListPropertyValue(PROP_LABEL_DEFINITION);
+			HashMap<String, String> labelParents = propertySheetToHash(labelFields, LABEL_KEY_FIELD_NAME,
+					LABEL_KEY_PARENT);
+			HashMap<String, String> references = propertySheetToHash(referenceList, REFERENCE_KEY_FIELD_NAME,
+					REFERENCE_KEY_TARGET);
+
+			// handle DD
+			if (dateDimensions != null) {
+				for (Map.Entry<String, String> dd : dateDimensions.entrySet()) {
+					if (dd.getValue().equalsIgnoreCase(DATE_FORMAT_CREATE_DD)) {
+						// Create new TD
+						String ddName = ddNames.get(dd.getKey());
+						info("Creating date dimension " + ddName);
+						DateDimensionConnector ddConnector = DateDimensionConnector.createConnector();
+						Command c = new Command("LoadDateDimension");
+						Properties prop = new Properties();
+						prop.put("name", ddName);
+						c.setParameters(prop);
+						ProcessingContext ctx = new ProcessingContext();
+						ctx.setProjectId(projectId);
+						ddConnector.processCommand(c, null, ctx);
+						String ddMaql = ddConnector.generateMaql();
+						restApi.executeMAQL(projectId, ddMaql);
+						info("Date dimension " + ddName + " created.");
+					} else if (dd.getValue().equalsIgnoreCase(DATE_FORMAT_CONNECT_DD)) {
+						// nothing to do at the moment
+						// dimensions are connected in schema creation part
+					}
 				}
-				column.setSchemaReference(ref[0]);
-				column.setReference(ref[1]);
 			}
-			
-			ss.addColumn(column);
+
+			SourceSchema ss = SourceSchema.createSchema(dliName);
+
+			for (Iterator localIterator1 = dliColumnTypes.iterator(); localIterator1.hasNext();) {
+				Object columnType = localIterator1.next();
+
+				HashMap entry = (HashMap) columnType;
+				String fieldName = (String) entry.get(DLI_SPEC_KEY_FIELD_NAME);
+				String ldmType = (String) entry.get(DLI_SPEC_KEY_LDM_TYPE);
+				SourceColumn column = new SourceColumn(fieldName, ldmType, fieldName);
+
+				if (dateFormats != null && dateFormats.containsKey(fieldName)) {
+					// setup date dimension
+					column.setFormat((String) dateFormats.get(fieldName));
+					column.setSchemaReference(ddNames.get(fieldName));
+				}
+
+				if (labelParents != null && labelParents.containsKey(fieldName)) {
+					column.setReference((String) labelParents.get(fieldName));
+				}
+
+				if (references != null && references.containsKey(fieldName)) {
+					String[] ref = references.get(fieldName).split(":");
+					if (ref.length != 2) {
+						elog(new Throwable("Error in reference format: " + references.get(fieldName)));
+						throw new SnapComponentException("Error in reference format: " + references.get(fieldName));
+					}
+					column.setSchemaReference(ref[0]);
+					column.setReference(ref[1]);
+				}
+
+				ss.addColumn(column);
+			}
+
+			try {
+				// PdmSchema is a representation of SourceSchema in the ConnectorBackend
+				PdmSchema pdm = PdmSchema.createSchema(ss);
+				// TODO Replace the Derby backend with stream backend
+				// Initialize embedded DB backend
+				DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
+				derbyConnectorBackend.setProjectId(projectId);
+				derbyConnectorBackend.setPdm(pdm);
+				// Setup CSV connector that will be used for reading the data
+				CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
+				csvConnector.setSchema(ss);
+				csvConnector.initialize();
+				// Generate MAQL for Source Schema
+				String maql = csvConnector.generateMaql();
+				// Execute the MAQL (creates DLI)
+				info("Going to create a new DLI " + dliName + " in project " + projectName);
+				restApi.executeMAQL(projectId, maql);
+				info("DLI " + dliName + " created");
+				// We are done here, project is set up in GoodData
+			} catch (IOException e) {
+				elog(e);
+				throw new SnapComponentException(e);
+			}
+
+			info("Parsing output view of the source component...");
+			String gdInput = enrichWithServerUrl(getStringPropertyValue(PROP_GD_INPUT));
+			String[] uriAndView = gdInput.split("::");
+			String uri = uriAndView[0];
+			String outViewName = uriAndView[1];
+
+			Map<String, Object> resdefAndFields = getResDefandFieldsFromSourceView();
+			ResDef srcResDef = (ResDef) resdefAndFields.get(Keys.RESDEF);
+			info("Source component understood");
+
+			String componentName = getStringPropertyValue(PROP_GD_COMP_NAME);
+			String gdPutUri = gdUriPrefix + "/" + componentName;
+			info("Creating new GoodDataPutDelimited component '" + componentName + "'. Its URI will be " + gdPutUri);
+			ResDef putResDef = snapi.createResourceObject(serverUri, GoodDataPutDenormalized.class.getName(), null);
+			putResDef.setResourceRef(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF, gdConnUri);
+			putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_NAME, projectName);
+			putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_ID, projectId);
+			putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_DLI, dliName);
+			try {
+				// since the component will need the Source Schema, we need to serialize it into the string and save it
+				putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_SOURCE_SCHEMA, ss.getConfig());
+			} catch (IOException e) {
+				elog(e);
+				throw new SnapComponentException(e);
+			}
+			info("Component '" + componentName + "' created and its basic properties were set.");
+
+			info("Transferring output view of the source component to component '" + componentName
+					+ "' (as Input View).");
+			// Let's remove possible existing views and insert the right one
+			Collection<String> inViews = putResDef.listInputViewNames();
+			String inViewName = "Input";
+			if (inViews.size() > 0) {
+				inViewName = inViews.iterator().next();
+				putResDef.removeInputView(inViewName);
+			}
+			List<Field> fields = new ArrayList<Field>();
+			List<List<String>> srcFields = (List<List<String>>) resdefAndFields.get("fields");
+			String[][] fieldLinks = new String[srcFields.size()][2];
+			int i = 0;
+			for (List<String> srcField : srcFields) {
+				String fieldName = srcField.get(0);
+				Field f = new Field(fieldName, SnapFieldType.map.get(srcField.get(1)), srcField.get(2));
+				fields.add(f);
+				List<String> link = new ArrayList<String>();
+				fieldLinks[i][0] = fieldName;
+				fieldLinks[i][1] = fieldName;
+				i++;
+			}
+			putResDef.addRecordInputView(inViewName, fields, "", true);
+			info("View duplicated");
+			putResDef.save(gdPutUri);
+			info("Component '" + componentName + "' saved to Snaplogic");
+
+		} catch (GdcRestApiException gde) {
+			elog(gde);
+			throw new SnapComponentException(gde);
 		}
-
-		try {
-			// PdmSchema is a representation of SourceSchema in the ConnectorBackend
-			PdmSchema pdm = PdmSchema.createSchema(ss);
-			// TODO Replace the Derby backend with stream backend
-			// Initialize embedded DB backend
-			DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
-			derbyConnectorBackend.setProjectId(projectId);
-			derbyConnectorBackend.setPdm(pdm);
-			// Setup CSV connector that will be used for reading the data
-			CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
-			csvConnector.setSchema(ss);
-			csvConnector.initialize();
-			// Generate MAQL for Source Schema
-			String maql = csvConnector.generateMaql();
-			// Execute the MAQL (creates DLI)
-			info("Going to create a new DLI " + dliName + " in project " + projectName);
-			restApi.executeMAQL(projectId, maql);
-			info("DLI " + dliName + " created");
-			// We are done here, project is set up in GoodData
-		} catch (IOException e) {
-			elog(e);
-			throw new SnapComponentException(e);
-		}
-
-		info("Parsing output view of the source component...");
-		String gdInput = enrichWithServerUrl(getStringPropertyValue(PROP_GD_INPUT));
-		String[] uriAndView = gdInput.split("::");
-		String uri = uriAndView[0];
-		String outViewName = uriAndView[1];
-
-		Map<String, Object> resdefAndFields = getResDefandFieldsFromSourceView();
-		ResDef srcResDef = (ResDef) resdefAndFields.get(Keys.RESDEF);
-		info("Source component understood");
-
-		String componentName = getStringPropertyValue(PROP_GD_COMP_NAME);
-		String gdPutUri = gdUriPrefix + "/" + componentName;
-		info("Creating new GoodDataPutDelimited component '" + componentName + "'. Its URI will be " + gdPutUri);
-		ResDef putResDef = snapi.createResourceObject(serverUri, GoodDataPutDenormalized.class.getName(), null);
-		putResDef.setResourceRef(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF, gdConnUri);
-		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_NAME, projectName);
-		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_ID, projectId);
-		putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_DLI, dliName);
-		try {
-			// since the component will need the Source Schema, we need to serialize it into the string and save it
-			putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_SOURCE_SCHEMA, ss.getConfig());
-		} catch (IOException e) {
-			elog(e);
-			throw new SnapComponentException(e);
-		}
-		info("Component '" + componentName + "' created and its basic properties were set.");
-
-		info("Transferring output view of the source component to component '" + componentName + "' (as Input View).");
-		// Let's remove possible existing views and insert the right one
-		Collection<String> inViews = putResDef.listInputViewNames();
-		String inViewName = "Input";
-		if (inViews.size() > 0) {
-			inViewName = inViews.iterator().next();
-			putResDef.removeInputView(inViewName);
-		}
-		List<Field> fields = new ArrayList<Field>();
-		List<List<String>> srcFields = (List<List<String>>) resdefAndFields.get("fields");
-		String[][] fieldLinks = new String[srcFields.size()][2];
-		int i = 0;
-		for (List<String> srcField : srcFields) {
-			String fieldName = srcField.get(0);
-			Field f = new Field(fieldName, SnapFieldType.map.get(srcField.get(1)), srcField.get(2));
-			fields.add(f);
-			List<String> link = new ArrayList<String>();
-			fieldLinks[i][0] = fieldName;
-			fieldLinks[i][1] = fieldName;
-			i++;
-		}
-		putResDef.addRecordInputView(inViewName, fields, "", true);
-		info("View duplicated");
-		putResDef.save(gdPutUri);
-		info("Component '" + componentName + "' saved to Snaplogic");
-
 		// This part is pending the fix of
 		// https://www.snaplogic.org/trac/ticket/2571
 
