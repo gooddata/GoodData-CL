@@ -948,9 +948,10 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 	private String parseProjectName(String idNameCompound) {
 		StringTokenizer t = new StringTokenizer(idNameCompound, " ");
-		String result = null;
+		String result = "";
 		int tokenCount = t.countTokens();
 		for (int i = 0; i < tokenCount - 2; i++) {
+			if (i>0) result += " ";
 			result += t.nextToken();
 		}
 		return result;

@@ -66,7 +66,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
     private boolean hasHeader;
 
     // field separator
-    private char separator;
+    private char separator = ',';
 
     /**
      * Creates GoodData CSV connector
