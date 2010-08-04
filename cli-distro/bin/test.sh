@@ -80,4 +80,10 @@ for backend in MYSQL DERBY ; do
     echo 'Dropping the separators test project and snapshots'
     drop "`cat tests/separators/pid`"
 
+    echo 'Running escapes test'
+    bin/gdi.sh --backend "$backend" tests/escapes/cmd.txt
+
+    echo 'Dropping the escapes test project and snapshots'
+    drop "`cat tests/escapes/pid`"
+
 done

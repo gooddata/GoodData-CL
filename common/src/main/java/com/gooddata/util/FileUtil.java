@@ -448,4 +448,18 @@ public class FileUtil {
 	public static CSVWriter createUtf8CsvWriter(OutputStream outputStream) throws IOException {
 		return new CSVWriter(new OutputStreamWriter(outputStream, "utf8"));
 	}
+
+
+    /**
+	 * Creates a UTF-8 {@link CSVWriter} of the given <tt>file</tt>.
+	 *
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	public static CSVWriter createUtf8CsvNoEscapingWriter(File file) throws IOException {
+		return new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), "utf8"),',','"',
+                '\\');
+	}
+
 }

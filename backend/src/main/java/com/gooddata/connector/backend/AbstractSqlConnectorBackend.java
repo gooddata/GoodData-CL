@@ -1164,7 +1164,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        String dliTable = getTableNameFromPart(part);
 	        String sql = "SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause;
             String[] header = getLoadHeader(part);
-            CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(file));
+            CSVWriter cw = FileUtil.createUtf8CsvNoEscapingWriter(new File(file));
             cw.writeNext(header);
             JdbcUtil.executeQuery(c, sql, new ResultSetCsvWriter(cw), FETCH_SIZE);
             cw.close();
