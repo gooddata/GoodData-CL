@@ -53,11 +53,7 @@ public class ProcessingContext {
 
 
     public String getProjectId() throws InvalidParameterException {
-        if(projectId == null || projectId.length() <= 0)
-            throw new InvalidCommandException("No project is active. Please activate project via CreateProject or " +
-                    "OpenProject command. ");
-        else
-            return projectId;
+        return projectId;
     }
 
     public void setProjectId(String projectId) {
