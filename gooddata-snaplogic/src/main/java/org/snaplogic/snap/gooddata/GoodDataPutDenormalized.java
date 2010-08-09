@@ -359,7 +359,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 		}
 	}
 
-	public static final SimpleDateFormat ISO_DATE_FORMAT = new SimpleDateFormat(ConvertUtils.DATE_FORMAT_1);
+	public static final SimpleDateFormat ISO_DATE_FORMAT = new SimpleDateFormat(ConvertUtils.DATE_FORMAT_3);
 
 	@Override
 	public void execute(Map<String, InputView> inputViews, Map<String, OutputView> outputViews) {
