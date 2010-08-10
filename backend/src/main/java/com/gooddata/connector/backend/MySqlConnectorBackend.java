@@ -90,6 +90,18 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
     }
 
     /**
+     * Constructor
+     * @param username database backend username
+     * @param password database backend password
+     * @param host database backend hostname
+     * @throws java.io.IOException in case of an IO issue
+     */
+    protected MySqlConnectorBackend(String username, String password, String host) throws IOException {
+        this(username, password);
+        this.setHost(host);
+    }
+
+    /**
      * Create
      * @param username MySQL username
      * @param password MySQL password
@@ -101,22 +113,38 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
     }
 
     /**
+     * Create
+     * @param username MySQL username
+     * @param password MySQL password
+     * @param host MySQL password hostname
+     * @return a new instance of the MySQL connector backend
+     * @throws java.io.IOException in case of an IO issue
+     */
+    public static MySqlConnectorBackend create(String username, String password, String host) throws IOException {
+        return new MySqlConnectorBackend(username, password, host);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public Connection getConnection() throws SQLException {
         String dbName = N.DB_PREFIX+getProjectId()+N.DB_SUFFIX;
     	if (connection == null) {
 	        String protocol = "jdbc:mysql:";
+            String hostName = "//localhost/";
+            if(getHost() != null) {
+                hostName = "//"+getHost()+"/";
+            }
 	        try {
-	        	connection = DriverManager.getConnection(protocol + "//localhost/" + dbName + "?jdbcCompliantTruncation=false", getUsername(), getPassword());
+	        	connection = DriverManager.getConnection(protocol + hostName + dbName + "?jdbcCompliantTruncation=false", getUsername(), getPassword());
 	        }
 	        catch (SQLException e) {
-	        	connection = DriverManager.getConnection(protocol + "//localhost/mysql", getUsername(), getPassword());
+	        	connection = DriverManager.getConnection(protocol + hostName+"mysql", getUsername(), getPassword());
 	            JdbcUtil.executeUpdate(connection,
 	                "CREATE DATABASE IF NOT EXISTS " + dbName + " CHARACTER SET utf8"
 	            );
 	            connection.close();
-	            connection = DriverManager.getConnection(protocol + "//localhost/" + dbName + "?jdbcCompliantTruncation=false", getUsername(), getPassword());
+	            connection = DriverManager.getConnection(protocol + hostName + dbName + "?jdbcCompliantTruncation=false", getUsername(), getPassword());
 	        }
     	}
     	Properties props = new Properties();

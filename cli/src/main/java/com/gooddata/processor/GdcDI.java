@@ -91,6 +91,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_BACKEND = {"backend","b"};
     public static String[] CLI_PARAM_DB_USERNAME = {"dbusername","d"};
     public static String[] CLI_PARAM_DB_PASSWORD = {"dbpassword","c"};
+    public static String[] CLI_PARAM_DB_HOST = {"dbhost","s"};
     public static String[] CLI_PARAM_PROTO = {"proto","t"};
     public static String[] CLI_PARAM_INSECURE = {"insecure","s"};
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
@@ -111,6 +112,7 @@ public class GdcDI implements Executor {
         new Option(CLI_PARAM_BACKEND[1], CLI_PARAM_BACKEND[0], true, "Database backend DERBY or MYSQL"),
         new Option(CLI_PARAM_DB_USERNAME[1], CLI_PARAM_DB_USERNAME[0], true, "Database backend username (not required for the local Derby SQL)"),
         new Option(CLI_PARAM_DB_PASSWORD[1], CLI_PARAM_DB_PASSWORD[0], true, "Database backend password (not required for the local Derby SQL)"),
+        new Option(CLI_PARAM_DB_HOST[1], CLI_PARAM_DB_HOST[0], true, "Database backend hostname (e.g. dbmachine-ip:3306, not required for the local Derby SQL)"),
         new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
         new Option(CLI_PARAM_INSECURE[1], CLI_PARAM_INSECURE[0], false, "Disable encryption"),
         new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files")
@@ -626,9 +628,18 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void dropProject(Command c, CliParams p, ProcessingContext ctx) {
-        String id = c.getParamMandatory("id");
-        ctx.getRestApi(p).dropProject(id);
-        l.info("Project id = '"+id+"' dropped.");
+        String id = c.getParam("id");
+        if(id == null || id.length() <= 0) {
+            id = ctx.getProjectId();
+        }
+        if(id != null && id.length() > 0) {
+            ctx.getRestApi(p).dropProject(id);
+            l.info("Project id = '"+id+"' dropped.");
+        }
+        else {
+            throw new InvalidParameterException("DropProject: Command parameter 'id' is required if no project" +
+                    " is active (no previous OpenProject or RetrieveProject commands).");
+        }
     }
 
     /**
@@ -756,7 +767,7 @@ public class GdcDI implements Executor {
         final ConnectorBackend backend;
         if("mysql".equalsIgnoreCase(b))
             backend = MySqlConnectorBackend.create(cliParams.get(CLI_PARAM_DB_USERNAME[0]),
-                    cliParams.get(CLI_PARAM_DB_PASSWORD[0]));
+                    cliParams.get(CLI_PARAM_DB_PASSWORD[0]), cliParams.get(CLI_PARAM_DB_HOST[0]));
         else if("derby".equalsIgnoreCase(b))
             backend = DerbyConnectorBackend.create();
         else

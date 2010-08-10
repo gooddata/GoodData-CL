@@ -74,6 +74,9 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     // Project id
     private String projectId;
 
+    // DB hostname
+    private String host;
+
     // database username
     private String username;
 
@@ -105,6 +108,18 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     protected AbstractSqlConnectorBackend(String username, String password) throws IOException {
         setUsername(username);
         setPassword(password);
+    }
+
+    /**
+     * Constructor
+     * @param username database backend username
+     * @param password database backend password
+     * @param host database backend host
+     * @throws IOException in case of an IO issue
+     */
+    protected AbstractSqlConnectorBackend(String username, String password, String host) throws IOException {
+        this(username,password);
+        setHost(host);
     }
 
     /**
@@ -1174,6 +1189,14 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         } catch (IOException e) {
     		throw new ConnectorBackendException(e);
     	}
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     private static class ResultSetCsvWriter implements JdbcUtil.ResultSetHandler {

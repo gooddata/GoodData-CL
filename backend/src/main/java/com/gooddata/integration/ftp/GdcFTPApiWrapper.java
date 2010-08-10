@@ -82,56 +82,64 @@ public class GdcFTPApiWrapper {
             String dir = file.getName().split("\\.")[0];
             client.connect(config.getGdcHost());
             if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
-                client.login(config.getUsername(), config.getPassword());
+                client.enterLocalPassiveMode();
                 if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
-                    client.makeDirectory(dir);
+                    client.login(config.getUsername(), config.getPassword());
                     if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
-                        client.changeWorkingDirectory(dir);
+                        client.makeDirectory(dir);
                         if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
-                            client.setFileType(FTPClient.BINARY_FILE_TYPE);
+                            client.changeWorkingDirectory(dir);
                             if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
-                                client.enterLocalPassiveMode();
-                                client.storeFile(file.getName(), new FileInputStream(file));
+                                client.setFileType(FTPClient.BINARY_FILE_TYPE);
                                 if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
-                                    client.rename(file.getName(),DEFAULT_ARCHIVE_NAME);
-                                    if (!FTPReply.isPositiveCompletion(client.getReplyCode())) {
-                                        l.debug("Can't change the file's name: server="
-                                                + config.getGdcHost() + ", file=" + file.getName() + ", " + clientReply(client));
-                                        throw new GdcUploadErrorException("Can't change the file's name: server="
-                                                + config.getGdcHost() + ", file=" + file.getName() + ", " + clientReply(client));
+                                    client.enterLocalPassiveMode();
+                                    client.storeFile(file.getName(), new FileInputStream(file));
+                                    if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                                        client.rename(file.getName(),DEFAULT_ARCHIVE_NAME);
+                                        if (!FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                                            l.debug("Can't change the file's name: server="
+                                                    + config.getGdcHost() + ", file=" + file.getName() + ", " + clientReply(client));
+                                            throw new GdcUploadErrorException("Can't change the file's name: server="
+                                                    + config.getGdcHost() + ", file=" + file.getName() + ", " + clientReply(client));
+                                        }
+                                    }
+                                    else {
+                                        l.debug("Can't copy file to the FTP: server="
+                                                + config.getGdcHost() + ", file=" + file.getName()  + ", " + clientReply(client));
+                                        throw new GdcUploadErrorException("Can't copy file to the FTP: server="
+                                                + config.getGdcHost() + ", file=" + file.getName()  + ", " + clientReply(client));
                                     }
                                 }
                                 else {
-                                    l.debug("Can't copy file to the FTP: server="
-                                            + config.getGdcHost() + ", file=" + file.getName()  + ", " + clientReply(client));
-                                    throw new GdcUploadErrorException("Can't copy file to the FTP: server="
-                                            + config.getGdcHost() + ", file=" + file.getName()  + ", " + clientReply(client));
+                                    l.debug("Can't set the BINARY file transfer: server="
+                                        + config.getGdcHost()  + ", " + clientReply(client));
+                                    throw new GdcUploadErrorException("Can't set the BINARY file transfer: server="
+                                        + config.getGdcHost()  + ", " + clientReply(client));
                                 }
                             }
                             else {
-                                l.debug("Can't set the BINARY file transfer: server="
-                                    + config.getGdcHost()  + ", " + clientReply(client));
-                                throw new GdcUploadErrorException("Can't set the BINARY file transfer: server="
-                                    + config.getGdcHost()  + ", " + clientReply(client));
+                                l.debug("Can't cd to the '"+dir+"' directory: server="
+                                        + config.getGdcHost()  + ", " + clientReply(client));
+                                throw new GdcUploadErrorException("Can't cd to the '"+dir+"' directory: server="
+                                        + config.getGdcHost()  + ", " + clientReply(client));
                             }
-                        }
-                        else {
-                            l.debug("Can't cd to the '"+dir+"' directory: server="
+                        } else {
+                            l.debug("Can't create the '"+dir+"' directory: server="
                                     + config.getGdcHost()  + ", " + clientReply(client));
-                            throw new GdcUploadErrorException("Can't cd to the '"+dir+"' directory: server="
+                            throw new GdcUploadErrorException("Can't create the '"+dir+"' directory: server="
                                     + config.getGdcHost()  + ", " + clientReply(client));
                         }
+                        client.logout();
                     } else {
-                        l.debug("Can't create the '"+dir+"' directory: server="
-                                + config.getGdcHost()  + ", " + clientReply(client));
-                        throw new GdcUploadErrorException("Can't create the '"+dir+"' directory: server="
-                                + config.getGdcHost()  + ", " + clientReply(client));
+                        l.debug("Can't FTP login: server=" + config.getGdcHost()
+                                + ", username=" + config.getUsername()  + ", " + clientReply(client));
+                        throw new GdcUploadErrorException("Can't FTP login: server=" + config.getGdcHost()
+                                + ", username=" + config.getUsername()  + ", " + clientReply(client));
                     }
-                    client.logout();
                 } else {
-                    l.debug("Can't FTP login: server=" + config.getGdcHost()
+                    l.debug("Can't set FTP PASV mode: server=" + config.getGdcHost()
                             + ", username=" + config.getUsername()  + ", " + clientReply(client));
-                    throw new GdcUploadErrorException("Can't FTP login: server=" + config.getGdcHost()
+                    throw new GdcUploadErrorException("Can't set FTP PASV mode: server=" + config.getGdcHost()
                             + ", username=" + config.getUsername()  + ", " + clientReply(client));
                 }
             } else {
