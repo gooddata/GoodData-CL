@@ -82,6 +82,7 @@ public class GdcFTPApiWrapper {
             String dir = file.getName().split("\\.")[0];
             client.connect(config.getGdcHost());
             if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                client.enterLocalPassiveMode();
                 client.login(config.getUsername(), config.getPassword());
                 if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
                     client.makeDirectory(dir);
@@ -90,7 +91,6 @@ public class GdcFTPApiWrapper {
                         if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
                             client.setFileType(FTPClient.BINARY_FILE_TYPE);
                             if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
-                                client.enterLocalPassiveMode();
                                 client.storeFile(file.getName(), new FileInputStream(file));
                                 if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
                                     client.rename(file.getName(),DEFAULT_ARCHIVE_NAME);
@@ -162,13 +162,13 @@ public class GdcFTPApiWrapper {
         try {
             client.connect(config.getGdcHost());
             if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
+                client.enterLocalPassiveMode();
                 client.login(config.getUsername(), config.getPassword());
                 if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
                     client.changeWorkingDirectory(remoteDir);
                     if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
                         client.setFileType(FTPClient.ASCII_FILE_TYPE);
                         if (FTPReply.isPositiveCompletion(client.getReplyCode())) {
-                            client.enterLocalPassiveMode();
                             String[] files = client.listNames();
                             for(String file : files) {
                                 if(file.endsWith(".log")) {
