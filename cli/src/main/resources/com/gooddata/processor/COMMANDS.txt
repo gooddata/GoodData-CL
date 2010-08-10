@@ -9,7 +9,8 @@ Usage: gdi.sh -u username -p password [ -h hostname ] [ -i project_id ] [-e comm
  -e,--execute <arg>    Commands to execute
  -b,--backend <arg>    Local database backend (DERBY or MYSQL, DERBY by default)
  -d,--dbusername <arg> Database backend username (not required for the local Derby SQL)
- -c,--dbpassword <arg> Database backend password (not required for the local Derby SQL) 
+ -c,--dbpassword <arg> Database backend password (not required for the local Derby SQL)
+ -l,--dbhost <arg>     Database backend hostname (e.g. dbmachine:3306 for MySQL, not required for the local Derby SQL)
  file                  path to script file with commands to execute
  
 Either -e or file(s) must be specified.
@@ -23,7 +24,7 @@ Project Management Commands:
   templateUri - (optional) project template to create the project from
 
  DropProject(id=<project-id>) - drop the project on the <hostname> server
-  project-id - project id
+  project-id - optional project id, if not specified, the command tries to drop the current project
 
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
   identifier - id of an existing project (takes the form of an MD5 hash)

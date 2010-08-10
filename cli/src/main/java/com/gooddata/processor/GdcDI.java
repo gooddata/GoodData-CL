@@ -91,7 +91,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_BACKEND = {"backend","b"};
     public static String[] CLI_PARAM_DB_USERNAME = {"dbusername","d"};
     public static String[] CLI_PARAM_DB_PASSWORD = {"dbpassword","c"};
-    public static String[] CLI_PARAM_DB_HOST = {"dbhost","s"};
+    public static String[] CLI_PARAM_DB_HOST = {"dbhost","l"};
     public static String[] CLI_PARAM_PROTO = {"proto","t"};
     public static String[] CLI_PARAM_INSECURE = {"insecure","s"};
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};

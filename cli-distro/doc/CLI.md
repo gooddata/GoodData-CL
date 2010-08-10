@@ -37,7 +37,7 @@ The following paragraphs describe the specific GoodData CL commands.
 
 * `DropProject`(id=&lt;project-id&gt;) - drop the project on the &lt;hostname&gt; server
 
-  - project-id - project id
+  - project-id - optional project id, if not specified, the command tries to drop the current project
 
 * `OpenProject`(id=&lt;identifier&gt;) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
 
