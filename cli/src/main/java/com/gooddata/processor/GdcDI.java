@@ -595,7 +595,7 @@ public class GdcDI implements Executor {
             if(desc == null || desc.length() <= 0)
                 desc = name;
             ctx.setProjectId(ctx.getRestApi(p).createProject(StringUtil.toTitle(name), StringUtil.toTitle(desc), pTempUri));
-            String pid = ctx.getProjectId();
+            String pid = ctx.getProjectIdMandatory();
             checkProjectCreationStatus(pid, p, ctx);
             l.info("Project id = '"+pid+"' created.");
         }
@@ -628,6 +628,7 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void dropProject(Command c, CliParams p, ProcessingContext ctx) {
+<<<<<<< HEAD
         String id = c.getParam("id");
         if(id == null || id.length() <= 0) {
             id = ctx.getProjectId();
@@ -640,6 +641,14 @@ public class GdcDI implements Executor {
             throw new InvalidParameterException("DropProject: Command parameter 'id' is required if no project" +
                     " is active (no previous OpenProject or RetrieveProject commands).");
         }
+=======
+        String id = ctx.getProjectId();
+        if (id == null) {
+        	id = c.getParamMandatory("id");
+        }
+        ctx.getRestApi(p).dropProject(id);
+        l.info("Project id = '"+id+"' dropped.");
+>>>>>>> af37182a7bf95947f8e42163fa897a490d8d96d1
     }
 
     /**
@@ -649,7 +658,7 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void inviteUser(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-        String pid = ctx.getProjectId();
+        String pid = ctx.getProjectIdMandatory();
         String email = c.getParamMandatory("email");
         String msg = c.getParam("msg");
         ctx.getRestApi(p).inviteUser(pid, email, (msg != null)?(msg):(""));
@@ -663,7 +672,7 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void getReports(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-        String pid = ctx.getProjectId();
+        String pid = ctx.getProjectIdMandatory();
         String fileName = c.getParamMandatory("fileName");
         List<String> uris = ctx.getRestApi(p).enumerateReports(pid);
         String result = "";
@@ -684,7 +693,7 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void executeReports(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
-        String pid = ctx.getProjectId();
+        String pid = ctx.getProjectIdMandatory();
         String fileName = c.getParamMandatory("fileName");
         String result = FileUtil.readStringFromFile(fileName).trim();
         if(result != null && result.length()>0) {
@@ -719,7 +728,7 @@ public class GdcDI implements Executor {
      */
     private void storeProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String fileName = c.getParamMandatory("fileName");
-        String pid = ctx.getProjectId();
+        String pid = ctx.getProjectIdMandatory();
         FileUtil.writeStringToFile(pid, fileName);
         l.debug("Stored project id="+pid+" to "+fileName);
         l.info("Stored project id="+pid+" to "+fileName);

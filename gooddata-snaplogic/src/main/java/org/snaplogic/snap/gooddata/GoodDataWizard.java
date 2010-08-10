@@ -20,6 +20,7 @@ import org.snaplogic.cc.InputView;
 import org.snaplogic.cc.OutputView;
 import org.snaplogic.cc.prop.DictProp;
 import org.snaplogic.cc.prop.ListProp;
+import org.snaplogic.cc.prop.ListPropErr;
 import org.snaplogic.cc.prop.SimpleProp;
 import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
 import org.snaplogic.common.ComponentResourceErr;
@@ -33,6 +34,7 @@ import org.snaplogic.snapi.PropertyConstraint;
 import org.snaplogic.snapi.ResDef;
 import org.snaplogic.snapi.Snapi;
 import org.snaplogic.snapi.PropertyConstraint.Type;
+import org.snaplogic.util.ConvertUtils;
 
 import com.gooddata.connector.CsvConnector;
 import com.gooddata.connector.DateDimensionConnector;
@@ -535,7 +537,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 		return fieldsSpecedAsDate;
 	}
-
+	
 	private void confirmationScreen() {
 		nextStep();
 		PropertyConstraint unmodifiable = new PropertyConstraint(Type.UNMODIFIABLE, true);
@@ -817,13 +819,20 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 				String fieldName = (String) entry.get(DLI_SPEC_KEY_FIELD_NAME);
 				String ldmType = (String) entry.get(DLI_SPEC_KEY_LDM_TYPE);
 				SourceColumn column = new SourceColumn(fieldName, ldmType, fieldName);
+				column.setFolder(dliName);
 
-				if (dateFormats != null && dateFormats.containsKey(fieldName)) {
+				if (ldmType.equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
 					// setup date dimension
-					column.setFormat((String) dateFormats.get(fieldName));
+					if (dateFormats != null && dateFormats.containsKey(fieldName)) {
+						// this is a field which was not date originally, set its format string
+						column.setFormat((String) dateFormats.get(fieldName));
+					} else {
+						//set default used by CSV Staging algorithm in GoodDataPut (yyyy-MM-dd)
+						column.setFormat(ConvertUtils.DATE_FORMAT_3);
+					}
 					column.setSchemaReference(ddNames.get(fieldName));
 				}
-
+				
 				if (labelParents != null && labelParents.containsKey(fieldName)) {
 					column.setReference((String) labelParents.get(fieldName));
 				}
@@ -951,7 +960,8 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		String result = "";
 		int tokenCount = t.countTokens();
 		for (int i = 0; i < tokenCount - 2; i++) {
-			if (i>0) result += " ";
+			if (i > 0)
+				result += " ";
 			result += t.nextToken();
 		}
 		return result;
