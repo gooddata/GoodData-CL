@@ -628,27 +628,12 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void dropProject(Command c, CliParams p, ProcessingContext ctx) {
-<<<<<<< HEAD
-        String id = c.getParam("id");
-        if(id == null || id.length() <= 0) {
-            id = ctx.getProjectId();
-        }
-        if(id != null && id.length() > 0) {
-            ctx.getRestApi(p).dropProject(id);
-            l.info("Project id = '"+id+"' dropped.");
-        }
-        else {
-            throw new InvalidParameterException("DropProject: Command parameter 'id' is required if no project" +
-                    " is active (no previous OpenProject or RetrieveProject commands).");
-        }
-=======
         String id = ctx.getProjectId();
         if (id == null) {
         	id = c.getParamMandatory("id");
         }
         ctx.getRestApi(p).dropProject(id);
         l.info("Project id = '"+id+"' dropped.");
->>>>>>> af37182a7bf95947f8e42163fa897a490d8d96d1
     }
 
     /**
