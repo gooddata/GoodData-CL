@@ -562,7 +562,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
-        l.info("SFDC Connector successfully loaded.");
+        l.info("SFDC Connector successfully loaded (query: " + StringUtil.previewString(q, 256) + ").");
     }
 
     /**

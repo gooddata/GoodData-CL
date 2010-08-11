@@ -120,6 +120,6 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         this.ctx = ct;
         // sets the current connector
         ctx.setConnector(this);
-        l.info("Time Dimension Connector successfully loaded.");
+        l.info("Time Dimension Connector successfully loaded (name: " + ct + ").");
     }
 }
