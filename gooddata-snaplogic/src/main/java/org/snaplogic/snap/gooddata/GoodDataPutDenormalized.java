@@ -133,8 +133,8 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 		return "1.0";
 	}
 
-	private PropertyConstraint projNameLovConstraint = new PropertyConstraint();
-	private PropertyConstraint projIdLovConstraint = new PropertyConstraint();
+	private PropertyConstraint projNameLovConstraint = new PropertyConstraint(Type.UNMODIFIABLE, true);
+	private PropertyConstraint projIdLovConstraint = new PropertyConstraint(Type.UNMODIFIABLE, true);
 
 	private SimpleProp projNameProp = new SimpleProp("Project Name", SimplePropType.SnapString, "Project name",
 			projNameLovConstraint, true);
@@ -142,7 +142,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 	private SimpleProp projIdProp = new SimpleProp("Project Id", SimplePropType.SnapString, "Project id",
 			projIdLovConstraint, true);
 
-	private PropertyConstraint dlisLovConstraint = new PropertyConstraint();
+	private PropertyConstraint dlisLovConstraint = new PropertyConstraint(Type.UNMODIFIABLE, true);
 
 	private SimpleProp dliProp = new SimpleProp("DLI", SimplePropType.SnapString, "Data Loading Interface",
 			dlisLovConstraint, true);
@@ -156,7 +156,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 
 		setPropertyDef(PROP_INCREMENTAL, new SimpleProp("Incremental", SimplePropType.SnapBoolean,
 				"Append if true, replace if false", true));
-		setPropertyValue(PROP_INCREMENTAL, true);
+		setPropertyValue(PROP_INCREMENTAL, false);
 
 		setPropertyDef(PROP_WAIT_FINISH, new SimpleProp("Wait  for Finish", SimplePropType.SnapBoolean,
 				"waits for the server-side processing", true));
@@ -167,8 +167,9 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 		SimpleProp transferSnProp = new SimpleProp("Transfer Snapshots", SimplePropType.SnapString,
 				"Snapshots to transfer to GoodData", transferSnapshotConstrain, true);
 		setPropertyDef(PROP_TRANSFER_SNAPSHOTS, transferSnProp);
+		setPropertyValue(PROP_TRANSFER_SNAPSHOTS, LAST_SNAPSHOT);
 
-		setPropertyDef(PROP_SOURCE_SCHEMA, new SimpleProp(PROP_SOURCE_SCHEMA, SimplePropType.SnapString, "",
+		setPropertyDef(PROP_SOURCE_SCHEMA, new SimpleProp("XML Schema", SimplePropType.SnapString, "",
 				new PropertyConstraint(Type.HIDDEN, true), true));
 		setPropertyValue(PROP_SOURCE_SCHEMA, "");
 
@@ -358,7 +359,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 		}
 	}
 
-	public static final SimpleDateFormat ISO_DATE_FORMAT = new SimpleDateFormat(ConvertUtils.DATE_FORMAT_1);
+	public static final SimpleDateFormat ISO_DATE_FORMAT = new SimpleDateFormat(ConvertUtils.DATE_FORMAT_3);
 
 	@Override
 	public void execute(Map<String, InputView> inputViews, Map<String, OutputView> outputViews) {
@@ -408,7 +409,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 		try {
 			// Transform data flowing into our input view into CSV file
 			File tmpDir = FileUtil.createTempDir();
-			stagedCSVs = stageInputsAsCsv(inputViews, true, false, tmpDir);
+			stagedCSVs = stageInputsAsCsv(inputViews, false, false, tmpDir);
 
 			if (stagedCSVs.size() == 1) {
 				// One file - exactly what's expected
