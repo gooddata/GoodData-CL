@@ -259,7 +259,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
-        l.info("CSV Connector successfully loaded.");
+        l.info("CSV Connector successfully loaded (file: " + csvDataFile + ").");
     }
 
     /**

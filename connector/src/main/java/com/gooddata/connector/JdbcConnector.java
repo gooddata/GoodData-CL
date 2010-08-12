@@ -383,8 +383,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         setSqlQuery(q);
         // sets the current connector
         ctx.setConnector(this);
-        setProjectId(ctx);
-        l.info("JDBC Connector successfully loaded.");
+        setProjectId(ctx);       
+        l.info("JDBC Connector successfully loaded (query: " + StringUtil.previewString(q, 256) + ").");
     }
 
     /**

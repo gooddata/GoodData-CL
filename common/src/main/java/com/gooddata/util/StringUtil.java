@@ -147,5 +147,19 @@ public class StringUtil {
         CSVReader cr = new CSVReader(new StringReader(elements));
         return Arrays.asList(cr.readNext());
     }
+    
+    /**
+     * Returns first <tt>limit</tt> characters of the string with last 3 letters replaced with ellipsis
+     * <p>
+     * Example: <tt>previewString("potatoe", 6)</tt> returns "pot..." 
+     * @param string
+     * @param limit
+     * @return
+     */
+    public static String previewString(String string, int limit) {
+    	return (string.length() > limit)
+	    	? string.substring(0, limit - 4) + "..."
+	    	: string;
+    }
 
 }
