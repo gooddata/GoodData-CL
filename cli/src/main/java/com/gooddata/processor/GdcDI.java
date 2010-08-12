@@ -95,7 +95,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_PROTO = {"proto","t"};
     public static String[] CLI_PARAM_INSECURE = {"insecure","s"};
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
-    public static String[] CLI_PARAM_VERSION = {"version","v"};
+    public static String[] CLI_PARAM_VERSION = {"version","V"};
     public static String CLI_PARAM_SCRIPT = "script";
     
     private static String DEFAULT_PROPERTIES = "gdi.properties";

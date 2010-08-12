@@ -11,7 +11,7 @@ Usage: gdi.sh -u username -p password [ -h hostname ] [ -i project_id ] [-e comm
  -d,--dbusername <arg> Database backend username (not required for the local Derby SQL)
  -c,--dbpassword <arg> Database backend password (not required for the local Derby SQL)
  -l,--dbhost <arg>     Database backend hostname (e.g. dbmachine:3306 for MySQL, not required for the local Derby SQL)
- -v, --version         Prints out the tool version
+ -V, --version         Prints out the tool version
  file                  path to script file with commands to execute
  
 Either -e or file(s) must be specified.
