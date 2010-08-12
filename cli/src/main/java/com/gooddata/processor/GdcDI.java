@@ -95,6 +95,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_PROTO = {"proto","t"};
     public static String[] CLI_PARAM_INSECURE = {"insecure","s"};
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
+    public static String[] CLI_PARAM_VERSION = {"version","v"};
     public static String CLI_PARAM_SCRIPT = "script";
     
     private static String DEFAULT_PROPERTIES = "gdi.properties";
@@ -115,6 +116,7 @@ public class GdcDI implements Executor {
         new Option(CLI_PARAM_DB_HOST[1], CLI_PARAM_DB_HOST[0], true, "Database backend hostname (e.g. dbmachine-ip:3306, not required for the local Derby SQL)"),
         new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
         new Option(CLI_PARAM_INSECURE[1], CLI_PARAM_INSECURE[0], false, "Disable encryption"),
+        new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version."),    
         new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files")
     };
 
@@ -126,6 +128,8 @@ public class GdcDI implements Executor {
     private boolean finishedSucessfuly = false;
 
     private static long  LOCK_EXPIRATION_TIME = 1000 * 3600; // 1 hour
+
+    private final static String BUILD_NUMBER = "";
 
     private GdcDI(CommandLine ln, Properties defaults) {
         try {
@@ -315,6 +319,7 @@ public class GdcDI implements Executor {
     protected CliParams parse(CommandLine ln, Properties defaults) throws InvalidArgumentException {
         l.debug("Parsing cli "+ln);
         CliParams cp = new CliParams();
+
         for( Option o : mandatoryOptions) {
             String name = o.getLongOpt();
             if (ln.hasOption(name))
@@ -335,6 +340,14 @@ public class GdcDI implements Executor {
             	cp.put(name, defaults.getProperty(name));
             }
         }
+
+        if(cp.containsKey(CLI_PARAM_VERSION[0])) {
+            l.info("GoodData CL version 1.1.2-SNAPSHOT" +
+                    ((BUILD_NUMBER.length()>0) ? ", build "+BUILD_NUMBER : "."));
+            System.exit(0);
+
+        }
+
 
         // use default host if there is no host in the CLI params
         if(!cp.containsKey(CLI_PARAM_HOST[0])) {
