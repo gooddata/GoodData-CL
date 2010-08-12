@@ -47,9 +47,20 @@ import com.gooddata.util.FileUtil;
  * @version 1.0
  */
 public class DataTypeGuess {
-
-
-    /**
+	
+    private static final SimpleDateFormat[] KNOWN_FORMATS = {new SimpleDateFormat("yyyy-MM-dd"), new SimpleDateFormat("MM/dd/yyyy"),
+            new SimpleDateFormat("M/d/yyyy"), new SimpleDateFormat("MM-dd-yyyy"),new SimpleDateFormat("yyyy-M-d"),
+            new SimpleDateFormat("M-d-yyyy")
+    };
+    
+	private final boolean hasHeader;
+	private String defaultLdmType = null;
+	
+	public DataTypeGuess(boolean hasHeader) {
+		this.hasHeader = hasHeader;
+	}
+	
+	/**
      * Tests if the String is integer
      * @param t the tested String
      * @return true if the String is integer, false otherwise
@@ -86,18 +97,13 @@ public class DataTypeGuess {
         }
     }
 
-    private static SimpleDateFormat[] dtf = {new SimpleDateFormat("yyyy-MM-dd"), new SimpleDateFormat("MM/dd/yyyy"),
-            new SimpleDateFormat("M/d/yyyy"), new SimpleDateFormat("MM-dd-yyyy"),new SimpleDateFormat("yyyy-M-d"),
-            new SimpleDateFormat("M-d-yyyy")
-    };
-
     /**
      * Tests if the String is date
      * @param t the tested String
      * @return true if the String is date, false otherwise
      */
     public static String getDateFormat(String t) {
-        for(SimpleDateFormat d : dtf) {
+        for(SimpleDateFormat d : KNOWN_FORMATS) {
             try {
                 Date dt = d.parse(t);
                 if(t.equals(d.format(dt)))
@@ -117,8 +123,8 @@ public class DataTypeGuess {
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
-    public static SourceColumn[] guessCsvSchema(URL url, boolean hasHeader) throws IOException {
-    	return guessCsvSchema(url.openStream(), hasHeader);
+    public SourceColumn[] guessCsvSchema(URL url) throws IOException {
+    	return guessCsvSchema(url.openStream());
     }
 
     /**
@@ -128,9 +134,9 @@ public class DataTypeGuess {
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
-    public static SourceColumn[] guessCsvSchema(InputStream is, boolean hasHeader) throws IOException {
+    public SourceColumn[] guessCsvSchema(InputStream is) throws IOException {
     	CSVReader cr = FileUtil.createUtf8CsvReader(is);
-    	return guessCsvSchema(cr, hasHeader);
+    	return guessCsvSchema(cr);
     }
 
     /**
@@ -140,50 +146,56 @@ public class DataTypeGuess {
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
-    public static SourceColumn[] guessCsvSchema(CSVReader cr, boolean hasHeader) throws IOException {
+    public SourceColumn[] guessCsvSchema(CSVReader cr) throws IOException {
         String[] header = null;
-        String[] row = cr.readNext();
 
         if(hasHeader) {
-            header = row;
-            row = cr.readNext();
+            header = cr.readNext();
         }
 
         List<Set<String>> excludedColumnTypes = new ArrayList<Set<String>>();
+        String[] dateFormats = new String[header.length];
 
-        for(int i=0; i < row.length; i++) {
-            HashSet<String> allTypes = new HashSet<String>();
-            excludedColumnTypes.add(allTypes);
-        }
-        String[] dateFormats = new String[row.length];
-        int countdown = 1000;
-        while(row != null && countdown-- >0) {
-            for(int i=0; i< row.length; i++) {
-                Set<String> types = excludedColumnTypes.get(i);
-                String value = row[i];
-                String dateFormat = getDateFormat(value);
-                if(dateFormat == null) {
-                    types.add(SourceColumn.LDM_TYPE_DATE);
-                } else {
-                	dateFormats[i] = dateFormat;
-                }
-                if(!isDecimal(value)) {
-                    types.add(SourceColumn.LDM_TYPE_FACT);
-                }
-            }
-            row = cr.readNext();
+        if (defaultLdmType == null) {
+	        String[] row = cr.readNext();
+	        for(int i=0; i < row.length; i++) {
+	            HashSet<String> allTypes = new HashSet<String>();
+	            excludedColumnTypes.add(allTypes);
+	        }
+	        int countdown = 1000;
+	        while(row != null && countdown-- >0) {
+	            for(int i=0; i< row.length; i++) {
+	                Set<String> types = excludedColumnTypes.get(i);
+	                String value = row[i];
+	                String dateFormat = getDateFormat(value);
+	                if(dateFormat == null) {
+	                    types.add(SourceColumn.LDM_TYPE_DATE);
+	                } else {
+	                	dateFormats[i] = dateFormat;
+	                }
+	                if(!isDecimal(value)) {
+	                    types.add(SourceColumn.LDM_TYPE_FACT);
+	                }
+	            }
+	            row = cr.readNext();
+	        }
         }
         
-        SourceColumn[] ret = new SourceColumn[excludedColumnTypes.size()];
-        for(int i=0; i < excludedColumnTypes.size(); i++) {
-            Set<String> excludedColumnType = excludedColumnTypes.get(i);
+        final int columns = (header == null) ? excludedColumnTypes.size() : header.length;
+        SourceColumn[] ret = new SourceColumn[columns];
+        for(int i=0; i < columns; i++) {
             final String ldmType;
-            if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_DATE))
-            	ldmType = SourceColumn.LDM_TYPE_DATE;
-            else if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_FACT))
-            	ldmType = SourceColumn.LDM_TYPE_FACT;
-            else
-            	ldmType = SourceColumn.LDM_TYPE_ATTRIBUTE;
+            if (defaultLdmType != null)
+            	ldmType = defaultLdmType;
+        	else {
+        		final Set<String> excludedColumnType = excludedColumnTypes.get(i);
+        		if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_DATE))
+	            	ldmType = SourceColumn.LDM_TYPE_DATE;
+	            else if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_FACT))
+	            	ldmType = SourceColumn.LDM_TYPE_FACT;
+	            else
+	            	ldmType = SourceColumn.LDM_TYPE_ATTRIBUTE;
+        	}
 
             ret[i] = new SourceColumn(null, ldmType, null);
             if (SourceColumn.LDM_TYPE_DATE.equals(ldmType)) {
@@ -192,6 +204,26 @@ public class DataTypeGuess {
         }
         return ret;
     }
+
+    /**
+     * returns default LDM type to be associated with detected fields rather
+     * than by guessing
+     * 
+     * @return
+     */
+	public String getDefaultLdmType() {
+		return defaultLdmType;
+	}
+
+	/**
+	 * sets the default LDM type to be associated with detected fields rather
+     * than by guessing
+     * 
+	 * @param defaultLdmType
+	 */
+	public void setDefaultLdmType(String defaultLdmType) {
+		this.defaultLdmType = defaultLdmType;
+	}
 
 
 }
