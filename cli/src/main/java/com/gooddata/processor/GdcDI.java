@@ -481,19 +481,31 @@ public class GdcDI implements Executor {
     public static void main(String[] args) {
 
         checkJavaVersion();
-        PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
-        Properties defaults = loadDefaults();
-        try {
-            Options o = getOptions();
-            CommandLineParser parser = new GnuParser();
-            CommandLine cmdline = parser.parse(o, args);
-            GdcDI gdi = new GdcDI(cmdline, defaults);
-            if (!gdi.finishedSucessfuly) {
-            	System.exit(1);
+        String logConfig = System.getProperty("log4j.configuration");
+        if(logConfig != null && logConfig.length()>0) {
+            File lc = new File(logConfig);
+            if(lc.exists()) {
+                PropertyConfigurator.configure(logConfig);
+                Properties defaults = loadDefaults();
+                try {
+                    Options o = getOptions();
+                    CommandLineParser parser = new GnuParser();
+                    CommandLine cmdline = parser.parse(o, args);
+                    GdcDI gdi = new GdcDI(cmdline, defaults);
+                    if (!gdi.finishedSucessfuly) {
+                        System.exit(1);
+                    }
+                } catch (org.apache.commons.cli.ParseException e) {
+                    l.error("Error parsing command line parameters: "+e.getMessage());
+                    l.debug("Error parsing command line parameters",e);
+                }
             }
-        } catch (org.apache.commons.cli.ParseException e) {
-            l.error("Error parsing command line parameters: "+e.getMessage());
-            l.debug("Error parsing command line parameters",e);
+            else {
+                l.error("Can't find the logging config. Please configure the logging via the log4j.configuration.");
+            }
+        }
+        else {
+            l.error("Can't find the logging config. Please configure the logging via the log4j.configuration.");
         }
     }
 

@@ -67,7 +67,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     private String jdbcPassword;
     private String sqlQuery;
 
-    protected int FETCH_SIZE = 256;
+    protected static final int FETCH_SIZE = 256;
 
     /**
      * Creates a new JDBC connector
@@ -133,7 +133,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                     }
                 }
             };
-            JdbcUtil.executeQuery(con, query, rh,1);
+            JdbcUtil.executeQuery(con, query, rh,1, FETCH_SIZE);
             s.writeConfig(new File(configFileName));
         }
         finally {
