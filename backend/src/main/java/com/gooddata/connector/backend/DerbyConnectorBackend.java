@@ -157,7 +157,7 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
                 else
                     inClause = "" + i;
             }
-            whereClause = ",snapshots WHERE " + dliTable.toUpperCase() +
+            whereClause = ",snapshots WHERE " + dliTable +
                     ".ID BETWEEN snapshots.firstid and snapshots.lastid AND snapshots.id IN (" + inClause + ")";
         }
         return whereClause;
@@ -168,10 +168,10 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
      */
     protected String decorateFactColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols.length() > 0)
-            cols += ",ATOD(" + table.toUpperCase() + "." +
+            cols += ",ATOD(" + table + "." +
                     StringUtil.toIdentifier(cl.getName())+")";
         else
-            cols +=  "ATOD(" + table.toUpperCase() + "." +
+            cols +=  "ATOD(" + table + "." +
                     StringUtil.toIdentifier(cl.getName())+")";
         return cols;
     }
@@ -181,10 +181,10 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
      */
     protected String decorateLookupColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols != null && cols.length() > 0)
-            cols += ",CAST(" + table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName())+
+            cols += ",CAST(" + table + "." + StringUtil.toIdentifier(cl.getName())+
                     " AS VARCHAR("+Constants.LABEL_MAX_LENGTH+"))";
         else
-            cols +=  "CAST("+table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName())+
+            cols +=  "CAST("+table + "." + StringUtil.toIdentifier(cl.getName())+
                     " AS VARCHAR("+Constants.LABEL_MAX_LENGTH+"))";
         return cols;
     }
@@ -194,9 +194,9 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
      */
     protected String decorateOtherColumnForLoad(String cols, PdmColumn cl, String table) {
         if (cols != null && cols.length() > 0)
-            cols += "," + table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName());
+            cols += "," + table + "." + StringUtil.toIdentifier(cl.getName());
         else
-            cols +=  table.toUpperCase() + "." + StringUtil.toIdentifier(cl.getName());
+            cols +=  table + "." + StringUtil.toIdentifier(cl.getName());
         return cols;
     }
 

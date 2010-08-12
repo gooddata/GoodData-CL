@@ -1177,7 +1177,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        String cols = getLoadColumns(part, schema);
 	        String whereClause = getLoadWhereClause(part, schema, snapshotIds);
 	        String dliTable = getTableNameFromPart(part);
-	        String sql = "SELECT " + cols + " FROM " + dliTable.toUpperCase() + whereClause;
+	        String sql = "SELECT " + cols + " FROM " + dliTable + whereClause;
             String[] header = getLoadHeader(part);
             CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(file));
             cw.writeNext(header);

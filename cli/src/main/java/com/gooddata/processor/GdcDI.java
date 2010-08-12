@@ -281,6 +281,21 @@ public class GdcDI implements Executor {
             l.error("REST API invocation error: "+e.getMessage());
             Throwable c = e.getCause();
             while(c!=null) {
+                if(c instanceof HttpMethodException) {
+                    HttpMethodException ex = (HttpMethodException)c;
+                    String msg = ex.getMessage();
+                    if(msg != null && msg.length()>0 && msg.indexOf("/ldm/manage")>0) {
+                        l.error("Error creating/updating logical data model (executing MAQL DDL).");
+                        if(msg.indexOf(".date")>0) {
+                            l.error("Bad time dimension schemaReference.");
+                        }
+                        else {
+                           l.error("You are either trying to create a data object that already exists " +
+                                   "(executing the same MAQL multiple times) or providing a wrong reference " +
+                                   "or schemaReference in your XML configuration.");
+                        }
+                    }
+                }
                 l.error("Caused by: "+c.getMessage());
                 c = c.getCause();
             }
@@ -342,7 +357,7 @@ public class GdcDI implements Executor {
         }
 
         if(cp.containsKey(CLI_PARAM_VERSION[0])) {
-            l.info("GoodData CL version 1.1.2-SNAPSHOT" +
+            l.info("GoodData CL version 1.1.2-BETA" +
                     ((BUILD_NUMBER.length()>0) ? ", build "+BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -638,7 +653,7 @@ public class GdcDI implements Executor {
      */
     private void checkProjectCreationStatus(String projectId, CliParams p, ProcessingContext ctx) throws InterruptedException {
         l.debug("Checking project "+projectId+" loading status.");
-        String status = "";
+        String status = "LOADING";
         while(status.equalsIgnoreCase("LOADING")) {
             status = ctx.getRestApi(p).getProjectStatus(projectId);
             l.debug("Project "+projectId+" loading  status = "+status);
