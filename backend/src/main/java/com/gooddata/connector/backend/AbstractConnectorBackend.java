@@ -26,6 +26,8 @@ package com.gooddata.connector.backend;
 import java.io.File;
 import java.io.IOException;
 import com.gooddata.exception.InvalidParameterException;
+
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,9 +72,9 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
     /**
      * {@inheritDoc}
      */
-    public abstract void dropSnapshots();
-        
+    public abstract void dropIntegrationDatabase();
 
+    
     /**
      * {@inheritDoc}
      */

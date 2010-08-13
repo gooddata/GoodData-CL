@@ -132,7 +132,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 	column.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
                 }
                 s.addColumn(column);
-                
+
             }
             s.writeConfig(new File(configFileName));
         }

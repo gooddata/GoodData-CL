@@ -26,6 +26,8 @@ package com.gooddata.connector.backend;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -109,7 +111,7 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
     /**
      * {@inheritDoc}
      */
-    public void dropSnapshots() {
+    public void dropIntegrationDatabase() {
         String dbName = N.DB_PREFIX+getProjectId()+N.DB_SUFFIX;
         l.debug("Dropping derby snapshots "+dbName);
         File derbyDir = new File (System.getProperty("derby.system.home") +
@@ -243,6 +245,14 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
     	return super.exists(c,tbl.toUpperCase(), col.toUpperCase());
     }
 
+
+    /**
+     * {@inheritDoc}
+     * Derby SQL catalog is all in uppercase! We need to convert all names to uppercase :(
+     */
+    protected List<String> getTablesByName(Connection con, String tblName) throws SQLException {
+        return super.getTablesByName(con,tblName.toUpperCase());  
+    }
     
 
 }
