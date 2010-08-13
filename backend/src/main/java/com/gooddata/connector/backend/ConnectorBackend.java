@@ -25,6 +25,7 @@ package com.gooddata.connector.backend;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
 
 import com.gooddata.connector.model.PdmSchema;
@@ -47,7 +48,13 @@ public interface ConnectorBackend {
     public void transform();
 
     /**
-     * Drops all current snapshots. This is usually achieved by dropping the whole project database.
+     * Drops the whole project database.
+     */
+    public void dropIntegrationDatabase();
+
+
+    /**
+     * Drops all current snapshots.
      */
     public void dropSnapshots();
 

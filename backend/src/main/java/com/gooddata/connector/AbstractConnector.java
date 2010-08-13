@@ -209,6 +209,9 @@ public abstract class AbstractConnector implements Connector {
             else if(c.match("ListSnapshots")) {
                 listSnapshots(c, cli, ctx);
             }
+            else if(c.match("DropIntegrationDatabase")) {
+                dropIntegrationDatabase(c, cli, ctx);
+            }
             else if(c.match("DropSnapshots")) {
                 dropSnapshots(c, cli, ctx);
             }
@@ -480,7 +483,19 @@ public abstract class AbstractConnector implements Connector {
     }
 
     /**
-     * Drops all snapshots (drop the entire project database)
+     * Drops the integration database (drop the entire project database)
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void dropIntegrationDatabase(Command c, CliParams p, ProcessingContext ctx) {
+        setProjectId(ctx);
+        ctx.getConnectorBackend().dropIntegrationDatabase();
+        l.info("The integration database has been dropped.");
+    }
+
+    /**
+     * Drops the integration database (drop the entire project database)
      * @param c command
      * @param p cli parameters
      * @param ctx current context
@@ -488,7 +503,7 @@ public abstract class AbstractConnector implements Connector {
     private void dropSnapshots(Command c, CliParams p, ProcessingContext ctx) {
         setProjectId(ctx);
         ctx.getConnectorBackend().dropSnapshots();
-        l.info("All snapshots dropped.");
+        l.info("All snapshots has been dropped.");
     }
 
     /**

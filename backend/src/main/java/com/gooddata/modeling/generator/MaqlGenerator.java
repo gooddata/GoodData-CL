@@ -51,6 +51,7 @@ public class MaqlGenerator {
     private List<DateColumn> dates = new ArrayList<DateColumn>();
     private List<Reference> references = new ArrayList<Reference>();
     private boolean hasCp = false;
+    private String factsOfPrimaryColumn = N.ID;
 
     public MaqlGenerator(SourceSchema schema) {
         this.schema = schema;
@@ -133,7 +134,7 @@ public class MaqlGenerator {
 	        script += "# IT IS USED FOR COUNT AGGREGATIONS\n";
 	        // generate the facts of / record id special attribute
 	        script += "CREATE ATTRIBUTE " + factsOfAttrMaqlDdl + " VISUAL(TITLE \""
-	                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+N.ID+"} FULLSET;\n";
+	                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+factsOfPrimaryColumn+"} FULLSET;\n";
 	        script += "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + ".factsof};\n\n";
         }
 
@@ -392,15 +393,8 @@ public class MaqlGenerator {
         public ConnectionPoint(SourceColumn column) {
             super(column);
             hasCp = true;
+            factsOfPrimaryColumn = scn + "_" + N.ID; 
         }
-
-		 @Override
-		protected String createForeignKeyMaqlDdl() {
-			// The fact table's primary key values are identical with the primary key values
-			// of a Connection Point attribute. This is why the fact table's PK may act as 
-			// the connection point's foreign key as well
-			return "{" + getFactTableName() + "."+N.ID+"}";
-		}
     }
 
     // references
@@ -411,7 +405,9 @@ public class MaqlGenerator {
     	
     	@Override
     	public String generateMaqlDdl() {
-    		String foreignAttrId = createFactOfMaqlDdl(column.getSchemaReference());
+
+
+    		String foreignAttrId = "{attr." + StringUtil.toIdentifier(column.getSchemaReference()) + "." + N.FACTS_OF + "}";;
             String script = "# CONNECT THE REFERENCE TO THE APPROPRIATE DIMENSION\n";
     		script += "ALTER ATTRIBUTE " + foreignAttrId
     					  + " ADD KEYS " + createForeignKeyMaqlDdl() + ";\n\n"; 

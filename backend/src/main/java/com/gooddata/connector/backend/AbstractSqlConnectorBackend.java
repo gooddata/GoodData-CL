@@ -67,7 +67,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
  * @version 1.0
  */public abstract class AbstractSqlConnectorBackend extends AbstractConnectorBackend implements ConnectorBackend {
 
-    private static final int BATCH_SIZE = 1000;
+    private static final int BATCH_SIZE = 10000;
 
     private static Logger l = Logger.getLogger(AbstractSqlConnectorBackend.class);
 
@@ -125,7 +125,58 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
     /**
      * {@inheritDoc}
      */
-    public abstract void dropSnapshots(); 
+    public abstract void dropIntegrationDatabase();
+
+    /**
+     * {@inheritDoc}
+     */
+    public void dropSnapshots() {
+        Connection con;
+        try {
+            l.debug("Dropping snapshots.");
+        	con = getConnection();
+            JdbcUtil.executeUpdate(con,"DROP TABLE snapshots");
+            List<String> tables = getTablesByName(con, "o_%");
+            for(String table : tables) {
+                JdbcUtil.executeUpdate(con,"DROP TABLE "+table);                                
+            }
+            tables = getTablesByName(con, "f_%");
+            for(String table : tables) {
+                JdbcUtil.executeUpdate(con,"DROP TABLE "+table);
+            }            
+            l.debug("Snapshots dropped.");
+        }
+        catch (SQLException e) {
+            throw new ConnectorBackendException("Error initializing pdm schema '" + getPdm().getName() + "'", e);
+        }
+    }
+
+
+    /**
+     * Gets tables by name (SQL wildacrds supported)
+     * @param con database connection 
+     * @param tblName table name (SQL wildacrds supported)
+     * @return the list of tables
+     */
+    protected List<String> getTablesByName(Connection con, String tblName) throws SQLException {
+        String[] types = {"TABLE"};
+        ArrayList<String> ret = new ArrayList<String>();
+        DatabaseMetaData dbm = null;
+        ResultSet rs = null;
+        try {
+            dbm = con.getMetaData();
+            rs = dbm.getTables(null,null,tblName,types);
+            while (rs.next()){
+                String table = rs.getString("TABLE_NAME");
+                ret.add(table);
+            }
+        }
+        finally {
+            if(rs != null)
+                rs.close();
+        }
+        return ret;
+    }
 
     /**
      * {@inheritDoc}
@@ -272,7 +323,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        		} else if (PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT.equals(table.getType())) {
 	        			final List<Map<String,String>> rows = prepareInitialTableLoad(table);
 	        			if (!rows.isEmpty()) {
-	        				l.warn("Prepopulating of connection point tables is not suppported (table = " + table.getName() + ")");
+	        				l.warn("Pre-populating of connection point tables is not suppported (table = " + table.getName() + ")");
 	        			}
 	        		}
 		            /*
@@ -320,7 +371,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 	        l.debug("Executing connection point tables population.");
 	        populateConnectionPointTables(c, schema);
 	        
-	        l.debug("FInished connection point tables population.");
+	        l.debug("Finished connection point tables population.");
 	        // nothing for the reference columns
 	        l.debug("Inserting partial snapshot record.");
 	        insertSnapshotsRecord(c, schema);
@@ -658,7 +709,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             populateConnectionPointTable(c, cpTable, schema);
     }
 
-    private void updateFactTableFk(Connection c, PdmSchema schema) throws SQLException {
+    protected void updateFactTableFk(Connection c, PdmSchema schema) throws SQLException {
         String fact = schema.getFactTable().getName();
         String updateStatement = "";
         List<PdmTable> tables = new ArrayList<PdmTable>();
@@ -671,6 +722,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             else
                 updateStatement += generateFactUpdateSetStatement(tbl, schema);
     	}
+
         if(updateStatement.length()>0) {
             updateStatement = "UPDATE " + fact + " SET " + updateStatement +
                 " WHERE "+N.ID+" > "+getLastId(c,fact);
@@ -774,6 +826,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
      * @throws SQLException in case of a DB issue
      */
     protected void populateConnectionPointTable(Connection c, PdmTable lookupTable, PdmSchema schema) throws SQLException {
+        /*
         String lookup = lookupTable.getName();
         String fact = schema.getFactTable().getName();
         String source = schema.getSourceTable().getName();
@@ -781,21 +834,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         String associatedSourceColumns = getAssociatedSourceColumns(lookupTable);
         String concatAssociatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
         String nestedSelectColumns = N.SRC_ID+","+concatAssociatedSourceColumns+","+associatedSourceColumns;
-        /*
-        JdbcUtil.executeUpdate(c,
-            "INSERT INTO " + lookup + "(" + insertColumns + ") SELECT DISTINCT " + nestedSelectColumns +
-            " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +
-            "') AND " + associatedSourceColumns + " NOT IN (SELECT "+N.HSH+" FROM " + lookup + ")"
-        );
-        */
-        // TODO: when snapshotting, there are duplicate CONNECTION POINT VALUES
-        // we need to decide if we want to accumultae the connection point lookup or not
-        /*
-        JdbcUtil.executeUpdate(c,
-            "INSERT INTO " + lookup + "(" + insertColumns + ") SELECT DISTINCT " + nestedSelectColumns +
-            " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='" + fact +"')"
-        );
-        */
+
         JdbcUtil.executeUpdate(c,
             "INSERT INTO " + lookup + "(" + insertColumns +
             ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
@@ -814,6 +853,9 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         JdbcUtil.executeUpdate(c,
             "DROP TABLE delete_ids"
         );
+        */
+        // FIX: treating the connection point as any other lookup
+        populateLookupTable(c, lookupTable, schema);
      }
 
     /**
@@ -1141,12 +1183,16 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
                                 " columns. Expecting "+cnt+" columns.");
                     }
                     if(rowCnt % BATCH_SIZE == 0) {
+                        l.debug("Flushing data to the db. Current row "+rowCnt);
                         s.executeBatch();
+                        l.debug("Flushing data completed.");
                     }
                 }
 	        }
             if(s != null) {
+                l.debug("Flushing data to the db. Last row "+rowCnt);
                 s.executeBatch();
+                l.debug("Flushing data completed.");
             }
 	        l.debug("Finished extracting data. Extracted "+rowCnt+" rows.");
     	} catch (SQLException e) {

@@ -43,4 +43,8 @@ public class Constants {
 
     public final static int LABEL_MAX_LENGTH = 128;
 
+    public final static int HASHID_MAX_LENGTH = 333;
+
+    public static final int MIN_MYSQL_HEAP_MEMORY_IN_MB = 16;
+
 }
