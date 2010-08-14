@@ -391,7 +391,7 @@ public class MaqlGenerator {
         public ConnectionPoint(SourceColumn column) {
             super(column);
             hasCp = true;
-            factsOfPrimaryColumn = scn + "_" + N.ID; 
+            //factsOfPrimaryColumn = scn + "_" + N.ID;
         }
     }
 

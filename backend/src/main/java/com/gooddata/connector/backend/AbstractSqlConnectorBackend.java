@@ -118,7 +118,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         try {
             l.debug("Dropping snapshots.");
         	con = getConnection();
-            JdbcUtil.executeUpdate(con,"DROP TABLE snapshots");
+            JdbcUtil.executeUpdate(con,"DELETE FROM snapshots");
             List<String> tables = getTablesByName(con, "o_%");
             for(String table : tables) {
                 JdbcUtil.executeUpdate(con,"DROP TABLE "+table);                                
@@ -1002,6 +1002,22 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) &&
                     SourceColumn.LDM_TYPE_FACT.equals(col.getLdmTypeReference()))
                 cols = decorateFactColumnForLoad(cols, col, dliTable);
+            // fact of attribute of a fact table
+            // we nee dto decide if we want to connect it either to the generated id (if there is no connection point)
+            // or to the connection point foreign key
+            else if(PdmTable.PDM_TABLE_TYPE_FACT.equals(pdmTable.getType()) &&
+                    N.ID.equalsIgnoreCase(col.getName())) {
+                List<PdmTable> cpTbls = schema.getConnectionPointTables();
+                if(cpTbls != null && cpTbls.size()>0) {
+                    // found connection point, let's use the connection point FK
+                    PdmColumn newCol = new PdmColumn(cpTbls.get(0).getName()+"_"+N.ID, PdmColumn.PDM_COLUMN_TYPE_INT);
+                    cols = decorateOtherColumnForLoad(cols, newCol, dliTable);
+                }
+                else
+                // no connection point, let's use the fact table id (PK)
+                    cols = decorateOtherColumnForLoad(cols, col, dliTable);
+
+            }
             // lookup table name column
             else if (PdmTable.PDM_TABLE_TYPE_LOOKUP.equals(pdmTable.getType()) &&
                     SourceColumn.LDM_TYPE_ATTRIBUTE.equals(col.getLdmTypeReference()))

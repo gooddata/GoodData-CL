@@ -86,28 +86,28 @@ public class PdmSchema {
         for (SourceColumn column : srcSchema.getColumns()) {
             if(SourceColumn.LDM_TYPE_ATTRIBUTE.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
-                factTable.addColumn(createColumn(column, schemaName));
+                factTable.addColumn(createFactTableColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_LOOKUP);
             }
             else if(SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
-                factTable.addColumn(createColumn(column, schemaName));
+                factTable.addColumn(createFactTableColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_CONNECTION_POINT);
             }
             else if(SourceColumn.LDM_TYPE_REFERENCE.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
-                factTable.addColumn(createColumn(column, schemaName));
+                factTable.addColumn(createFactTableColumn(column, schemaName));
                 addLookupColumn(schema, column, PdmTable.PDM_TABLE_TYPE_REFERENCE);
                 // just copy the referenced lookup rows to the referencing lookup
                 createTableReplication(schema, column);
             }
             else if(SourceColumn.LDM_TYPE_FACT.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
-                factTable.addColumn(createColumn(column, schemaName));
+                factTable.addColumn(createFactTableColumn(column, schemaName));
             }
             else if(SourceColumn.LDM_TYPE_DATE.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
-                factTable.addColumn(createColumn(column, schemaName));
+                factTable.addColumn(createFactTableColumn(column, schemaName));
             }
             else if(SourceColumn.LDM_TYPE_LABEL.equals(column.getLdmType())) {
                 sourceTable.addColumn(createSourceColumn(column));
@@ -259,7 +259,7 @@ public class PdmSchema {
      * @param schemaName schema name
      * @return new PDM column
      */
-    private static PdmColumn createColumn(SourceColumn c, String schemaName) {
+    private static PdmColumn createFactTableColumn(SourceColumn c, String schemaName) {
         String name = StringUtil.toIdentifier(c.getName());
         String type = c.getLdmType();
         if(type.equals(SourceColumn.LDM_TYPE_ATTRIBUTE) || type.equals(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
