@@ -73,3 +73,5 @@ for backend in MYSQL DERBY ; do
 
     echo 'Dropping the drop_snapshots test project and snapshots'
     drop "`cat tests/drop_snapshots/pid`"
+
+done
