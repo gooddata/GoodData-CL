@@ -317,8 +317,9 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         String source = schema.getSourceTable().getName();
         String associatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
 
-        return lookupTable.getAssociatedSourceColumn() + "_"+N.ID+" = (SELECT "+N.ID+" FROM " + ((useMemory)?("m"):("")) +
-              lookup + " d," + source + " o WHERE " + associatedSourceColumns + " = d."+N.HSH+" AND o."+N.SRC_ID+"= " +
+        return lookupTable.getAssociatedSourceColumn() + "_"+N.ID+" = (SELECT "+N.ID+" FROM " +
+                ((useMemory)?(N.MEM_TBL_PREFIX):("")) + lookup + " d," + source + " o WHERE " + associatedSourceColumns +
+                " = d."+N.HSH+" AND o."+N.SRC_ID+"= " +
               fact + "."+N.ID+") ";
     }
 
@@ -326,7 +327,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         JdbcUtil.executeUpdate(c,"set max_heap_table_size="+(getMemoryAmountInMB()*1000000));
         for(PdmTable tbl : tables) {
             String tblName = tbl.getName();
-            String memTblName = "m" + tbl.getName();
+            String memTblName = N.MEM_TBL_PREFIX + tbl.getName();
             int maxLength = getMaxHashidLength(tblName);
             JdbcUtil.executeUpdate(c,"CREATE TEMPORARY TABLE " + memTblName + " ("+N.ID+" INT, "+N.HSH+" CHAR("+maxLength+") UNIQUE) ENGINE MEMORY");
             JdbcUtil.executeUpdate(c,"INSERT INTO "+memTblName+" SELECT "+N.ID+","+N.HSH+" FROM "+tblName);
@@ -336,7 +337,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
     protected void dropMemoryLookups(Connection c, List<PdmTable> tables) throws SQLException {
         for(PdmTable tbl : tables) {
             String tblName = tbl.getName();
-            String memTblName = "m" + tbl.getName();
+            String memTblName = N.MEM_TBL_PREFIX + tbl.getName();
             JdbcUtil.executeUpdate(c,"DROP TABLE IF EXISTS " + memTblName);
         }
     }

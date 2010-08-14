@@ -48,7 +48,6 @@ public class PdmColumn {
     // constraints
     public static final String PDM_CONSTRAINT_INDEX_UNIQUE = "UNIQUE";
     public static final String PDM_CONSTRAINT_INDEX_NON_UNIQUE = "NON UNIQUE";
-    public static final String PDM_CONSTRAINT_INDEX_MULTIPLE = "MULTIPLE";
     public static final String PDM_CONSTRAINT_AUTOINCREMENT = "AUTOINCREMENT";
     public static final String PDM_CONSTRAINT_PK = "PRIMARY KEY";
 
