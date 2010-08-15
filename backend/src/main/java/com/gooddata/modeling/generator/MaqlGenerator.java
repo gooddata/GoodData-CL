@@ -27,6 +27,7 @@ import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
+import com.sun.corba.se.spi.ior.Identifiable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,14 +65,14 @@ public class MaqlGenerator {
      *
      * @return the MAQL as a String
      */
-    public String generateMaql() {
+    public String generateMaqlCreate() {
         String script = "# THIS IS MAQL SCRIPT THAT GENERATES PROJECT LOGICAL MODEL.\n# SEE THE MAQL DOCUMENTATION " +
                 "AT http://developer.gooddata.com/api/maql-ddl.html FOR MORE DETAILS\n\n";
         script += "# CREATE DATASET. DATASET GROUPS ALL FOLLOWING LOGICAL MODEL ELEMENTS TOGETHER.\n";
         script += "CREATE DATASET {" + schema.getDatasetName() + "} VISUAL(TITLE \"" + lsn + "\");\n\n";
         script += generateFoldersMaqlDdl(schema.getColumns());
         
-        script += generateMaql(schema.getColumns(), true);
+        script += generateMaqlAdd(schema.getColumns(), true);
         
         return script;
     }
@@ -81,8 +82,8 @@ public class MaqlGenerator {
      * @param columns list of columns
      * @return MAQL as String
      */
-    public String generateMaql(List<SourceColumn> columns) {
-    	return generateMaql(columns, false);
+    public String generateMaqlAdd(List<SourceColumn> columns) {
+    	return generateMaqlAdd(columns, false);
     }
 
     /**
@@ -95,6 +96,39 @@ public class MaqlGenerator {
 		final String ssn = StringUtil.toIdentifier(schema.getName());
 		return "d_" + ssn + "_" + StringUtil.toIdentifier(sc.getName());
 	}
+	
+	/**
+     * Generate MAQL DROP statement for selected columns
+     * @param columns list of columns
+     * @param createFactsOf create the facts of attribute
+     * @return MAQL as String
+     */
+    public String generateMaqlDrop(List<SourceColumn> columns) {
+        // generate attributes and facts
+        for (SourceColumn column : columns) {
+            processColumn(column);
+        }
+        
+        StringBuffer script = new StringBuffer("# DROP ATTRIBUTES.\n");
+        
+        for (final Column c : attributes.values()) {
+            script.append(c.generateMaqlDdlDrop());
+        }
+        script.append("# DROP FACTS\n");
+        for (final Column c : facts) {
+        	script.append(c.generateMaqlDdlDrop());
+        }
+        script.append("# DROP DATEs\n# DATES ARE REPRESENTED AS FACTS\n");
+        script.append("# DATES ARE ALSO CONNECTED TO THE DATE DIMENSIONS\n");
+        for (final Column c : dates) {
+            script.append(c.generateMaqlDdlDrop());
+        }
+        script.append("# CREATE REFERENCES\n# REFERENCES CONNECT THE DATASET TO OTHER DATASETS\n");
+        for (final Column c : references) {
+        	script.append(c.generateMaqlDdlDrop());
+        }
+        return script.toString();
+    }
 
     /**
      * Generate MAQL for selected (new) columns
@@ -102,7 +136,7 @@ public class MaqlGenerator {
      * @param createFactsOf create the facts of attribute
      * @return MAQL as String
      */
-    private String generateMaql(List<SourceColumn> columns, boolean createFactsOf) {
+    private String generateMaqlAdd(List<SourceColumn> columns, boolean createFactsOf) {
 
         // generate attributes and facts
         for (SourceColumn column : columns) {
@@ -112,20 +146,20 @@ public class MaqlGenerator {
         String script = "# CREATE ATTRIBUTES.\n# ATTRIBUTES ARE CATEGORIES THAT ARE USED FOR SLICING AND DICING THE " +
                     "NUMBERS (FACTS)\n";
         for (final Column c : attributes.values()) {
-            script += c.generateMaqlDdl();
+            script += c.generateMaqlDdlAdd();
         }
         script += "# CREATE FACTS\n# FACTS ARE NUMBERS THAT ARE AGGREGATED BY ATTRIBUTES.\n";
         for (final Column c : facts) {
-            script += c.generateMaqlDdl();
+            script += c.generateMaqlDdlAdd();
         }
         script += "# CREATE DATE FACTS\n# DATES ARE REPRESENTED AS FACTS\n# DATES ARE ALSO CONNECTED TO THE " +
                 "DATE DIMENSIONS\n";
         for (final Column c : dates) {
-            script += c.generateMaqlDdl();
+            script += c.generateMaqlDdlAdd();
         }
         script += "# CREATE REFERENCES\n# REFERENCES CONNECT THE DATASET TO OTHER DATASETS\n";
         for (final Column c : references) {
-        	script += c.generateMaqlDdl();
+        	script += c.generateMaqlDdlAdd();
         }
 
         if (createFactsOf) {
@@ -139,7 +173,7 @@ public class MaqlGenerator {
 
         // labels last
         for (final Column c : labels) {
-            script += c.generateMaqlDdl();
+            script += c.generateMaqlDdlAdd();
         }
         
         // finally synchronize
@@ -262,18 +296,25 @@ public class MaqlGenerator {
     private abstract class Column {
         protected final SourceColumn column;
         protected final String scn, lcn;
+        protected final String identifier;
 
-        Column(SourceColumn column) {
+        Column(SourceColumn column, String idprefix) {
             this.column = column;
             this.scn = StringUtil.toIdentifier(column.getName());
             this.lcn = StringUtil.toTitle(column.getTitle());
+            this.identifier = idprefix + "." + ssn + "." + scn;
         }
 
         protected String createForeignKeyMaqlDdl() {
            	return "{" + getFactTableName() + "." + scn + "_" + N.ID+ "}";
         }
+                
+        public abstract String generateMaqlDdlAdd();
         
-        public abstract String generateMaqlDdl();
+        public String generateMaqlDdlDrop() {
+        	return "DROP {" + identifier + "} CASCADE;";
+        }
+
     }
 
 
@@ -281,11 +322,9 @@ public class MaqlGenerator {
     private class Attribute extends Column {
 
         protected final String table;
-        protected final String identifier;
 
         Attribute(SourceColumn column, String table) {
-            super(column);
-            this.identifier = "attr." + ssn + "." + scn;
+            super(column, "attr");
             this.table = (table == null) ? createAttributeTableName(schema, column) : table;
         }
 
@@ -293,8 +332,7 @@ public class MaqlGenerator {
             this(column, null);
         }
 
-        @Override
-        public String generateMaqlDdl() {
+        public String generateMaqlDdlAdd() {
             String folderStatement = "";
             String folder = column.getFolder();
             if (folder != null && folder.length() > 0) {
@@ -316,11 +354,11 @@ public class MaqlGenerator {
     private class Fact extends Column {
 
         Fact(SourceColumn column) {
-            super(column);
+            super(column, "fact");
         }
 
         @Override
-        public String generateMaqlDdl() {
+        public String generateMaqlDdlAdd() {
             String folderStatement = "";
             String folder = column.getFolder();
             if (folder != null && folder.length() > 0) {
@@ -330,7 +368,7 @@ public class MaqlGenerator {
 
             return "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
                     + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.FCT_PFX + scn + "};\n"
-                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {fact." + ssn + "." + scn + "};\n\n";
+                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {" + identifier + "};\n\n";
         }
     }
 
@@ -338,11 +376,11 @@ public class MaqlGenerator {
     private class Label extends Column {
 
         Label(SourceColumn column) {
-            super(column);
+            super(column, "label");
         }
 
         @Override
-        public String generateMaqlDdl() {
+        public String generateMaqlDdlAdd() {
             String scnPk = StringUtil.toIdentifier(column.getReference());
             Attribute attr = attributes.get(scnPk);
             
@@ -354,18 +392,21 @@ public class MaqlGenerator {
                     + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + "."+N.NM_PFX + scn + "};\n\n";
             return script;
         }
+        
+        public String generateMaqlDdlDrop() {
+        	throw new UnsupportedOperationException("Generate MAQL Drop is not supported for LABELS yet");
+        }
     }
-
 
     // dates
     private class DateColumn extends Column {
 
         DateColumn(SourceColumn column) {
-            super(column);
+            super(column, N.DT);
         }
 
         @Override
-        public String generateMaqlDdl() {
+        public String generateMaqlDdlAdd() {
             String folderStatement = "";
             String folder = column.getFolder();
             String reference = column.getSchemaReference();
@@ -373,9 +414,9 @@ public class MaqlGenerator {
                 String sfn = StringUtil.toIdentifier(folder);
                 folderStatement = ", FOLDER {ffld." + sfn + "}";
             }
-            String stat = "CREATE FACT {"+N.DT+"." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
+            String stat = "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
                     + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn + "_"+N.ID+"};\n"
-                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+N.DT+"." + ssn + "." + scn + "};\n\n";
+                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
             if(reference != null && reference.length() > 0) {
                 reference = StringUtil.toIdentifier(reference);
                 stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
@@ -383,7 +424,18 @@ public class MaqlGenerator {
                         "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
             }
             return stat;
-
+        }
+        
+        public String generateMaqlDdlDrop() {
+        	String script = super.generateMaqlDdlDrop();
+        	String reference = column.getSchemaReference();
+        	if(reference != null && reference.length() > 0) {
+                reference = StringUtil.toIdentifier(reference);
+                script += "# DISCONNECT THE DATE DIMENSION\n";
+                script += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} DROP KEYS {"+getFactTableName() + 
+                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
+            }
+        	return script;
         }
     }
 
@@ -401,22 +453,34 @@ public class MaqlGenerator {
 			// the connection point's foreign key as well
 			return "{" + getFactTableName() + "."+N.ID+"}";
 		}
+		 
+		 public String generateMaqlDdlDrop() {
+	      	throw new UnsupportedOperationException("Generate MAQL Drop is not supported for CONNECTION_POINTS yet");
+		 }
     }
 
     // references
     private class Reference extends Column {
     	public Reference(SourceColumn column) {
-			super(column);
+			super(column, "");
 		}
     	
     	@Override
-    	public String generateMaqlDdl() {
+    	public String generateMaqlDdlAdd() {
     		String foreignAttrId = createFactOfMaqlDdl(column.getSchemaReference());
             String script = "# CONNECT THE REFERENCE TO THE APPROPRIATE DIMENSION\n";
     		script += "ALTER ATTRIBUTE " + foreignAttrId
     					  + " ADD KEYS " + createForeignKeyMaqlDdl() + ";\n\n"; 
     		return script;
     	}
+    	
+    	public String generateMaqlDdlDrop() {
+    		String foreignAttrId = createFactOfMaqlDdl(column.getSchemaReference());
+            String script = "# DISCONNECT THE REFERENCE FROM THE APPROPRIATE DIMENSION\n";
+    		script += "ALTER ATTRIBUTE " + foreignAttrId
+    					  + " DROP KEYS " + createForeignKeyMaqlDdl() + ";\n\n"; 
+    		return script;
+		 }
     }   
 }
 

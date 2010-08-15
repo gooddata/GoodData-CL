@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.model.PdmSchema;
@@ -49,7 +50,6 @@ import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.log4j.MDC;
 
 /**
  * GoodData abstract connector implements functionality that can be reused in several connectors.
@@ -81,28 +81,6 @@ public abstract class AbstractConnector implements Connector {
      */
     protected AbstractConnector(ConnectorBackend backend) {
         setConnectorBackend(backend);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String generateMaql() {
-        l.debug("Executing maql generation.");
-        MaqlGenerator mg = new MaqlGenerator(schema);
-        String maql = mg.generateMaql();
-        l.debug("Finished maql generation maql:\n"+maql);
-        return maql;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public String generateMaql(List<SourceColumn> columns) {
-        l.debug("Executing maql generation for columns "+columns);
-        MaqlGenerator mg = new MaqlGenerator(schema);
-        String maql = mg.generateMaql(columns);
-        l.debug("Finished maql generation maql:\n"+maql);
-        return maql;
     }
 
     /**
@@ -193,6 +171,11 @@ public abstract class AbstractConnector implements Connector {
         schema = SourceSchema.createSchema(new File(configFileName));
         connectorBackend.setPdm(PdmSchema.createSchema(schema));
     }
+    
+    public String generateMaqlCreate() {
+    	MaqlGenerator mg = new MaqlGenerator(schema);
+    	return mg.generateMaqlCreate();
+    }
 
     /**
      * {@inheritDoc}
@@ -249,7 +232,11 @@ public abstract class AbstractConnector implements Connector {
     private void generateMAQL(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         Connector cc = ctx.getConnectorMandatory();
         String maqlFile = c.getParamMandatory("maqlFile");
-        String maql = cc.generateMaql();
+
+        l.debug("Executing maql generation.");
+        String maql = cc.generateMaqlCreate();
+        l.debug("Finished maql generation maql:\n"+maql);
+               
         FileUtil.writeStringToFile(maql, maqlFile);
         l.info("MAQL script successfully generated into "+maqlFile);
     }
@@ -522,26 +509,37 @@ public abstract class AbstractConnector implements Connector {
 
         List<DLIPart> parts = ctx.getRestApi(p).getDLIParts(dataset, pid);
 
-        final List<SourceColumn> newColumns = findNewColumns(parts, schema);
-        if (!newColumns.isEmpty()) {
-        	final String maql = cc.generateMaql(newColumns);
-        	FileUtil.writeStringToFile(maql, maqlFile);
+        StringBuffer maql = new StringBuffer();
+        final Changes changes = findColumnChanges(parts, schema);
+        
+        l.debug("Executing maql generation for changes of "+schema.getName() + " schema");
+        MaqlGenerator mg = new MaqlGenerator(schema);
+ 
+        if (!changes.deletedColumns.isEmpty()) {
+        	maql.append(mg.generateMaqlDrop(changes.deletedColumns));
         }
+        if (!changes.newColumns.isEmpty()) {
+        	maql.append(mg.generateMaqlAdd(changes.newColumns));
+        }
+        l.debug("Finished maql generation maql:\n"+maql.toString());
+        FileUtil.writeStringToFile(maql.toString(), maqlFile);
         l.debug("MAQL update finished.");
         l.info("MAQL update successfully finished.");
     }
 
-    /**
+	/**
      * Finds the attributes and facts with no appropriate part or part column
      * TODO: a generic detector of new labels etc could be added too
      * @param parts DLI parts
      * @param schema former source schema
      * @return list of new columns
      */
-    private List<SourceColumn> findNewColumns(List<DLIPart> parts, SourceSchema schema) {
+    private Changes findColumnChanges(List<DLIPart> parts, SourceSchema schema) {
     	Set<String> fileNames = new HashSet<String>();
     	Set<String> factColumns = new HashSet<String>();
     	DLIPart factPart = null;
+    	
+    	// get fact table's column names
     	for (final DLIPart part : parts) {
     		if (part.getFileName().startsWith(N.FCT_PFX)) {
     			if (factPart == null) {
@@ -557,21 +555,49 @@ public abstract class AbstractConnector implements Connector {
     		fileNames.add(part.getFileName());
     	}
 
-    	final List<SourceColumn> result = new ArrayList<SourceColumn>();
+    	// create set of column names to be used in the search for deleted fields 
+    	final Set<String> attributeTablesSet = new HashSet<String>();
+    	final Set<String> factColumnSet      = new HashSet<String>();
+    	
+    	// find columns in the source schema that don't exist on server
+    	final List<SourceColumn> newColumns = new ArrayList<SourceColumn>();
     	for (final SourceColumn sc : schema.getColumns()) {
     		if (SourceColumn.LDM_TYPE_ATTRIBUTE.equals(sc.getLdmType())) {
-    			final String filename = MaqlGenerator.createAttributeTableName(schema, sc) + ".csv";
+    			final String attributeTableName = MaqlGenerator.createAttributeTableName(schema, sc);
+        		attributeTablesSet.add(attributeTableName);
+    			final String filename = attributeTableName + ".csv";
     			if (!fileNames.contains(filename)) {
-    				result.add(sc);
+    				newColumns.add(sc);
     			}
     		} else if (SourceColumn.LDM_TYPE_FACT.equals(sc.getLdmType())) {
     			final String factColumn = StringUtil.toFactColumnName(sc.getName());
+    			factColumnSet.add(factColumn);
     			if (!factColumns.contains(factColumn)) {
-    				result.add(sc);
+    				newColumns.add(sc);
     			}
     		}
     	}
-    	return result;
+    	
+    	// find server-side columns that no more exist in the source schema
+    	final List<String> deletedLookups = new ArrayList<String>();
+    	final List<String> deletedFactColumns = new ArrayList<String>();
+    	for (final String lookupFile : fileNames) {
+    		final String lookup = lookupFile.replaceAll(".csv$", "");
+    		if (!attributeTablesSet.contains(lookup)) {
+    			deletedLookups.add(lookup);
+    		}
+    	}
+    	for (final String fact : factColumns) {
+    		if (!factColumnSet.contains(fact)) {
+    			deletedFactColumns.add(fact);
+    		}
+    	}
+    	
+    	final Changes changes = new Changes();
+    	changes.newColumns = newColumns;
+    	changes.deletedColumns.addAll(lookups2columns(schema, deletedLookups));
+    	changes.deletedColumns.addAll(facts2columns(deletedFactColumns));
+    	return changes;
     }
 
     /**
@@ -585,6 +611,27 @@ public abstract class AbstractConnector implements Connector {
             }
         }
     }
+    
+    private List<SourceColumn> lookups2columns(SourceSchema schema, List<String> lookups) {
+    	List<SourceColumn> result = new ArrayList<SourceColumn>();
+    	for (String l : lookups) {
+    		String prefix = N.LKP_PFX + "_" + StringUtil.toIdentifier(schema.getName()) + "_";
+    		if (!l.startsWith(prefix)) {
+    			throw new IllegalStateException("Lookup table " + l + " does not start with expected prefix " + prefix);
+    		}
+    		String name = l.replaceAll("^" + prefix, "");
+    		new SourceColumn(name, SourceColumn.LDM_TYPE_ATTRIBUTE, name);
+    	}
+    	return result;
+    }
+    
+    private List<SourceColumn> facts2columns(List<String> facts) {
+    	List<SourceColumn> result = new ArrayList<SourceColumn>();
+    	for (String f : facts) {
+    		new SourceColumn(f, SourceColumn.LDM_TYPE_FACT, f);
+    	}
+    	return result;
+    }
 
     /**
      * Sets the project id from context
@@ -597,4 +644,11 @@ public abstract class AbstractConnector implements Connector {
             this.getConnectorBackend().setProjectId(pid);
     }
 
+    /**
+     * Class wrapping local changes to a server-side model
+     */
+    private static class Changes {
+    	private List<SourceColumn> newColumns = new ArrayList<SourceColumn>();
+    	private List<SourceColumn> deletedColumns = new ArrayList<SourceColumn>();
+    }
 }
