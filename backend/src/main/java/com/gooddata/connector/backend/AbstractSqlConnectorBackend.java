@@ -768,19 +768,22 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
             ") SELECT DISTINCT " + nestedSelectColumns + " FROM " + source +
             " WHERE "+N.SRC_ID+" > "+getLastId(c,fact)
         );
-        JdbcUtil.executeUpdate(c,
-            "CREATE TABLE delete_ids("+N.HSH+" "+PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT+", "+N.ID+" INT, PRIMARY KEY(id))"
-        );
-        JdbcUtil.executeUpdate(c,
-            "INSERT INTO delete_ids SELECT "+N.HSH+",max("+N.ID+") FROM "+lookup+
-                    " GROUP by "+N.HSH+" HAVING count("+N.ID+") > 1"
-        );
-        JdbcUtil.executeUpdate(c,
-            "DELETE FROM "+lookup+" WHERE "+N.ID+" IN (SELECT "+N.ID+" FROM delete_ids)"
-        );
-        JdbcUtil.executeUpdate(c,
-            "DROP TABLE delete_ids"
-        );
+        int deleted = 0;
+        do {
+            JdbcUtil.executeUpdate(c,
+                "CREATE TABLE delete_ids("+N.HSH+" "+PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT+", "+N.ID+" INT, PRIMARY KEY(id))"
+            );
+            JdbcUtil.executeUpdate(c,
+                "INSERT INTO delete_ids SELECT "+N.HSH+",max("+N.ID+") FROM "+lookup+
+                        " GROUP by "+N.HSH+" HAVING count("+N.ID+") > 1"
+            );
+            deleted = JdbcUtil.executeUpdate(c,
+                "DELETE FROM "+lookup+" WHERE "+N.ID+" IN (SELECT "+N.ID+" FROM delete_ids)"
+            );
+            JdbcUtil.executeUpdate(c,
+                "DROP TABLE delete_ids"
+            );
+        } while (deleted > 0);
     }
 
     /**
