@@ -45,6 +45,17 @@ Project Management Commands:
   email - the invited user's e-mail
   msg - optional invitation message 
 
+ RetrieveMetadataObject(id=<object-id>, file=<file-to-store-the-object>) - retrieves a metadata object and stores it in a file, must call CreateProject or OpenProject before
+  object-id - valid object id (integer number)
+  file - file where the object content (JSON) is going to be stored
+
+ StoreMetadataObject([id=<object-id>,] file=<file-with-the-object-content>) - stores a metadata object with a content (JSON) in file to the metadata server, must call CreateProject or OpenProject before
+  object-id - valid object id (integer number), if the id is specified, the object is going to be modified, if not, a new object is created
+  file - file where the object content (JSON) is stored
+
+ DropMetadataObject(id=<object-id>) - drops the object with specified id from the project's metadata, must call CreateProject or OpenProject before
+  object-id - valid object id (integer number)
+
  Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 
 Logical Model Management Commands:

@@ -41,6 +41,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import com.gooddata.util.CSVReader;
@@ -219,7 +220,32 @@ public class FileUtil {
     public static String readStringFromFile(String fileName) throws IOException {
         return readStringFromBufferedReader(createBufferedUtf8Reader(fileName));
     }
-    
+
+    /**
+     * Writes a JSON object to a file.
+     *
+     * @param content  the content
+     * @param fileName the file
+     * @throws IOException
+     */
+    public static void writeJSONToFile(JSONObject content, String fileName) throws IOException {
+        BufferedWriter fw = createBufferedUtf8Writer(fileName);
+        fw.write(content.toString(2));
+        fw.flush();
+        fw.close();
+    }
+
+    /**
+     * Reads a JSON object from a file
+     *
+     * @param fileName the file
+     * @return the file content as JSON object
+     * @throws IOException
+     */
+    public static JSONObject readJSONFromFile(String fileName) throws IOException {
+        return JSONObject.fromObject(readStringFromBufferedReader(createBufferedUtf8Reader(fileName)));
+    }
+
     /**
      * Reads the entire {@link InputStream} and returns its content as a single {@link String} 
      *

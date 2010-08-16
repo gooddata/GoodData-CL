@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.gooddata.util.StringUtil;
+import net.sf.json.JSONObject;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -605,6 +606,15 @@ public class GdcDI implements Executor {
             else if(c.match("ExecuteReports")) {
                 executeReports(c, cli, ctx);
             }
+            else if(c.match("StoreMetadataObject")) {
+                storeMdObject(c, cli, ctx);
+            }
+            else if(c.match("DropMetadataObject")) {
+                dropMdObject(c, cli, ctx);
+            }
+            else if(c.match("RetrieveMetadataObject")) {
+                getMdObject(c, cli, ctx);
+            }
             else {
                 l.debug("No match command "+c.getCommand());
                 return false;
@@ -689,7 +699,56 @@ public class GdcDI implements Executor {
         String email = c.getParamMandatory("email");
         String msg = c.getParam("msg");
         ctx.getRestApi(p).inviteUser(pid, email, (msg != null)?(msg):(""));
-        l.info("Succesfully imvited user "+email+" to the project "+pid);
+        l.info("Succesfully invited user "+email+" to the project "+pid);
+    }
+
+    /**
+     * Retrieves a MD object
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void getMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+       String pid = ctx.getProjectIdMandatory();
+       String id = c.getParamMandatory("id");
+       String fl = c.getParamMandatory("file");
+       JSONObject ret = ctx.getRestApi(p).getMetadataObject(pid,id);
+       FileUtil.writeJSONToFile(ret, fl);
+       l.info("Retrieved metadata object "+id+" from the project "+pid+" and stored it in file "+fl);
+    }
+
+    /**
+     * Stores a MD object
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void storeMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String pid = ctx.getProjectIdMandatory();
+        String fl = c.getParamMandatory("file");
+        String id = c.getParam("id");
+        if(id != null && id.length() > 0) {
+            ctx.getRestApi(p).modifyMetadataObject(pid,id, FileUtil.readJSONFromFile(fl));
+            l.info("Modified metadata object "+id+" to the project "+pid);
+        }
+        else {
+            ctx.getRestApi(p).createMetadataObject(pid, FileUtil.readJSONFromFile(fl));
+            l.info("Created a new metadata object in the project "+pid);
+        }
+
+    }
+
+    /**
+     * Drops a MD object
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void dropMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String pid = ctx.getProjectIdMandatory();
+        String id = c.getParamMandatory("id");
+            ctx.getRestApi(p).deleteMetadataObject(pid,id);
+        l.info("Dropped metadata object "+id+" from the project "+pid);
     }
 
     /**
