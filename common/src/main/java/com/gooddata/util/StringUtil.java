@@ -30,6 +30,8 @@ import java.util.Collection;
 import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
+
+import com.gooddata.naming.N;
 import com.ibm.icu.text.Transliterator;
 
 /**
@@ -51,6 +53,15 @@ public class StringUtil {
      */
     public static String toIdentifier(String s) {
         return convertToIdentifier(s);
+    }
+    
+    /**
+     * Formats a string as a fact column name
+     * @param s the string to convert to identifier
+     * @return converted string
+     */
+    public static String toFactColumnName(String s) {
+        return N.FCT_PFX + convertToIdentifier(s);
     }
 
     /**

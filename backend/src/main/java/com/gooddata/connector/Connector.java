@@ -45,15 +45,7 @@ public interface Connector extends Executor {
      * Generates the MAQL for the data source
      * @return the MAQL in string format
      */
-    public String generateMaql();
-    
-    /**
-     * Generates the MAQL for the specified columns
-     * of the datasource
-     * @param columns columns that the MAQL is generated for
-     * @return the MAQL in string format
-     */
-    public String generateMaql(List<SourceColumn> columns);
+    public String generateMaqlCreate();
 
     /**
      * LDM schema getter

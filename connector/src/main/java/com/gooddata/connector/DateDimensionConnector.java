@@ -70,7 +70,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
     /**
      * {@inheritDoc}
      */
-    public String generateMaql() {
+    public String generateMaqlCreate() {
         l.debug("Generating time dimension MAQL with context "+ctx);
         if(ctx != null && ctx.trim().length()>0) {
             String idp = StringUtil.toIdentifier(ctx);

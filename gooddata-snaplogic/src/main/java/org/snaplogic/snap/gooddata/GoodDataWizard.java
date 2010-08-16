@@ -20,7 +20,6 @@ import org.snaplogic.cc.InputView;
 import org.snaplogic.cc.OutputView;
 import org.snaplogic.cc.prop.DictProp;
 import org.snaplogic.cc.prop.ListProp;
-import org.snaplogic.cc.prop.ListPropErr;
 import org.snaplogic.cc.prop.SimpleProp;
 import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
 import org.snaplogic.common.ComponentResourceErr;
@@ -800,7 +799,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 						ProcessingContext ctx = new ProcessingContext();
 						ctx.setProjectId(projectId);
 						ddConnector.processCommand(c, null, ctx);
-						String ddMaql = ddConnector.generateMaql();
+						String ddMaql = ddConnector.generateMaqlCreate();
 						restApi.executeMAQL(projectId, ddMaql);
 						info("Date dimension " + ddName + " created.");
 					} else if (dd.getValue().equalsIgnoreCase(DATE_FORMAT_CONNECT_DD)) {
@@ -863,7 +862,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 				csvConnector.setSchema(ss);
 				csvConnector.initialize();
 				// Generate MAQL for Source Schema
-				String maql = csvConnector.generateMaql();
+				String maql = csvConnector.generateMaqlCreate();
 				// Execute the MAQL (creates DLI)
 				info("Going to create a new DLI " + dliName + " in project " + projectName);
 				restApi.executeMAQL(projectId, maql);
