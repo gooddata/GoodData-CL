@@ -38,6 +38,7 @@ import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
+import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.DLI;
 import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.generator.MaqlGenerator;
@@ -530,9 +531,11 @@ public abstract class AbstractConnector implements Connector {
         MaqlGenerator mg = new MaqlGenerator(schema);
  
         if (!changes.deletedColumns.isEmpty()) {
+        	mg.setSynchronize(false);
         	maql.append(mg.generateMaqlDrop(changes.deletedColumns));
         }
         if (!changes.newColumns.isEmpty()) {
+        	mg.setSynchronize(true);
         	maql.append(mg.generateMaqlAdd(changes.newColumns));
         }
         l.debug("Finished maql generation maql:\n"+maql.toString());
@@ -555,6 +558,17 @@ public abstract class AbstractConnector implements Connector {
     	
     	// get fact table's column names
     	for (final DLIPart part : parts) {
+    		if (part.getFileName().startsWith(N.FCT_PFX)) {
+    			if (factPart == null) {
+    				factPart = part;
+    				for (Column col : factPart.getColumns()) {
+    					factColumns.add(col.getName());
+    				}
+    			} else {
+    				throw new IllegalStateException("Two fact tables detected on the server: "
+    						+ factPart.getFileName() + " and " + part.getFileName());
+    			}
+    		}
     		fileNames.add(part.getFileName());
     	}
 
@@ -565,7 +579,7 @@ public abstract class AbstractConnector implements Connector {
     	// find columns in the source schema that don't exist on server
     	final List<SourceColumn> newColumns = new ArrayList<SourceColumn>();
     	for (final SourceColumn sc : schema.getColumns()) {
-    		if (SourceColumn.LDM_TYPE_ATTRIBUTE.equals(sc.getLdmType())) {
+    		if (SourceColumn.LDM_TYPE_ATTRIBUTE.equals(sc.getLdmType()) || SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(sc.getLdmType())) {
     			final String attributeTableName = MaqlGenerator.createAttributeTableName(schema, sc);
         		attributeTablesSet.add(attributeTableName);
     			final String filename = attributeTableName + ".csv";
@@ -585,13 +599,15 @@ public abstract class AbstractConnector implements Connector {
     	final List<String> deletedLookups = new ArrayList<String>();
     	final List<String> deletedFactColumns = new ArrayList<String>();
     	for (final String lookupFile : fileNames) {
-    		final String lookup = lookupFile.replaceAll(".csv$", "");
-    		if (!attributeTablesSet.contains(lookup)) {
-    			deletedLookups.add(lookup);
+    		if (!lookupFile.startsWith(N.FCT_PFX)) {
+	    		final String lookup = lookupFile.replaceAll(".csv$", "");
+	    		if (!attributeTablesSet.contains(lookup)) {
+	    			deletedLookups.add(lookup);
+	    		}
     		}
     	}
     	for (final String fact : factColumns) {
-    		if (!factColumnSet.contains(fact)) {
+    		if (fact.startsWith(N.FCT_PFX) && !factColumnSet.contains(fact)) {
     			deletedFactColumns.add(fact);
     		}
     	}
@@ -618,20 +634,21 @@ public abstract class AbstractConnector implements Connector {
     private List<SourceColumn> lookups2columns(SourceSchema schema, List<String> lookups) {
     	List<SourceColumn> result = new ArrayList<SourceColumn>();
     	for (String l : lookups) {
-    		String prefix = N.LKP_PFX + "_" + StringUtil.toIdentifier(schema.getName()) + "_";
+    		String prefix = N.LKP_PFX + StringUtil.toIdentifier(schema.getName()) + "_";
     		if (!l.startsWith(prefix)) {
     			throw new IllegalStateException("Lookup table " + l + " does not start with expected prefix " + prefix);
     		}
     		String name = l.replaceAll("^" + prefix, "");
-    		new SourceColumn(name, SourceColumn.LDM_TYPE_ATTRIBUTE, name);
+    		result.add(new SourceColumn(name, SourceColumn.LDM_TYPE_ATTRIBUTE, name));
     	}
     	return result;
     }
     
     private List<SourceColumn> facts2columns(List<String> facts) {
     	List<SourceColumn> result = new ArrayList<SourceColumn>();
-    	for (String f : facts) {
-    		new SourceColumn(f, SourceColumn.LDM_TYPE_FACT, f);
+    	for (String factColumn : facts) {
+    		String factName = factColumn.replaceAll("^" + N.FCT_PFX, "");
+    		result.add(new SourceColumn(factName, SourceColumn.LDM_TYPE_FACT, factName));
     	}
     	return result;
     }
