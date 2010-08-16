@@ -22,6 +22,9 @@ for backend in MYSQL DERBY ; do
     grep '^\(LoadCsv\|Transfer\)' examples/quotes/quotes.txt >> "$tmp"
     bin/gdi.sh --backend "$backend" "$tmp"
 
+    echo 'Altering the server-side model (-2 attributes -1 fact +1 fact)'
+    bin/gdi.sh --backend "$backend" examples/quotes/alter.txt
+
     echo 'Dropping the quotes project and snapshots'
     drop "`cat examples/quotes/pid`"
 
