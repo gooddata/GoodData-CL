@@ -535,8 +535,11 @@ public abstract class AbstractConnector implements Connector {
         	maql.append(mg.generateMaqlDrop(changes.deletedColumns));
         }
         if (!changes.newColumns.isEmpty()) {
-        	mg.setSynchronize(true);
+        	mg.setSynchronize(false);
         	maql.append(mg.generateMaqlAdd(changes.newColumns));
+        }
+        if (maql.length() > 0) {
+        	maql.append(mg.generateMaqlSynchronize());
         }
         l.debug("Finished maql generation maql:\n"+maql.toString());
         FileUtil.writeStringToFile(maql.toString(), maqlFile);
