@@ -70,6 +70,7 @@ public class GdcRESTApiWrapper {
     public static final String REPORT_QUERY = "/query/reports";
     public static final String EXECUTOR = "/gdc/xtab2/executor";
     public static final String INVITATION_URI = "/invitations";
+    public static final String OBJ_URI = "/obj";
 
     public static final String DLI_MANIFEST_FILENAME = "upload_info.json";
 
@@ -243,12 +244,17 @@ public class GdcRESTApiWrapper {
         l.debug("Getting project links.");
         HttpMethod req = new GetMethod(config.getUrl() + MD_URI);
         setJsonHeaders(req);
-        String resp = executeMethodOk(req);
-        JSONObject parsedResp = JSONObject.fromObject(resp);
-        JSONObject about = parsedResp.getJSONObject("about");
-        JSONArray links = about.getJSONArray("links");
-        l.debug("Got project links "+links);
-        return links.iterator();
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            JSONObject about = parsedResp.getJSONObject("about");
+            JSONArray links = about.getJSONArray("links");
+            l.debug("Got project links "+links);
+            return links.iterator();
+        }
+        finally {
+            req.releaseConnection();
+        }
     }
 
     /**
@@ -337,28 +343,33 @@ public class GdcRESTApiWrapper {
         String ifcUri = getDLIsUri(projectId);
         HttpMethod interfacesGet = new GetMethod(ifcUri);
         setJsonHeaders(interfacesGet);
-        String response = executeMethodOk(interfacesGet);
-        JSONObject responseObject = JSONObject.fromObject(response);
-        if (responseObject.isNullObject()) {
-            l.debug("The project id=" + projectId + " doesn't exist!");
-            throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
+        try {
+            String response = executeMethodOk(interfacesGet);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            if (responseObject.isNullObject()) {
+                l.debug("The project id=" + projectId + " doesn't exist!");
+                throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
+            }
+            JSONObject interfaceQuery = responseObject.getJSONObject("about");
+            if (interfaceQuery.isNullObject()) {
+                l.debug("The project id=" + projectId + " doesn't exist!");
+                throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
+            }
+            JSONArray links = interfaceQuery.getJSONArray("links");
+            if (links == null) {
+                l.debug("The project id=" + projectId + " doesn't exist!");
+                throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
+            }
+            for (Object ol : links) {
+                JSONObject link = (JSONObject) ol;
+                DLI ii = new DLI(link);
+                list.add(ii);
+            }
+            l.debug("Got DLIs "+list+" from project id="+projectId);
         }
-        JSONObject interfaceQuery = responseObject.getJSONObject("about");
-        if (interfaceQuery.isNullObject()) {
-            l.debug("The project id=" + projectId + " doesn't exist!");
-            throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
+        finally {
+            interfacesGet.releaseConnection();
         }
-        JSONArray links = interfaceQuery.getJSONArray("links");
-        if (links == null) {
-            l.debug("The project id=" + projectId + " doesn't exist!");
-            throw new GdcProjectAccessException("The project id=" + projectId + " doesn't exist!");
-        }
-        for (Object ol : links) {
-            JSONObject link = (JSONObject) ol;
-            DLI ii = new DLI(link);
-            list.add(ii);
-        }
-        l.debug("Got DLIs "+list+" from project id="+projectId);
         return list;
     }
 
@@ -376,23 +387,28 @@ public class GdcRESTApiWrapper {
         String dliUri = getDLIUri(dliId, projectId);
         HttpMethod dliGet = new GetMethod(dliUri);
         setJsonHeaders(dliGet);
-        String response = executeMethodOk(dliGet);
-        JSONObject partsResponseObject = JSONObject.fromObject(response);
-        if (partsResponseObject.isNullObject()) {
-            l.debug("No DLI parts DLI id = "+dliId+" from project id="+projectId);
-            throw new GdcProjectAccessException("No DLI parts DLI id = "+dliId+" from project id="+projectId);
+        try {
+            String response = executeMethodOk(dliGet);
+            JSONObject partsResponseObject = JSONObject.fromObject(response);
+            if (partsResponseObject.isNullObject()) {
+                l.debug("No DLI parts DLI id = "+dliId+" from project id="+projectId);
+                throw new GdcProjectAccessException("No DLI parts DLI id = "+dliId+" from project id="+projectId);
+            }
+            JSONObject dli = partsResponseObject.getJSONObject("dataSetDLI");
+            if (dli.isNullObject()) {
+                l.debug("No DLI parts DLI id = "+dliId+" from project id="+projectId);
+                throw new GdcProjectAccessException("No DLI parts DLI id = "+dliId+" from project id="+projectId);
+            }
+            JSONArray parts = dli.getJSONArray("parts");
+            for (Object op : parts) {
+                JSONObject part = (JSONObject) op;
+                list.add(new DLIPart(part));
+            }
+            l.debug("Got DLI parts "+list+" DLI id = "+dliId+" from project id="+projectId);
         }
-        JSONObject dli = partsResponseObject.getJSONObject("dataSetDLI");
-        if (dli.isNullObject()) {
-            l.debug("No DLI parts DLI id = "+dliId+" from project id="+projectId);
-            throw new GdcProjectAccessException("No DLI parts DLI id = "+dliId+" from project id="+projectId);
+        finally {
+            dliGet.releaseConnection();
         }
-        JSONArray parts = dli.getJSONArray("parts");
-        for (Object op : parts) {
-            JSONObject part = (JSONObject) op;
-            list.add(new DLIPart(part));
-        }
-        l.debug("Got DLI parts "+list+" DLI id = "+dliId+" from project id="+projectId);
         return list;
     }
 
@@ -408,27 +424,32 @@ public class GdcRESTApiWrapper {
         String qUri = getProjectMdUrl(projectId) + REPORT_QUERY;
         HttpMethod qGet = new GetMethod(qUri);
         setJsonHeaders(qGet);
-        String qr = executeMethodOk(qGet);
-        JSONObject q = JSONObject.fromObject(qr);
-        if (q.isNullObject()) {
-            l.debug("Enumerating reports for project id="+projectId+" failed.");
-            throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
+        try {
+            String qr = executeMethodOk(qGet);
+            JSONObject q = JSONObject.fromObject(qr);
+            if (q.isNullObject()) {
+                l.debug("Enumerating reports for project id="+projectId+" failed.");
+                throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
+            }
+            JSONObject qry = q.getJSONObject("query");
+            if (qry.isNullObject()) {
+                l.debug("Enumerating reports for project id="+projectId+" failed.");
+                throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
+            }
+            JSONArray entries = qry.getJSONArray("entries");
+            if (entries == null) {
+                l.debug("Enumerating reports for project id="+projectId+" failed.");
+                throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
+            }
+            for(Object oentry : entries) {
+                JSONObject entry = (JSONObject)oentry;
+                int deprecated = entry.getInt("deprecated");
+                if(deprecated == 0)
+                    list.add(entry.getString("link"));
+            }
         }
-        JSONObject qry = q.getJSONObject("query");
-        if (qry.isNullObject()) {
-            l.debug("Enumerating reports for project id="+projectId+" failed.");
-            throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
-        }
-        JSONArray entries = qry.getJSONArray("entries");
-        if (entries == null) {
-            l.debug("Enumerating reports for project id="+projectId+" failed.");
-            throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
-        }
-        for(Object oentry : entries) {
-            JSONObject entry = (JSONObject)oentry;
-            int deprecated = entry.getInt("deprecated");
-            if(deprecated == 0)
-                list.add(entry.getString("link"));
+        finally {
+            qGet.releaseConnection();
         }
         return list;
     }
@@ -469,23 +490,28 @@ public class GdcRESTApiWrapper {
             qUri = config.getUrl() + lastResultUri;
             qGet = new GetMethod(qUri);
             setJsonHeaders(qGet);
-            qr = executeMethodOk(qGet);
-            q = JSONObject.fromObject(qr);
-            if (q.isNullObject()) {
-                l.debug("Error getting report definition for result uri="+lastResultUri);
-                throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
+            try {
+                qr = executeMethodOk(qGet);
+                q = JSONObject.fromObject(qr);
+                if (q.isNullObject()) {
+                    l.debug("Error getting report definition for result uri="+lastResultUri);
+                    throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
+                }
+                JSONObject result = q.getJSONObject("reportResult2");
+                if (result.isNullObject()) {
+                    l.debug("Error getting report definition for result uri="+lastResultUri);
+                    throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
+                }
+                content = result.getJSONObject("content");
+                if (result.isNullObject()) {
+                    l.debug("Error getting report definition for result uri="+lastResultUri);
+                    throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
+                }
+                return content.getString("reportDefinition");
             }
-            JSONObject result = q.getJSONObject("reportResult2");
-            if (result.isNullObject()) {
-                l.debug("Error getting report definition for result uri="+lastResultUri);
-                throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
+            finally {
+                qGet.releaseConnection();
             }
-            content = result.getJSONObject("content");
-            if (result.isNullObject()) {
-                l.debug("Error getting report definition for result uri="+lastResultUri);
-                throw new GdcProjectAccessException("Error getting report definition for result uri="+lastResultUri);
-            }
-            return content.getString("reportDefinition");
         }
         l.debug("Error getting report definition for report uri="+reportUri+" . No report results!");
         throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri+
@@ -515,26 +541,31 @@ public class GdcRESTApiWrapper {
                 task = task.substring(1,task.length()-1);
                 HttpMethod tg = new GetMethod(config.getUrl() + task);
                 setJsonHeaders(tg);
-                String t = executeMethodOk(tg);
-                JSONObject tr = JSONObject.fromObject(t);
-                if(tr.isNullObject()) {
-                    l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
-                    throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
-                            "Returned invalid result result="+tr);                    
+                try {
+                    String t = executeMethodOk(tg);
+                    JSONObject tr = JSONObject.fromObject(t);
+                    if(tr.isNullObject()) {
+                        l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
+                        throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
+                                "Returned invalid result result="+tr);
+                    }
+                    JSONObject reportResult = tr.getJSONObject("reportResult");
+                    if(reportResult.isNullObject()) {
+                        l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
+                        throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
+                                "Returned invalid result result="+tr);
+                    }
+                    JSONObject content = reportResult.getJSONObject("content");
+                    if(content.isNullObject()) {
+                        l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
+                        throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
+                                "Returned invalid result result="+tr);
+                    }
+                    return content.getString("dataResult");
                 }
-                JSONObject reportResult = tr.getJSONObject("reportResult");
-                if(reportResult.isNullObject()) {
-                    l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
-                    throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
-                            "Returned invalid result result="+tr);
+                finally {
+                    tg.releaseConnection();
                 }
-                JSONObject content = reportResult.getJSONObject("content");
-                if(content.isNullObject()) {
-                    l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
-                    throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
-                            "Returned invalid result result="+tr);
-                }
-                return content.getString("dataResult");
             }
             else {
                 l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid task link uri="+task);
@@ -569,6 +600,9 @@ public class GdcRESTApiWrapper {
         catch (HttpMethodNoContentException e) {
             l.debug("Got report execution status uri="+link+" status=EMPTY");
             return true;
+        }
+        finally {
+            ptm.releaseConnection();
         }
         l.debug("Got report execution status uri="+link+" status="+true);
         return true;
@@ -626,11 +660,16 @@ public class GdcRESTApiWrapper {
         l.debug("Getting data loading status uri="+link);
         HttpMethod ptm = new GetMethod(config.getUrl() + link);
         setJsonHeaders(ptm);
-        String response = executeMethodOk(ptm);
-        JSONObject task = JSONObject.fromObject(response);
-        String status = task.getString("taskStatus");
-        l.debug("Loading status="+status);
-        return status;
+        try {
+            String response = executeMethodOk(ptm);
+            JSONObject task = JSONObject.fromObject(response);
+            String status = task.getString("taskStatus");
+            l.debug("Loading status="+status);
+            return status;
+        }
+        finally {
+            ptm.releaseConnection();
+        }
     }
 
     
@@ -709,13 +748,18 @@ public class GdcRESTApiWrapper {
         String uri = getProjectDeleteUri(projectId);
         HttpMethod ptm = new GetMethod(config.getUrl() + uri);
         setJsonHeaders(ptm);
-        String response = executeMethodOk(ptm);
-        JSONObject jresp = JSONObject.fromObject(response);
-        JSONObject project = jresp.getJSONObject("project");
-        JSONObject content = project.getJSONObject("content");
-        String status = content.getString("state");
-        l.debug("Project "+projectId+" status="+status);
-        return status;
+        try {
+            String response = executeMethodOk(ptm);
+            JSONObject jresp = JSONObject.fromObject(response);
+            JSONObject project = jresp.getJSONObject("project");
+            JSONObject content = project.getJSONObject("content");
+            String status = content.getString("state");
+            l.debug("Project "+projectId+" status="+status);
+            return status;
+        }
+        finally {
+            ptm.releaseConnection();
+        }
     }
 
     /**
@@ -749,32 +793,37 @@ public class GdcRESTApiWrapper {
         l.debug("Getting project id by uri="+uri);
         HttpMethod req = new GetMethod(config.getUrl() + uri);
         setJsonHeaders(req);
-        String resp = executeMethodOk(req);
-        JSONObject parsedResp = JSONObject.fromObject(resp);
-        if(parsedResp.isNullObject()) {
-            l.debug("Can't get project from "+uri);
-            throw new GdcRestApiException("Can't get project from "+uri);
-        }
-        JSONObject project = parsedResp.getJSONObject("project");
-        if(project.isNullObject()) {
-            l.debug("Can't get project from "+uri);
-            throw new GdcRestApiException("Can't get project from "+uri);
-        }
-        JSONObject links = project.getJSONObject("links");
-        if(links.isNullObject()) {
-            l.debug("Can't get project from "+uri);
-            throw new GdcRestApiException("Can't get project from "+uri);
-        }
-        String mdUrl = links.getString("metadata");
-        if(mdUrl != null && mdUrl.length()>0) {
-            String[] cs = mdUrl.split("/");
-            if(cs != null && cs.length > 0) {
-                l.debug("Got project id="+cs[cs.length -1]+" by uri="+uri);
-                return cs[cs.length -1];
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if(parsedResp.isNullObject()) {
+                l.debug("Can't get project from "+uri);
+                throw new GdcRestApiException("Can't get project from "+uri);
             }
+            JSONObject project = parsedResp.getJSONObject("project");
+            if(project.isNullObject()) {
+                l.debug("Can't get project from "+uri);
+                throw new GdcRestApiException("Can't get project from "+uri);
+            }
+            JSONObject links = project.getJSONObject("links");
+            if(links.isNullObject()) {
+                l.debug("Can't get project from "+uri);
+                throw new GdcRestApiException("Can't get project from "+uri);
+            }
+            String mdUrl = links.getString("metadata");
+            if(mdUrl != null && mdUrl.length()>0) {
+                String[] cs = mdUrl.split("/");
+                if(cs != null && cs.length > 0) {
+                    l.debug("Got project id="+cs[cs.length -1]+" by uri="+uri);
+                    return cs[cs.length -1];
+                }
+            }
+            l.debug("Can't get project from "+uri);
+            throw new GdcRestApiException("Can't get project from "+uri);
         }
-        l.debug("Can't get project from "+uri);
-        throw new GdcRestApiException("Can't get project from "+uri); 
+        finally {
+            req.releaseConnection();
+        }
     }
 
     /**
@@ -951,44 +1000,49 @@ public class GdcRESTApiWrapper {
                     if(projectsUri != null && projectsUri.length()>0) {
                         HttpMethod req = new GetMethod(config.getUrl()+projectsUri);
                         setJsonHeaders(req);
-                        String resp = executeMethodOk(req);
-                        JSONObject rsp = JSONObject.fromObject(resp);
-                        if(rsp != null) {
-                            JSONArray projects = rsp.getJSONArray("projects");
-                            for(Object po : projects) {
-                                JSONObject p = (JSONObject)po;
-                                JSONObject project = p.getJSONObject("project");
-                                if(project != null) {
-                                    JSONObject links = project.getJSONObject("links");
-                                    if(links != null) {
-                                        String uri = links.getString("metadata");
-                                        if(uri != null && uri.length() > 0) {
-                                            String id = getProjectIdFromUri(uri);
-                                            if(projectId.equals(id)) {
-                                                String sf = links.getString("self");
-                                                if(sf != null && sf.length()>0)
-                                                    return sf;
+                        try {
+                            String resp = executeMethodOk(req);
+                            JSONObject rsp = JSONObject.fromObject(resp);
+                            if(rsp != null) {
+                                JSONArray projects = rsp.getJSONArray("projects");
+                                for(Object po : projects) {
+                                    JSONObject p = (JSONObject)po;
+                                    JSONObject project = p.getJSONObject("project");
+                                    if(project != null) {
+                                        JSONObject links = project.getJSONObject("links");
+                                        if(links != null) {
+                                            String uri = links.getString("metadata");
+                                            if(uri != null && uri.length() > 0) {
+                                                String id = getProjectIdFromUri(uri);
+                                                if(projectId.equals(id)) {
+                                                    String sf = links.getString("self");
+                                                    if(sf != null && sf.length()>0)
+                                                        return sf;
+                                                }
+                                            }
+                                            else {
+                                                l.debug("Project with no metadata uri.");
+                                                throw new GdcRestApiException("Project with no metadata uri.");
                                             }
                                         }
                                         else {
-                                            l.debug("Project with no metadata uri.");
-                                            throw new GdcRestApiException("Project with no metadata uri.");
+                                            l.debug("Project with no links.");
+                                            throw new GdcRestApiException("Project with no links.");
                                         }
                                     }
                                     else {
-                                        l.debug("Project with no links.");
-                                        throw new GdcRestApiException("Project with no links.");
+                                        l.debug("No project in the project list.");
+                                        throw new GdcRestApiException("No project in the project list.");
                                     }
                                 }
-                                else {
-                                    l.debug("No project in the project list.");
-                                    throw new GdcRestApiException("No project in the project list.");
-                                }
+                            }
+                            else {
+                                l.debug("Can't get project from "+projectsUri);
+                                throw new GdcRestApiException("Can't get projects from uri="+projectsUri);
                             }
                         }
-                        else {
-                            l.debug("Can't get project from "+projectsUri);
-                            throw new GdcRestApiException("Can't get projects from uri="+projectsUri);
+                        finally {
+                            req.releaseConnection();
                         }
                     }
                     else {
@@ -1071,6 +1125,104 @@ public class GdcRESTApiWrapper {
         invitations.put("invitations", ia);
         return invitations;
     }
-    
+
+
+    /**
+     * Retrieves a metadata object definition
+     * @param projectId project id (hash)
+     * @param objectId object id (integer)
+     * @return the object to get
+     */
+    public JSONObject getMetadataObject(String projectId, String objectId) {
+        l.debug("Executing getMetadataObject id="+objectId+" on project id="+projectId);
+        HttpMethod req = new GetMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
+        setJsonHeaders(req);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if(parsedResp.isNullObject()) {
+                l.debug("Can't getMetadataObject id="+objectId+" on project id="+projectId);
+                throw new GdcRestApiException("Can't getMetadataObject id="+objectId+" on project id="+projectId);
+            }
+            return parsedResp;
+        }
+        finally {
+            req.releaseConnection();
+        }
+    }
+
+    /**
+     * Creates a new object in the metadata server
+     * @param projectId project id (hash)
+     * @param content the new object content
+     * @return the new object
+     */
+    public JSONObject createMetadataObject(String projectId, JSONObject content) {
+        l.debug("Executing createMetadataObject on project id="+projectId+ "content='"+content.toString()+"'");
+        PostMethod req = new PostMethod(getProjectMdUrl(projectId) + OBJ_URI + "?createAndGet=true");
+        setJsonHeaders(req);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                content.toString().getBytes()));
+        req.setRequestEntity(request);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            return parsedResp;
+        } catch (HttpMethodException ex) {
+            l.debug("Failed executing createMetadataObject on project id="+projectId+ "content='"+content.toString()+"'");
+            throw new GdcRestApiException("Failed executing createMetadataObject on project id="+projectId+ "content='"+content.toString()+"'",ex);
+        } finally {
+            req.releaseConnection();
+        }
+
+    }
+
+    /**
+     * Modifies an object in the metadata server
+     * @param projectId project id (hash)
+     * @param objectId object id (integer)
+     * @param content the new object content
+     * @return the new object
+     */
+    public JSONObject modifyMetadataObject(String projectId, String objectId, JSONObject content) {
+        l.debug("Executing modifyMetadataObject on project id="+projectId+" objectId="+objectId+" content='"+content.toString()+"'");
+        PostMethod req = new PostMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
+        setJsonHeaders(req);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                content.toString().getBytes()));
+        req.setRequestEntity(request);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            return parsedResp;
+        } catch (HttpMethodException ex) {
+            l.debug("Failed executing modifyMetadataObject on project id="+projectId+" objectId="+objectId+" content='"+content.toString()+"'");
+            throw new GdcRestApiException("Failed executing modifyMetadataObject on project id="+projectId+" objectId="+objectId+" content='"+content.toString()+"'",ex);
+        } finally {
+            req.releaseConnection();
+        }
+
+    }
+
+    /**
+     * Deletes an object in the metadata server
+     * @param projectId project id (hash)
+     * @param objectId object id (integer)
+     * @return the new object
+     */
+    public void deleteMetadataObject(String projectId, String objectId) {
+        l.debug("Executing deleteMetadataObject on project id="+projectId+" objectId="+objectId);
+        DeleteMethod req = new DeleteMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
+        setJsonHeaders(req);
+        try {
+            String resp = executeMethodOk(req);
+        } catch (HttpMethodException ex) {
+            l.debug("Failed executing deleteMetadataObject on project id="+projectId+" objectId="+objectId);
+            throw new GdcRestApiException("Failed executing deleteMetadataObject on project id="+projectId+" objectId="+objectId,ex);
+        } finally {
+            req.releaseConnection();
+        }
+
+    }
 
 }
