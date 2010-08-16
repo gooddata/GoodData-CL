@@ -1,0 +1,34 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+<schema>
+  <name>Salary</name>
+  <columns>
+    <column>
+      <name>salary</name>
+      <title>Salary</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+      <folder>Salary</folder>
+    </column>
+    <column>
+      <name>employee</name>
+      <title>Employee</title>
+      <ldmType>REFERENCE</ldmType>
+      <reference>employee</reference>
+      <schemaReference>Employee</schemaReference>  
+      <folder>Salary</folder>
+    </column>
+    <column>
+      <name>payment</name>
+      <title>Payment</title>
+      <ldmType>FACT</ldmType>
+      <folder>Salary</folder>
+    </column>
+    <column>
+      <name>payday</name>
+      <title>Pay Day</title>
+      <ldmType>DATE</ldmType>
+      <format>yyyy-MM-dd</format>  
+      <schemaReference>payment</schemaReference>
+      <folder>Salary</folder>
+    </column>
+  </columns>
+</schema>

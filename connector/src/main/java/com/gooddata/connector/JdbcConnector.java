@@ -121,10 +121,12 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 public void handle(ResultSet rs) throws SQLException {
                     ResultSetMetaData rsm = rs.getMetaData();
                     int cnt = rsm.getColumnCount();
+                    l.debug("GenerateJdbcConfig: The dataset column count="+cnt);
                     for(int i=1; i <= cnt; i++) {
                         String cnm = StringUtil.toIdentifier(rsm.getColumnName(i));
                         String cdsc = rsm.getColumnName(i);
                         String type = getColumnType(rsm.getColumnType(i));
+                        l.debug("GenerateJdbcConfig: Processing column '"+cnm+"' type '"+type+"'");                        
                         SourceColumn column = new SourceColumn(cnm, type, cdsc);
                         if (SourceColumn.LDM_TYPE_DATE.equals(type)) {
                 	        column.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
@@ -133,7 +135,12 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                     }
                 }
             };
-            JdbcUtil.executeQuery(con, query, rh,1, FETCH_SIZE);
+            //JdbcUtil.executeQuery(con, query, rh,1, FETCH_SIZE);
+            Statement st = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            l.debug("GenerateJdbcConfig: Executing SQL statement='" + st.toString() + "'");
+    		ResultSet rs = st.executeQuery(query);
+            l.debug("GenerateJdbcConfig: Executed SQL statement='" + st.toString() + "'");
+    	    rh.handle(rs);
             s.writeConfig(new File(configFileName));
         }
         finally {

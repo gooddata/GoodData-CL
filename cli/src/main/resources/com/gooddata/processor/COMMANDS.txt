@@ -11,6 +11,7 @@ Usage: gdi.sh -u username -p password [ -h hostname ] [ -i project_id ] [-e comm
  -d,--dbusername <arg> Database backend username (not required for the local Derby SQL)
  -c,--dbpassword <arg> Database backend password (not required for the local Derby SQL)
  -l,--dbhost <arg>     Database backend hostname (e.g. dbmachine:3306 for MySQL, not required for the local Derby SQL)
+ -m,--memory <arg>     Turns on the fast MySQL in-memory backend. It requires memory heap size in MB (60+ MB)
  -V, --version         Prints out the tool version
  file                  path to script file with commands to execute
  
@@ -27,6 +28,10 @@ Project Management Commands:
  DropProject(id=<project-id>) - drop the project on the <hostname> server
   project-id - optional project id, if not specified, the command tries to drop the current project
 
+ DropSnapshots() - drop the project's snapshots (history data) in the local transformation database
+
+ DropIntegrationDatabase() - drop the project's local transformation database
+
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
   identifier - id of an existing project (takes the form of an MD5 hash)
 
@@ -39,6 +44,17 @@ Project Management Commands:
  InviteUser(email=<email>, msg=<msg>) - invites a new user to the project
   email - the invited user's e-mail
   msg - optional invitation message 
+
+ RetrieveMetadataObject(id=<object-id>, file=<file-to-store-the-object>) - retrieves a metadata object and stores it in a file, must call CreateProject or OpenProject before
+  object-id - valid object id (integer number)
+  file - file where the object content (JSON) is going to be stored
+
+ StoreMetadataObject([id=<object-id>,] file=<file-with-the-object-content>) - stores a metadata object with a content (JSON) in file to the metadata server, must call CreateProject or OpenProject before
+  object-id - valid object id (integer number), if the id is specified, the object is going to be modified, if not, a new object is created
+  file - file where the object content (JSON) is stored
+
+ DropMetadataObject(id=<object-id>) - drops the object with specified id from the project's metadata, must call CreateProject or OpenProject before
+  object-id - valid object id (integer number)
 
  Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 

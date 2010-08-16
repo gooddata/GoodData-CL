@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.gooddata.util.StringUtil;
+import net.sf.json.JSONObject;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -96,6 +97,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_INSECURE = {"insecure","s"};
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
     public static String[] CLI_PARAM_VERSION = {"version","V"};
+    public static String[] CLI_PARAM_MEMORY = {"memory","m"};
     public static String CLI_PARAM_SCRIPT = "script";
     
     private static String DEFAULT_PROPERTIES = "gdi.properties";
@@ -114,6 +116,7 @@ public class GdcDI implements Executor {
         new Option(CLI_PARAM_DB_USERNAME[1], CLI_PARAM_DB_USERNAME[0], true, "Database backend username (not required for the local Derby SQL)"),
         new Option(CLI_PARAM_DB_PASSWORD[1], CLI_PARAM_DB_PASSWORD[0], true, "Database backend password (not required for the local Derby SQL)"),
         new Option(CLI_PARAM_DB_HOST[1], CLI_PARAM_DB_HOST[0], true, "Database backend hostname (e.g. dbmachine-ip:3306, not required for the local Derby SQL)"),
+        new Option(CLI_PARAM_MEMORY[1], CLI_PARAM_MEMORY[0], true, "Turns the in-memory  (fast) processing mode for the MySQL. Accepts the available memory size in MB."),    
         new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
         new Option(CLI_PARAM_INSECURE[1], CLI_PARAM_INSECURE[0], false, "Disable encryption"),
         new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version."),    
@@ -603,6 +606,15 @@ public class GdcDI implements Executor {
             else if(c.match("ExecuteReports")) {
                 executeReports(c, cli, ctx);
             }
+            else if(c.match("StoreMetadataObject")) {
+                storeMdObject(c, cli, ctx);
+            }
+            else if(c.match("DropMetadataObject")) {
+                dropMdObject(c, cli, ctx);
+            }
+            else if(c.match("RetrieveMetadataObject")) {
+                getMdObject(c, cli, ctx);
+            }
             else {
                 l.debug("No match command "+c.getCommand());
                 return false;
@@ -687,7 +699,56 @@ public class GdcDI implements Executor {
         String email = c.getParamMandatory("email");
         String msg = c.getParam("msg");
         ctx.getRestApi(p).inviteUser(pid, email, (msg != null)?(msg):(""));
-        l.info("Succesfully imvited user "+email+" to the project "+pid);
+        l.info("Succesfully invited user "+email+" to the project "+pid);
+    }
+
+    /**
+     * Retrieves a MD object
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void getMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+       String pid = ctx.getProjectIdMandatory();
+       String id = c.getParamMandatory("id");
+       String fl = c.getParamMandatory("file");
+       JSONObject ret = ctx.getRestApi(p).getMetadataObject(pid,id);
+       FileUtil.writeJSONToFile(ret, fl);
+       l.info("Retrieved metadata object "+id+" from the project "+pid+" and stored it in file "+fl);
+    }
+
+    /**
+     * Stores a MD object
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void storeMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String pid = ctx.getProjectIdMandatory();
+        String fl = c.getParamMandatory("file");
+        String id = c.getParam("id");
+        if(id != null && id.length() > 0) {
+            ctx.getRestApi(p).modifyMetadataObject(pid,id, FileUtil.readJSONFromFile(fl));
+            l.info("Modified metadata object "+id+" to the project "+pid);
+        }
+        else {
+            ctx.getRestApi(p).createMetadataObject(pid, FileUtil.readJSONFromFile(fl));
+            l.info("Created a new metadata object in the project "+pid);
+        }
+
+    }
+
+    /**
+     * Drops a MD object
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void dropMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String pid = ctx.getProjectIdMandatory();
+        String id = c.getParamMandatory("id");
+            ctx.getRestApi(p).deleteMetadataObject(pid,id);
+        l.info("Dropped metadata object "+id+" from the project "+pid);
     }
 
     /**
@@ -799,13 +860,27 @@ public class GdcDI implements Executor {
     private ConnectorBackend instantiateConnectorBackend() throws IOException {
         String b = cliParams.get(CLI_PARAM_BACKEND[0]);
         final ConnectorBackend backend;
-        if("mysql".equalsIgnoreCase(b))
-            backend = MySqlConnectorBackend.create(cliParams.get(CLI_PARAM_DB_USERNAME[0]),
-                    cliParams.get(CLI_PARAM_DB_PASSWORD[0]), cliParams.get(CLI_PARAM_DB_HOST[0]));
+        if("mysql".equalsIgnoreCase(b)) {
+            if(cliParams.containsKey(CLI_PARAM_MEMORY[0])) {
+                try {
+                    int mem = Integer.parseInt(cliParams.get(CLI_PARAM_MEMORY[0]));
+                    backend = MySqlConnectorBackend.create(cliParams.get(CLI_PARAM_DB_USERNAME[0]),
+                        cliParams.get(CLI_PARAM_DB_PASSWORD[0]), cliParams.get(CLI_PARAM_DB_HOST[0]), mem);
+                }
+                catch (NumberFormatException e) {
+                    throw new InvalidParameterException("Please specify a whole number for the memory parameter.");
+                }
+            }
+            else {
+                backend = MySqlConnectorBackend.create(cliParams.get(CLI_PARAM_DB_USERNAME[0]),
+                        cliParams.get(CLI_PARAM_DB_PASSWORD[0]), cliParams.get(CLI_PARAM_DB_HOST[0]));                
+            }
+
+        }
         else if("derby".equalsIgnoreCase(b))
             backend = DerbyConnectorBackend.create();
         else
-        	throw new IllegalStateException("Invalid backed '" + b + "'");
+        	throw new IllegalStateException("Invalid backend '" + b + "'");
 
         return backend;
     }

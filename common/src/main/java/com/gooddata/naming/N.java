@@ -42,6 +42,8 @@ public class N {
     public final static String HSH = "hashid";
     public final static String SRC_ID = SRC_PFX+"_"+ID;
     public final static String DT_ATTR_NAME = "date";
+    public final static String MEM_TBL_PREFIX = "m";
+
 
 
     public static final String FACTS_OF = "factsof";

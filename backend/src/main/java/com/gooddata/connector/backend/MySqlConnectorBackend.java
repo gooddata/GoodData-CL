@@ -24,10 +24,9 @@
 package com.gooddata.connector.backend;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -54,6 +53,13 @@ import com.gooddata.util.StringUtil;
 public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implements ConnectorBackend {
 
     private static Logger l = Logger.getLogger(MySqlConnectorBackend.class);
+
+    //use memory tables for transformations
+    private boolean useMemory = false;
+
+    //use memory tables for transformations
+    private int memoryAmountInMB = 60;
+
     
     /**
      * static initializer of the Derby SQL JDBC driver
@@ -102,6 +108,20 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
     }
 
     /**
+     * Constructor
+     * @param username database backend username
+     * @param password database backend password
+     * @param host database backend hostname
+     * @param mem amount of memory (in MB) to use for the fast in-memory processing
+     * @throws java.io.IOException in case of an IO issue
+     */
+    protected MySqlConnectorBackend(String username, String password, String host, int mem) throws IOException {
+        this(username, password,host);
+        this.setUseMemory(true);
+        this.setMemoryAmountInMB(mem);
+    }
+
+    /**
      * Create
      * @param username MySQL username
      * @param password MySQL password
@@ -122,6 +142,18 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
      */
     public static MySqlConnectorBackend create(String username, String password, String host) throws IOException {
         return new MySqlConnectorBackend(username, password, host);
+    }
+
+    /**
+     * Create
+     * @param username database backend username
+     * @param password database backend password
+     * @param host database backend hostname
+     * @param mem amount of memory (in MB) to use for the fast in-memory processing
+     * @throws java.io.IOException in case of an IO issue
+     */
+    public static MySqlConnectorBackend create(String username, String password, String host, int mem) throws IOException {
+        return new MySqlConnectorBackend(username, password, host, mem);        
     }
 
     /**
@@ -158,7 +190,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
     /**
      * {@inheritDoc}
      */
-    public void dropSnapshots() {
+    public void dropIntegrationDatabase() {
         String dbName = N.DB_PREFIX+getProjectId()+N.DB_SUFFIX;
         l.debug("Dropping MySQL snapshots "+dbName);
         Connection con = null;
@@ -245,5 +277,116 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         JdbcUtil.executeUpdate(c, sql);
         l.debug("System functions creation finished.");
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void updateFactTableFk(Connection c, PdmSchema schema) throws SQLException {
+        String fact = schema.getFactTable().getName();
+        String updateStatement = "";
+        List<PdmTable> tables = new ArrayList<PdmTable>();
+        tables.addAll(schema.getLookupTables());
+        tables.addAll(schema.getConnectionPointTables());
+        tables.addAll(schema.getReferenceTables());
+        for(PdmTable tbl : tables) {
+            if(updateStatement.length() > 0)
+                updateStatement += " , " + generateFactUpdateSetStatement(tbl, schema);
+            else
+                updateStatement += generateFactUpdateSetStatement(tbl, schema);
+    	}
+
+        if(useMemory)
+            copyLookupsToMemory(c,tables);
+
+        if(updateStatement.length()>0) {
+            updateStatement = "UPDATE " + fact + " SET " + updateStatement +
+                " WHERE "+N.ID+" > "+getLastId(c,fact);
+            JdbcUtil.executeUpdate(c, updateStatement);
+        }
+
+        if(useMemory)
+            dropMemoryLookups(c,tables);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected String generateFactUpdateSetStatement(PdmTable lookupTable, PdmSchema schema) {
+        String lookup = lookupTable.getName();
+        String fact = schema.getFactTable().getName();
+        String source = schema.getSourceTable().getName();
+        String associatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
+
+        return lookupTable.getAssociatedSourceColumn() + "_"+N.ID+" = (SELECT "+N.ID+" FROM " +
+                ((useMemory)?(N.MEM_TBL_PREFIX):("")) + lookup + " d," + source + " o WHERE " + associatedSourceColumns +
+                " = d."+N.HSH+" AND o."+N.SRC_ID+"= " +
+              fact + "."+N.ID+") ";
+    }
+
+    protected void copyLookupsToMemory(Connection c, List<PdmTable> tables) throws SQLException {
+        JdbcUtil.executeUpdate(c,"set max_heap_table_size="+(getMemoryAmountInMB()*1000000));
+        for(PdmTable tbl : tables) {
+            String tblName = tbl.getName();
+            String memTblName = N.MEM_TBL_PREFIX + tbl.getName();
+            int maxLength = getMaxHashidLength(tblName);
+            JdbcUtil.executeUpdate(c,"CREATE TEMPORARY TABLE " + memTblName + " ("+N.ID+" INT, "+N.HSH+" CHAR("+maxLength+") UNIQUE) ENGINE MEMORY");
+            JdbcUtil.executeUpdate(c,"INSERT INTO "+memTblName+" SELECT "+N.ID+","+N.HSH+" FROM "+tblName);
+        }
+    }
+
+    protected void dropMemoryLookups(Connection c, List<PdmTable> tables) throws SQLException {
+        for(PdmTable tbl : tables) {
+            String tblName = tbl.getName();
+            String memTblName = N.MEM_TBL_PREFIX + tbl.getName();
+            JdbcUtil.executeUpdate(c,"DROP TABLE IF EXISTS " + memTblName);
+        }
+    }
+
+    public int getMaxHashidLength(String tblName) throws SQLException {
+        Connection con = null;
+        Statement s = null;
+        ResultSet r = null;
+        try {
+            con = getConnection();
+            s = con.createStatement();
+            r = s.executeQuery("SELECT MAX(LENGTH("+N.HSH+")) FROM "+tblName);
+            for(boolean rc = r.next(); rc; rc = r.next()) {
+                int mx = r.getInt(1);
+                return mx;
+            }
+        }
+        finally {
+            try {
+                if(r != null)
+                    r.close();
+                if(s != null)
+                    s.close();
+            }
+            catch (SQLException ee) {
+                ee.printStackTrace();
+            }
+        }
+        return Constants.HASHID_MAX_LENGTH;
+    }
+
+    public boolean isUseMemory() {
+        return useMemory;
+    }
+
+    public void setUseMemory(boolean useMemory) {
+        this.useMemory = useMemory;
+    }
+
+    public int getMemoryAmountInMB() {
+        return memoryAmountInMB;
+    }
+
+    public void setMemoryAmountInMB(int memoryAmountInMB) {
+        if(memoryAmountInMB > Constants.MIN_MYSQL_HEAP_MEMORY_IN_MB)
+            this.memoryAmountInMB = memoryAmountInMB;
+        else
+            this.memoryAmountInMB = Constants.MIN_MYSQL_HEAP_MEMORY_IN_MB;            
+    }
+    
 
 }

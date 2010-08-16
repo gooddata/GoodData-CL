@@ -9,7 +9,7 @@ tmp=`mktemp -t gdi-int-XXXXXX`
 function drop() {
     pid="$1"
     echo "OpenProject(id = \"$pid\");" > "$tmp"
-    echo "DropSnapshots(id = \"$pid\"); DropProject(id = \"$pid\");" >> "$tmp"
+    echo "DropIntegrationDatabase(); DropProject(id = \"$pid\");" >> "$tmp"
     bin/gdi.sh --backend "$backend" "$tmp"
 }
 
@@ -85,5 +85,11 @@ for backend in MYSQL DERBY ; do
 
     echo 'Dropping the escapes test project and snapshots'
     drop "`cat tests/escapes/pid`"
+
+    echo 'Running drop_snapshots test'
+    bin/gdi.sh --backend "$backend" tests/drop_snapshots/cmd.txt
+
+    echo 'Dropping the drop_snapshots test project and snapshots'
+    drop "`cat tests/drop_snapshots/pid`"
 
 done

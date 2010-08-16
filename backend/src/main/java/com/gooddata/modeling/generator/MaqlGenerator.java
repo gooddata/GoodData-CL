@@ -52,6 +52,7 @@ public class MaqlGenerator {
     private List<DateColumn> dates = new ArrayList<DateColumn>();
     private List<Reference> references = new ArrayList<Reference>();
     private boolean hasCp = false;
+    private String factsOfPrimaryColumn = N.ID;
 
     public MaqlGenerator(SourceSchema schema) {
         this.schema = schema;
@@ -167,7 +168,7 @@ public class MaqlGenerator {
 	        script += "# IT IS USED FOR COUNT AGGREGATIONS\n";
 	        // generate the facts of / record id special attribute
 	        script += "CREATE ATTRIBUTE " + factsOfAttrMaqlDdl + " VISUAL(TITLE \""
-	                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+N.ID+"} FULLSET;\n";
+	                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+factsOfPrimaryColumn+"} FULLSET;\n";
 	        script += "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + ".factsof};\n\n";
         }
 
@@ -444,6 +445,7 @@ public class MaqlGenerator {
         public ConnectionPoint(SourceColumn column) {
             super(column);
             hasCp = true;
+            //factsOfPrimaryColumn = scn + "_" + N.ID;
         }
 
 		 @Override

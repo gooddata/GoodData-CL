@@ -39,7 +39,7 @@ public class PdmColumn {
 
     // data types
     public static final String PDM_COLUMN_TYPE_TEXT = "VARCHAR("+ Constants.LABEL_MAX_LENGTH+")";
-    public static final String PDM_COLUMN_TYPE_LONG_TEXT = "VARCHAR(333)";
+    public static final String PDM_COLUMN_TYPE_LONG_TEXT = "VARCHAR("+Constants.HASHID_MAX_LENGTH+")";
     public static final String PDM_COLUMN_TYPE_DATE = "INT";
     public static final String PDM_COLUMN_TYPE_INT = "INT";
     public static final String PDM_COLUMN_TYPE_LONG = "BIGINT";
@@ -48,7 +48,6 @@ public class PdmColumn {
     // constraints
     public static final String PDM_CONSTRAINT_INDEX_UNIQUE = "UNIQUE";
     public static final String PDM_CONSTRAINT_INDEX_NON_UNIQUE = "NON UNIQUE";
-    public static final String PDM_CONSTRAINT_INDEX_MULTIPLE = "MULTIPLE";
     public static final String PDM_CONSTRAINT_AUTOINCREMENT = "AUTOINCREMENT";
     public static final String PDM_CONSTRAINT_PK = "PRIMARY KEY";
 

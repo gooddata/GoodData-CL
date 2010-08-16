@@ -56,6 +56,18 @@ The following paragraphs describe the specific GoodData CL commands.
   - email - the invited user's e-mail
   - msg - optional invitation message
 
+* `RetrieveMetadataObject`(id=&lt;object-id&gt;, file=&lt;file-to-store-the-object&gt;) - retrieves a metadata object and stores it in a file, must call CreateProject or OpenProject before
+  object-id - valid object id (integer number)
+  file - file where the object content (JSON) is going to be stored
+
+* `StoreMetadataObject`(\[id=&lt;object-id&gt;,\] file=&lt;file-with-the-object-content&gt;) - stores a metadata object with a content (JSON) in file to the metadata server, must call CreateProject or OpenProject before
+  object-id - valid object id (integer number), if the id is specified, the object is going to be modified, if not, a new object is created
+  file - file where the object content (JSON) is stored
+
+* `DropMetadataObject`(id=&lt;object-id&gt;) - drops the object with specified id from the project's metadata, must call CreateProject or OpenProject before
+  object-id - valid object id (integer number)
+
+
 * `Lock`(path=&lt;file&gt;) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 
 ## Logical Model Management Commands
