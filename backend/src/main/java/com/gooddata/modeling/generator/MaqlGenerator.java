@@ -141,6 +141,20 @@ public class MaqlGenerator {
         
         return script.toString();
     }
+    
+    /**
+     * Generates the single <tt>SYNCHRONIZE</tt> command based on the given
+     * schema name. Ignores the <tt>synchronize</tt> flag (set by the {@link #setSynchronize(boolean)}
+     * method)
+     * 
+     * @return
+     */
+	public String generateMaqlSynchronize() {
+		StringBuffer script = new StringBuffer();
+		script.append("# SYNCHRONIZE THE STORAGE AND DATA LOADING INTERFACES WITH THE NEW LOGICAL MODEL\n");
+        script.append("SYNCHRONIZE {" + schema.getDatasetName() + "};\n\n");
+        return script.toString();
+	}
 
     /**
      * Generate MAQL for selected (new) columns
