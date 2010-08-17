@@ -540,11 +540,14 @@ public abstract class AbstractConnector implements Connector {
         }
         if (maql.length() > 0) {
         	maql.append(mg.generateMaqlSynchronize());
+            l.debug("Finished maql generation maql:\n"+maql.toString());
+            FileUtil.writeStringToFile(maql.toString(), maqlFile);
+            l.debug("MAQL update finished.");
+            l.info("MAQL update successfully finished.");
+        } else {
+        	l.info("MAQL update successfully finished - no changes detected.");
         }
-        l.debug("Finished maql generation maql:\n"+maql.toString());
-        FileUtil.writeStringToFile(maql.toString(), maqlFile);
-        l.debug("MAQL update finished.");
-        l.info("MAQL update successfully finished.");
+
     }
 
 	/**
