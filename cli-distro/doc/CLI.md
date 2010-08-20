@@ -51,10 +51,11 @@ The following paragraphs describe the specific GoodData CL commands.
 
   - fileName - file to load the project identifier from
 
-* `InviteUser`(email=&lt;email&gt;, msg=&lt;msg&gt;) - invites a new user to the project
+* `InviteUser`(email=&lt;email&gt;, msg=&lt;msg&gt;\[, role=&lt;role&gt;\]) - invites a new user to the project
 
   - email - the invited user's e-mail
   - msg - optional invitation message
+  - role - optional initial user's role
 
 * `RetrieveMetadataObject`(id=&lt;object-id&gt;, file=&lt;file-to-store-the-object&gt;) - retrieves a metadata object and stores it in a file, must call CreateProject or OpenProject before
   object-id - valid object id (integer number)

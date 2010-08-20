@@ -698,7 +698,8 @@ public class GdcDI implements Executor {
         String pid = ctx.getProjectIdMandatory();
         String email = c.getParamMandatory("email");
         String msg = c.getParam("msg");
-        ctx.getRestApi(p).inviteUser(pid, email, (msg != null)?(msg):(""));
+        String role = c.getParam("role");        
+        ctx.getRestApi(p).inviteUser(pid, email, (msg != null)?(msg):(""), role);
         l.info("Succesfully invited user "+email+" to the project "+pid);
     }
 

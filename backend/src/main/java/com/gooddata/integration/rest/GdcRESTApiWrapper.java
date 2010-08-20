@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -78,6 +79,14 @@ public class GdcRESTApiWrapper {
     protected NamePasswordConfiguration config;
     private String ssToken;
     private JSONObject profile;
+
+    private static HashMap<String,Integer> ROLES = new HashMap<String,Integer>();
+
+    static {
+        ROLES.put("ADMIN",new Integer(1));
+        ROLES.put("EDITOR",new Integer(2));
+        ROLES.put("DASHBOARD ONLY",new Integer(3));        
+    }
 
     /**
      * Constructs the GoodData REST API Java wrapper
@@ -1083,10 +1092,20 @@ public class GdcRESTApiWrapper {
      * @param message invitation message
      */
     public void inviteUser(String projectId, String eMail, String message) {
+        this.inviteUser(projectId, eMail, message, null);
+    }
+
+    /**
+     * Invites a new user to a project
+     * @param projectId project ID
+     * @param eMail invited user e-mail
+     * @param message invitation message
+     */
+    public void inviteUser(String projectId, String eMail, String message, String role) {
         l.debug("Executing inviteUser projectId="+projectId+" e-mail="+eMail+" message="+message);
         PostMethod invitePost = new PostMethod(config.getUrl() + getProjectDeleteUri(projectId) + INVITATION_URI);
         setJsonHeaders(invitePost);
-        JSONObject inviteStructure = getInviteStructure(projectId, eMail, message);
+        JSONObject inviteStructure = getInviteStructure(projectId, eMail, message, role);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 inviteStructure.toString().getBytes()));
         invitePost.setRequestEntity(request);
@@ -1107,11 +1126,18 @@ public class GdcRESTApiWrapper {
      * @param msg invitation message
      * @return the new invitation structure
      */
-    private JSONObject getInviteStructure(String pid, String eMail, String msg) {
+    private JSONObject getInviteStructure(String pid, String eMail, String msg, String role) {
         JSONObject content = new JSONObject();
         content.put("firstname","");
         content.put("lastname","");
         content.put("email",eMail);
+        String puri = config.getUrl() + getProjectDeleteUri(pid);
+        if(role != null && role.length() > 0) {
+            Integer roleId = ROLES.get(role.toUpperCase());
+            if(roleId == null)
+                throw new InvalidParameterException("The role '"+role+"' is not recognized by the GoodData platform.");
+            content.put("role",puri+"/"+roleId);
+        }
         JSONObject action = new JSONObject();
         action.put("setMessage",msg);
         content.put("action", action);
