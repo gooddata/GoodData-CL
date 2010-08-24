@@ -96,6 +96,14 @@ public class GdcRESTApiWrapper {
     public GdcRESTApiWrapper(NamePasswordConfiguration config) {
         this.config = config;
         client = new HttpClient();
+    	
+        final String proxyHost = System.getProperty("http.proxyHost");
+    	final int proxyPort = System.getProperty("http.proxyPort") == null
+    		? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
+
+    	if (proxyHost != null) {
+    		client.getHostConfiguration().setProxy(proxyHost,proxyPort);
+    	}
     }
 
     /**
