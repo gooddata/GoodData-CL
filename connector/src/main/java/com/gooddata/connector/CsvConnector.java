@@ -248,9 +248,10 @@ public class CsvConnector extends AbstractConnector implements Connector {
             hasHeader = true;
         String sep = c.getParam("separator");
         if(sep != null) {
-            if(sep.length() == 0 || sep.length() > 1)
+            if(sep.length() == 0 || (sep.length() > 1 && !"\\t".equals(sep)))
                 throw new InvalidParameterException("The CSV separator be non-empty, one character only.");
-            setSeparator(sep.charAt(0));
+            char sepChar = "\\t".equals(sep) ? '\t' : sep.charAt(0);
+            setSeparator(sepChar);
         }
         else {
             setSeparator(',');
