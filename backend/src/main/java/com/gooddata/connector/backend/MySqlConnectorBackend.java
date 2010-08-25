@@ -262,7 +262,8 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         l.debug("Creating system functions.");
     	String sql = "CREATE FUNCTION ATOD(str varchar(255)) RETURNS DECIMAL(15,4) "
 			    + "RETURN CASE "
-			    + "      WHEN str = '' THEN NULL "
+                + "      WHEN TRIM(str) = '-' THEN 0"
+			    + "      WHEN TRIM(str) = '' THEN NULL "
 			    + "      ELSE CAST( ";
     	for (final String s : Constants.DISCARD_CHARS) {
     		sql += "REPLACE(";
