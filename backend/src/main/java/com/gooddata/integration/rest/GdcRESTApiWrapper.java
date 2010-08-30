@@ -69,7 +69,7 @@ public class GdcRESTApiWrapper {
     private static final String DLI_DESCRIPTOR_URI = "/descriptor";
     public static final String MAQL_EXEC_URI = "/ldm/manage";
     public static final String REPORT_QUERY = "/query/reports";
-    public static final String EXECUTOR = "/gdc/xtab2/executor";
+    public static final String EXECUTOR = "/gdc/xtab2/executor3";
     public static final String INVITATION_URI = "/invitations";
     public static final String OBJ_URI = "/obj";
 
@@ -545,8 +545,7 @@ public class GdcRESTApiWrapper {
         PostMethod execPost = new PostMethod(config.getUrl() + EXECUTOR);
         setJsonHeaders(execPost);
         JSONObject execDef = new JSONObject();
-        //execDef.put("reportDefinition",reportDefUri);
-        execDef.put("report",reportDefUri);
+        execDef.put("reportDefinition",reportDefUri);
         JSONObject exec = new JSONObject();
         exec.put("report_req", execDef);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(exec.toString().getBytes()));
@@ -555,34 +554,25 @@ public class GdcRESTApiWrapper {
         try {
             String task = executeMethodOk(execPost);
             if(task != null && task.length()>0) {
-                task = task.substring(1,task.length()-1);
-                HttpMethod tg = new GetMethod(config.getUrl() + task);
-                setJsonHeaders(tg);
-                try {
-                    String t = executeMethodOk(tg);
-                    JSONObject tr = JSONObject.fromObject(t);
-                    if(tr.isNullObject()) {
-                        l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
-                        throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
-                                "Returned invalid result result="+tr);
-                    }
-                    JSONObject reportResult = tr.getJSONObject("reportResult");
-                    if(reportResult.isNullObject()) {
-                        l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
-                        throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
-                                "Returned invalid result result="+tr);
-                    }
-                    JSONObject content = reportResult.getJSONObject("content");
-                    if(content.isNullObject()) {
-                        l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
-                        throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
-                                "Returned invalid result result="+tr);
-                    }
-                    return content.getString("dataResult");
+                JSONObject tr = JSONObject.fromObject(task);
+                if(tr.isNullObject()) {
+                    l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
+                    throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
+                            "Returned invalid result result="+tr);
                 }
-                finally {
-                    tg.releaseConnection();
+                JSONObject reportResult = tr.getJSONObject("reportResult2");
+                if(reportResult.isNullObject()) {
+                    l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
+                    throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
+                            "Returned invalid result result="+tr);
                 }
+                JSONObject content = reportResult.getJSONObject("content");
+                if(content.isNullObject()) {
+                    l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid result result="+tr);
+                    throw new GdcRestApiException("Executing report definition uri="+reportDefUri + " failed. " +
+                            "Returned invalid result result="+tr);
+                }
+                return content.getString("dataResult");
             }
             else {
                 l.debug("Executing report definition uri="+reportDefUri + " failed. Returned invalid task link uri="+task);
@@ -595,34 +585,6 @@ public class GdcRESTApiWrapper {
         } finally {
             execPost.releaseConnection();
         }
-    }
-
-    /**
-     * Checks if the report execution is finished
-     *
-     * @param link the link returned exec report
-     * @return the loading status (true - finished, false - not yet)
-     */
-    public boolean getReportExecutionStatus(String link) throws HttpMethodException {
-        l.debug("Getting report execution status uri="+link);
-        HttpMethod ptm = new GetMethod(config.getUrl() + link);
-        setJsonHeaders(ptm);
-        try {
-            executeMethodOk(ptm);
-        }
-        catch (HttpMethodNotFinishedYetException e) {
-            l.debug("Got report execution status uri="+link+" status="+false);
-            return false;
-        }
-        catch (HttpMethodNoContentException e) {
-            l.debug("Got report execution status uri="+link+" status=EMPTY");
-            return true;
-        }
-        finally {
-            ptm.releaseConnection();
-        }
-        l.debug("Got report execution status uri="+link+" status="+true);
-        return true;
     }
 
     /**

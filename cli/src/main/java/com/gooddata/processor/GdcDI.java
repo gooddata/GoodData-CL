@@ -789,14 +789,6 @@ public class GdcDI implements Executor {
                 String defUri = ctx.getRestApi(p).getReportDefinition(uri.trim());
                 l.info("Executing report uri="+defUri);
                 String task = ctx.getRestApi(p).executeReportDefinition(defUri.trim());
-                boolean finished = false;
-                do {
-                    finished = ctx.getRestApi(p).getReportExecutionStatus(task);
-                    if(!finished)
-                        Thread.sleep(1500);
-                    l.info("Checking report " +defUri+ " execution finished status="+finished);
-                }
-                while(!finished);
                 l.info("Report " +defUri+ " execution finished.");
             }
         }
