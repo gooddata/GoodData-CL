@@ -477,37 +477,38 @@ public class GdcRESTApiWrapper {
      * @return report definition
      */
     public String getReportDefinition(String reportUri) {
-        l.debug("Getting report definition for report uri="+reportUri);
-        String qUri = config.getUrl() + reportUri;
-        HttpMethod qGet = new GetMethod(qUri);
-        setJsonHeaders(qGet);
-        String qr = executeMethodOk(qGet);
-        JSONObject q = JSONObject.fromObject(qr);
-        if (q.isNullObject()) {
-            l.debug("Error getting report definition for report uri="+reportUri);
-            throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
-        }
-        JSONObject report = q.getJSONObject("report");
-        if (report.isNullObject()) {
-            l.debug("Error getting report definition for report uri="+reportUri);
-            throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
-        }
-        JSONObject content = report.getJSONObject("content");
-        if (content.isNullObject()) {
-            l.debug("Error getting report definition for report uri="+reportUri);
-            throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
-        }
-        JSONArray results = content.getJSONArray("results");
-        if (results == null) {
-            l.debug("Error getting report definition for report uri="+reportUri);
-            throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
-        }
-        if(results.size()>0) {
-            String lastResultUri = results.getString(results.size()-1);
-            qUri = config.getUrl() + lastResultUri;
+        HttpMethod qGet = null;
+        try {
+            l.debug("Getting report definition for report uri="+reportUri);
+            String qUri = config.getUrl() + reportUri;
             qGet = new GetMethod(qUri);
             setJsonHeaders(qGet);
-            try {
+            String qr = executeMethodOk(qGet);
+            JSONObject q = JSONObject.fromObject(qr);
+            if (q.isNullObject()) {
+                l.debug("Error getting report definition for report uri="+reportUri);
+                throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
+            }
+            JSONObject report = q.getJSONObject("report");
+            if (report.isNullObject()) {
+                l.debug("Error getting report definition for report uri="+reportUri);
+                throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
+            }
+            JSONObject content = report.getJSONObject("content");
+            if (content.isNullObject()) {
+                l.debug("Error getting report definition for report uri="+reportUri);
+                throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
+            }
+            JSONArray results = content.getJSONArray("results");
+            if (results == null) {
+                l.debug("Error getting report definition for report uri="+reportUri);
+                throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri);
+            }
+            if(results.size()>0) {
+                String lastResultUri = results.getString(results.size()-1);
+                qUri = config.getUrl() + lastResultUri;
+                qGet = new GetMethod(qUri);
+                setJsonHeaders(qGet);
                 qr = executeMethodOk(qGet);
                 q = JSONObject.fromObject(qr);
                 if (q.isNullObject()) {
@@ -526,13 +527,18 @@ public class GdcRESTApiWrapper {
                 }
                 return content.getString("reportDefinition");
             }
-            finally {
-                qGet.releaseConnection();
-            }
+            // Here we haven't found any results. Let's try the defaultReportDefinition
+            String defaultRepDef = content.getString("defaultReportDefinition");
+            if(defaultRepDef != null && defaultRepDef.length() > 0)
+                return defaultRepDef;
+            l.debug("Error getting report definition for report uri="+reportUri+" . No report results!");
+            throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri+
+                    " . No report results!");
         }
-        l.debug("Error getting report definition for report uri="+reportUri+" . No report results!");
-        throw new GdcProjectAccessException("Error getting report definition for report uri="+reportUri+
-                " . No report results!");
+        finally {
+            if(qGet != null)
+                qGet.releaseConnection();
+        }        
     }
 
 
