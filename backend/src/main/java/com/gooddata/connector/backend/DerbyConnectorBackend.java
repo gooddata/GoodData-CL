@@ -94,7 +94,10 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
     public static DerbyConnectorBackend create() throws IOException {
         return new DerbyConnectorBackend();
     }
-
+    
+    protected String makeCreateTempTableStatement(String tableName, String definition) {
+    	return "DECLARE GLOBAL TEMPORARY TABLE " + tableName + " " + definition;
+    }
 
     /**
      * {@inheritDoc}

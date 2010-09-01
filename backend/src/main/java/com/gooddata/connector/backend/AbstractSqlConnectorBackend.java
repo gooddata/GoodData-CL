@@ -286,6 +286,10 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
 		}
     }
     
+    protected String makeCreateTempTableStatement(String tableName, String definition) {
+    	return "CREATE TEMPORARY TABLE " + tableName + " " + definition;
+    }
+    
     protected abstract Connection getConnection() throws SQLException;
 
 	/**
@@ -766,7 +770,7 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         int deleted = 0;
         do {
             JdbcUtil.executeUpdate(c,
-                "CREATE TABLE delete_ids("+N.HSH+" "+PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT+", "+N.ID+" INT, PRIMARY KEY(id))"
+                makeCreateTempTableStatement("delete_ids", "("+N.HSH+" "+PdmColumn.PDM_COLUMN_TYPE_LONG_TEXT+", "+N.ID+" INT, PRIMARY KEY(id))")
             );
             JdbcUtil.executeUpdate(c,
                 "INSERT INTO delete_ids SELECT "+N.HSH+",max("+N.ID+") FROM "+lookup+
