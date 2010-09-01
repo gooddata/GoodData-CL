@@ -95,7 +95,6 @@ public class DerbyConnectorBackend extends AbstractSqlConnectorBackend implement
         return new DerbyConnectorBackend();
     }
 
-
     /**
      * {@inheritDoc}
      */

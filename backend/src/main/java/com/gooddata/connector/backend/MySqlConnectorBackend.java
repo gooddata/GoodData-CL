@@ -156,6 +156,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         return new MySqlConnectorBackend(username, password, host, mem);        
     }
 
+
     /**
      * {@inheritDoc}
      */
@@ -186,6 +187,9 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         return connection;
     }
 
+    protected String makeCreateTempTableStatement(String tableName, String definition) {
+    	return "CREATE TEMPORARY TABLE " + tableName + " " + definition;
+    }
 
     /**
      * {@inheritDoc}
