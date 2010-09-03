@@ -16,11 +16,11 @@ package com.gooddata.util;
  limitations under the License.
  */
 
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -30,21 +30,33 @@ import java.util.List;
  * 
  */
 public class CSVReader implements Closeable {
+	
+	private static char DEFAULT_SEPARATOR = ',';
+	private static char DEFAULT_QUOTE_CHARACTER = '"';
+	private static char DEFAULT_ESCAPE_CHARACTER = '"';
+	
+	private static int CHUNK_SIZE = 4096;
 
-    private BufferedReader br;
-
-    private boolean hasNext = true;
-
-    private CSVParser parser;
+    private Reader r;
     
-    private int skipLines;
+    // configuration
+    private char separator;
+    private char quote;
+    private char escape;
+    private boolean hasCommentSupport = false;
+    private char commentChar;
 
-    private boolean linesSkiped;
-
-    /**
-     * The default line to start reading.
-     */
-    public static final int DEFAULT_SKIP_LINES = 0;
+    // status variables
+    private List<String> openRecord = new ArrayList<String>();
+    private StringBuffer openField  = new StringBuffer();
+    private char lastChar = 0; 
+    private boolean quotedField = false;
+    private boolean commentedLine = false;
+    private LinkedList<String[]> recordsQueue = new LinkedList<String[]>();
+    private boolean eof = false;
+    
+    private int row = 0;
+    private int col = 0;
 
     /**
      * Constructs CSVReader using a comma for the separator.
@@ -52,8 +64,8 @@ public class CSVReader implements Closeable {
      * @param reader
      *            the reader to an underlying CSV source.
      */
-    public CSVReader(Reader reader) {
-        this(reader, CSVParser.DEFAULT_SEPARATOR, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_ESCAPE_CHARACTER);
+    public CSVReader(Reader r) {
+        this(r, DEFAULT_SEPARATOR, DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER);
     }
 
     /**
@@ -64,8 +76,8 @@ public class CSVReader implements Closeable {
      * @param separator
      *            the delimiter to use for separating entries.
      */
-    public CSVReader(Reader reader, char separator) {
-        this(reader, separator, CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_ESCAPE_CHARACTER);
+    public CSVReader(Reader r, char separator) {
+        this(r, separator, DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER);
     }
 
     /**
@@ -78,25 +90,8 @@ public class CSVReader implements Closeable {
      * @param quotechar
      *            the character to use for quoted elements
      */
-    public CSVReader(Reader reader, char separator, char quotechar) {
-        this(reader, separator, quotechar, CSVParser.DEFAULT_ESCAPE_CHARACTER, DEFAULT_SKIP_LINES, CSVParser.DEFAULT_STRICT_QUOTES);
-    }
-
-    /**
-     * Constructs CSVReader with supplied separator, quote char and quote handling
-     * behavior.
-     *
-     * @param reader
-     *            the reader to an underlying CSV source.
-     * @param separator
-     *            the delimiter to use for separating entries
-     * @param quotechar
-     *            the character to use for quoted elements
-     * @param strictQuotes
-     *            sets if characters outside the quotes are ignored
-     */
-    public CSVReader(Reader reader, char separator, char quotechar, boolean strictQuotes) {
-        this(reader, separator, quotechar, CSVParser.DEFAULT_ESCAPE_CHARACTER, DEFAULT_SKIP_LINES, strictQuotes);
+    public CSVReader(Reader r, char separator, char quotechar) {
+        this(r, separator, quotechar, DEFAULT_ESCAPE_CHARACTER);
     }
 
    /**
@@ -112,88 +107,12 @@ public class CSVReader implements Closeable {
      *            the character to use for escaping a separator or quote
      */
 
-    public CSVReader(Reader reader, char separator,
-			char quotechar, char escape) {
-        this(reader, separator, quotechar, escape, DEFAULT_SKIP_LINES, CSVParser.DEFAULT_STRICT_QUOTES);
+    public CSVReader(Reader r, char separator, char quotechar, char escape) {
+        this.r = r;
+        this.separator = separator;
+        this.quote = quotechar;
+        this.escape = escape;
 	}
-    
-    /**
-     * Constructs CSVReader with supplied separator and quote char.
-     * 
-     * @param reader
-     *            the reader to an underlying CSV source.
-     * @param separator
-     *            the delimiter to use for separating entries
-     * @param quotechar
-     *            the character to use for quoted elements
-     * @param line
-     *            the line number to skip for start reading 
-     */
-    public CSVReader(Reader reader, char separator, char quotechar, int line) {
-        this(reader, separator, quotechar, CSVParser.DEFAULT_ESCAPE_CHARACTER, line, CSVParser.DEFAULT_STRICT_QUOTES);
-    }
-
-    /**
-     * Constructs CSVReader with supplied separator and quote char.
-     *
-     * @param reader
-     *            the reader to an underlying CSV source.
-     * @param separator
-     *            the delimiter to use for separating entries
-     * @param quotechar
-     *            the character to use for quoted elements
-     * @param escape
-     *            the character to use for escaping a separator or quote
-     * @param line
-     *            the line number to skip for start reading
-     */
-    public CSVReader(Reader reader, char separator, char quotechar, char escape, int line) {
-        this(reader, separator, quotechar, escape, line, CSVParser.DEFAULT_STRICT_QUOTES);
-    }
-    
-    /**
-     * Constructs CSVReader with supplied separator and quote char.
-     * 
-     * @param reader
-     *            the reader to an underlying CSV source.
-     * @param separator
-     *            the delimiter to use for separating entries
-     * @param quotechar
-     *            the character to use for quoted elements
-     * @param escape
-     *            the character to use for escaping a separator or quote
-     * @param line
-     *            the line number to skip for start reading
-     * @param strictQuotes
-     *            sets if characters outside the quotes are ignored
-     */
-    public CSVReader(Reader reader, char separator, char quotechar, char escape, int line, boolean strictQuotes) {
-        this(reader, separator, quotechar, escape, line, strictQuotes, CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE);
-    }
-
-    /**
-     * Constructs CSVReader with supplied separator and quote char.
-     * 
-     * @param reader
-     *            the reader to an underlying CSV source.
-     * @param separator
-     *            the delimiter to use for separating entries
-     * @param quotechar
-     *            the character to use for quoted elements
-     * @param escape
-     *            the character to use for escaping a separator or quote
-     * @param line
-     *            the line number to skip for start reading
-     * @param strictQuotes
-     *            sets if characters outside the quotes are ignored
-     * @param ignoreLeadingWhiteSpace
-     *            it true, parser should ignore white space before a quote in a field
-     */
-    public CSVReader(Reader reader, char separator, char quotechar, char escape, int line, boolean strictQuotes, boolean ignoreLeadingWhiteSpace) {
-        this.br = new BufferedReader(reader);
-        this.parser = new CSVParser(separator, quotechar, escape, strictQuotes, ignoreLeadingWhiteSpace);
-        this.skipLines = line;
-    }
 
 	/**
      * Reads the entire file into a List with each element being a String[] of
@@ -208,13 +127,11 @@ public class CSVReader implements Closeable {
     public List<String[]> readAll() throws IOException {
 
         List<String[]> allElements = new ArrayList<String[]>();
-        while (hasNext) {
-            String[] nextLineAsTokens = readNext();
-            if (nextLineAsTokens != null)
-                allElements.add(nextLineAsTokens);
+        String line[];
+        while ((line = readNext()) != null) {
+            allElements.add(line);
         }
         return allElements;
-
     }
 
     /**
@@ -227,56 +144,152 @@ public class CSVReader implements Closeable {
      *             if bad things happen during the read
      */
     public String[] readNext() throws IOException {
+    	while (recordsQueue.isEmpty() && !eof) {
+	    	char[] data = new char[CHUNK_SIZE];
+	    	int size = r.read(data);
+	    	if (size == -1) {
+	    		break;
+	    	}
+	    	
+	    	for (int i = 0; i < size; i++) {
+	    		col++;
+	    		final char c = data[i];
+	    		if (c == escape || c == quote) {
+	    			i = handleEscapeOrQuote(data, size, i);
+	    		} else if (c == separator) {
+	    			handleSeparator(c);
+	    		} else if (c == '\n' || c == '\r') {
+	    			// handle CRLF sequence
+	                if (c == '\n' && !quotedField && (lastChar == '\r')) {
+	                	break;
+	                }
+	                handleEndOfLine(c);
+	    		} else if (hasCommentSupport && (c == commentChar)) {
+	    			handleComment(c);
+	    		} else {
+	    			if (commentedLine) 
+	    				break;
+	    			addCharacter(c);
+	    		}
+	    		lastChar = c;
+	    	}	
+    	}
+    	if (recordsQueue.isEmpty()) {
+    		if (openRecord.isEmpty()) {
+    			return null;
+    		} else {
+    			String[] result = openRecord.toArray(new String[]{});
+    			openRecord.clear();
+    			return result;
+    		}
+    	}
+    	return recordsQueue.removeFirst();
+    }
+    
+    private void handleComment(final char c) {
+    	if (commentedLine)
+			return;
+    	if (openRecord.isEmpty() && (openField.length() == 0) && !quotedField) {
+    		commentedLine = true;
+    	} else {
+    		addCharacter(c);
+    	}
+    }
+    
+    private void handleEndOfLine(final char c) {
+    	if (commentedLine) {
+    		commentedLine = false;
+    	} else if (quotedField) {
+    		addCharacter(c);
+    	} else {
+    		addField();
+    		addRecord();
+    	}
+    	row++;
+    	col = 0;
+    }
+    
+    private void addRecord() {
+    	recordsQueue.add(openRecord.toArray(new String[]{}));
+    	openRecord.clear();
+    	openField.delete(0, openField.length());
+    	quotedField = false;
+    }
+    
+    private void handleSeparator(final char c) {
+    	if (commentedLine)
+    		return;
+    	if (quotedField) {
+    		this.addCharacter(c);
+    	} else {
+    		this.addField();
+    	}
+    }
     	
-    	String[] result = null;
-    	do {
-    		String nextLine = getNextLine();
-    		if (!hasNext) {
-    			return result; // should throw if still pending?
-    		}
-    		String[] r = parser.parseLineMulti(nextLine);
-    		if (r.length > 0) {
-    			if (result == null) {
-    				result = r;
-    			} else {
-    				String[] t = new String[result.length+r.length];
-    				System.arraycopy(result, 0, t, 0, result.length);
-    				System.arraycopy(r, 0, t, result.length, r.length);
-    				result = t;
-    			}
-    		}
-    	} while (parser.isPending());
-    	return result;
-    }
+    private int handleEscapeOrQuote(final char[] data, final int size, int i) {
+    	if (commentedLine)
+			return i;
+    	final char c = data[i];
+		final char nextChar;
+		final boolean hasNextChar;
+		if (i + 1 < size) {
+			nextChar = data[i + 1];
+			hasNextChar = true;
+		} else {
+			nextChar = 0;
+			hasNextChar = false;
+		}
+		boolean isEscape = false;
+		if (c == escape && hasNextChar) {
+			if (isEscapableCharacter(nextChar)) {
+				addCharacter(nextChar);
+				i++;
+				isEscape = true;
+			}
+		}
+		if (!isEscape && (c == quote)) {
+			if (quotedField) { // closing quote should be followed by separator
+				if (hasNextChar && nextChar != '\r' && nextChar != '\n' && nextChar != separator) {
+					throw new IllegalStateException(
+							"separator expected after a closing quote; found " + nextChar + getPositionString());
+				}
+				quotedField = false;
+			} else if (openField.length() == 0) {
+				quotedField = true;
+			}
+		}
+		return i;
+	}
 
-    /**
-     * Reads the next line from the file.
-     * 
-     * @return the next line from the file without trailing newline
-     * @throws IOException
-     *             if bad things happen during the read
-     */
-    private String getNextLine() throws IOException {
-    	if (!this.linesSkiped) {
-            for (int i = 0; i < skipLines; i++) {
-                br.readLine();
-            }
-            this.linesSkiped = true;
-        }
-        String nextLine = br.readLine();
-        if (nextLine == null) {
-            hasNext = false;
-        }
-        return hasNext ? nextLine : null;
+    private void addField() {
+    	openRecord.add(openField.toString());
+    	openField.delete(0, openField.length());
+    	quotedField = false;
     }
-
+    
+    private void addCharacter(final char c) {
+    	openField.append(c);
+    }
+    
+    private boolean isEscapableCharacter(final char c) {
+    	return (c == escape || c == quote);
+    }
+    
     /**
      * Closes the underlying reader.
      * 
      * @throws IOException if the close fails
      */
     public void close() throws IOException{
-    	br.close();
+    	r.close();
     }
     
+    private String getPositionString() {
+    	return " [" + row + "," + col + "]";
+    }
+    
+    public void setCommentChar(char c) {
+    	hasCommentSupport = true;
+    	commentChar = c;
+    }
 }
