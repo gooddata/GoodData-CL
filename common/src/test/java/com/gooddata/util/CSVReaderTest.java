@@ -32,7 +32,6 @@ public class CSVReaderTest {
 		Assert.assertEquals(expectedRows, i);
 	}
 
-    /*
     @Test
 	public void testEscaping() throws IOException {
 		Reader reader = new InputStreamReader(
@@ -49,5 +48,4 @@ public class CSVReaderTest {
 		}
 		Assert.assertEquals(expectedRows, i);
 	}
-	*/
 }

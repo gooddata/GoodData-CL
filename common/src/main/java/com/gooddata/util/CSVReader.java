@@ -155,7 +155,11 @@ public class CSVReader implements Closeable {
 	    		col++;
 	    		final char c = data[i];
 	    		if (c == escape || c == quote) {
-	    			i = handleEscapeOrQuote(data, size, i);
+	    			final int i2 = handleEscapeOrQuote(data, size, i);
+	    			if (i2 > i) {
+	    				i = i2;
+	    				col += i2 - i;
+	    			}
 	    		} else if (c == separator) {
 	    			handleSeparator(c);
 	    		} else if (c == '\n' || c == '\r') {
@@ -178,6 +182,10 @@ public class CSVReader implements Closeable {
     		if (openRecord.isEmpty()) {
     			return null;
     		} else {
+    			if (openField.length() > 0) {
+    				openRecord.add(openField.toString());
+    				openField.delete(0, openField.length());
+    			}
     			String[] result = openRecord.toArray(new String[]{});
     			openRecord.clear();
     			return result;
@@ -229,6 +237,14 @@ public class CSVReader implements Closeable {
     private int handleEscapeOrQuote(final char[] data, final int size, int i) {
     	if (commentedLine)
 			return i;
+    	
+    	// handle start of a new quoted field
+    	if (openField.length() == 0 && !quotedField) {
+    		quotedField = true;
+    		return i;
+    	}
+    	
+    	// how about escaping?
     	final char c = data[i];
 		final char nextChar;
 		final boolean hasNextChar;
@@ -256,6 +272,8 @@ public class CSVReader implements Closeable {
 				quotedField = false;
 			} else if (openField.length() == 0) {
 				quotedField = true;
+			} else {
+				throw new IllegalStateException("odd quote character at " + getPositionString());
 			}
 		}
 		return i;
