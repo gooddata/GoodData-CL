@@ -31,4 +31,23 @@ public class CSVReaderTest {
 		}
 		Assert.assertEquals(expectedRows, i);
 	}
+
+    /*
+    @Test
+	public void testEscaping() throws IOException {
+		Reader reader = new InputStreamReader(
+				CSVReaderTest.class.getResourceAsStream("/com/gooddata/util/escaping.csv"),
+				"utf8");
+		CSVReader csv = new CSVReader(reader);
+
+		final int expectedRows = 2;
+		int i = 0;
+		String[] line = null;
+		while ((line = csv.readNext()) != null) {
+			Assert.assertEquals(4, line.length);
+			i++;
+		}
+		Assert.assertEquals(expectedRows, i);
+	}
+	*/
 }
