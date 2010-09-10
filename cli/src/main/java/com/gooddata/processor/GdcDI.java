@@ -51,9 +51,6 @@ import com.gooddata.connector.DateDimensionConnector;
 import com.gooddata.connector.GaConnector;
 import com.gooddata.connector.JdbcConnector;
 import com.gooddata.connector.SfdcConnector;
-import com.gooddata.connector.backend.ConnectorBackend;
-import com.gooddata.connector.backend.DerbyConnectorBackend;
-import com.gooddata.connector.backend.MySqlConnectorBackend;
 import com.gooddata.exception.GdcException;
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.GdcRestApiException;
@@ -145,34 +142,25 @@ public class GdcDI implements Executor {
                     cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "ftp" : "ftps",
                     cliParams.get(CLI_PARAM_FTP_HOST[0]),
                     cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
-        	ConnectorBackend backend = null;
-            try {
-                backend = instantiateConnectorBackend();
-                context.setConnectorBackend(backend);
-	            connectors = instantiateConnectors(backend);
-	            String execute = cliParams.get(CLI_PARAM_EXECUTE[0]);
-	            String scripts = cliParams.get(CLI_PARAM_SCRIPT);
-	            
-	            if(execute!= null && scripts != null && execute.length()>0 && scripts.length()>0) {
-	                throw new InvalidArgumentException("You can't execute a script and use the -e command line parameter at the same time.");
-	            }
-	            if(execute!= null && execute.length() > 0) {
-	                l.debug("Executing arg="+execute);
-	                execute(execute);
-	            }
-	            if(scripts!= null && scripts.length() > 0) {
-	                String[] sas = scripts.split(",");
-	                for(String script : sas) {
-	                    l.debug("Executing file="+script);
-	                    execute(new File(script));
-	                }
-	            }
-	            finishedSucessfuly = true;
-            } finally {
-            	if (backend != null) {
-            		backend.close();
-            	}
+            connectors = instantiateConnectors();
+            String execute = cliParams.get(CLI_PARAM_EXECUTE[0]);
+            String scripts = cliParams.get(CLI_PARAM_SCRIPT);
+
+            if(execute!= null && scripts != null && execute.length()>0 && scripts.length()>0) {
+                throw new InvalidArgumentException("You can't execute a script and use the -e command line parameter at the same time.");
             }
+            if(execute!= null && execute.length() > 0) {
+                l.debug("Executing arg="+execute);
+                execute(execute);
+            }
+            if(scripts!= null && scripts.length() > 0) {
+                String[] sas = scripts.split(",");
+                for(String script : sas) {
+                    l.debug("Executing file="+script);
+                    execute(new File(script));
+                }
+            }
+            finishedSucessfuly = true;
         }
         catch (InvalidArgumentException e) {
             l.error("Invalid command line argument: "+e.getMessage());
@@ -850,46 +838,19 @@ public class GdcDI implements Executor {
     	lock.deleteOnExit();
     }
 
-    private ConnectorBackend instantiateConnectorBackend() throws IOException {
-        String b = cliParams.get(CLI_PARAM_BACKEND[0]);
-        final ConnectorBackend backend;
-        if("mysql".equalsIgnoreCase(b)) {
-            if(cliParams.containsKey(CLI_PARAM_MEMORY[0])) {
-                try {
-                    int mem = Integer.parseInt(cliParams.get(CLI_PARAM_MEMORY[0]));
-                    backend = MySqlConnectorBackend.create(cliParams.get(CLI_PARAM_DB_USERNAME[0]),
-                        cliParams.get(CLI_PARAM_DB_PASSWORD[0]), cliParams.get(CLI_PARAM_DB_HOST[0]), mem);
-                }
-                catch (NumberFormatException e) {
-                    throw new InvalidParameterException("Please specify a whole number for the memory parameter.");
-                }
-            }
-            else {
-                backend = MySqlConnectorBackend.create(cliParams.get(CLI_PARAM_DB_USERNAME[0]),
-                        cliParams.get(CLI_PARAM_DB_PASSWORD[0]), cliParams.get(CLI_PARAM_DB_HOST[0]));                
-            }
 
-        }
-        else if("derby".equalsIgnoreCase(b))
-            backend = DerbyConnectorBackend.create();
-        else
-        	throw new IllegalStateException("Invalid backend '" + b + "'");
-
-        return backend;
-    }
-    
     /**
      * Instantiate all known connectors
      * TODO: this should be automated
      * @return array of all active connectors
      * @throws IOException in case of IO issues
      */
-    private Connector[] instantiateConnectors(ConnectorBackend backend) throws IOException {
+    private Connector[] instantiateConnectors() throws IOException {
         return new Connector[] {
-            CsvConnector.createConnector(backend),
-            GaConnector.createConnector(backend),
-            SfdcConnector.createConnector(backend),
-            JdbcConnector.createConnector(backend),
+            CsvConnector.createConnector(),
+            GaConnector.createConnector(),
+            SfdcConnector.createConnector(),
+            JdbcConnector.createConnector(),
             DateDimensionConnector.createConnector()    
         };
     }

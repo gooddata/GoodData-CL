@@ -22,7 +22,7 @@ In each `<column>` entry, following tags can be used:
 
 1. `<name>` (**required**) - unique identifier for this column (will be used internally to generate MAQL DDL identifier)
 2. `<title>` (**required**) - the name of this column on UI level
-3. `<ldmType>` (**required**) - data type of this column, one of:
+3. `<ldmType>` (**required**) - data mode of this column, one of:
 
     * ATTRIBUTE - a generic column containing data that is used as labels - either strings or numbers that cannot be added (ex. Name, social security number, id)
     * FACT - a column containing numeric values that can be added 

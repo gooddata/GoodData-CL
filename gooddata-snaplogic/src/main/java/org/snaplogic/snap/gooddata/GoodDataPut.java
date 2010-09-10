@@ -57,9 +57,6 @@ import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.exception.GdcUploadErrorException;
 import com.gooddata.exception.HttpMethodException;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.DLI;
-import com.gooddata.integration.model.DLIPart;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.util.FileUtil;
@@ -119,7 +116,7 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 
 	private PropertyConstraint dlisLovConstraint = new PropertyConstraint();
 
-	private SimpleProp dliProp = new SimpleProp("DLI", SimplePropType.SnapString, "Data Loading Interface",
+	private SimpleProp dliProp = new SimpleProp("SLI", SimplePropType.SnapString, "Data Loading Interface",
 			dlisLovConstraint, true);
 
 	@Override
@@ -200,10 +197,10 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 
 		List<String> dlisForCurProject = new ArrayList<String>();
 		Project proj = projNames.get(curProjName);
-		List<DLI> interfaces;
+		//List<DLI> interfaces;
 
 		try {
-			interfaces = restApi.getDLIs(proj.getId());
+			//interfaces = restApi.getDLIs(proj.getId());
 		} catch (HttpMethodException e) {
 			elog(e);
 			err.setMessage("Unable to update project with DLIs: " + String.format(e.getMessage(), proj.getName(), " "));
@@ -215,12 +212,12 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 		}
 
 		info("For project name: " + proj.getName());
-		for (DLI dli : interfaces) {
-			info("   Adding DLI: " + dli.getName());
-			dlisForCurProject.add(dli.getName());
-		}
+		//for (DLI dli : interfaces) {
+		//	info("   Adding SLI: " + dli.getName());
+		//	dlisForCurProject.add(dli.getName());
+		//}
 
-		dlisLovConstraint.clear();
+		//dlisLovConstraint.clear();
 		dlisLovConstraint.put(Type.LOV, dlisForCurProject.toArray());
 		String curDli = (String) getPropertyValue(PROP_DLI);
 		getResdef().removePropertyDef(PROP_DLI);
@@ -234,7 +231,7 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 
 		}
 		setPropertyValue(PROP_DLI, curDli);
-		info("Current DLI is:" + curDli);
+		info("Current SLI is:" + curDli);
 
 		// remove existing input views
 		String[] inViewNames = listInputViewNames().toArray(new String[0]);
@@ -245,45 +242,45 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 			info("  View " + inViewName + " removed.");
 		}
 
-		List<DLIPart> dliParts = null;
+		//List<DLIPart> dliParts = null;
 		try {
-			DLI dli = restApi.getDLIByName(curDli, proj.getId());
-			dliParts = restApi.getDLIParts(dli.getId(), proj.getId());
+			//DLI dli = restApi.getDLIByName(curDli, proj.getId());
+			//dliParts = restApi.getDLIParts(dli.getId(), proj.getId());
 		} catch (HttpMethodException e) {
-			info("Unable to update project with DLI Parts: " + String.format(e.getMessage(), curDli, " "));
+			info("Unable to update project with SLI Parts: " + String.format(e.getMessage(), curDli, " "));
 		} catch (GdcProjectAccessException e) {
-			info("Unable to update project with DLI Parts: " + String.format(e.getMessage(), curDli, " "));
+			info("Unable to update project with SLI Parts: " + String.format(e.getMessage(), curDli, " "));
 		}
 
-		if (dliParts != null) {
-			for (DLIPart part : dliParts) {
+		//if (dliParts != null) {
+		//	for (DLIPart part : dliParts) {
 				// Finally, set the view...
-				String inViewName = part.getFileName().replaceAll(".csv", "");
+				//String inViewName = part.getFileName().replaceAll(".csv", "");
 				List<Field> fields = new ArrayList<Field>();
 
-				List<Column> columns = part.getColumns();
-				for (Column column : columns) {
-					String fieldName = column.getName();
+				//List<Column> columns = part.getColumns();
+				//for (Column column : columns) {
+				//	String fieldName = column.getName();
 
 					Field f;
-					if (column.getType().toLowerCase().startsWith("varchar")) {
-						f = new Field(fieldName, SnapFieldType.SnapString);
-					} else if (column.getType().toLowerCase().startsWith("date")) {
-						f = new Field(fieldName, SnapFieldType.SnapDateTime);
-					} else {
-						f = new Field(fieldName, SnapFieldType.SnapNumber);
-					}
+				//	if (column.getType().toLowerCase().startsWith("varchar")) {
+				//		f = new Field(fieldName, SnapFieldType.SnapString);
+				//	} else if (column.getType().toLowerCase().startsWith("date")) {
+				//		f = new Field(fieldName, SnapFieldType.SnapDateTime);
+				//	} else {
+				//		f = new Field(fieldName, SnapFieldType.SnapNumber);
+				//	}
 
-					fields.add(f);
-				}
+				//	fields.add(f);
+				//}
 
-				info("Storing new input view: " + inViewName);
-				addRecordInputViewDef(inViewName, fields, "Input view for project " + curProjName + ", DLI " + curDli,
-						true);
-			}
-		} else {
-			info("No input view created, since there're no parts for selected Project & DLI");
-		}
+				//info("Storing new input view: " + inViewName);
+				//addRecordInputViewDef(inViewName, fields, "Input view for project " + curProjName + ", SLI " + curDli,
+				//		true);
+			//}
+		//} else {
+		//	info("No input view created, since there're no parts for selected Project & SLI");
+		//}
 	}
 
 	private HashMap<String, Project> getProjectList(GdcRESTApiWrapper restApi) throws HttpMethodException {
@@ -462,7 +459,7 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 		Boolean overwrite = (Boolean) getPropertyValue(PROP_OVERWRITE);
 
 		if (projectLabel == null || dliName == null)
-			throw new SnapComponentException("Project or DLI is not specified!");
+			throw new SnapComponentException("Project or SLI is not specified!");
 
 		info("Listing projects...");
 		HashMap<String, Project> projectList;
@@ -481,16 +478,16 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 
 		try {
 			Project project = restApi.getProjectById(projectId);
-			DLI dli = restApi.getDLIByName(dliName, projectId);
-			List<DLIPart> parts = restApi.getDLIParts(dli.getId(), projectId);
+			//DLI dli = restApi.getDLIByName(dliName, projectId);
+			//List<DLIPart> parts = restApi.getDLIParts(dli.getId(), projectId);
 
 			if (overwrite != null) {
-				for (DLIPart part : parts) {
-					if (overwrite.booleanValue())
-						part.setLoadMode(DLIPart.LM_FULL);
-					else
-						part.setLoadMode(DLIPart.LM_INCREMENTAL);
-				}
+				//for (DLIPart part : parts) {
+				//	if (overwrite.booleanValue())
+				//		part.setLoadMode(DLIPart.LM_FULL);
+				//	else
+				//		part.setLoadMode(DLIPart.LM_INCREMENTAL);
+				//}
 			}
 
 			File tmpDir = FileUtil.createTempDir();
@@ -499,8 +496,8 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 			archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") + archiveName;
 
 			stagedCSVs = stageInputsAsCsv(inputViews, true, false, tmpDir);
-			FileUtil.writeStringToFile(dli.getDLIManifest(parts), tmpDir + System.getProperty("file.separator")
-					+ DLI_MANIFEST_FILENAME);
+			//FileUtil.writeStringToFile(dli.getDLIManifest(parts), tmpDir + System.getProperty("file.separator")
+			//		+ DLI_MANIFEST_FILENAME);
 
 			info("Packing and uploading contect of: " + tmpDir.getAbsolutePath());
 			FileUtil.compressDir(tmpDir.getAbsolutePath(), archivePath);

@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 
 import com.gooddata.util.CSVWriter;
 
-import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.exception.SfdcException;
@@ -82,19 +81,17 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * Creates a new SFDC connector
-     * @param connectorBackend connector backend
      */
-    protected SfdcConnector(ConnectorBackend connectorBackend) {
-        super(connectorBackend);
+    protected SfdcConnector() {
+        super();
     }
 
    /**
      * Creates a new SFDC connector
-     * @param connectorBackend connector backend
      * @return a new instance of the SFDC connector
      */
-    public static SfdcConnector createConnector(ConnectorBackend connectorBackend) {
-        return new SfdcConnector(connectorBackend);
+    public static SfdcConnector createConnector() {
+        return new SfdcConnector();
     }
 
     /**
@@ -295,11 +292,13 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
-    public void extract() throws IOException {
+    public void extract(String dir) throws IOException {
         l.debug("Extracting SFDC data.");
-        File dataFile = FileUtil.getTempFile();
+        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
         l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
+        String[] header = this.populateCsvHeaderFromSchema();
+        cw.writeNext(header);
         SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
         List<SObject> result;
         try {
@@ -331,7 +330,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             l.debug("Retrieved " + result.size() + " rows of SFDC data.");
             cw.flush();
             cw.close();
-            getConnectorBackend().extract(dataFile, false,',');
+            //getConnectorBackend().extract(dataFile, false,',');
             FileUtil.recursiveDelete(dataFile);
             l.debug("Extracted SFDC data.");
         }

@@ -35,10 +35,7 @@ import org.snaplogic.snapi.Snapi;
 import org.snaplogic.snapi.PropertyConstraint.Type;
 import org.snaplogic.util.ConvertUtils;
 
-import com.gooddata.connector.CsvConnector;
 import com.gooddata.connector.DateDimensionConnector;
-import com.gooddata.connector.backend.DerbyConnectorBackend;
-import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.integration.model.Project;
@@ -385,7 +382,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	}
 
 	/**
-	 * Step 4 of wizard - show a DLI based on the view picked in previous step. User can edit this of course. This will
+	 * Step 4 of wizard - show a SLI based on the view picked in previous step. User can edit this of course. This will
 	 * be created as a complex property, and then, in the {@link #execute(Map, Map)} method XML will be written out and
 	 * loaded into GoodData
 	 * 
@@ -401,7 +398,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		PropertyConstraint ldmTypeConstraint = new PropertyConstraint(Type.LOV, LDM_TYPES);
 		fieldDefProp.put(DLI_SPEC_KEY_LDM_TYPE, new SimpleProp("LDM Type", SimplePropType.SnapString, "",
 				ldmTypeConstraint, true));
-		ListProp dliSpec = new ListProp("DLI definition", fieldDefProp, "", fields.size(), fields.size(), true);
+		ListProp dliSpec = new ListProp("SLI definition", fieldDefProp, "", fields.size(), fields.size(), true);
 		setPropertyDef(PROP_DLI_DEFINITION, dliSpec);
 		List dliSpecValue = new ArrayList();
 		for (List<String> field : fields) {
@@ -418,7 +415,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			dliSpecValue.add(fieldSpec);
 		}
 		setPropertyValue(PROP_DLI_DEFINITION, dliSpecValue);
-		setPropertyDef("dli_name", new SimpleProp("DLI Name", SimpleProp.SimplePropType.SnapString, "DLI Name", true));
+		setPropertyDef("dli_name", new SimpleProp("SLI Name", SimpleProp.SimplePropType.SnapString, "SLI Name", true));
 	}
 
 	private void getProjects(ComponentResourceErr err) {
@@ -516,7 +513,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	 *             if any fields of type {@link SnapNumber} are
 	 */
 	private List<String> checkDateFormats(ComponentResourceErr err) {
-		// Get result of the DLI specification
+		// Get result of the SLI specification
 		List<Map> dliSpecValue = (List<Map>) getListPropertyValue(PROP_DLI_DEFINITION);
 
 		// Not really used, but might be handy
@@ -540,7 +537,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 	private void confirmationScreen() {
 		nextStep();
 		PropertyConstraint unmodifiable = new PropertyConstraint(Type.UNMODIFIABLE, true);
-		String propNameHack = "You are about to create DLI and model for your GoodData project. Click 'Next' to continue, or 'Back' to review your choices";
+		String propNameHack = "You are about to create SLI and model for your GoodData project. Click 'Next' to continue, or 'Back' to review your choices";
 		setPropertyDef(propNameHack, new SimpleProp(propNameHack, SimplePropType.SnapString, "", unmodifiable, false));
 		setPropertyValue(propNameHack, "OK");
 	}
@@ -849,29 +846,31 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 				ss.addColumn(column);
 			}
 
+            /*
 			try {
 				// PdmSchema is a representation of SourceSchema in the ConnectorBackend
-				PdmSchema pdm = PdmSchema.createSchema(ss);
+				//PdmSchema pdm = PdmSchema.createSchema(ss);
 				// TODO Replace the Derby backend with stream backend
 				// Initialize embedded DB backend
-				DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
-				derbyConnectorBackend.setProjectId(projectId);
-				derbyConnectorBackend.setPdm(pdm);
+				//DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
+				//derbyConnectorBackend.setProjectId(projectId);
+				//derbyConnectorBackend.setPdm(pdm);
 				// Setup CSV connector that will be used for reading the data
-				CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
-				csvConnector.setSchema(ss);
-				csvConnector.initialize();
+				//CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
+				//csvConnector.setSchema(ss);
+				//csvConnector.initialize();
 				// Generate MAQL for Source Schema
-				String maql = csvConnector.generateMaqlCreate();
-				// Execute the MAQL (creates DLI)
-				info("Going to create a new DLI " + dliName + " in project " + projectName);
-				restApi.executeMAQL(projectId, maql);
-				info("DLI " + dliName + " created");
+				//String maql = csvConnector.generateMaqlCreate();
+				// Execute the MAQL (creates SLI)
+				info("Going to create a new SLI " + dliName + " in project " + projectName);
+				//restApi.executeMAQL(projectId, maql);
+				info("SLI " + dliName + " created");
 				// We are done here, project is set up in GoodData
 			} catch (IOException e) {
 				elog(e);
 				throw new SnapComponentException(e);
 			}
+			*/
 
 			info("Parsing output view of the source component...");
 			String gdInput = enrichWithServerUrl(getStringPropertyValue(PROP_GD_INPUT));

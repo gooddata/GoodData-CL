@@ -23,10 +23,11 @@
 
 package com.gooddata.integration.model;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * GoodData DLI Column
+ * GoodData SLI Column
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
@@ -34,19 +35,46 @@ import net.sf.json.JSONObject;
 public class Column {
 
     private String name;
-    private String type;
-    private String constraints;
+    private String mode;
+    private int referenceKey;
+
+    private String[] populates;
 
     /**
-     * Constructs a new DLI column
+     * Full load mode. All the existing date will be replaced.
+     */
+    public static final String LM_FULL = "FULL";
+
+    /**
+     * Incremental load mode. All the existing date will be preserved. The new data are going to be appended.
+     */
+    public static final String LM_INCREMENTAL = "INCREMENTAL";
+    
+    /**
+     * Constructs a new SLI column
+     *
+     * @param name the column name
+     */
+    public Column(String name) {
+        this.setName(name);
+    }
+
+    /**
+     * Constructs a new SLI column
      *
      * @param column the JSON object from the GoodData REST API
      */
     public Column(JSONObject column) {
-        name = column.getString("name");
-        type = column.getString("type");
-        if (column.containsKey("constraint"))
-            constraints = column.getString("constraint");
+        name = column.getString("columnName");
+        mode = column.getString("mode");
+        JSONArray pa = column.getJSONArray("populates");
+        populates = new String[pa.size()];
+        for(int i=0; i<pa.size(); i++) {
+            populates[i] = pa.getString(i);        
+        }
+        populates = (String[])pa.toArray(populates);
+        if (column.containsKey("referenceKey"))
+            referenceKey = column.getInt("referenceKey");
     }
 
     /**
@@ -68,39 +96,47 @@ public class Column {
     }
 
     /**
-     * Returns the column type
+     * Returns the column mode
      *
-     * @return the column type
+     * @return the column mode
      */
-    public String getType() {
-        return type;
+    public String getMode() {
+        return mode;
     }
 
     /**
-     * Sets the column type
+     * Sets the column mode
      *
-     * @param type the column type
+     * @param mode the column mode
      */
-    public void setType(String type) {
-        this.type = type;
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
     /**
-     * Returns the column constraints
+     * Returns the column referenceKey
      *
-     * @return the column constraints
+     * @return the column referenceKey
      */
-    public String getConstraints() {
-        return constraints;
+    public int getReferenceKey() {
+        return referenceKey;
     }
 
     /**
-     * Sets the column constraints
+     * Sets the column referenceKey
      *
-     * @param constraints the column constraints
+     * @param referenceKey the column referenceKey
      */
-    public void setConstraints(String constraints) {
-        this.constraints = constraints;
+    public void setReferenceKey(int referenceKey) {
+        this.referenceKey = referenceKey;
+    }
+
+    public String[] getPopulates() {
+        return populates;
+    }
+
+    public void setPopulates(String[] populates) {
+        this.populates = populates;
     }
 
     /**
@@ -109,7 +145,7 @@ public class Column {
      * @return the string description of the object
      */
     public String toString() {
-        return "name='" + name + "', type='" + type + "', constraints='" + constraints + "'";
+        return "name='" + name + "', mode='" + mode + "', referenceKey='" + referenceKey + "'";
     }
 
 }

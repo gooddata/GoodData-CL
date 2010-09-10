@@ -38,8 +38,6 @@ import org.apache.log4j.Logger;
 
 import com.gooddata.util.CSVWriter;
 
-import com.gooddata.connector.backend.ConnectorBackend;
-import com.gooddata.connector.backend.Constants;
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
@@ -69,21 +67,13 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     protected static final int FETCH_SIZE = 256;
 
-    /**
-     * Creates a new JDBC connector
-     * @param connectorBackend connector backend
-     */
-    protected JdbcConnector(ConnectorBackend connectorBackend) {
-        super(connectorBackend);
-    }
 
     /**
      * Creates a new JDBC connector
-     * @param connectorBackend connector backend
      * @return a new instance of the JdbcConnector
      */
-    public static JdbcConnector createConnector(ConnectorBackend connectorBackend) {
-        return new JdbcConnector(connectorBackend);
+    public static JdbcConnector createConnector() {
+        return new JdbcConnector();
     }
 
     /**
@@ -199,15 +189,17 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
-    public void extract() throws IOException {
+    public void extract(String dir) throws IOException {
         Connection con = null;
         Statement s = null;
         ResultSet rs = null;
-        File dataFile = FileUtil.getTempFile();
+        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
         try {
             con = connect();
             l.debug("Extracting JDBC data to file="+dataFile.getAbsolutePath());
             CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
+            String[] header = this.populateCsvHeaderFromSchema();
+            cw.writeNext(header);
             s = con.createStatement();
             ResultSetCsvWriter rw = new ResultSetCsvWriter(cw);
             JdbcUtil.executeQuery(con, getSqlQuery(), rw, FETCH_SIZE);
@@ -232,7 +224,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 l.error("Error closing JDBC connection.",e);
             }
         }
-        getConnectorBackend().extract(dataFile, false,',');
+        //getConnectorBackend().extract(dataFile, false,',');
         FileUtil.recursiveDelete(dataFile);
     }
 

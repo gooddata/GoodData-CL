@@ -23,12 +23,9 @@
 
 package com.gooddata.connector;
 
-import com.gooddata.exception.InvalidCommandException;
+import com.gooddata.exception.*;
+import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
-import com.gooddata.connector.backend.ConnectorBackend;
-import com.gooddata.exception.InternalErrorException;
-import com.gooddata.exception.InvalidArgumentException;
-import com.gooddata.exception.ProcessingException;
 import com.gooddata.google.analytics.FeedDumper;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.modeling.model.SourceColumn;
@@ -69,20 +66,17 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Creates a new Google Analytics Connector
-     * @param connectorBackend connector backend
      */
-    protected GaConnector(ConnectorBackend connectorBackend) {
-        super(connectorBackend);
+    protected GaConnector() {
     }
 
      /**
       * Creates a new Google Analytics Connector
-      * @param connectorBackend connector backend
       * @return a new instance of the GA connector
       *
      */
-    public static GaConnector createConnector(ConnectorBackend connectorBackend) {
-        return new GaConnector(connectorBackend);
+    public static GaConnector createConnector() {
+        return new GaConnector();
     }
 
     /**
@@ -151,7 +145,7 @@ public class GaConnector extends AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
-    public void extract() throws IOException {
+    public void extract(String dir) throws IOException {
         try {
             AnalyticsService as = new AnalyticsService(APP_NAME);
             if(googleAnalyticsToken != null && googleAnalyticsToken.length() > 0) {
@@ -164,12 +158,15 @@ public class GaConnector extends AbstractConnector implements Connector {
                 throw new InvalidCommandException("The LoadGoogleAnalytics command requires either GA token or " +
                     "username and password!");
             }
-            File dataFile = FileUtil.getTempFile();
+            File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
             GaQuery gaq = getGoogleAnalyticsQuery();
             gaq.setMaxResults(5000);
             int cnt = 1;
 
             CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);
+
+            String[] header = this.populateCsvHeaderFromSchema();
+            cw.writeNext(header);
             
             for(int startIndex = 1; cnt > 0; startIndex += cnt + 1) {
                 gaq.setStartIndex(startIndex);
@@ -180,7 +177,6 @@ public class GaConnector extends AbstractConnector implements Connector {
             }
             cw.flush();
             cw.close();
-            getConnectorBackend().extract(dataFile,false,',');
             FileUtil.recursiveDelete(dataFile);
         }
         catch (AuthenticationException e) {
@@ -190,6 +186,7 @@ public class GaConnector extends AbstractConnector implements Connector {
         }
     }
 
+    
     /**
      * Google Analytics username getter
      * @return Google Analytics username

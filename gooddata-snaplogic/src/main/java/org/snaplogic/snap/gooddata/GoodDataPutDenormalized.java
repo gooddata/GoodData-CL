@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
-import org.apache.log4j.MDC;
 import org.snaplogic.cc.Capabilities;
 import org.snaplogic.cc.Capability;
 import org.snaplogic.cc.InputView;
@@ -48,7 +47,6 @@ import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
 import org.snaplogic.common.ComponentResourceErr;
 import org.snaplogic.common.Field;
 import org.snaplogic.common.Record;
-import org.snaplogic.common.Field.SnapFieldType;
 import org.snaplogic.common.exceptions.SnapComponentException;
 import org.snaplogic.log.Log;
 import org.snaplogic.snapi.PropertyConstraint;
@@ -56,19 +54,10 @@ import org.snaplogic.snapi.ResDef;
 import org.snaplogic.snapi.PropertyConstraint.Type;
 import org.snaplogic.util.ConvertUtils;
 
-import com.gooddata.connector.Connector;
-import com.gooddata.connector.CsvConnector;
-import com.gooddata.connector.backend.DerbyConnectorBackend;
-import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.GdcProjectAccessException;
 import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.exception.GdcUploadErrorException;
 import com.gooddata.exception.HttpMethodException;
-import com.gooddata.integration.ftp.GdcFTPApiWrapper;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.DLI;
-import com.gooddata.integration.model.DLIPart;
-import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.modeling.model.SourceSchema;
@@ -76,7 +65,6 @@ import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
-import com.gooddata.util.StringUtil;
 
 public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 
@@ -144,7 +132,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 
 	private PropertyConstraint dlisLovConstraint = new PropertyConstraint(Type.UNMODIFIABLE, true);
 
-	private SimpleProp dliProp = new SimpleProp("DLI", SimplePropType.SnapString, "Data Loading Interface",
+	private SimpleProp dliProp = new SimpleProp("SLI", SimplePropType.SnapString, "Data Loading Interface",
 			dlisLovConstraint, true);
 
 	@Override
@@ -399,7 +387,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 		}
 
 		if (projectId == null || dliName == null)
-			throw new SnapComponentException("Project or DLI is not specified!");
+			throw new SnapComponentException("Project or SLI is not specified!");
 
 		info("Integration starting for project ID " + projectId);
 
@@ -414,32 +402,32 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 			if (stagedCSVs.size() == 1) {
 				// One file - exactly what's expected
 				// Setup backend
-				DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
-				derbyConnectorBackend.setProjectId(projectId);
-				derbyConnectorBackend.setPdm(PdmSchema.createSchema(sourceSchema));
+				//DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
+				//derbyConnectorBackend.setProjectId(projectId);
+				//derbyConnectorBackend.setPdm(PdmSchema.createSchema(sourceSchema));
 
 				// setup CSV connector
-				CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
-				csvConnector.setSchema(sourceSchema);
-				csvConnector.initialize();
-				csvConnector.setHasHeader(false);
-				csvConnector.setDataFile(stagedCSVs.entrySet().iterator().next().getValue());
+				//CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
+				//csvConnector.setSchema(sourceSchema);
+				//csvConnector.initialize();
+				//csvConnector.setHasHeader(false);
+				//csvConnector.setDataFile(stagedCSVs.entrySet().iterator().next().getValue());
 
 				// Setup processing context
 				ProcessingContext context = new ProcessingContext();
-				context.setConnector(csvConnector);
-				context.setConnectorBackend(derbyConnectorBackend);
+				//context.setConnector(csvConnector);
+				//context.setConnectorBackend(derbyConnectorBackend);
 				context.setProjectId(projectId);
 								
 				// Finally, do the job
 				if (transferSnapshots.equals(LAST_SNAPSHOT)) {
 					Command cmd = new Command("TransferLastSnapshot");
 					cmd.setParameters(props);
-					csvConnector.processCommand(cmd, cliParams, context);
+					//csvConnector.processCommand(cmd, cliParams, context);
 				} else if (transferSnapshots.equals(ALL_SNAPSHOTS)) {
 					Command cmd = new Command("TransferAllSnapshots");
 					cmd.setParameters(props);
-					csvConnector.processCommand(cmd, cliParams, context);
+					//csvConnector.processCommand(cmd, cliParams, context);
 				}
 				
 			} else {

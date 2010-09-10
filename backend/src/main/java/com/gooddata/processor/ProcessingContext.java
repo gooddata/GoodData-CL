@@ -24,7 +24,6 @@
 package com.gooddata.processor;
 
 import com.gooddata.connector.Connector;
-import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.InvalidArgumentException;
 import com.gooddata.exception.InvalidCommandException;
@@ -49,7 +48,6 @@ public class ProcessingContext {
     private Connector connector;
     private GdcRESTApiWrapper _restApi = null;
     private GdcFTPApiWrapper _ftpApi = null;
-    private ConnectorBackend backend = null;
 
 
     public String getProjectId() throws InvalidParameterException {
@@ -68,14 +66,6 @@ public class ProcessingContext {
 
     public void setConnector(Connector connector) {
         this.connector = connector;
-    }
-
-    public ConnectorBackend getConnectorBackend() {
-        return backend;
-    }
-
-    public void setConnectorBackend(ConnectorBackend cb) {
-        this.backend = cb;
     }
 
     /**

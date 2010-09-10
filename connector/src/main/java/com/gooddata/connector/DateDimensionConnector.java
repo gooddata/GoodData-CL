@@ -62,9 +62,8 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void extract() throws IOException {
-        //EMPTY
+    public void extract(String dir) throws IOException {
+
     }
 
     /**

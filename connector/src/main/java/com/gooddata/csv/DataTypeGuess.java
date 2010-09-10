@@ -34,9 +34,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.gooddata.connector.Constants;
 import com.gooddata.util.CSVReader;
 
-import com.gooddata.connector.backend.Constants;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.util.FileUtil;
 
@@ -118,8 +118,6 @@ public class DataTypeGuess {
     
     /**
      * Guesses the CSV schema
-     * @param f CSV file
-     * @param hasHeader
      * @param separator field separator
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
@@ -131,7 +129,6 @@ public class DataTypeGuess {
     /**
      * Guesses the CSV schema
      * @param is CSV stream
-     * @param hasHeader
      * @param separator field separator 
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
@@ -144,7 +141,6 @@ public class DataTypeGuess {
     /**
      * Guesses the CSV schema
      * @param cr CSV reader
-     * @param hasHeader
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */

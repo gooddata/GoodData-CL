@@ -23,10 +23,7 @@
 
 package com.gooddata.connector;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashSet;
@@ -34,10 +31,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.util.*;
 import org.apache.log4j.Logger;
 
-import com.gooddata.connector.backend.ConnectorBackend;
-import com.gooddata.connector.backend.Constants;
 import com.gooddata.csv.DataTypeGuess;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
@@ -45,9 +41,6 @@ import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
-import com.gooddata.util.FileUtil;
-import com.gooddata.util.NameTransformer;
-import com.gooddata.util.StringUtil;
 
 /**
  * GoodData CSV Connector
@@ -70,19 +63,41 @@ public class CsvConnector extends AbstractConnector implements Connector {
 
     /**
      * Creates GoodData CSV connector
-     * @param backend connector backend
      */
-    protected CsvConnector(ConnectorBackend backend) {
-        super(backend);
+    protected CsvConnector() {
+        super();
     }
 
     /**
      * Create a new GoodData CSV connector. This constructor creates the connector from a config file
-     * @param backend connector backend
      * @return new CSV Connector
      */
-    public static CsvConnector createConnector(ConnectorBackend backend) {
-        return new CsvConnector(backend);    
+    public static CsvConnector createConnector() {
+        return new CsvConnector();    
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void extract(String dir) throws IOException {
+        CSVReader cr = FileUtil.createUtf8CsvReader(this.getDataFile(), this.getSeparator());
+        CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(dir + System.getProperty("file.separator") + "data.csv"));
+        String[] header = this.populateCsvHeaderFromSchema();
+        String[] row = cr.readNext();
+        if(row.length != header.length) {
+            throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
+                    "it's configuration file!");
+        }
+        if(this.getHasHeader())
+            row = cr.readNext();
+        cw.writeNext(header);
+        while (row != null) {
+            cw.writeNext(row);
+            row = cr.readNext();
+        }
+        cw.flush();
+        cw.close();
+        cr.close();
     }
 
     /**
@@ -183,15 +198,6 @@ public class CsvConnector extends AbstractConnector implements Connector {
      */
     public void setDataFile(File dataFile) {
         this.dataFile = dataFile;
-    }
-
-    /**
-     * Extracts the source data CSV to the internal database where it is going to be transformed
-     * @throws IOException in case of IO issues
-     */
-    public void extract() throws IOException {
-        File src = getDataFile();
-        getConnectorBackend().extract(src, getHasHeader(),getSeparator());
     }
 
     /**

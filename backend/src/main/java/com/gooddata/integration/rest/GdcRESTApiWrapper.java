@@ -24,11 +24,10 @@
 package com.gooddata.integration.rest;
 
 import com.gooddata.exception.*;
-import com.gooddata.integration.model.DLI;
-import com.gooddata.integration.model.DLIPart;
+import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.Project;
+import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.util.JSONUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -63,7 +62,7 @@ public class GdcRESTApiWrapper {
     private static final String MD_URI = "/gdc/md/";
     private static final String LOGIN_URI = "/gdc/account/login";
     private static final String TOKEN_URI = "/gdc/account/token";
-    private static final String DATA_INTERFACES_URI = "/ldm/dataloadinterface";
+    private static final String DATA_INTERFACES_URI = "/ldm/singleloadinterface";
     private static final String PROJECTS_URI = "/gdc/projects";
     private static final String PULL_URI = "/etl/pull";
     private static final String DLI_DESCRIPTOR_URI = "/descriptor";
@@ -296,68 +295,18 @@ public class GdcRESTApiWrapper {
         return list;
     }
 
-
     /**
-     * Finds a project DLI by it's name
-     *
-     * @param name the DLI name
-     * @param projectId the project id 
-     * @return the DLI
-     * @throws GdcProjectAccessException if the DLI doesn't exist
-     * @throws HttpMethodException if there is a communication issue with the GDC platform
-     */
-    public DLI getDLIByName(String name, String projectId) throws GdcProjectAccessException, HttpMethodException {
-        l.debug("Get DLI by name="+name+" project id="+projectId);
-        List<DLI> dlis = getDLIs(projectId);
-        for (DLI dli : dlis) {
-            if (name.equals(dli.getName())) {
-                l.debug("Got DLI by name="+name+" project id="+projectId);
-                return dli;
-            }
-        }
-        l.debug("The DLI name=" + name + " doesn't exist in the project id="+projectId);
-        throw new GdcProjectAccessException("The DLI name=" + name + " doesn't exist in the project id="+projectId);
-    }
-
-    /**
-     * Finds a project DLI by it's id
-     *
-     * @param id the DLI id
-     * @param projectId the project id
-     * @return the DLI
-     * @throws GdcProjectAccessException if the DLI doesn't exist
-     * @throws HttpMethodException if there is a communication issue with the GDC platform 
-     */
-    public DLI getDLIById(String id, String projectId) throws GdcProjectAccessException, HttpMethodException {
-        l.debug("Get DLI by id="+id+" project id="+projectId);
-        List<DLI> dlis = getDLIs(projectId);
-        for (DLI dli : dlis) {
-            if (id.equals(dli.getId())) {
-                l.debug("Got DLI by id="+id+" project id="+projectId);
-                return dli;
-            }
-        }
-        l.debug("The DLI id=" + id+ " doesn't exist in the project id="+projectId);
-        throw new GdcProjectAccessException("The DLI id=" + id+ " doesn't exist in the project id="+projectId);
-    }
-
-
-    public String getToken() {
-        return ssToken;
-    }
-
-    /**
-     * Returns a list of project's data loading interfaces
+     * Returns a list of project's SLIs
      *
      * @param projectId project's ID
-     * @return a list of project's data loading interfaces
+     * @return a list of project's SLIs
      * @throws HttpMethodException if there is a communication error
-     * @throws GdcProjectAccessException if the DLI doesn't exist
+     * @throws GdcProjectAccessException if the SLI doesn't exist
      */
-    public List<DLI> getDLIs(String projectId) throws HttpMethodException, GdcProjectAccessException {
-        l.debug("Getting DLIs from project id="+projectId);
-        List<DLI> list = new ArrayList<DLI>();
-        String ifcUri = getDLIsUri(projectId);
+    public List<SLI> getSLIs(String projectId) throws HttpMethodException, GdcProjectAccessException {
+        l.debug("Getting SLIs from project id="+projectId);
+        List<SLI> list = new ArrayList<SLI>();
+        String ifcUri = getSLIsUri(projectId);
         HttpMethod interfacesGet = new GetMethod(ifcUri);
         setJsonHeaders(interfacesGet);
         try {
@@ -379,10 +328,10 @@ public class GdcRESTApiWrapper {
             }
             for (Object ol : links) {
                 JSONObject link = (JSONObject) ol;
-                DLI ii = new DLI(link);
+                SLI ii = new SLI(link);
                 list.add(ii);
             }
-            l.debug("Got DLIs "+list+" from project id="+projectId);
+            l.debug("Got SLIs "+list+" from project id="+projectId);
         }
         finally {
             interfacesGet.releaseConnection();
@@ -390,43 +339,118 @@ public class GdcRESTApiWrapper {
         return list;
     }
 
+
     /**
-     * Returns a list of DLI parts
+     * Retrieves the SLI columns
      *
-     * @param dliId DLI ID
-     * @param projectId project's ID
-     * @return a list of project's data loading interfaces
-     * @throws HttpMethodException if there is a communication error
+     * @param uri the SLI uri
+     * @return list of SLI columns
+     * @throws GdcProjectAccessException if the SLI doesn't exist
+     * @throws HttpMethodException if there is a communication issue with the GDC platform
      */
-    public List<DLIPart> getDLIParts(String dliId, String projectId) throws HttpMethodException {
-        l.debug("Getting DLI parts DLI id = "+dliId+" from project id="+projectId);
-        List<DLIPart> list = new ArrayList<DLIPart>();
-        String dliUri = getDLIUri(dliId, projectId);
-        HttpMethod dliGet = new GetMethod(dliUri);
-        setJsonHeaders(dliGet);
+    public List<Column> getSLIColumns(String uri) throws GdcProjectAccessException, HttpMethodException {
+        l.debug("Retrieveing SLI columns for SLI uri="+uri);
+        List<Column> list = new ArrayList<Column>();
+        HttpMethod sliGet = new GetMethod(config.getUrl() + uri + "/manifest");
+        setJsonHeaders(sliGet);
         try {
-            String response = executeMethodOk(dliGet);
-            JSONObject partsResponseObject = JSONObject.fromObject(response);
-            if (partsResponseObject.isNullObject()) {
-                l.debug("No DLI parts DLI id = "+dliId+" from project id="+projectId);
-                throw new GdcProjectAccessException("No DLI parts DLI id = "+dliId+" from project id="+projectId);
+            String response = executeMethodOk(sliGet);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            if (responseObject.isNullObject()) {
+                l.debug("The SLI uri=" + uri + " doesn't exist!");
+                throw new GdcProjectAccessException("The SLI uri=" + uri + " doesn't exist!");
             }
-            JSONObject dli = partsResponseObject.getJSONObject("dataSetDLI");
-            if (dli.isNullObject()) {
-                l.debug("No DLI parts DLI id = "+dliId+" from project id="+projectId);
-                throw new GdcProjectAccessException("No DLI parts DLI id = "+dliId+" from project id="+projectId);
+            JSONObject dataSetSLIManifest = responseObject.getJSONObject("dataSetSLIManifest");
+            if (dataSetSLIManifest.isNullObject()) {
+                l.debug("The SLI uri=" + uri + " doesn't exist!");
+                throw new GdcProjectAccessException("The SLI uri=" + uri + " doesn't exist!");
             }
-            JSONArray parts = dli.getJSONArray("parts");
-            for (Object op : parts) {
-                JSONObject part = (JSONObject) op;
-                list.add(new DLIPart(part));
+            JSONArray parts = dataSetSLIManifest.getJSONArray("parts");
+            for(Object oPart : parts) {
+                list.add(new Column((JSONObject)oPart));
             }
-            l.debug("Got DLI parts "+list+" DLI id = "+dliId+" from project id="+projectId);
         }
         finally {
-            dliGet.releaseConnection();
+            sliGet.releaseConnection();
         }
         return list;
+    }
+
+    /**
+     * Retrieves the SLI columns
+     *
+     * @param uri the SLI uri
+     * @return JSON manifest
+     * @throws GdcProjectAccessException if the SLI doesn't exist
+     * @throws HttpMethodException if there is a communication issue with the GDC platform
+     */
+    public JSONObject getSLIManifest(String uri) throws GdcProjectAccessException, HttpMethodException {
+        l.debug("Retrieveing SLI columns for SLI uri="+uri);
+        List<Column> list = new ArrayList<Column>();
+        HttpMethod sliGet = new GetMethod(config.getUrl() + uri + "/manifest");
+        setJsonHeaders(sliGet);
+        try {
+            String response = executeMethodOk(sliGet);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            if (responseObject.isNullObject()) {
+                l.debug("The SLI uri=" + uri + " doesn't exist!");
+                throw new GdcProjectAccessException("The SLI uri=" + uri + " doesn't exist!");
+            }
+            return responseObject;
+        }
+        finally {
+            sliGet.releaseConnection();
+        }
+    }
+
+
+    /**
+     * Finds a project SLI by it's name
+     *
+     * @param name the SLI name
+     * @param projectId the project id
+     * @return the SLI
+     * @throws GdcProjectAccessException if the SLI doesn't exist
+     * @throws HttpMethodException if there is a communication issue with the GDC platform
+     */
+    public SLI getSLIByName(String name, String projectId) throws GdcProjectAccessException, HttpMethodException {
+        l.debug("Get SLI by name="+name+" project id="+projectId);
+        List<SLI> slis = getSLIs(projectId);
+        for (SLI sli : slis) {
+            if (name.equals(sli.getName())) {
+                l.debug("Got SLI by name="+name+" project id="+projectId);
+                return sli;
+            }
+        }
+        l.debug("The SLI name=" + name + " doesn't exist in the project id="+projectId);
+        throw new GdcProjectAccessException("The SLI name=" + name + " doesn't exist in the project id="+projectId);
+    }
+
+    /**
+     * Finds a project SLI by it's id
+     *
+     * @param id the SLI id
+     * @param projectId the project id
+     * @return the SLI
+     * @throws GdcProjectAccessException if the SLI doesn't exist
+     * @throws HttpMethodException if there is a communication issue with the GDC platform
+     */
+    public SLI getSLIById(String id, String projectId) throws GdcProjectAccessException, HttpMethodException {
+        l.debug("Get SLI by id="+id+" project id="+projectId);
+        List<SLI> slis = getSLIs(projectId);
+        for (SLI sli : slis) {
+            if (id.equals(sli.getId())) {
+                l.debug("Got SLI by id="+id+" project id="+projectId);
+                return sli;
+            }
+        }
+        l.debug("The SLI id=" + id+ " doesn't exist in the project id="+projectId);
+        throw new GdcProjectAccessException("The SLI id=" + id+ " doesn't exist in the project id="+projectId);
+    }
+
+
+    public String getToken() {
+        return ssToken;
     }
 
 
@@ -928,21 +952,21 @@ public class GdcRESTApiWrapper {
      * Returns the data interfaces URI
      *
      * @param projectId project ID
-     * @return DLI collection URI
+     * @return SLI collection URI
      */
-    public String getDLIsUri(String projectId) {
+    public String getSLIsUri(String projectId) {
         return getProjectMdUrl(projectId) + DATA_INTERFACES_URI;
     }
 
     /**
-     * Returns the DLI URI
+     * Returns the SLI URI
      *
-     * @param dliId DLI ID
+     * @param sliId SLI ID
      * @param projectId project ID
      * @return DLI URI
      */
-    public String getDLIUri(String dliId, String projectId) {
-        return getProjectMdUrl(projectId) + DATA_INTERFACES_URI + "/" + dliId + DLI_DESCRIPTOR_URI;
+    public String getSLIUri(String sliId, String projectId) {
+        return getProjectMdUrl(projectId) + DATA_INTERFACES_URI + "/" + sliId + DLI_DESCRIPTOR_URI;
     }
 
 

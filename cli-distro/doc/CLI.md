@@ -107,10 +107,10 @@ The following paragraphs describe the specific GoodData CL commands.
 
 ## CSV Connector Commands
 
-* `GenerateCsvConfig`(csvHeaderFile=&lt;file&gt;, configFile=&lt;config&gt; \[, defaultLdmType=&lt;type&gt;\] \[, folder=&lt;folder&gt;\], \[separator = &lt;separator-char&gt;\]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
+* `GenerateCsvConfig`(csvHeaderFile=&lt;file&gt;, configFile=&lt;config&gt; \[, defaultLdmType=&lt;mode&gt;\] \[, folder=&lt;folder&gt;\], \[separator = &lt;separator-char&gt;\]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
   - csvHeaderFile - path to CSV file (only the first header row will be used)
   - configFile  - path to configuration file (will be overwritten)
-  - defaultLdmType - LDM type to be associated with new columns (only ATTRIBUTE type is supported by the ProcessNewColumns task at this time)
+  - defaultLdmType - LDM mode to be associated with new columns (only ATTRIBUTE mode is supported by the ProcessNewColumns task at this time)
   - folder - folder where to place new attributes
   - separator - optional field separator, the default is ','
 

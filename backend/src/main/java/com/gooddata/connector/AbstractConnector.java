@@ -31,16 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.gooddata.integration.model.Column;
+import com.gooddata.integration.model.SLI;
+import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
-import com.gooddata.connector.backend.ConnectorBackend;
-import com.gooddata.connector.model.PdmSchema;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.DLI;
-import com.gooddata.integration.model.DLIPart;
 import com.gooddata.modeling.generator.MaqlGenerator;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
@@ -66,21 +64,16 @@ public abstract class AbstractConnector implements Connector {
      */
     protected SourceSchema schema;
 
-    // Connector backend
-    private ConnectorBackend connectorBackend;
+    /**
+     * Project id
+     */
+    protected String projectId;
+
 
     /**
      * Default constructor
      */
     protected AbstractConnector() {
-    }
-
-    /**
-     * GoodData abstract connector.
-     * @param backend initialized connector backend
-     */
-    protected AbstractConnector(ConnectorBackend backend) {
-        setConnectorBackend(backend);
     }
 
     /**
@@ -100,67 +93,21 @@ public abstract class AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
-    public ConnectorBackend getConnectorBackend() {
-        return connectorBackend;
-    }
+    public abstract void extract(String dir) throws IOException;
+    
 
     /**
      * {@inheritDoc}
      */
-    public void setConnectorBackend(ConnectorBackend connectorBackend) {
-        this.connectorBackend = connectorBackend;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isInitialized() {
-        return getConnectorBackend().isInitialized();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int getLastSnapshotId() {
-        return getConnectorBackend().getLastSnapshotId();
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public void deploy(DLI dli, List<DLIPart> parts, String dir, String archiveName)
+    public void deploy(SLI sli, List<Column> columns, String dir, String archiveName)
             throws IOException {
-        getConnectorBackend().deploy(dli, parts, dir, archiveName);
+        String fn = dir + System.getProperty("file.separator") +
+                GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
+        String cn = sli.getSLIManifest(columns);
+        FileUtil.writeStringToFile(cn, fn);
+        l.debug("Manifest file written to file '"+fn+"'. Content: "+cn);
+        FileUtil.compressDir(dir, archiveName);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void deploySnapshot(DLI dli, List<DLIPart> parts, String dir, String archiveName, int[] snapshotIds)
-            throws IOException {
-        getConnectorBackend().deploySnapshot(dli, parts, dir, archiveName, snapshotIds);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void initialize()  {
-        getConnectorBackend().initialize();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void transform() {
-        getConnectorBackend().transform();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public abstract void extract() throws IOException;
-
 
     /**
      * Initializes the source and PDM schemas from the config file
@@ -169,7 +116,6 @@ public abstract class AbstractConnector implements Connector {
      */
     protected void initSchema(String configFileName) throws IOException {
         schema = SourceSchema.createSchema(new File(configFileName));
-        connectorBackend.setPdm(PdmSchema.createSchema(schema));
     }
     
     public String generateMaqlCreate() {
@@ -189,23 +135,9 @@ public abstract class AbstractConnector implements Connector {
             else if(c.match("ExecuteMaql")) {
                 executeMAQL(c, cli, ctx);
             }
-            else if(c.match("ListSnapshots")) {
-                listSnapshots(c, cli, ctx);
-            }
-            else if(c.match("DropIntegrationDatabase")) {
-                dropIntegrationDatabase(c, cli, ctx);
-            }
-            else if(c.match("DropSnapshots")) {
-                dropSnapshots(c, cli, ctx);
-            }
-            else if(c.match("TransferData") || c.match("TransferAllSnapshots")) {
+            else if(c.match("TransferData") || c.match("TransferAllSnapshots") || c.match("TransferLastSnapshot") ||
+                    c.match("TransferSnapshots")) {
                 transferData(c, cli, ctx);
-            }
-            else if(c.match("TransferSnapshots")) {
-                transferSnapshots(c, cli, ctx);
-            }
-            else if(c.match("TransferLastSnapshot")) {
-                transferLastSnapshot(c, cli, ctx);
             }
             else if (c.match( "GenerateUpdateMaql")) {
                 generateUpdateMaql(c, cli, ctx);
@@ -280,7 +212,6 @@ public abstract class AbstractConnector implements Connector {
         String pid = ctx.getProjectIdMandatory();
         // connector's schema name
         String ssn = StringUtil.toIdentifier(cc.getSchema().getName());
-        cc.initialize();
         
         boolean waitForFinish = true;
         if(c.checkParam("waitForFinish")) {
@@ -291,6 +222,48 @@ public abstract class AbstractConnector implements Connector {
         extractAndTransfer(c, pid, cc, null, waitForFinish, p, ctx);
         l.debug("Data transfer finished.");
         l.info("Data transfer finished.");
+    }
+
+    protected String[] populateCsvHeaderFromSchema() {
+        SourceSchema schema = getSchema();
+        List<SourceColumn> columns = schema.getColumns();
+        String[] header = new String[columns.size()];
+        for(int i = 0; i < header.length; i++) {
+            header[i] = StringUtil.toIdentifier(columns.get(i).getName());
+        }
+        return header;
+    }
+    
+
+    protected List<Column> populateColumnsFromSchema() {
+        SourceSchema schema = getSchema();
+        List<Column> columns = new ArrayList<Column>();
+        String ssn = StringUtil.toIdentifier(schema.getName());
+        for(SourceColumn sc : schema.getColumns()) {
+            String scn = StringUtil.toIdentifier(sc.getName());
+            if(!sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_IGNORE)) {
+                Column c = new Column(sc.getName());
+                c.setMode(Column.LM_FULL);
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
+                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
+                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
+                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
+                    c.setReferenceKey(1);
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
+                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
+                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT))
+                    c.setPopulates(new String[] {"label." + ssn + "." + scn});
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL))
+                    c.setPopulates(new String[] {"label." + ssn + "." + StringUtil.toIdentifier(sc.getReference()) +
+                            "." + scn});
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
+                    c.setPopulates(new String[] {N.DT + "." + ssn + "." + scn});
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT))
+                    c.setPopulates(new String[] {"fact." + ssn + "." + scn});
+                columns.add(c);
+            }
+        }
+        return columns;
     }
 
     /**
@@ -317,24 +290,27 @@ public abstract class AbstractConnector implements Connector {
         MDC.put("GdcDataPackageDir",archiveName);
         String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
             archiveName + ".zip";
-        // loads the CSV data to the embedded Derby SQL
-        cc.extract();
-        // normalize the data in the Derby
-        cc.transform();
 
         // get information about the data loading package      
-        DLI dli = ctx.getRestApi(p).getDLIById("dataset." + ssn, pid);
-        List<DLIPart> parts= ctx.getRestApi(p).getDLIParts("dataset." +ssn, pid);
+        SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
+        List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
+        List<Column> columns = populateColumnsFromSchema();
+
+        if(sliColumns.size() > columns.size())
+            throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");
+
 
         String incremental = c.getParam("incremental");
         if(incremental != null && incremental.length() > 0 &&
                 incremental.equalsIgnoreCase("true")) {
             l.debug("Using incremental mode.");
-            setIncremental(parts);
+            setIncremental(columns);
         }
+
+        // extract the data to the CSV that is going to be transferred to the server
+        cc.extract(tmpDir.getAbsolutePath());
         
-        // load data from the Derby to the local GoodData data integration package
-        cc.deploySnapshot(dli, parts, tmpDir.getAbsolutePath(), archivePath, snapshots);
+        cc.deploy(sli, columns, tmpDir.getAbsolutePath(), archivePath);
         // transfer the data package to the GoodData server
         ctx.getFtpApi(p).transferDir(archivePath);
         // kick the GooDData server to load the data package to the project
@@ -349,6 +325,17 @@ public abstract class AbstractConnector implements Connector {
         MDC.remove("GdcDataPackageDir");
         l.debug("Data extract finished.");
     }
+
+    /**
+     * Sets the incremental loading status for a part
+     * @param cols SLI columns
+     */
+    private void setIncremental(List<Column> cols) {
+        for(Column col : cols) {
+            col.setMode(Column.LM_INCREMENTAL);
+        }
+    }
+
 
     /**
      * Checks the status of data integration process in the GoodData platform
@@ -389,120 +376,6 @@ public abstract class AbstractConnector implements Connector {
     }
 
 
-    /**
-     * Transfers the last snapshot of data to the GoodData project
-     * @param c command
-     * @param p cli parameters
-     * @param ctx current context
-     * @throws IOException IO issues
-     * @throws InterruptedException internal problem with making file writable
-     */
-    private void transferLastSnapshot(Command c, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
-        l.debug("Transferring last snapshot.");
-        Connector cc = ctx.getConnectorMandatory();
-        String pid = ctx.getProjectIdMandatory();
-
-        cc.initialize();
-        boolean waitForFinish = true;
-        if(c.checkParam("waitForFinish")) {
-            String w = c.getParam( "waitForFinish");
-            if(w != null && w.equalsIgnoreCase("false"))
-                waitForFinish = false;
-        }
-        extractAndTransfer(c, pid, cc, new int[] {cc.getLastSnapshotId()+1}, waitForFinish, p, ctx);
-        l.debug("Last Snapshot transfer finished.");
-        l.info("Last snapshot successfully transferred.");
-    }
-
-    /**
-     * Transfers selected snapshots to the GoodData project
-     * @param c command
-     * @param p cli parameters
-     * @param ctx current context
-     * @throws IOException IO issues
-     * @throws InterruptedException internal problem with making file writable
-     */
-    private void transferSnapshots(Command c, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
-        Connector cc = ctx.getConnectorMandatory();
-        String pid = ctx.getProjectIdMandatory();
-        String firstSnapshot = c.getParamMandatory("firstSnapshot");
-        String lastSnapshot = c.getParamMandatory("lastSnapshot");
-        l.debug("Transferring snapshots "+firstSnapshot+" - " + lastSnapshot);
-        int fs,ls;
-        try  {
-            fs = Integer.parseInt(firstSnapshot);
-        }
-        catch (NumberFormatException e) {
-            throw new IllegalArgumentException("TransferSnapshots: The 'firstSnapshot' (" + firstSnapshot +
-                    ") parameter is not a number.");
-        }
-        try {
-            ls = Integer.parseInt(lastSnapshot);
-        }
-        catch (NumberFormatException e) {
-            throw new IllegalArgumentException("TransferSnapshots: The 'lastSnapshot' (" + lastSnapshot +
-                    ") parameter is not a number.");
-        }
-        int cnt = ls - fs;
-        if(cnt >= 0) {
-            int[] snapshots = new int[cnt];
-            for(int i = 0; i < cnt; i++) {
-                snapshots[i] = fs + i;
-            }
-            // connector's schema name
-            String ssn = StringUtil.toIdentifier(cc.getSchema().getName());
-
-            cc.initialize();
-            // retrieve the DLI
-
-            boolean waitForFinish = true;
-            if(c.checkParam("waitForFinish")) {
-                String w = c.getParam( "waitForFinish");
-                if(w != null && w.equalsIgnoreCase("false"))
-                    waitForFinish = false;
-            }
-            extractAndTransfer(c, pid, cc, snapshots, waitForFinish, p, ctx);
-            l.debug("Snapshots transfer finished.");
-            l.info("Last snapshot successfully transferred.");
-        }
-        else
-            throw new InvalidParameterException(c.getCommand()+": The firstSnapshot can't be higher than the lastSnapshot.");
-    }
-
-    /**
-     * Drops the integration database (drop the entire project database)
-     * @param c command
-     * @param p cli parameters
-     * @param ctx current context
-     */
-    private void dropIntegrationDatabase(Command c, CliParams p, ProcessingContext ctx) {
-        setProjectId(ctx);
-        ctx.getConnectorBackend().dropIntegrationDatabase();
-        l.info("The integration database has been dropped.");
-    }
-
-    /**
-     * Drops the integration database (drop the entire project database)
-     * @param c command
-     * @param p cli parameters
-     * @param ctx current context
-     */
-    private void dropSnapshots(Command c, CliParams p, ProcessingContext ctx) {
-        setProjectId(ctx);
-        ctx.getConnectorBackend().dropSnapshots();
-        l.info("All snapshots has been dropped.");
-    }
-
-    /**
-     * Lists the current snapshots
-     * @param c command
-     * @param p cli parameters
-     * @param ctx current context
-     */
-    private void listSnapshots(Command c, CliParams p, ProcessingContext ctx) {
-        setProjectId(ctx);
-        l.info(ctx.getConnectorBackend().listSnapshots());
-    }
 
     /**
      * Generate the MAQL for new columns 
@@ -512,6 +385,7 @@ public abstract class AbstractConnector implements Connector {
      * @throws IOException IO issue
      */
     private void generateUpdateMaql(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        /*
         l.debug("Updating MAQL.");
     	//final String configFile = c.getParamMandatory( "configFile");
     	//final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
@@ -547,16 +421,18 @@ public abstract class AbstractConnector implements Connector {
         } else {
         	l.info("MAQL update successfully finished - no changes detected.");
         }
+        */
 
     }
 
 	/**
      * Finds the attributes and facts with no appropriate part or part column
      * TODO: a generic detector of new labels etc could be added too
-     * @param parts DLI parts
+     * @param parts SLI parts
      * @param schema former source schema
      * @return list of new columns
      */
+    /*
     private Changes findColumnChanges(List<DLIPart> parts, SourceSchema schema) {
     	Set<String> fileNames = new HashSet<String>();
     	Set<String> factColumns = new HashSet<String>();
@@ -624,18 +500,7 @@ public abstract class AbstractConnector implements Connector {
     	changes.deletedColumns.addAll(facts2columns(deletedFactColumns));
     	return changes;
     }
-
-    /**
-     * Sets the incremental loading status for a part
-     * @param parts DLI part
-     */
-    private void setIncremental(List<DLIPart> parts) {
-        for(DLIPart part : parts) {
-            if(part.getFileName().startsWith(N.FCT_PFX)) {
-                part.setLoadMode(DLIPart.LM_INCREMENTAL);
-            }
-        }
-    }
+    */
     
     private List<SourceColumn> lookups2columns(SourceSchema schema, List<String> lookups) {
     	List<SourceColumn> result = new ArrayList<SourceColumn>();
@@ -659,6 +524,16 @@ public abstract class AbstractConnector implements Connector {
     	return result;
     }
 
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+   
+
     /**
      * Sets the project id from context
      * @param ctx process context
@@ -667,7 +542,7 @@ public abstract class AbstractConnector implements Connector {
     protected void setProjectId(ProcessingContext ctx) throws InvalidParameterException {
         String pid = ctx.getProjectIdMandatory();
         if(pid != null && pid.length() > 0)
-            this.getConnectorBackend().setProjectId(pid);
+            setProjectId(pid);
     }
 
     /**

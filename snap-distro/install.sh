@@ -32,7 +32,7 @@ then
 fi
 export PKGDIR
 
-PKGNAME=`find ${PKGDIR} -mindepth 1 -maxdepth 1 -type d -print | awk -F/ '{ print $NF }' | grep -v "^\." | grep -v components`
+PKGNAME=`find ${PKGDIR} -mindepth 1 -maxdepth 1 -mode d -print | awk -F/ '{ print $NF }' | grep -v "^\." | grep -v components`
 export PKGNAME
 
 # Nouns for installer
