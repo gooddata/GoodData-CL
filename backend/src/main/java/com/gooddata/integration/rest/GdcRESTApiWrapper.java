@@ -82,6 +82,9 @@ public class GdcRESTApiWrapper {
 
     private static HashMap<String,Integer> ROLES = new HashMap<String,Integer>();
 
+    /* TODO This is fragile and may not work for all projects and/or future versions. 
+     * Use /gdc/projects/{projectId}/roles to retrieve roles for a particular project.
+     */
     static {
         ROLES.put("ADMIN",new Integer(1));
         ROLES.put("EDITOR",new Integer(2));
