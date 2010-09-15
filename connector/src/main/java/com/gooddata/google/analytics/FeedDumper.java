@@ -43,6 +43,8 @@ import java.util.List;
  */
 public class FeedDumper {
 
+	private static final String UNKNOWN_DATE = "(other)";
+	
     private static Logger l = Logger.getLogger(FeedDumper.class);
     
     /**
@@ -80,9 +82,13 @@ public class FeedDumper {
                 final String valueIn = entry.stringValueOf(dataName);
                 String valueOut;
                 if (GaConnector.GA_DATE.equalsIgnoreCase(dataName)) {
-                    valueOut = valueIn.substring(0, 4) + "-"
-                            + valueIn.substring(4, 6) + "-"
-                            + valueIn.substring(6, 8);
+                	if (UNKNOWN_DATE.equals(valueIn)) {
+                		valueOut = "";
+                	} else {
+	                    valueOut = valueIn.substring(0, 4) + "-"
+	                            + valueIn.substring(4, 6) + "-"
+	                            + valueIn.substring(6, 8);
+                	}
                 } else {
                     valueOut = valueIn;
                 }
