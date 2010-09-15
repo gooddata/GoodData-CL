@@ -51,7 +51,7 @@ The following paragraphs describe the specific GoodData CL commands.
 
   - fileName - file to load the project identifier from
 
-* `InviteUser`(email=&lt;email&gt;, msg=&lt;msg&gt;\[, role=&lt;role&gt;\]) - invites a new user to the project
+* `InviteUser`(email=&lt;email&gt;, msg=&lt;msg&gt;\[, role=&lt;admin|editor|dashboard only&gt;\]) - invites a new user to the project
 
   - email - the invited user's e-mail
   - msg - optional invitation message

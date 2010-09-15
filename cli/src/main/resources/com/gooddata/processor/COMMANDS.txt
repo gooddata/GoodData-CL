@@ -41,7 +41,7 @@ Project Management Commands:
  RetrieveProject(fileName=<file>) - loads the current project identifier from the specified file
   fileName - file to load the project identifier from
 
- InviteUser(email=<email>, msg=<msg>[, role=<role>]) - invites a new user to the project
+ InviteUser(email=<email>, msg=<msg>[, role=<admin|editor|dashboard only>]) - invites a new user to the project
   email - the invited user's e-mail
   msg - optional invitation message
   role - initial user's role
