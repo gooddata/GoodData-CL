@@ -40,12 +40,32 @@ public class CSVReaderTest {
 		CSVReader csv = new CSVReader(reader);
 
 		final int expectedRows = 2;
+		final int expectedCols = 4;
+
 		int i = 0;
 		String[] line = null;
 		while ((line = csv.readNext()) != null) {
-			Assert.assertEquals(4, line.length);
+			Assert.assertEquals(expectedCols, line.length);
 			i++;
 		}
 		Assert.assertEquals(expectedRows, i);
 	}
+    
+    @Test
+	public void testChunkBoundaryEscape() throws IOException {
+    	Reader reader = new InputStreamReader(
+				CSVReaderTest.class.getResourceAsStream("/com/gooddata/util/chunk-boundary.csv"),
+				"utf8");
+		CSVReader csv = new CSVReader(reader);
+
+		final int expectedRows = 58;
+		final int expectedCols = 13;
+		int i = 0;
+		String[] line = null;
+		while ((line = csv.readNext()) != null) {
+			Assert.assertEquals(expectedCols, line.length);
+			i++;
+		}
+		Assert.assertEquals(expectedRows, i);
+    }
 }
