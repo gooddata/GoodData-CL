@@ -68,4 +68,21 @@ public class CSVReaderTest {
 		}
 		Assert.assertEquals(expectedRows, i);
     }
+    
+    @Test
+	public void testNoClosingQuotes() throws IOException {
+    	Reader reader = new InputStreamReader(
+				CSVReaderTest.class.getResourceAsStream("/com/gooddata/util/no-closing-quotes.csv"),
+				"utf8");
+		CSVReader csv = new CSVReader(reader);
+		try {
+			while (csv.readNext() != null) {
+				;
+			}
+		} catch (IllegalStateException e) {
+			Assert.assertTrue(e.getMessage().endsWith(" [2,9]")); // location of unclosed quote
+			return; // ok
+		}
+		Assert.assertFalse("IllegalStateException expected", true);
+    }
 }
