@@ -58,6 +58,8 @@ public class CSVReader implements Closeable {
     private StringBuffer openField  = new StringBuffer();
     private char lastChar = 0; 
     private boolean quotedField = false;
+    private int quotedFieldStartRow = 0;
+    private int quotedFieldStartCol = 0;
     private boolean wasEscapeOrNotOpeningQuote = false;
     private boolean commentedLine = false;
     private LinkedList<String[]> recordsQueue = new LinkedList<String[]>();
@@ -184,6 +186,10 @@ public class CSVReader implements Closeable {
     		if (wasEscapeOrNotOpeningQuote) {
     			handlePreviousEscapeOrQuote(null);
     		}
+    		if (quotedField) {
+    			throw new IllegalStateException("Missing quote character to close the quote char at ["
+    					+ quotedFieldStartRow + "," + quotedFieldStartCol + "]");
+    		}
     		if (openRecord.isEmpty()) {
     			return null;
     		} else {
@@ -270,7 +276,7 @@ public class CSVReader implements Closeable {
 							"separator expected after a closing quote; found " + c + getPositionString());
 				}
 			} else if (openField.length() == 0) {
-				quotedField = true;
+				startQuotedField();
 			} else {
 				throw new IllegalStateException("odd quote character at " + getPositionString());
 			}
@@ -285,7 +291,7 @@ public class CSVReader implements Closeable {
     	
     	// handle start of a new quoted field
     	if (openField.length() == 0 && !quotedField) {
-    		quotedField = true;
+    		startQuotedField();
     		wasEscapeOrNotOpeningQuote = false;
     	} else {
     		wasEscapeOrNotOpeningQuote = true;
@@ -304,6 +310,12 @@ public class CSVReader implements Closeable {
     
     private boolean isEscapableCharacter(final char c) {
     	return (c == escape || c == quote);
+    }
+    
+    private void startQuotedField() {
+    	quotedField = true;
+    	quotedFieldStartRow = row;
+    	quotedFieldStartCol = col;
     }
     
     /**
