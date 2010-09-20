@@ -41,7 +41,7 @@ import com.gooddata.integration.model.DLIPart;
  * @version 1.0
 */
 public interface ConnectorBackend {
-
+	
     /**
      * Perform the data normalization (generate lookups). The database must contain the required schema
      */

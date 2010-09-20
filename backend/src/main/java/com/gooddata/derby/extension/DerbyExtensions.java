@@ -28,6 +28,7 @@ import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.gooddata.connector.backend.AbstractConnectorBackend;
 import com.gooddata.connector.backend.Constants;
 
 /**
@@ -39,9 +40,6 @@ import com.gooddata.connector.backend.Constants;
 public class DerbyExtensions {
 
     private final static DateTimeFormatter baseFmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-
-    // Empty date id
-    private final static int EMPTY_DATE_ID = 0;
 
     /**
      * Aggresivelly converts string to a numeric type.
@@ -85,7 +83,7 @@ public class DerbyExtensions {
             return ds.getDays() + 1;
         }
         catch (IllegalArgumentException e) {
-            return EMPTY_DATE_ID;
+            return AbstractConnectorBackend.getDefaultDateForeignKey();
         }
     }
 

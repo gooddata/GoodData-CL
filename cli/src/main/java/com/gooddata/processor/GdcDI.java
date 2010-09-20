@@ -51,6 +51,7 @@ import com.gooddata.connector.DateDimensionConnector;
 import com.gooddata.connector.GaConnector;
 import com.gooddata.connector.JdbcConnector;
 import com.gooddata.connector.SfdcConnector;
+import com.gooddata.connector.backend.AbstractConnectorBackend;
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.backend.DerbyConnectorBackend;
 import com.gooddata.connector.backend.MySqlConnectorBackend;
@@ -98,6 +99,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
     public static String[] CLI_PARAM_VERSION = {"version","V"};
     public static String[] CLI_PARAM_MEMORY = {"memory","m"};
+    public static String[] CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY = {"default-date-fk","D"};
     public static String CLI_PARAM_SCRIPT = "script";
     
     private static String DEFAULT_PROPERTIES = "gdi.properties";
@@ -120,7 +122,8 @@ public class GdcDI implements Executor {
         new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
         new Option(CLI_PARAM_INSECURE[1], CLI_PARAM_INSECURE[0], false, "Disable encryption"),
         new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version."),    
-        new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files")
+        new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files"),
+        new Option(CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY[1], CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY[0], true, "Foreign key to represent an 'unknown' date")
     };
 
     private CliParams cliParams = null;
@@ -875,6 +878,15 @@ public class GdcDI implements Executor {
         else
         	throw new IllegalStateException("Invalid backend '" + b + "'");
 
+        String defaultFkStr = cliParams.get(CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY[0]);
+        if (defaultFkStr != null) {
+        	try {
+        		AbstractConnectorBackend.setDefaultDateForeignKey(Integer.parseInt(defaultFkStr));
+        	} catch (NumberFormatException e) {
+        		throw new IllegalArgumentException("Wrong default date foreign key: "
+        				+ defaultFkStr + " is not a number");
+        	}
+        }
         return backend;
     }
     

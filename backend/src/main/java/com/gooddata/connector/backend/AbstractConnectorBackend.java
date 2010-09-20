@@ -57,6 +57,8 @@ import com.gooddata.util.StringUtil;
  * @version 1.0
  */
 public abstract class AbstractConnectorBackend implements ConnectorBackend {
+	
+	protected final static int DEFAULT_DATE_FOREIGN_KEY = 0; 
 
     private static Logger l = Logger.getLogger(AbstractConnectorBackend.class);
 
@@ -68,8 +70,14 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
 
     // separates the different LABELs when we concatenate them to create an unique identifier out of them
     protected String HASH_SEPARATOR = "%";
+    
+    // default fk for unknown value of the date dimension
+    // must be static because it's used by Derby extension, see
+    // com.gooddata.derby.extension.DerbyExtensions and
+    // com.gooddata.connector.backend.DerbyConnectorBackend
+    private static int defaultDateForeignKey = DEFAULT_DATE_FOREIGN_KEY;
 
-    /**
+	/**
      * {@inheritDoc}
      */
     public abstract void dropIntegrationDatabase();
@@ -373,4 +381,19 @@ public abstract class AbstractConnectorBackend implements ConnectorBackend {
      */
     protected abstract void createSnowflake(PdmSchema schema) throws ConnectorBackendException;
 
+    /**
+     * Default foreign key of a date value getter
+     * @return
+     */
+    public static int getDefaultDateForeignKey() {
+		return defaultDateForeignKey;
+	}
+
+    /**
+     * Default foreign key of a date value setter
+     * @param 
+     */
+	public static void setDefaultDateForeignKey(int value) {
+		defaultDateForeignKey = value;
+	}
 }

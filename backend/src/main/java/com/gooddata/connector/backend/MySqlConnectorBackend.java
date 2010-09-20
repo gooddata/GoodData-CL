@@ -59,7 +59,6 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
 
     //use memory tables for transformations
     private int memoryAmountInMB = 60;
-
     
     /**
      * static initializer of the Derby SQL JDBC driver
@@ -251,7 +250,8 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
         for(PdmColumn column : factTable.getDateColumns()) {
             factColumns += "," + column.getName();
             sourceColumns += ",IFNULL(DATEDIFF(STR_TO_DATE(" + column.getSourceColumn() + ",'" +
-                    StringUtil.convertJavaDateFormatToMySql(column.getFormat())+"'),'1900-01-01')+1,0)";
+                    StringUtil.convertJavaDateFormatToMySql(column.getFormat())
+                    + "'),'1900-01-01')+1," + getDefaultDateForeignKey() + ")";
         }
         String sql = "INSERT INTO "+fact+"("+N.ID+factColumns+") SELECT "+ N.SRC_ID + sourceColumns 
         		+ " FROM " + source + " WHERE "+N.SRC_ID+" > (SELECT MAX(lastid) FROM snapshots WHERE name='"
