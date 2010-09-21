@@ -5,6 +5,10 @@
 * Fixed invalid "odd quote character" error if the 4096th character is an escaped double-quote + test added 
 * Non-closed quotes in a CSV file were silently accepted, the tool returns an error now
 
+## 1.1.6-beta
+
+* Google Analytics Connector: support for incremental data loading with overlapped dates
+
 ## 1.1.5-beta
 
 * Fixed CSV parsing bugs with the <comma><tree-double-quotes> sequence and with missing end lines. 
