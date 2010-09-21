@@ -99,6 +99,8 @@ public class GaConnector extends AbstractConnector implements Connector {
         String dims = gQuery.getDimensions();
         String mtrs = gQuery.getMetrics();
         SourceSchema s = SourceSchema.createSchema(name);
+        SourceColumn cp = new SourceColumn("id",SourceColumn.LDM_TYPE_CONNECTION_POINT, "id");
+        s.addColumn(cp);
         if(dims != null && dims.length() > 0) {
             String[] dimensions = dims.split("\\|");
             for(String dim : dimensions) {
