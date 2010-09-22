@@ -12,61 +12,92 @@ public class CSVReaderTest {
 
 	@Test
 	public void testLoadCrazyFile() throws IOException {
-		Reader reader = new InputStreamReader(
-				CSVReaderTest.class.getResourceAsStream("/com/gooddata/util/crazy.csv"),
-				"utf8");
-		CSVReader csv = new CSVReader(reader); 
-				
-		final int expectedRows = 6;
-		int i = 0;
-		String[] line = null;
-		while ((line = csv.readNext()) != null) {
-			Assert.assertEquals(4, line.length);
-			i++;
-			if (i == expectedRows) {
-				for (Integer j = 1; j <= 4; j++) {
-					Assert.assertEquals(j.toString(), line[j - 1]);
+		String[] files = new String[] { "/com/gooddata/util/crazy.csv", "/com/gooddata/util/crazy.csv.win" };
+		for (final String f : files) {
+			Reader reader = new InputStreamReader(
+					CSVReaderTest.class.getResourceAsStream(f),
+					"utf8");
+			CSVReader csv = new CSVReader(reader); 
+					
+			final int expectedRows = 6;
+			int i = 0;
+			String[] line = null;
+			while ((line = csv.readNext()) != null) {
+				i++;
+				Assert.assertEquals(f + ":" + i, 4, line.length);
+				if (i == expectedRows) {
+					for (Integer j = 1; j <= 4; j++) {
+						Assert.assertEquals(j.toString(), line[j - 1]);
+					}
 				}
 			}
+			Assert.assertEquals(f, expectedRows, i);
 		}
-		Assert.assertEquals(expectedRows, i);
 	}
 
     @Test
 	public void testEscaping() throws IOException {
-		Reader reader = new InputStreamReader(
-				CSVReaderTest.class.getResourceAsStream("/com/gooddata/util/escaping.csv"),
-				"utf8");
-		CSVReader csv = new CSVReader(reader);
+		String[] files = new String[] { "/com/gooddata/util/escaping.csv", "/com/gooddata/util/escaping.csv.win" };
+		for (final String f : files) {
+			Reader reader = new InputStreamReader(
+					CSVReaderTest.class.getResourceAsStream(f),
+					"utf8");
 
-		final int expectedRows = 2;
-		final int expectedCols = 4;
-
-		int i = 0;
-		String[] line = null;
-		while ((line = csv.readNext()) != null) {
-			Assert.assertEquals(expectedCols, line.length);
-			i++;
+			CSVReader csv = new CSVReader(reader);
+	
+			final int expectedRows = 2;
+			final int expectedCols = 4;
+	
+			int i = 0;
+			String[] line = null;
+			while ((line = csv.readNext()) != null) {
+				i++;
+				Assert.assertEquals(f + ":" + i, expectedCols, line.length);
+			}
+			Assert.assertEquals(f, expectedRows, i);
 		}
-		Assert.assertEquals(expectedRows, i);
 	}
     
     @Test
 	public void testChunkBoundaryEscape() throws IOException {
-    	Reader reader = new InputStreamReader(
-				CSVReaderTest.class.getResourceAsStream("/com/gooddata/util/chunk-boundary.csv"),
-				"utf8");
-		CSVReader csv = new CSVReader(reader);
-
-		final int expectedRows = 58;
-		final int expectedCols = 13;
-		int i = 0;
-		String[] line = null;
-		while ((line = csv.readNext()) != null) {
-			Assert.assertEquals(expectedCols, line.length);
-			i++;
+    	String[] files = new String[] { "/com/gooddata/util/chunk-boundary.csv", "/com/gooddata/util/chunk-boundary.csv.win" };
+		for (final String f : files) {
+			Reader reader = new InputStreamReader(
+					CSVReaderTest.class.getResourceAsStream(f),
+					"utf8");
+			CSVReader csv = new CSVReader(reader);
+	
+			final int expectedRows = 58;
+			final int expectedCols = 13;
+			int i = 0;
+			String[] line = null;
+			while ((line = csv.readNext()) != null) {
+				i++;
+				Assert.assertEquals(f + ":" + i, expectedCols, line.length);
+			}
+			Assert.assertEquals(f, expectedRows, i);
 		}
-		Assert.assertEquals(expectedRows, i);
+    }
+    
+    @Test
+	public void testLong() throws IOException {
+    	String[] files = new String[] { "/com/gooddata/util/long.csv", "/com/gooddata/util/long.csv.win" };
+		for (final String f : files) {
+			Reader reader = new InputStreamReader(
+					CSVReaderTest.class.getResourceAsStream(f),
+					"utf8");
+			CSVReader csv = new CSVReader(reader);
+	
+			final int expectedRows = 753;
+			final int expectedCols = 10;
+			int i = 0;
+			String[] line = null;
+			while ((line = csv.readNext()) != null) {
+				i++;
+				Assert.assertEquals(f + ":" + i, expectedCols, line.length);
+			}
+			Assert.assertEquals(f, expectedRows, i);
+		}
     }
     
     @Test

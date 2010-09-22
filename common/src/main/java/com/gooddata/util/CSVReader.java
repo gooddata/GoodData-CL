@@ -160,27 +160,7 @@ public class CSVReader implements Closeable {
 	    	if (size == -1) {
 	    		break;
 	    	}
-	    	
-	    	for (int i = 0; i < size; i++) {
-	    		col++;
-	    		final char c = data[i];
-	    		if (wasEscapeOrNotOpeningQuote) {
-	    			handlePreviousEscapeOrQuote(c);
-	    		} else if (c == escape || c == quote) {
-	    			handleEscapeOrQuote(c);
-	    		} else if (c == separator) {
-	    			handleSeparator(c);
-	    		} else if (c == '\n' || c == '\r') {
-	    			handleCrOrLf(c);
-	    		} else if (hasCommentSupport && (c == commentChar)) {
-	    			handleComment(c);
-	    		} else {
-	    			if (commentedLine) 
-	    				break;
-	    			addCharacter(c);
-	    		}
-	    		lastChar = c;
-	    	}	
+	    	processChunk(data, size);
     	}
     	if (recordsQueue.isEmpty()) {
     		if (wasEscapeOrNotOpeningQuote) {
@@ -205,8 +185,31 @@ public class CSVReader implements Closeable {
     	return recordsQueue.removeFirst();
     }
     
+    private void processChunk(final char[] data, final int size) {
+    	for (int i = 0; i < size; i++) {
+    		col++;
+    		final char c = data[i];
+    		if (wasEscapeOrNotOpeningQuote) {
+    			handlePreviousEscapeOrQuote(c);
+    		} else if (c == escape || c == quote) {
+    			handleEscapeOrQuote(c);
+    		} else if (c == separator) {
+    			handleSeparator(c);
+    		} else if (c == '\n' || c == '\r') {
+    			handleCrOrLf(c);
+    		} else if (hasCommentSupport && (c == commentChar)) {
+    			handleComment(c);
+    		} else {
+    			if (commentedLine) 
+    				break;
+    			addCharacter(c);
+    		}
+    		lastChar = c;
+    	}	
+    }
+    
     private void handleCrOrLf(final char c) {
-        if (c == '\n' && !quotedField && (lastChar == '\r')) {
+        if (!quotedField && (lastChar == '\r')) {
         	return;
         }
         handleEndOfLine(c);
