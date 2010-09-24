@@ -456,6 +456,7 @@ public class MaqlGenerator {
 	            String stat = "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
 	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn + "_"+N.ID+"};\n"
 	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
+                //stat = "ALTER DATATYPE {"+getFactTableName() + "." + N.DT_PFX + scn + "_" + N.ID+"} DATE;\n\n";
 	            if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
 	                stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";

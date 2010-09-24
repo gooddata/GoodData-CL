@@ -37,6 +37,7 @@ public class Column {
     private String name;
     private String mode;
     private int referenceKey;
+    private String format;
 
     private String[] populates;
 
@@ -147,5 +148,14 @@ public class Column {
     public String toString() {
         return "name='" + name + "', mode='" + mode + "', referenceKey='" + referenceKey + "'";
     }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+    
 
 }

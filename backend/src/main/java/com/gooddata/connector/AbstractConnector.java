@@ -256,8 +256,21 @@ public abstract class AbstractConnector implements Connector {
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL))
                     c.setPopulates(new String[] {"label." + ssn + "." + StringUtil.toIdentifier(sc.getReference()) +
                             "." + scn});
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
-                    c.setPopulates(new String[] {N.DT + "." + ssn + "." + scn});
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
+                    String fmt = sc.getFormat();
+                    if(fmt != null && fmt.length() > 0) {
+                        c.setFormat(fmt);
+                    }
+                    else {
+                        c.setFormat(Constants.DEFAULT_DATE_FMT_STRING); 
+                    }
+                    String sr = sc.getSchemaReference();
+                    if(sr != null && sr.length() > 0) {
+                        sr = StringUtil.toIdentifier(sr);
+                        c.setPopulates(new String[] {sr + "." + Constants.DEFAULT_DATE_LABEL});
+                    }
+                    //TODO - HANDLE DATES WITHOUT schemaReference
+                }
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT))
                     c.setPopulates(new String[] {"fact." + ssn + "." + scn});
                 columns.add(c);

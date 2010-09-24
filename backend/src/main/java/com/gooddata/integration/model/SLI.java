@@ -23,6 +23,7 @@
 
 package com.gooddata.integration.model;
 
+import com.gooddata.util.StringUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -39,6 +40,7 @@ public class SLI {
     private String id;
     private String name;
     private String link;
+    private String format;
 
     /**
      * Constructs the new SLI
@@ -79,6 +81,15 @@ public class SLI {
         return id;
     }
 
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+    
+
 
     /**
      * Returns the SLI manifest that determines how the data are loaded to the GDC platform.
@@ -92,9 +103,15 @@ public class SLI {
         JSONArray oParts = new JSONArray();
         for(Column column : columns) {
             JSONObject oPart = new JSONObject();
-            oPart.put("columnName", column.getName());
+            oPart.put("columnName", StringUtil.toIdentifier(column.getName()));
             oPart.put("mode", column.getMode());
             oPart.put("populates", column.getPopulates());
+            String fmt = column.getFormat();
+            if(fmt != null && fmt.length()>0) {
+                JSONObject constraints = new JSONObject();
+                constraints.put("date",fmt);
+                oPart.put("constraints",constraints);
+            }
             int referenceKey = column.getReferenceKey();
             if(referenceKey > 0)
                 oPart.put("referenceKey", referenceKey);
