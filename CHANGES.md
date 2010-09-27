@@ -2,6 +2,17 @@
 
 ## To be released
 
+* Nothing yet
+
+## 1.1.8-beta
+
+* Fixed error when using MySQL backend database running with binary logging turned on
+* Fixed error loading data containing double-quote character from an external source
+
+## 1.1.7-beta
+
+* Fixed error handling CRLF sequences in CSV files. IMPORTANT: If you run GoodData CL 1.1.4 to 1.1.6 on Windows, you really need to upgrade!
+
 ## 1.1.6-beta
 
 * Google Analytics Connector: support for incremental data loading with overlapped dates
