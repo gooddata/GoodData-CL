@@ -265,6 +265,7 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
     protected void createFunctions(Connection c) throws SQLException {
         l.debug("Creating system functions.");
     	String sql = "CREATE FUNCTION ATOD(str varchar(255)) RETURNS DECIMAL(15,4) "
+    		    + "DETERMINISTIC READS SQL DATA "
 			    + "RETURN CASE "
                 + "      WHEN TRIM(str) = '-' THEN 0"
 			    + "      WHEN TRIM(str) = '' THEN NULL "
