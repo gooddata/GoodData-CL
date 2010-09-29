@@ -41,6 +41,7 @@ import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -125,29 +126,23 @@ public class GdcRESTApiWrapper {
         try {
             String resp = executeMethodOk(loginPost, false); // do not re-login on SC_UNAUTHORIZED
             // read SST from cookie
-            for (Cookie cookie : client.getState().getCookies()) {
-                if ("GDCAuthSST".equals(cookie.getName())) {
-                    ssToken = cookie.getValue();
-                    setTokenCookie();
-                    l.debug("Succesfully logged into GoodData.");
-                    JSONObject rsp = JSONObject.fromObject(resp);
-                    JSONObject userLogin =  rsp.getJSONObject("userLogin");
-                    String profileUri = userLogin.getString("profile");
-                    if(profileUri != null && profileUri.length()>0) {
-                        GetMethod gm = new GetMethod(config.getUrl() + profileUri);
-                        setJsonHeaders(gm);
-                        resp = executeMethodOk(gm);
-                        this.profile = JSONObject.fromObject(resp);
-                    }
-                    else {
-                        l.debug("Empty account profile.");
-                        throw new GdcRestApiException("Empty account profile.");
-                    }
-                    return ssToken;
-                }
+            ssToken = extractCookie(loginPost, "GDCAuthSST");
+            setTokenCookie();
+            l.debug("Succesfully logged into GoodData.");
+            JSONObject rsp = JSONObject.fromObject(resp);
+            JSONObject userLogin =  rsp.getJSONObject("userLogin");
+            String profileUri = userLogin.getString("profile");
+            if(profileUri != null && profileUri.length()>0) {
+                GetMethod gm = new GetMethod(config.getUrl() + profileUri);
+                setJsonHeaders(gm);
+                resp = executeMethodOk(gm);
+                this.profile = JSONObject.fromObject(resp);
             }
-            l.debug("GDCAuthSST was not found in cookies after login.");
-            throw new GdcLoginException("GDCAuthSST was not found in cookies after login.");
+            else {
+                l.debug("Empty account profile.");
+                throw new GdcRestApiException("Empty account profile.");
+            }
+            return ssToken;
         } catch (HttpMethodException ex) {
             l.debug("Error logging into GoodData.", ex);
             throw new GdcLoginException("Login to GDC failed.", ex);
@@ -172,6 +167,18 @@ public class GdcRESTApiWrapper {
         loginStructure.put("postUserLogin", credentialsStructure);
         return loginStructure;
     }
+    
+    private String extractCookie(HttpMethod method, String cookieName) {
+    	for (final Header cookieHeader : method.getResponseHeaders("Set-Cookie")) {
+	    	for (final HttpCookie cookie : HttpCookie.parse(cookieHeader.getValue())) {
+	    		if (cookieName.equals(cookie.getName())) {
+	    			return cookie.getValue();
+	    		}
+	    	}
+    	}
+    	throw new GdcRestApiException(cookieName + " cookie not found in the response to "
+    			+ method.getName() + " to " + method.getPath());
+    }
 
     /**
      * Sets the SS token
@@ -184,7 +191,7 @@ public class GdcRESTApiWrapper {
         setJsonHeaders(secutityTokenGet);
 
         // set SSToken from config
-        Cookie sstCookie = new Cookie(config.getGdcHost(), "GDCAuthSST", ssToken, "/", -1, false);
+        Cookie sstCookie = new Cookie(config.getGdcHost(), "GDCAuthSST", ssToken, TOKEN_URI, -1, false);
         sstCookie.setPathAttributeSpecified(true);
         client.getState().addCookie(sstCookie);
 
@@ -883,8 +890,8 @@ public class GdcRESTApiWrapper {
             if (method.getStatusCode() == HttpStatus.SC_OK) {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reLoginOn401) {
-            	// retry
-            	login();
+            	// refresh the temporary token
+            	setTokenCookie();
             	return executeMethodOk(method, false);
             } else if (method.getStatusCode() == HttpStatus.SC_CREATED) {
                 return method.getResponseBodyAsString();
