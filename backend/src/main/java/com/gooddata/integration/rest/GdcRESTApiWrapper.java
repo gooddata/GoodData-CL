@@ -119,8 +119,7 @@ public class GdcRESTApiWrapper {
     public String login() throws GdcLoginException {
         l.debug("Logging into GoodData.");
         JSONObject loginStructure = getLoginStructure();
-        PostMethod loginPost = new PostMethod(config.getUrl() + LOGIN_URI);
-        setJsonHeaders(loginPost);
+        PostMethod loginPost = createPostMethod(config.getUrl() + LOGIN_URI);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(loginStructure.toString().getBytes()));
         loginPost.setRequestEntity(request);
         try {
@@ -133,8 +132,7 @@ public class GdcRESTApiWrapper {
             JSONObject userLogin =  rsp.getJSONObject("userLogin");
             String profileUri = userLogin.getString("profile");
             if(profileUri != null && profileUri.length()>0) {
-                GetMethod gm = new GetMethod(config.getUrl() + profileUri);
-                setJsonHeaders(gm);
+                GetMethod gm = createGetMethod(config.getUrl() + profileUri);
                 resp = executeMethodOk(gm);
                 this.profile = JSONObject.fromObject(resp);
             }
@@ -186,9 +184,8 @@ public class GdcRESTApiWrapper {
      * @throws GdcLoginException
      */
     private void setTokenCookie() throws GdcLoginException {
-        HttpMethod secutityTokenGet = new GetMethod(config.getUrl() + TOKEN_URI);
+        HttpMethod secutityTokenGet = createGetMethod(config.getUrl() + TOKEN_URI);
 
-        setJsonHeaders(secutityTokenGet);
 
         // set SSToken from config
         Cookie sstCookie = new Cookie(config.getGdcHost(), "GDCAuthSST", ssToken, TOKEN_URI, -1, false);
@@ -269,8 +266,7 @@ public class GdcRESTApiWrapper {
     @SuppressWarnings("unchecked")
     private Iterator<JSONObject> getProjectsLinks() throws HttpMethodException {
         l.debug("Getting project links.");
-        HttpMethod req = new GetMethod(config.getUrl() + MD_URI);
-        setJsonHeaders(req);
+        HttpMethod req = createGetMethod(config.getUrl() + MD_URI);
         try {
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
@@ -368,8 +364,7 @@ public class GdcRESTApiWrapper {
         l.debug("Getting DLIs from project id="+projectId);
         List<DLI> list = new ArrayList<DLI>();
         String ifcUri = getDLIsUri(projectId);
-        HttpMethod interfacesGet = new GetMethod(ifcUri);
-        setJsonHeaders(interfacesGet);
+        HttpMethod interfacesGet = createGetMethod(ifcUri);
         try {
             String response = executeMethodOk(interfacesGet);
             JSONObject responseObject = JSONObject.fromObject(response);
@@ -412,8 +407,7 @@ public class GdcRESTApiWrapper {
         l.debug("Getting DLI parts DLI id = "+dliId+" from project id="+projectId);
         List<DLIPart> list = new ArrayList<DLIPart>();
         String dliUri = getDLIUri(dliId, projectId);
-        HttpMethod dliGet = new GetMethod(dliUri);
-        setJsonHeaders(dliGet);
+        HttpMethod dliGet = createGetMethod(dliUri);
         try {
             String response = executeMethodOk(dliGet);
             JSONObject partsResponseObject = JSONObject.fromObject(response);
@@ -449,8 +443,7 @@ public class GdcRESTApiWrapper {
         l.debug("Enumerating reports for project id="+projectId);
         List<String> list = new ArrayList<String>();
         String qUri = getProjectMdUrl(projectId) + REPORT_QUERY;
-        HttpMethod qGet = new GetMethod(qUri);
-        setJsonHeaders(qGet);
+        HttpMethod qGet = createGetMethod(qUri);
         try {
             String qr = executeMethodOk(qGet);
             JSONObject q = JSONObject.fromObject(qr);
@@ -491,8 +484,7 @@ public class GdcRESTApiWrapper {
         try {
             l.debug("Getting report definition for report uri="+reportUri);
             String qUri = config.getUrl() + reportUri;
-            qGet = new GetMethod(qUri);
-            setJsonHeaders(qGet);
+            qGet = createGetMethod(qUri);
             String qr = executeMethodOk(qGet);
             JSONObject q = JSONObject.fromObject(qr);
             if (q.isNullObject()) {
@@ -517,8 +509,7 @@ public class GdcRESTApiWrapper {
             if(results.size()>0) {
                 String lastResultUri = results.getString(results.size()-1);
                 qUri = config.getUrl() + lastResultUri;
-                qGet = new GetMethod(qUri);
-                setJsonHeaders(qGet);
+                qGet = createGetMethod(qUri);
                 qr = executeMethodOk(qGet);
                 q = JSONObject.fromObject(qr);
                 if (q.isNullObject()) {
@@ -558,8 +549,7 @@ public class GdcRESTApiWrapper {
      */
     public String executeReportDefinition(String reportDefUri) {
         l.debug("Executing report definition uri="+reportDefUri);
-        PostMethod execPost = new PostMethod(config.getUrl() + EXECUTOR);
-        setJsonHeaders(execPost);
+        PostMethod execPost = createPostMethod(config.getUrl() + EXECUTOR);
         JSONObject execDef = new JSONObject();
         execDef.put("reportDefinition",reportDefUri);
         JSONObject exec = new JSONObject();
@@ -613,8 +603,7 @@ public class GdcRESTApiWrapper {
      */
     public String startLoading(String projectId, String remoteDir) throws GdcRestApiException {
         l.debug("Initiating data load project id="+projectId+" remoteDir="+remoteDir);
-        PostMethod pullPost = new PostMethod(getProjectMdUrl(projectId) + PULL_URI);
-        setJsonHeaders(pullPost);
+        PostMethod pullPost = createPostMethod(getProjectMdUrl(projectId) + PULL_URI);
         JSONObject pullStructure = getPullStructure(remoteDir);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(pullStructure.toString().getBytes()));
         pullPost.setRequestEntity(request);
@@ -653,8 +642,7 @@ public class GdcRESTApiWrapper {
      */
     public String getLoadingStatus(String link) throws HttpMethodException {
         l.debug("Getting data loading status uri="+link);
-        HttpMethod ptm = new GetMethod(config.getUrl() + link);
-        setJsonHeaders(ptm);
+        HttpMethod ptm = createGetMethod(config.getUrl() + link);
         try {
             String response = executeMethodOk(ptm);
             JSONObject task = JSONObject.fromObject(response);
@@ -680,8 +668,7 @@ public class GdcRESTApiWrapper {
      */
     public String createProject(String name, String desc, String templateUri) throws GdcRestApiException {
         l.debug("Creating project name="+name);
-        PostMethod createProjectPost = new PostMethod(config.getUrl() + PROJECTS_URI);
-        setJsonHeaders(createProjectPost);
+        PostMethod createProjectPost = createPostMethod(config.getUrl() + PROJECTS_URI);
         JSONObject createProjectStructure = getCreateProject(name, desc, templateUri);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 createProjectStructure.toString().getBytes()));
@@ -741,8 +728,7 @@ public class GdcRESTApiWrapper {
     public String getProjectStatus(String projectId) {
         l.debug("Getting project status for project "+projectId);
         String uri = getProjectDeleteUri(projectId);
-        HttpMethod ptm = new GetMethod(config.getUrl() + uri);
-        setJsonHeaders(ptm);
+        HttpMethod ptm = createGetMethod(config.getUrl() + uri);
         try {
             String response = executeMethodOk(ptm);
             JSONObject jresp = JSONObject.fromObject(response);
@@ -765,8 +751,7 @@ public class GdcRESTApiWrapper {
      */
     public void dropProject(String projectId) throws GdcRestApiException {
         l.debug("Dropping project id="+projectId);
-        DeleteMethod dropProjectDelete = new DeleteMethod(config.getUrl() + getProjectDeleteUri(projectId));
-        setJsonHeaders(dropProjectDelete);
+        DeleteMethod dropProjectDelete = createDeleteMethod(config.getUrl() + getProjectDeleteUri(projectId));
         try {
             executeMethodOk(dropProjectDelete);
         } catch (HttpMethodException ex) {
@@ -786,8 +771,7 @@ public class GdcRESTApiWrapper {
      */
     protected String getProjectId(String uri) throws GdcRestApiException {
         l.debug("Getting project id by uri="+uri);
-        HttpMethod req = new GetMethod(config.getUrl() + uri);
-        setJsonHeaders(req);
+        HttpMethod req = createGetMethod(config.getUrl() + uri);
         try {
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
@@ -831,8 +815,7 @@ public class GdcRESTApiWrapper {
      */
     public String[] executeMAQL(String projectId, String maql) throws GdcRestApiException {
         l.debug("Executing MAQL projectId="+projectId+" MAQL:\n"+maql);
-        PostMethod maqlPost = new PostMethod(getProjectMdUrl(projectId) + MAQL_EXEC_URI);
-        setJsonHeaders(maqlPost);
+        PostMethod maqlPost = createPostMethod(getProjectMdUrl(projectId) + MAQL_EXEC_URI);
         JSONObject maqlStructure = getMAQLExecStructure(maql);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 maqlStructure.toString().getBytes()));
@@ -923,17 +906,6 @@ public class GdcRESTApiWrapper {
         }
     }
 
-
-    /**
-     * Sets the JSON request headers
-     *
-     * @param request the http request
-     */
-    protected void setJsonHeaders(HttpMethod request) {
-        request.setRequestHeader("Content-Type", "application/json");
-        request.setRequestHeader("Accept", "application/json");
-    }
-
     /**
      * Returns the data interfaces URI
      *
@@ -993,8 +965,7 @@ public class GdcRESTApiWrapper {
                 if(lnks != null) {
                     String projectsUri = lnks.getString("projects");
                     if(projectsUri != null && projectsUri.length()>0) {
-                        HttpMethod req = new GetMethod(config.getUrl()+projectsUri);
-                        setJsonHeaders(req);
+                        HttpMethod req = createGetMethod(config.getUrl()+projectsUri);
                         try {
                             String resp = executeMethodOk(req);
                             JSONObject rsp = JSONObject.fromObject(resp);
@@ -1089,8 +1060,7 @@ public class GdcRESTApiWrapper {
      */
     public void inviteUser(String projectId, String eMail, String message, String role) {
         l.debug("Executing inviteUser projectId="+projectId+" e-mail="+eMail+" message="+message);
-        PostMethod invitePost = new PostMethod(config.getUrl() + getProjectDeleteUri(projectId) + INVITATION_URI);
-        setJsonHeaders(invitePost);
+        PostMethod invitePost = createPostMethod(config.getUrl() + getProjectDeleteUri(projectId) + INVITATION_URI);
         JSONObject inviteStructure = getInviteStructure(projectId, eMail, message, role);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 inviteStructure.toString().getBytes()));
@@ -1147,8 +1117,7 @@ public class GdcRESTApiWrapper {
      */
     public JSONObject getMetadataObject(String projectId, String objectId) {
         l.debug("Executing getMetadataObject id="+objectId+" on project id="+projectId);
-        HttpMethod req = new GetMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
-        setJsonHeaders(req);
+        HttpMethod req = createGetMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
         try {
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
@@ -1171,8 +1140,7 @@ public class GdcRESTApiWrapper {
      */
     public JSONObject createMetadataObject(String projectId, JSONObject content) {
         l.debug("Executing createMetadataObject on project id="+projectId+ "content='"+content.toString()+"'");
-        PostMethod req = new PostMethod(getProjectMdUrl(projectId) + OBJ_URI + "?createAndGet=true");
-        setJsonHeaders(req);
+        PostMethod req = createPostMethod(getProjectMdUrl(projectId) + OBJ_URI + "?createAndGet=true");
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 content.toString().getBytes()));
         req.setRequestEntity(request);
@@ -1198,8 +1166,7 @@ public class GdcRESTApiWrapper {
      */
     public JSONObject modifyMetadataObject(String projectId, String objectId, JSONObject content) {
         l.debug("Executing modifyMetadataObject on project id="+projectId+" objectId="+objectId+" content='"+content.toString()+"'");
-        PostMethod req = new PostMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
-        setJsonHeaders(req);
+        PostMethod req = createPostMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 content.toString().getBytes()));
         req.setRequestEntity(request);
@@ -1224,8 +1191,7 @@ public class GdcRESTApiWrapper {
      */
     public void deleteMetadataObject(String projectId, String objectId) {
         l.debug("Executing deleteMetadataObject on project id="+projectId+" objectId="+objectId);
-        DeleteMethod req = new DeleteMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
-        setJsonHeaders(req);
+        DeleteMethod req = createDeleteMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
         try {
             String resp = executeMethodOk(req);
         } catch (HttpMethodException ex) {
@@ -1234,7 +1200,25 @@ public class GdcRESTApiWrapper {
         } finally {
             req.releaseConnection();
         }
-
     }
+    
+    private static GetMethod createGetMethod(String path) {
+    	return configureHttpMethod(new GetMethod(path));
+    }
+    
+    private static PostMethod createPostMethod(String path) {
+    	return configureHttpMethod(new PostMethod(path));
+    }
+    
+    private static DeleteMethod createDeleteMethod(String path) {
+    	return configureHttpMethod(new DeleteMethod(path));
+    }
+    
+    private static <T extends HttpMethod> T configureHttpMethod(T request) {
+        request.setRequestHeader("Content-Type", "application/json");
+        request.setRequestHeader("Accept", "application/json");
+    	return request;
+    }
+
 
 }
