@@ -1,8 +1,9 @@
 # GoodData CL Change Log
 
-## To be released
+## 1.1.9-beta
 
-* Nothing yet
+* Authentication handling updated to be forward compatible with API change in the upcoming
+  GoodData platform release 41 (~ end of October)
 
 ## 1.1.8-beta
 
