@@ -235,8 +235,7 @@ public abstract class AbstractConnector implements Connector {
     }
     
 
-    protected List<Column> populateColumnsFromSchema() {
-        SourceSchema schema = getSchema();
+    protected List<Column> populateColumnsFromSchema(SourceSchema schema) {
         List<Column> columns = new ArrayList<Column>();
         String ssn = StringUtil.toIdentifier(schema.getName());
         for(SourceColumn sc : schema.getColumns()) {
@@ -309,7 +308,7 @@ public abstract class AbstractConnector implements Connector {
         // get information about the data loading package      
         SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
         List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
-        List<Column> columns = populateColumnsFromSchema();
+        List<Column> columns = populateColumnsFromSchema(cc.getSchema());
 
         if(sliColumns.size() > columns.size())
             throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");

@@ -68,7 +68,7 @@ public class MaqlGenerator {
         script += "CREATE DATASET {" + schema.getDatasetName() + "} VISUAL(TITLE \"" + lsn + "\");\n\n";
         script += generateFoldersMaqlDdl(schema.getColumns());
         
-        script += generateMaqlAdd(schema.getColumns(), false);
+        script += generateMaqlAdd(schema.getColumns(), true);
         
         return script;
     }
@@ -188,7 +188,7 @@ public class MaqlGenerator {
         	script += c.generateMaqlDdlAdd();
         }
 
-        if (createFactsOf) {
+        if (createFactsOf & (!state.hasCp)) {
 	        script += "# THE FACTS OF ATTRIBUTE IS SORT OF DATASET IDENTIFIER\n";
 	        script += "# IT IS USED FOR COUNT AGGREGATIONS\n";
 	        // generate the facts of / record id special attribute

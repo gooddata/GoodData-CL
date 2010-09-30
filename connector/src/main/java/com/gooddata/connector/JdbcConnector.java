@@ -224,7 +224,6 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 l.error("Error closing JDBC connection.",e);
             }
         }
-        //getConnectorBackend().extract(dataFile, false,',');
         FileUtil.recursiveDelete(dataFile);
     }
 
