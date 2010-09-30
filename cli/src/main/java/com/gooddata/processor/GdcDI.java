@@ -23,18 +23,13 @@
 
 package com.gooddata.processor;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
+import com.gooddata.connector.*;
 import com.gooddata.util.StringUtil;
 import net.sf.json.JSONObject;
 import org.apache.commons.cli.CommandLine;
@@ -45,12 +40,6 @@ import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import com.gooddata.connector.Connector;
-import com.gooddata.connector.CsvConnector;
-import com.gooddata.connector.DateDimensionConnector;
-import com.gooddata.connector.GaConnector;
-import com.gooddata.connector.JdbcConnector;
-import com.gooddata.connector.SfdcConnector;
 import com.gooddata.exception.GdcException;
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.GdcRestApiException;
@@ -95,6 +84,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
     public static String[] CLI_PARAM_VERSION = {"version","V"};
     public static String[] CLI_PARAM_MEMORY = {"memory","m"};
+    public static String[] CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY = {"default-date-fk","D"};
     public static String CLI_PARAM_SCRIPT = "script";
     
     private static String DEFAULT_PROPERTIES = "gdi.properties";
@@ -117,7 +107,8 @@ public class GdcDI implements Executor {
         new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
         new Option(CLI_PARAM_INSECURE[1], CLI_PARAM_INSECURE[0], false, "Disable encryption"),
         new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version."),    
-        new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files")
+        new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files"),
+        new Option(CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY[1], CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY[0], true, "Foreign key to represent an 'unknown' date")
     };
 
     private CliParams cliParams = null;
@@ -837,7 +828,6 @@ public class GdcDI implements Executor {
     	}
     	lock.deleteOnExit();
     }
-
 
     /**
      * Instantiate all known connectors

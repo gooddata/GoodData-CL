@@ -1,20 +1,27 @@
-package com.gooddata.util;
-
-/**
- Copyright 2005 Bytecode Pty Ltd.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2009, GoodData Corporation. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ *        the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the GoodData Corporation nor the names of its contributors may be used to endorse
+ *        or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+package com.gooddata.util;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -24,9 +31,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A very simple CSV reader released under a commercial-friendly license.
+ * A simple CSV reader written from the scratch to replace Bytecode's CSV reader
  * 
- * @author Glen Smith
+ * @author Pavel Kolesnikov
  * 
  */
 public class CSVReader implements Closeable {
@@ -51,11 +58,14 @@ public class CSVReader implements Closeable {
     private StringBuffer openField  = new StringBuffer();
     private char lastChar = 0; 
     private boolean quotedField = false;
+    private int quotedFieldStartRow = 0;
+    private int quotedFieldStartCol = 0;
+    private boolean wasEscapeOrNotOpeningQuote = false;
     private boolean commentedLine = false;
     private LinkedList<String[]> recordsQueue = new LinkedList<String[]>();
     private boolean eof = false;
     
-    private int row = 0;
+    private int row = 1;
     private int col = 0;
 
     /**
@@ -150,35 +160,16 @@ public class CSVReader implements Closeable {
 	    	if (size == -1) {
 	    		break;
 	    	}
-	    	
-	    	for (int i = 0; i < size; i++) {
-	    		col++;
-	    		final char c = data[i];
-	    		if (c == escape || c == quote) {
-	    			final int i2 = handleEscapeOrQuote(data, size, i);
-	    			if (i2 > i) {
-	    				i = i2;
-	    				col += i2 - i;
-	    			}
-	    		} else if (c == separator) {
-	    			handleSeparator(c);
-	    		} else if (c == '\n' || c == '\r') {
-	    			// handle CRLF sequence
-	                if (c == '\n' && !quotedField && (lastChar == '\r')) {
-	                	break;
-	                }
-	                handleEndOfLine(c);
-	    		} else if (hasCommentSupport && (c == commentChar)) {
-	    			handleComment(c);
-	    		} else {
-	    			if (commentedLine) 
-	    				break;
-	    			addCharacter(c);
-	    		}
-	    		lastChar = c;
-	    	}	
+	    	processChunk(data, size);
     	}
     	if (recordsQueue.isEmpty()) {
+    		if (wasEscapeOrNotOpeningQuote) {
+    			handlePreviousEscapeOrQuote(null);
+    		}
+    		if (quotedField) {
+    			throw new IllegalStateException("Missing quote character to close the quote char at ["
+    					+ quotedFieldStartRow + "," + quotedFieldStartCol + "]");
+    		}
     		if (openRecord.isEmpty()) {
     			return null;
     		} else {
@@ -192,6 +183,36 @@ public class CSVReader implements Closeable {
     		}
     	}
     	return recordsQueue.removeFirst();
+    }
+    
+    private void processChunk(final char[] data, final int size) {
+    	for (int i = 0; i < size; i++) {
+    		col++;
+    		final char c = data[i];
+    		if (wasEscapeOrNotOpeningQuote) {
+    			handlePreviousEscapeOrQuote(c);
+    		} else if (c == escape || c == quote) {
+    			handleEscapeOrQuote(c);
+    		} else if (c == separator) {
+    			handleSeparator(c);
+    		} else if (c == '\n' || c == '\r') {
+    			handleCrOrLf(c);
+    		} else if (hasCommentSupport && (c == commentChar)) {
+    			handleComment(c);
+    		} else {
+    			if (commentedLine) 
+    				break;
+    			addCharacter(c);
+    		}
+    		lastChar = c;
+    	}	
+    }
+    
+    private void handleCrOrLf(final char c) {
+        if (!quotedField && (lastChar == '\r')) {
+        	return;
+        }
+        handleEndOfLine(c);
     }
     
     private void handleComment(final char c) {
@@ -233,50 +254,51 @@ public class CSVReader implements Closeable {
     		this.addField();
     	}
     }
-    	
-    private int handleEscapeOrQuote(final char[] data, final int size, int i) {
-    	if (commentedLine)
-			return i;
-    	
-    	// handle start of a new quoted field
-    	if (openField.length() == 0 && !quotedField) {
-    		quotedField = true;
-    		return i;
+    
+    private void handlePreviousEscapeOrQuote(Character c) {
+    	boolean wasEscape = false;
+    	if (lastChar == escape && c != null) {
+			if (isEscapableCharacter(c)) {
+				addCharacter(c);
+				wasEscape = true;
+			}
     	}
     	
-    	// how about escaping?
-    	final char c = data[i];
-		final char nextChar;
-		final boolean hasNextChar;
-		if (i + 1 < size) {
-			nextChar = data[i + 1];
-			hasNextChar = true;
-		} else {
-			nextChar = 0;
-			hasNextChar = false;
-		}
-		boolean isEscape = false;
-		if (c == escape && hasNextChar) {
-			if (isEscapableCharacter(nextChar)) {
-				addCharacter(nextChar);
-				i++;
-				isEscape = true;
-			}
-		}
-		if (!isEscape && (c == quote)) {
+		if (!wasEscape && (lastChar == quote)) {
 			if (quotedField) { // closing quote should be followed by separator
-				if (hasNextChar && nextChar != '\r' && nextChar != '\n' && nextChar != separator) {
+				if (c == null || c == '\r' || c == '\n') {
+					quotedField = false;
+					if (c != null) {
+						handleCrOrLf(c);
+					} // c == null is handled after the main loop
+				} else if (c == separator) {
+					quotedField = false;
+					handleSeparator(c);
+				} else {
 					throw new IllegalStateException(
-							"separator expected after a closing quote; found " + nextChar + getPositionString());
+							"separator expected after a closing quote; found " + c + getPositionString());
 				}
-				quotedField = false;
 			} else if (openField.length() == 0) {
-				quotedField = true;
+				startQuotedField();
 			} else {
 				throw new IllegalStateException("odd quote character at " + getPositionString());
 			}
 		}
-		return i;
+		
+		wasEscapeOrNotOpeningQuote = false;
+    }
+    	
+    private void handleEscapeOrQuote(char c) {
+    	if (commentedLine)
+			return;
+    	
+    	// handle start of a new quoted field
+    	if (openField.length() == 0 && !quotedField) {
+    		startQuotedField();
+    		wasEscapeOrNotOpeningQuote = false;
+    	} else {
+    		wasEscapeOrNotOpeningQuote = true;
+    	}
 	}
 
     private void addField() {
@@ -291,6 +313,12 @@ public class CSVReader implements Closeable {
     
     private boolean isEscapableCharacter(final char c) {
     	return (c == escape || c == quote);
+    }
+    
+    private void startQuotedField() {
+    	quotedField = true;
+    	quotedFieldStartRow = row;
+    	quotedFieldStartCol = col;
     }
     
     /**

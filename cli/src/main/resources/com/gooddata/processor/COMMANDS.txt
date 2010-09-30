@@ -107,7 +107,7 @@ CSV Connector Commands:
   csvDataFile    - path to CSV datafile
   configFile  - path to XML configuration file (see the GenerateCsvConfig command that generates the config file template)
   header - true if the CSV file has header in the first row, false otherwise
-  separator - optional field separator, the default is ','
+  separator - optional field separator, the default is ','. Use '\t' or type the tab char for tabulator.
 
 GoogleAnalytics Connector Commands:
 -----------------------------------

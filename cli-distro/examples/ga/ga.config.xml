@@ -3,6 +3,11 @@
   <name>GA</name>
   <columns>
     <column>
+      <name>id</name>
+      <title>ID</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+    </column>
+    <column>
       <name>date</name>
       <title>Date</title>
       <ldmType>DATE</ldmType>

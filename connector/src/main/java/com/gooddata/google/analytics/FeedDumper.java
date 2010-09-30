@@ -32,6 +32,8 @@ import com.google.gdata.data.analytics.Metric;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,8 @@ import java.util.List;
  */
 public class FeedDumper {
 
+	private static final String UNKNOWN_DATE = "(other)";
+	
     private static Logger l = Logger.getLogger(FeedDumper.class);
     
     /**
@@ -55,6 +59,7 @@ public class FeedDumper {
         l.debug("Dumping GA feed.");
         List<DataEntry> entries = feed.getEntries();
         List<Dimension> dimensions = null;
+        List<String> dimensionNames = new ArrayList<String>();        
         List<Metric> metrics = null;
            
         if (!entries.isEmpty()) {
@@ -68,26 +73,50 @@ public class FeedDumper {
         final List<String> headers = new ArrayList<String>();
         for (Dimension dimension : dimensions) {
             headers.add(dimension.getName());
+            dimensionNames.add(dimension.getName());
         }
         for (Metric metric : metrics) {
             headers.add(metric.getName());
         }
 
+        MessageDigest digest = null;
+
+        try {
+            digest = java.security.MessageDigest.getInstance("MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new IOException(e);
+        }
+
         for (DataEntry entry : entries) {
             final List<String> row = new ArrayList<String>();
-
+            String key = "";
             for (String dataName : headers) {
                 final String valueIn = entry.stringValueOf(dataName);
+                if(dimensionNames.contains(dataName)) {
+                    key += valueIn + "|";
+                }
                 String valueOut;
                 if (GaConnector.GA_DATE.equalsIgnoreCase(dataName)) {
-                    valueOut = valueIn.substring(0, 4) + "-"
-                            + valueIn.substring(4, 6) + "-"
-                            + valueIn.substring(6, 8);
+                	if (UNKNOWN_DATE.equals(valueIn)) {
+                		valueOut = "";
+                	} else {
+	                    valueOut = valueIn.substring(0, 4) + "-"
+	                            + valueIn.substring(4, 6) + "-"
+	                            + valueIn.substring(6, 8);
+                	}
                 } else {
                     valueOut = valueIn;
                 }
                 row.add(valueOut);
             }
+            digest.update(key.getBytes());
+            byte[] hash = digest.digest();
+            String hex = "";
+            for(byte b : hash) {
+                hex += Integer.toHexString(b);
+            }
+            row.add(0,hex);
             cw.writeNext(row.toArray(new String[]{}));
         }
         l.debug("Dumped "+entries.size()+" rows from GA feed.");
