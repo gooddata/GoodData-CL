@@ -36,7 +36,7 @@ public class Constants {
 	public final static int MAX_TABLE_NAME_LENGTH = 44;
 
 	public final static String DEFAULT_DATE_FMT_STRING = "YYYY-MM-DD";
-    public final static String DEFAULT_DATE_LABEL = "ac481lMifn6q";
+    public final static String DEFAULT_DATE_LABEL = "date.mdyy";
 	public final static DateFormat DEFAULT_DATE_FMT = new SimpleDateFormat(DEFAULT_DATE_FMT_STRING);
 
 

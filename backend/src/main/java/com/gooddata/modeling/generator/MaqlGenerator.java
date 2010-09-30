@@ -68,7 +68,7 @@ public class MaqlGenerator {
         script += "CREATE DATASET {" + schema.getDatasetName() + "} VISUAL(TITLE \"" + lsn + "\");\n\n";
         script += generateFoldersMaqlDdl(schema.getColumns());
         
-        script += generateMaqlAdd(schema.getColumns(), true);
+        script += generateMaqlAdd(schema.getColumns(), false);
         
         return script;
     }
@@ -104,7 +104,6 @@ public class MaqlGenerator {
 	/**
      * Generate MAQL DROP statement for selected columns
      * @param columns list of columns
-     * @param createFactsOf create the facts of attribute
      * @return MAQL as String
      */
     public String generateMaqlDrop(List<SourceColumn> columns) {
@@ -380,10 +379,13 @@ public class MaqlGenerator {
 	            }
 
 	            String script = "CREATE ATTRIBUTE {" + identifier + "} VISUAL(TITLE \"" + lcn
-	                    + "\"" + folderStatement + ") AS KEYS {" + table + "."+N.ID+"} FULLSET, ";
-	            script += createForeignKeyMaqlDdl();
+	                    + "\"" + folderStatement + ") AS KEYS {" + table + "."+N.ID+"} FULLSET";
+                String fks = createForeignKeyMaqlDdl();
+                // FK can be null in case of the connection point
+	            script += (fks != null && fks.length() > 0) ? (", "+fks) : ("");
+                // The connection point are going to have labels in the fact table
 	            script += " WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
-	                    + lcn + "\") AS {d_" + ssn + "_" + scn + "."+N.NM_PFX + scn + "};\n"
+	                    + lcn + "\") AS {" + table + "."+N.NM_PFX + scn + "};\n"
 	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + "." + scn + "};\n\n";
 	            return script;
 	        }
@@ -482,7 +484,7 @@ public class MaqlGenerator {
 	    // connection points
 	    private class ConnectionPoint extends Attribute {
 	        public ConnectionPoint(SourceColumn column) {
-	            super(column);
+	            super(column, getFactTableName());
 	            hasCp = true;
 	            //factsOfPrimaryColumn = scn + "_" + N.ID;
 	        }
@@ -492,7 +494,7 @@ public class MaqlGenerator {
 				// The fact table's primary key values are identical with the primary key values
 				// of a Connection Point attribute. This is why the fact table's PK may act as 
 				// the connection point's foreign key as well
-				return "{" + getFactTableName() + "."+N.ID+"}";
+				return null;
 			}
 			 
 			 public String generateMaqlDdlDrop() {
@@ -508,7 +510,7 @@ public class MaqlGenerator {
 	    	
 	    	@Override
 	    	public String generateMaqlDdlAdd() {
-	    		String foreignAttrId = createFactOfMaqlDdl(column.getSchemaReference());
+	    		String foreignAttrId = "{attr"+"."+StringUtil.toIdentifier(column.getSchemaReference())+"."+StringUtil.toIdentifier(column.getReference())+"}";
 	            String script = "# CONNECT THE REFERENCE TO THE APPROPRIATE DIMENSION\n";
 	    		script += "ALTER ATTRIBUTE " + foreignAttrId
 	    					  + " ADD KEYS " + createForeignKeyMaqlDdl() + ";\n\n"; 
@@ -516,7 +518,7 @@ public class MaqlGenerator {
 	    	}
 	    	
 	    	public String generateMaqlDdlDrop() {
-	    		String foreignAttrId = createFactOfMaqlDdl(column.getSchemaReference());
+	    		String foreignAttrId = "{attr"+"."+StringUtil.toIdentifier(column.getSchemaReference())+"."+StringUtil.toIdentifier(column.getReference())+"}";
 	            String script = "# DISCONNECT THE REFERENCE FROM THE APPROPRIATE DIMENSION\n";
 	    		script += "ALTER ATTRIBUTE " + foreignAttrId
 	    					  + " DROP KEYS " + createForeignKeyMaqlDdl() + ";\n\n"; 
