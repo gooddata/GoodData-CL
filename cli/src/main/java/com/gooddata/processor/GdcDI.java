@@ -689,12 +689,19 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void getMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-       String pid = ctx.getProjectIdMandatory();
-       String id = c.getParamMandatory("id");
-       String fl = c.getParamMandatory("file");
-       JSONObject ret = ctx.getRestApi(p).getMetadataObject(pid,id);
-       FileUtil.writeJSONToFile(ret, fl);
-       l.info("Retrieved metadata object "+id+" from the project "+pid+" and stored it in file "+fl);
+        String pid = ctx.getProjectIdMandatory();
+        String ids = c.getParamMandatory("id");
+        String fl = c.getParamMandatory("file");
+        int id;
+        try {
+            id = Integer.parseInt(ids);
+        }
+        catch (NumberFormatException e) {
+            throw new InvalidParameterException("The id in getMetadataObject must be an integer.");
+        }
+        JSONObject ret = ctx.getRestApi(p).getMetadataObject(pid,id);
+        FileUtil.writeJSONToFile(ret, fl);
+        l.info("Retrieved metadata object "+id+" from the project "+pid+" and stored it in file "+fl);
     }
 
     /**
@@ -706,8 +713,15 @@ public class GdcDI implements Executor {
     private void storeMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String pid = ctx.getProjectIdMandatory();
         String fl = c.getParamMandatory("file");
-        String id = c.getParam("id");
-        if(id != null && id.length() > 0) {
+        String ids = c.getParam("id");
+        if(ids != null && ids.length() > 0) {
+            int id;
+            try {
+                id = Integer.parseInt(ids);
+            }
+            catch (NumberFormatException e) {
+                throw new InvalidParameterException("The id in storeMetadataObject must be an integer.");
+            }
             ctx.getRestApi(p).modifyMetadataObject(pid,id, FileUtil.readJSONFromFile(fl));
             l.info("Modified metadata object "+id+" to the project "+pid);
         }
@@ -726,8 +740,15 @@ public class GdcDI implements Executor {
      */
     private void dropMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String pid = ctx.getProjectIdMandatory();
-        String id = c.getParamMandatory("id");
-            ctx.getRestApi(p).deleteMetadataObject(pid,id);
+        String ids = c.getParamMandatory("id");
+        int id;
+        try {
+            id = Integer.parseInt(ids);
+        }
+        catch (NumberFormatException e) {
+            throw new InvalidParameterException("The id in dropMetadataObject must be an integer.");
+        }
+        ctx.getRestApi(p).deleteMetadataObject(pid,id);
         l.info("Dropped metadata object "+id+" from the project "+pid);
     }
 

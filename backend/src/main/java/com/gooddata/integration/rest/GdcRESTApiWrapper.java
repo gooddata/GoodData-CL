@@ -118,7 +118,7 @@ public class GdcRESTApiWrapper {
     public String login() throws GdcLoginException {
         l.debug("Logging into GoodData.");
         JSONObject loginStructure = getLoginStructure();
-        PostMethod loginPost = createPostMethod(config.getUrl() + LOGIN_URI);
+        PostMethod loginPost = createPostMethod(getServerUrl() + LOGIN_URI);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(loginStructure.toString().getBytes()));
         loginPost.setRequestEntity(request);
         try {
@@ -131,7 +131,7 @@ public class GdcRESTApiWrapper {
             JSONObject userLogin =  rsp.getJSONObject("userLogin");
             String profileUri = userLogin.getString("profile");
             if(profileUri != null && profileUri.length()>0) {
-                GetMethod gm = createGetMethod(config.getUrl() + profileUri);
+                GetMethod gm = createGetMethod(getServerUrl() + profileUri);
                 resp = executeMethodOk(gm);
                 this.profile = JSONObject.fromObject(resp);
             }
@@ -183,7 +183,7 @@ public class GdcRESTApiWrapper {
      * @throws GdcLoginException
      */
     private void setTokenCookie() throws GdcLoginException {
-        HttpMethod secutityTokenGet = createGetMethod(config.getUrl() + TOKEN_URI);
+        HttpMethod secutityTokenGet = createGetMethod(getServerUrl() + TOKEN_URI);
 
 
         // set SSToken from config
@@ -194,8 +194,8 @@ public class GdcRESTApiWrapper {
         try {
             executeMethodOk(secutityTokenGet);
         } catch (HttpMethodException ex) {
-            l.debug("Cannot login to:" + config.getUrl() + TOKEN_URI + ".",ex);
-            throw new GdcLoginException("Cannot login to:" + config.getUrl() + TOKEN_URI + ".",ex);
+            l.debug("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
+            throw new GdcLoginException("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
         } finally {
             secutityTokenGet.releaseConnection();
         }
@@ -265,7 +265,7 @@ public class GdcRESTApiWrapper {
     @SuppressWarnings("unchecked")
     private Iterator<JSONObject> getProjectsLinks() throws HttpMethodException {
         l.debug("Getting project links.");
-        HttpMethod req = createGetMethod(config.getUrl() + MD_URI);
+        HttpMethod req = createGetMethod(getServerUrl() + MD_URI);
         try {
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
@@ -356,7 +356,7 @@ public class GdcRESTApiWrapper {
     public List<Column> getSLIColumns(String uri) throws GdcProjectAccessException, HttpMethodException {
         l.debug("Retrieveing SLI columns for SLI uri="+uri);
         List<Column> list = new ArrayList<Column>();
-        HttpMethod sliGet = createGetMethod(config.getUrl() + uri + "/manifest");
+        HttpMethod sliGet = createGetMethod(getServerUrl() + uri + "/manifest");
         try {
             String response = executeMethodOk(sliGet);
             JSONObject responseObject = JSONObject.fromObject(response);
@@ -391,7 +391,7 @@ public class GdcRESTApiWrapper {
     public JSONObject getSLIManifest(String uri) throws GdcProjectAccessException, HttpMethodException {
         l.debug("Retrieveing SLI columns for SLI uri="+uri);
         List<Column> list = new ArrayList<Column>();
-        HttpMethod sliGet = createGetMethod(config.getUrl() + uri + "/manifest");
+        HttpMethod sliGet = createGetMethod(getServerUrl() + uri + "/manifest");
         try {
             String response = executeMethodOk(sliGet);
             JSONObject responseObject = JSONObject.fromObject(response);
@@ -506,7 +506,7 @@ public class GdcRESTApiWrapper {
         HttpMethod qGet = null;
         try {
             l.debug("Getting report definition for report uri="+reportUri);
-            String qUri = config.getUrl() + reportUri;
+            String qUri = getServerUrl() + reportUri;
             qGet = createGetMethod(qUri);
             String qr = executeMethodOk(qGet);
             JSONObject q = JSONObject.fromObject(qr);
@@ -531,7 +531,7 @@ public class GdcRESTApiWrapper {
             }
             if(results.size()>0) {
                 String lastResultUri = results.getString(results.size()-1);
-                qUri = config.getUrl() + lastResultUri;
+                qUri = getServerUrl() + lastResultUri;
                 qGet = createGetMethod(qUri);
                 qr = executeMethodOk(qGet);
                 q = JSONObject.fromObject(qr);
@@ -572,7 +572,7 @@ public class GdcRESTApiWrapper {
      */
     public String executeReportDefinition(String reportDefUri) {
         l.debug("Executing report definition uri="+reportDefUri);
-        PostMethod execPost = createPostMethod(config.getUrl() + EXECUTOR);
+        PostMethod execPost = createPostMethod(getServerUrl() + EXECUTOR);
         JSONObject execDef = new JSONObject();
         execDef.put("reportDefinition",reportDefUri);
         JSONObject exec = new JSONObject();
@@ -665,7 +665,7 @@ public class GdcRESTApiWrapper {
      */
     public String getLoadingStatus(String link) throws HttpMethodException {
         l.debug("Getting data loading status uri="+link);
-        HttpMethod ptm = createGetMethod(config.getUrl() + link);
+        HttpMethod ptm = createGetMethod(getServerUrl() + link);
         try {
             String response = executeMethodOk(ptm);
             JSONObject task = JSONObject.fromObject(response);
@@ -691,7 +691,7 @@ public class GdcRESTApiWrapper {
      */
     public String createProject(String name, String desc, String templateUri) throws GdcRestApiException {
         l.debug("Creating project name="+name);
-        PostMethod createProjectPost = createPostMethod(config.getUrl() + PROJECTS_URI);
+        PostMethod createProjectPost = createPostMethod(getServerUrl() + PROJECTS_URI);
         JSONObject createProjectStructure = getCreateProject(name, desc, templateUri);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 createProjectStructure.toString().getBytes()));
@@ -751,7 +751,7 @@ public class GdcRESTApiWrapper {
     public String getProjectStatus(String projectId) {
         l.debug("Getting project status for project "+projectId);
         String uri = getProjectDeleteUri(projectId);
-        HttpMethod ptm = createGetMethod(config.getUrl() + uri);
+        HttpMethod ptm = createGetMethod(getServerUrl() + uri);
         try {
             String response = executeMethodOk(ptm);
             JSONObject jresp = JSONObject.fromObject(response);
@@ -774,7 +774,7 @@ public class GdcRESTApiWrapper {
      */
     public void dropProject(String projectId) throws GdcRestApiException {
         l.debug("Dropping project id="+projectId);
-        DeleteMethod dropProjectDelete = createDeleteMethod(config.getUrl() + getProjectDeleteUri(projectId));
+        DeleteMethod dropProjectDelete = createDeleteMethod(getServerUrl() + getProjectDeleteUri(projectId));
         try {
             executeMethodOk(dropProjectDelete);
         } catch (HttpMethodException ex) {
@@ -794,7 +794,7 @@ public class GdcRESTApiWrapper {
      */
     protected String getProjectId(String uri) throws GdcRestApiException {
         l.debug("Getting project id by uri="+uri);
-        HttpMethod req = createGetMethod(config.getUrl() + uri);
+        HttpMethod req = createGetMethod(getServerUrl() + uri);
         try {
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
@@ -951,13 +951,17 @@ public class GdcRESTApiWrapper {
     }
 
 
+    protected String getServerUrl() {
+        return config.getUrl();
+    }
+
     /**
      * Constructs project's metadata uri
      *
      * @param projectId project ID
      */
     protected String getProjectMdUrl(String projectId) {
-        return config.getUrl() + MD_URI + projectId;
+        return getServerUrl() + MD_URI + projectId;
     }
 
     /**
@@ -988,7 +992,7 @@ public class GdcRESTApiWrapper {
                 if(lnks != null) {
                     String projectsUri = lnks.getString("projects");
                     if(projectsUri != null && projectsUri.length()>0) {
-                        HttpMethod req = createGetMethod(config.getUrl()+projectsUri);
+                        HttpMethod req = createGetMethod(getServerUrl()+projectsUri);
                         try {
                             String resp = executeMethodOk(req);
                             JSONObject rsp = JSONObject.fromObject(resp);
@@ -1083,7 +1087,7 @@ public class GdcRESTApiWrapper {
      */
     public void inviteUser(String projectId, String eMail, String message, String role) {
         l.debug("Executing inviteUser projectId="+projectId+" e-mail="+eMail+" message="+message);
-        PostMethod invitePost = createPostMethod(config.getUrl() + getProjectDeleteUri(projectId) + INVITATION_URI);
+        PostMethod invitePost = createPostMethod(getServerUrl() + getProjectDeleteUri(projectId) + INVITATION_URI);
         JSONObject inviteStructure = getInviteStructure(projectId, eMail, message, role);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 inviteStructure.toString().getBytes()));
@@ -1110,7 +1114,7 @@ public class GdcRESTApiWrapper {
         content.put("firstname","");
         content.put("lastname","");
         content.put("email",eMail);
-        String puri = config.getUrl() + getProjectDeleteUri(pid);
+        String puri = getServerUrl() + getProjectDeleteUri(pid);
         if(role != null && role.length() > 0) {
             Integer roleId = ROLES.get(role.toUpperCase());
             if(roleId == null)
@@ -1138,15 +1142,25 @@ public class GdcRESTApiWrapper {
      * @param objectId object id (integer)
      * @return the object to get
      */
-    public JSONObject getMetadataObject(String projectId, String objectId) {
+    public JSONObject getMetadataObject(String projectId, int objectId) {
         l.debug("Executing getMetadataObject id="+objectId+" on project id="+projectId);
-        HttpMethod req = createGetMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
+        return getMetadataObject(MD_URI + projectId + OBJ_URI + "/" + objectId);
+    }
+
+    /**
+     * Retrieves a metadata object definition
+     * @param objectUri object uri
+     * @return the object to get
+     */
+    public JSONObject getMetadataObject(String objectUri) {
+        l.debug("Executing getMetadataObject uri="+objectUri);
+        HttpMethod req = createGetMethod(getServerUrl() + objectUri);
         try {
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
             if(parsedResp.isNullObject()) {
-                l.debug("Can't getMetadataObject id="+objectId+" on project id="+projectId);
-                throw new GdcRestApiException("Can't getMetadataObject id="+objectId+" on project id="+projectId);
+                l.debug("Can't getMetadataObject object uri="+objectUri);
+                throw new GdcRestApiException("Can't getMetadataObject object uri="+objectUri);
             }
             return parsedResp;
         }
@@ -1187,7 +1201,7 @@ public class GdcRESTApiWrapper {
      * @param content the new object content
      * @return the new object
      */
-    public JSONObject modifyMetadataObject(String projectId, String objectId, JSONObject content) {
+    public JSONObject modifyMetadataObject(String projectId, int objectId, JSONObject content) {
         l.debug("Executing modifyMetadataObject on project id="+projectId+" objectId="+objectId+" content='"+content.toString()+"'");
         PostMethod req = createPostMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
@@ -1212,7 +1226,7 @@ public class GdcRESTApiWrapper {
      * @param objectId object id (integer)
      * @return the new object
      */
-    public void deleteMetadataObject(String projectId, String objectId) {
+    public void deleteMetadataObject(String projectId, int objectId) {
         l.debug("Executing deleteMetadataObject on project id="+projectId+" objectId="+objectId);
         DeleteMethod req = createDeleteMethod(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
         try {
