@@ -192,7 +192,7 @@ public class GdcRESTApiWrapper {
         client.getState().addCookie(sstCookie);
 
         try {
-            executeMethodOk(secutityTokenGet);
+            executeMethodOk(secutityTokenGet, false);
         } catch (HttpMethodException ex) {
             l.debug("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
             throw new GdcLoginException("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
