@@ -146,7 +146,7 @@ public class Column {
      * @return the string description of the object
      */
     public String toString() {
-        return "name='" + name + "', mode='" + mode + "', referenceKey='" + referenceKey + "'";
+        return "{name='" + name + "', mode='" + mode + "', referenceKey='" + referenceKey + "'}";
     }
 
     public String getFormat() {
