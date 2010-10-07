@@ -121,6 +121,12 @@ public class SLI {
         oDataSetManifest.put("parts", oParts);
         oDataSetManifest.put("file", "data.csv");
         oDataSetManifest.put("dataSet", id);
+        JSONObject params = new JSONObject();
+        params.put("quoteChar","\"");
+        params.put("escapeChar","\"");
+        params.put("separatorChar",",");
+        params.put("endOfLine","\n");
+        oDataSetManifest.put("csvParams", params);
         omf.put("dataSetSLIManifest", oDataSetManifest);
         return omf.toString(2);
     }

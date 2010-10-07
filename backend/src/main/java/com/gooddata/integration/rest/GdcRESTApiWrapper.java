@@ -1327,7 +1327,9 @@ public class GdcRESTApiWrapper {
         for(String identifier : m.keySet()) {
             MetadataObject o = m.get(identifier);
             String t = o.getType();
-            String name = t+"."+identifier+".gmd";
+            String uri = o.getUri();
+            String id = uri.substring(uri.lastIndexOf("/")+1);
+            String name = t+"."+identifier+"."+id+".gmd";
             name = name.replace("..",".");
             FileUtil.writeJSONToFile(o, dir+"/"+name);
         }
