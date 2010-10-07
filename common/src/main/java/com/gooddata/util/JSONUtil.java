@@ -23,6 +23,7 @@
 
 package com.gooddata.util;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 
@@ -41,7 +42,7 @@ public class JSONUtil {
      *
      * @param o the JSON Object
      */
-    public static void printJson(JSONObject o) {
+    public static void printJson(JSON o) {
         l.info(o.toString(2));
     }
 

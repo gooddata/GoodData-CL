@@ -41,6 +41,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 
@@ -231,7 +232,7 @@ public class FileUtil {
      * @param fileName the file
      * @throws IOException
      */
-    public static void writeJSONToFile(JSONObject content, String fileName) throws IOException {
+    public static void writeJSONToFile(JSON content, String fileName) throws IOException {
         BufferedWriter fw = createBufferedUtf8Writer(fileName);
         fw.write(content.toString(2));
         fw.flush();

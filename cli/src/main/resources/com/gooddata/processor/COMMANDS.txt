@@ -46,6 +46,9 @@ Project Management Commands:
   msg - optional invitation message
   role - initial user's role
 
+ RetrieveAllObjects(dir=<directory-to-store-the-objects>) - retrieves all metadata objects from the current project and stores it in a directory, must call CreateProject or OpenProject before
+  dir - directory where the objects content (JSON) are going to be stored
+
  RetrieveMetadataObject(id=<object-id>, file=<file-to-store-the-object>) - retrieves a metadata object and stores it in a file, must call CreateProject or OpenProject before
   object-id - valid object id (integer number)
   file - file where the object content (JSON) is going to be stored
@@ -56,6 +59,10 @@ Project Management Commands:
 
  DropMetadataObject(id=<object-id>) - drops the object with specified id from the project's metadata, must call CreateProject or OpenProject before
   object-id - valid object id (integer number)
+
+ CopyObjects(dir=<directory-with-the-objects>, overwrite=<overwrite-flag>) - copies all metadata objects from the directory to the current project, must call CreateProject or OpenProject before
+   dir - directory where the copied objects content (JSON) are stored
+   overwrite - if true overwrite the existing objects in the project
 
  Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 

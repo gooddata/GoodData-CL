@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.gooddata.connector.*;
+import com.gooddata.integration.rest.MetadataObject;
 import com.gooddata.util.StringUtil;
 import net.sf.json.JSONObject;
 import org.apache.commons.cli.CommandLine;
@@ -594,6 +595,12 @@ public class GdcDI implements Executor {
             else if(c.match("RetrieveMetadataObject")) {
                 getMdObject(c, cli, ctx);
             }
+            else if(c.match("RetrieveAllObjects")) {
+                retrieveAllObjects(c, cli, ctx);
+            }
+            else if(c.match("CopyObjects")) {
+                copyObjects(c, cli, ctx);
+            }
             else {
                 l.debug("No match command "+c.getCommand());
                 return false;
@@ -699,9 +706,50 @@ public class GdcDI implements Executor {
         catch (NumberFormatException e) {
             throw new InvalidParameterException("The id in getMetadataObject must be an integer.");
         }
-        JSONObject ret = ctx.getRestApi(p).getMetadataObject(pid,id);
+        MetadataObject ret = ctx.getRestApi(p).getMetadataObject(pid,id);
         FileUtil.writeJSONToFile(ret, fl);
         l.info("Retrieved metadata object "+id+" from the project "+pid+" and stored it in file "+fl);
+    }
+
+    /**
+     * Retrieves all MD objects from a project to a directory
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void retrieveAllObjects(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String pid = ctx.getProjectIdMandatory();
+        String fl = c.getParamMandatory("dir");
+        File dir = new File(fl);
+        if(!dir.exists() || !dir.isDirectory()) {
+            throw new InvalidParameterException("The dir parameter in the RetrieveAllObjects command must be an existing directory.");
+        }
+        l.info("Retrieving all objects from the project "+pid+" to "+dir);
+        ctx.getRestApi(p).storeMetadataObjects(pid, fl);
+        l.info("All objects from the project "+pid+" successfully retrieved to "+dir);
+    }
+
+    /**
+     * Copies MD objects from a source directory to the current project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void copyObjects(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String pid = ctx.getProjectIdMandatory();
+        String fl = c.getParamMandatory("dir");
+        String overwriteStr = c.getParam("overwrite");
+        final boolean overwrite = (overwriteStr != null && "true".equalsIgnoreCase(overwriteStr));
+        File dir = new File(fl);
+        if(!dir.exists() || !dir.isDirectory()) {
+            throw new InvalidParameterException("The dir parameter in the CopyObjects command must be an existing directory.");
+        }
+        l.info("Copying all objects from the dir "+dir+" to project "+pid);
+        File tmpDir = FileUtil.createTempDir();
+        ctx.getRestApi(p).storeMetadataObjects(pid, tmpDir.getAbsolutePath());
+        ctx.getRestApi(p).copyMetadataObjects(pid, fl, tmpDir.getAbsolutePath(), overwrite);
+        FileUtil.recursiveDelete(tmpDir);
+        l.info("All objects from the dir "+dir+" successfully copied to project "+pid);
     }
 
     /**
