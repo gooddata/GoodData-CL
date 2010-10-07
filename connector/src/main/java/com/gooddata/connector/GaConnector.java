@@ -59,6 +59,7 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     private static final String APP_NAME = "gdc-ga-client";
 
+    private static final int GOOGLE_ANALYTICS_CHUNK = 9900;
     private String googleAnalyticsUsername;
     private String googleAnalyticsPassword;
     private String googleAnalyticsToken;
@@ -162,7 +163,7 @@ public class GaConnector extends AbstractConnector implements Connector {
             }
             File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
             GaQuery gaq = getGoogleAnalyticsQuery();
-            gaq.setMaxResults(5000);
+            gaq.setMaxResults(GOOGLE_ANALYTICS_CHUNK);
             int cnt = 1;
 
             CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);

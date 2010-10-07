@@ -5,6 +5,9 @@
 * Authentication handling updated to be forward compatible with API change in the upcoming
   GoodData platform release 41 (~ end of October)
 
+Note:  By accident, the released build of 1.1.9-beta errorneously reports version 1.1.8, sorry 
+  about that
+
 ## 1.1.8-beta
 
 * Fixed error when using MySQL backend database running with binary logging turned on
