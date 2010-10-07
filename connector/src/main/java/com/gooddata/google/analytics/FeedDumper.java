@@ -34,7 +34,11 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,9 +50,12 @@ import java.util.List;
 public class FeedDumper {
 
 	private static final String UNKNOWN_DATE = "(other)";
-	
+
+    private static DateFormat inFmt = new SimpleDateFormat("yyyyMMdd");
+    private static DateFormat outFmt = new SimpleDateFormat("yyyy-MM-dd");
+
     private static Logger l = Logger.getLogger(FeedDumper.class);
-    
+
     /**
      * Dupmps the gdata feed to CSV
      * @param cw CSVWriter
@@ -59,9 +66,9 @@ public class FeedDumper {
         l.debug("Dumping GA feed.");
         List<DataEntry> entries = feed.getEntries();
         List<Dimension> dimensions = null;
-        List<String> dimensionNames = new ArrayList<String>();        
+        List<String> dimensionNames = new ArrayList<String>();
         List<Metric> metrics = null;
-           
+
         if (!entries.isEmpty()) {
             DataEntry singleEntry = entries.get(0);
             dimensions = singleEntry.getDimensions();
@@ -98,12 +105,18 @@ public class FeedDumper {
                 }
                 String valueOut;
                 if (GaConnector.GA_DATE.equalsIgnoreCase(dataName)) {
-                	if (UNKNOWN_DATE.equals(valueIn)) {
+                	if (valueIn == null || valueIn.length() !=8 || UNKNOWN_DATE.equals(valueIn)) {
                 		valueOut = "";
+                        l.debug("Invalid date value '"+valueIn+"'");
                 	} else {
-	                    valueOut = valueIn.substring(0, 4) + "-"
-	                            + valueIn.substring(4, 6) + "-"
-	                            + valueIn.substring(6, 8);
+                        try {
+                            Date dt = inFmt.parse(valueIn);
+                            valueOut = outFmt.format(dt);
+                        }
+                        catch(ParseException e) {
+                            valueOut = "";
+                            l.debug("Invalid date value '"+valueIn+"'");
+                        }
                 	}
                 } else {
                     valueOut = valueIn;
@@ -120,7 +133,7 @@ public class FeedDumper {
             cw.writeNext(row.toArray(new String[]{}));
         }
         l.debug("Dumped "+entries.size()+" rows from GA feed.");
-        return entries.size() - 1;   
+        return entries.size() - 1;
     }
 
 }
