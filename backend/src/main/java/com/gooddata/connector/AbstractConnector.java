@@ -399,7 +399,6 @@ public abstract class AbstractConnector implements Connector {
      * @throws IOException IO issue
      */
     private void generateUpdateMaql(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-        /*
         l.debug("Updating MAQL.");
     	//final String configFile = c.getParamMandatory( "configFile");
     	//final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
@@ -410,10 +409,13 @@ public abstract class AbstractConnector implements Connector {
     	final String maqlFile = c.getParamMandatory( "maqlFile");
     	final String dataset = schema.getDatasetName();
 
-        List<DLIPart> parts = ctx.getRestApi(p).getDLIParts(dataset, pid);
+    	SLI sli = ctx.getRestApi(p).getSLIById(dataset, pid);
+        List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
+
+        // List<DLIPart> parts = ctx.getRestApi(p).getDLIParts(dataset, pid);
 
         StringBuffer maql = new StringBuffer();
-        final Changes changes = findColumnChanges(parts, schema);
+        final Changes changes = findColumnChanges(sliColumns, schema);
         
         l.debug("Executing maql generation for changes of "+schema.getName() + " schema");
         MaqlGenerator mg = new MaqlGenerator(schema);
@@ -435,7 +437,6 @@ public abstract class AbstractConnector implements Connector {
         } else {
         	l.info("MAQL update successfully finished - no changes detected.");
         }
-        */
 
     }
 
@@ -446,10 +447,13 @@ public abstract class AbstractConnector implements Connector {
      * @param schema former source schema
      * @return list of new columns
      */
-    /*
-    private Changes findColumnChanges(List<DLIPart> parts, SourceSchema schema) {
+    private Changes findColumnChanges(List<Column> columns, SourceSchema schema) {
     	Set<String> fileNames = new HashSet<String>();
     	Set<String> factColumns = new HashSet<String>();
+    	
+    	// TODO look at TestFindColumnChange and move the logic here
+    	throw new UnsupportedOperationException("Not implemented yet");
+    	/*
     	DLIPart factPart = null;
     	
     	// get fact table's column names
@@ -513,8 +517,8 @@ public abstract class AbstractConnector implements Connector {
     	changes.deletedColumns.addAll(lookups2columns(schema, deletedLookups));
     	changes.deletedColumns.addAll(facts2columns(deletedFactColumns));
     	return changes;
+     	*/
     }
-    */
     
     private List<SourceColumn> lookups2columns(SourceSchema schema, List<String> lookups) {
     	List<SourceColumn> result = new ArrayList<SourceColumn>();
