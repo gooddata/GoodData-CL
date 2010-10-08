@@ -1,7 +1,7 @@
 # This example shows how to load the Google Analytics data to the GoodData project
 
 # Create a new project
-CreateProject(name="GA");
+CreateProject(name='GA');
 
 # Generate config file. This command is commented out as we have done that already.
 # If you change the GA metrics and dimensions you need to re-run the config file generation
