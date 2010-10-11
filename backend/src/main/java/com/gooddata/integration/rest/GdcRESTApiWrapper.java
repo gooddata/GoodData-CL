@@ -908,6 +908,9 @@ public class GdcRESTApiWrapper {
      * @throws HttpMethodException
      */
     private String executeMethodOk(HttpMethod method, boolean reLoginOn401) throws HttpMethodException {
+    	if (reLoginOn401) {
+    		setTokenCookie();
+    	}
         try {
             client.executeMethod(method);
             if (method.getStatusCode() == HttpStatus.SC_OK) {

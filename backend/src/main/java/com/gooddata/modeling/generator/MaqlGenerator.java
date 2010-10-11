@@ -68,7 +68,7 @@ public class MaqlGenerator {
         script += "CREATE DATASET {" + schema.getDatasetName() + "} VISUAL(TITLE \"" + lsn + "\");\n\n";
         script += generateFoldersMaqlDdl(schema.getColumns());
         
-        script += generateMaqlAdd(schema.getColumns(), true);
+        script += generateMaqlAdd(schema.getColumns(), new ArrayList<SourceColumn>(), true);
         
         return script;
     }
@@ -86,8 +86,8 @@ public class MaqlGenerator {
      * @param columns list of columns
      * @return MAQL as String
      */
-    public String generateMaqlAdd(List<SourceColumn> columns) {
-    	return generateMaqlAdd(columns, false);
+    public String generateMaqlAdd(Iterable<SourceColumn> newColumns, Iterable<SourceColumn> knownColumns) {
+    	return generateMaqlAdd(newColumns, knownColumns, false);
     }
 
     /**
@@ -157,15 +157,15 @@ public class MaqlGenerator {
 
     /**
      * Generate MAQL for selected (new) columns
-     * @param columns list of columns
+     * @param newColumns list of columns
      * @param createFactsOf create the facts of attribute
      * @return MAQL as String
      */
-    private String generateMaqlAdd(List<SourceColumn> columns, boolean createFactsOf) {
+    private String generateMaqlAdd(Iterable<SourceColumn> newColumns, Iterable<SourceColumn> knownColumns, boolean createFactsOf) {
 
         // generate attributes and facts
     	State state = new State();
-        for (SourceColumn column : columns) {
+    	for (SourceColumn column : newColumns) {
             state.processColumn(column);
         }
 
@@ -196,6 +196,8 @@ public class MaqlGenerator {
 	                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+state.factsOfPrimaryColumn+"} FULLSET;\n";
 	        script += "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + ".factsof};\n\n";
         }
+        
+    	state.addKnownColumns(knownColumns);
 
         // labels last
         for (final Column c : state.labels) {
@@ -312,6 +314,14 @@ public class MaqlGenerator {
 		    } else {
 		    	throw new IllegalArgumentException("Unsupported ldm type '" + column.getLdmType() + "'.");
 		    }
+		}
+		
+		private void addKnownColumns(Iterable<SourceColumn> knownColumns) { // attributes only
+			for (SourceColumn column : knownColumns) {
+	    		if (SourceColumn.LDM_TYPE_ATTRIBUTE.equals(column.getLdmType())) {
+	    			attributes.put(column.getName(), new Attribute(column));
+	    		}
+	    	}
 		}
 
 		/**

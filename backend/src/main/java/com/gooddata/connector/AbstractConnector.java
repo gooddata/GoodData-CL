@@ -402,32 +402,31 @@ public abstract class AbstractConnector implements Connector {
         l.debug("Updating MAQL.");
     	//final String configFile = c.getParamMandatory( "configFile");
     	//final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
-        Connector cc = ctx.getConnectorMandatory();
-        SourceSchema schema = cc.getSchema();
+        final Connector cc = ctx.getConnectorMandatory();
+        final SourceSchema schema = cc.getSchema();
 
     	final String pid = ctx.getProjectIdMandatory();
     	final String maqlFile = c.getParamMandatory( "maqlFile");
     	final String dataset = schema.getDatasetName();
 
-    	SLI sli = ctx.getRestApi(p).getSLIById(dataset, pid);
-        List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
+    	final GdcRESTApiWrapper gd = ctx.getRestApi(p); 
+    	final SLI sli = gd.getSLIById(dataset, pid);
 
-        // List<DLIPart> parts = ctx.getRestApi(p).getDLIParts(dataset, pid);
+    	final DataSetDiffMaker diffMaker = new DataSetDiffMaker(gd, sli, schema);
+		final List<SourceColumn> newColumns = diffMaker.findNewColumns();
+		final List<SourceColumn> deletedColumns = diffMaker.findDeletedColumns();
+		final MaqlGenerator mg = new MaqlGenerator(schema);
+		
+		final StringBuilder maql = new StringBuilder();
+		if (!newColumns.isEmpty()) {
+			mg.setSynchronize(false);
+			maql.append(mg.generateMaqlAdd(newColumns, diffMaker.sourceColumns));
+		}
+		if (!deletedColumns.isEmpty()) {
+			mg.setSynchronize(false);
+			maql.append(mg.generateMaqlDrop(deletedColumns));
+		}
 
-        StringBuffer maql = new StringBuffer();
-        final Changes changes = findColumnChanges(sliColumns, schema);
-        
-        l.debug("Executing maql generation for changes of "+schema.getName() + " schema");
-        MaqlGenerator mg = new MaqlGenerator(schema);
- 
-        if (!changes.deletedColumns.isEmpty()) {
-        	mg.setSynchronize(false);
-        	maql.append(mg.generateMaqlDrop(changes.deletedColumns));
-        }
-        if (!changes.newColumns.isEmpty()) {
-        	mg.setSynchronize(false);
-        	maql.append(mg.generateMaqlAdd(changes.newColumns));
-        }
         if (maql.length() > 0) {
         	maql.append(mg.generateMaqlSynchronize());
             l.debug("Finished maql generation maql:\n"+maql.toString());
