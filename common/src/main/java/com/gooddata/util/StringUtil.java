@@ -77,6 +77,8 @@ public class StringUtil {
     }
 
     private static String convertToIdentifier(String s) {
+    	if (s == null)
+    		return s;
         Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
         s = t.transliterate(s);
         s = s.replaceAll("[^a-zA-Z0-9_]", "");
