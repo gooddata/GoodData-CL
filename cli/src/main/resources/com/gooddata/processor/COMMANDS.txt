@@ -28,8 +28,6 @@ Project Management Commands:
  DropProject(id=<project-id>) - drop the project on the <hostname> server
   project-id - optional project id, if not specified, the command tries to drop the current project
 
- DropSnapshots() - drop the project's snapshots (history data) in the local transformation database
-
  DropIntegrationDatabase() - drop the project's local transformation database
 
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
@@ -95,10 +93,6 @@ Data Transfer Commands:
  TransferLastSnapshot([incremental=<true | false>] [, waitForFinish=<true | false>]) ) - upload the last snapshot to the GoodData server
   incremental - incremental transfer (true | false), default is false
   waitForFinish - waits for the server-side processing (true | false), default is true
-
- ListSnapshots() - list all data snapshots from the internal DB, must call CreateProject or OpenProject before
-
- DropSnapshots() - drops the internal DB, must call CreateProject or OpenProject before
 
 CSV Connector Commands:
 -----------------------

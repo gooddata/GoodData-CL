@@ -101,10 +101,6 @@ The following paragraphs describe the specific GoodData CL commands.
   - incremental - incremental transfer (true | false), default is false
   - waitForFinish - waits for the server-side processing (true | false), default is true
 
-* `ListSnapshots`() - list all data snapshots from the internal DB, must call CreateProject or OpenProject before
-
-* `DropSnapshots`() - drops the internal DB, must call CreateProject or OpenProject before
-
 ## CSV Connector Commands
 
 * `GenerateCsvConfig`(csvHeaderFile=&lt;file&gt;, configFile=&lt;config&gt; \[, defaultLdmType=&lt;mode&gt;\] \[, folder=&lt;folder&gt;\], \[separator = &lt;separator-char&gt;\]) - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
