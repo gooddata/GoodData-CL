@@ -9,7 +9,7 @@ tmp=`mktemp -t gdi-int-XXXXXX`
 function drop() {
     pid="$1"
     echo "OpenProject(id = \"$pid\");" > "$tmp"
-    echo "DropIntegrationDatabase(); DropProject(id = \"$pid\");" >> "$tmp"
+    echo "DropProject(id = \"$pid\");" >> "$tmp"
     bin/gdi.sh --backend "$backend" "$tmp"
 }
 
