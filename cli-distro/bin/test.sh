@@ -10,7 +10,7 @@ function drop() {
     pid="$1"
     echo "OpenProject(id = \"$pid\");" > "$tmp"
     echo "DropProject(id = \"$pid\");" >> "$tmp"
-    bin/gdi.sh.sh "$tmp"
+    bin/gdi.sh "$tmp"
 }
 
 echo 'Running quotes demo'
@@ -58,7 +58,7 @@ echo 'Dropping the ga project and snapshots'
 drop "`cat examples/ga/pid`"
 
 echo 'Running naming test'
-bin/gdi.sh.sh tests/naming/cmd.txt
+bin/gdi.sh tests/naming/cmd.txt
 
 echo 'Dropping the naming test project and snapshots'
 drop "`cat tests/naming/pid`"
