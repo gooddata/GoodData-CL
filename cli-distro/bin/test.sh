@@ -64,31 +64,31 @@ echo 'Dropping the naming test project and snapshots'
 drop "`cat tests/naming/pid`"
 
 echo 'Running empty_lines test'
-bin/gdi.sh.sh tests/empty_lines/cmd.txt
+bin/gdi.sh tests/empty_lines/cmd.txt
 
 echo 'Dropping the empty_lines test project and snapshots'
 drop "`cat tests/empty_lines/pid`"
 
 echo 'Running empty_dates test'
-bin/gdi.sh.sh tests/empty_dates/cmd.txt
+bin/gdi.sh tests/empty_dates/cmd.txt
 
 echo 'Dropping the empty_dates test project and snapshots'
 drop "`cat tests/empty_dates/pid`"
 
 echo 'Running separators test'
-bin/gdi.sh.sh tests/separators/cmd.txt
+bin/gdi.sh tests/separators/cmd.txt
 
 echo 'Dropping the separators test project and snapshots'
 drop "`cat tests/separators/pid`"
 
 echo 'Running escapes test'
-bin/gdi.sh.sh tests/escapes/cmd.txt
+bin/gdi.sh tests/escapes/cmd.txt
 
 echo 'Dropping the escapes test project and snapshots'
 drop "`cat tests/escapes/pid`"
 
 echo 'Running drop_snapshots test'
-bin/gdi.sh.sh tests/drop_snapshots/cmd.txt
+bin/gdi.sh tests/drop_snapshots/cmd.txt
 
 echo 'Dropping the drop_snapshots test project and snapshots'
 drop "`cat tests/drop_snapshots/pid`"
