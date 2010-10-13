@@ -270,7 +270,9 @@ public abstract class AbstractConnector implements Connector {
                         sr = StringUtil.toIdentifier(sr);
                         c.setPopulates(new String[] {sr + "." + Constants.DEFAULT_DATE_LABEL});
                     }
-                    //TODO - HANDLE DATES WITHOUT schemaReference
+                    else {
+                        c.setPopulates(new String[] {"label." + ssn + "." + scn});   
+                    }
                 }
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT))
                     c.setPopulates(new String[] {"fact." + ssn + "." + scn});

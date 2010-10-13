@@ -302,7 +302,13 @@ public class MaqlGenerator {
 		    } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
 		        facts.add(new Fact(column));
 		    } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
-		        dates.add(new DateColumn(column));
+                if(column.getSchemaReference() != null && column.getSchemaReference().length() > 0) {
+		            dates.add(new DateColumn(column));
+                }
+                else {
+                    Attribute attr = new Attribute(column);
+		            attributes.put(attr.scn, attr);
+                }
 		    } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
 		        labels.add(new Label(column));
 		    } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_REFERENCE)) {
@@ -465,12 +471,12 @@ public class MaqlGenerator {
 	                String sfn = StringUtil.toIdentifier(folder);
 	                folderStatement = ", FOLDER {ffld." + sfn + "}";
 	            }
-	            String stat = "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
-	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn + "_"+N.ID+"};\n"
-	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
-                //stat = "ALTER DATATYPE {"+getFactTableName() + "." + N.DT_PFX + scn + "_" + N.ID+"} DATE;\n\n";
+                String stat = "";
 	            if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
+                    stat += "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
+	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn + "_"+N.ID+"};\n"
+	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
 	                stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
 	                stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() + 
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
