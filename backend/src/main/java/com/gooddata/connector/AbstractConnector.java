@@ -310,6 +310,18 @@ public abstract class AbstractConnector implements Connector {
         List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
         List<Column> columns = populateColumnsFromSchema(cc.getSchema());
 
+        /*
+        l.info("SLI COLUMNS");
+        for(Column co : sliColumns) {
+            l.info("name = "+co.getName()+" populates = "+co.getPopulates());
+        }
+
+        l.info("XML COLUMNS");
+        for(Column co : columns) {
+            l.info("name = "+co.getName()+" populates = "+co.getPopulates());
+        }
+        */
+
         if(sliColumns.size() > columns.size())
             throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");
 
