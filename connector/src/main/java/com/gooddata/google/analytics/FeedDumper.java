@@ -53,9 +53,8 @@ public class FeedDumper {
 
     private static DateFormat inFmt = new SimpleDateFormat("yyyyMMdd");
     private static DateFormat outFmt = new SimpleDateFormat("yyyy-MM-dd");
-	
     private static Logger l = Logger.getLogger(FeedDumper.class);
-    
+
     /**
      * Dupmps the gdata feed to CSV
      * @param cw CSVWriter
@@ -66,9 +65,9 @@ public class FeedDumper {
         l.debug("Dumping GA feed.");
         List<DataEntry> entries = feed.getEntries();
         List<Dimension> dimensions = null;
-        List<String> dimensionNames = new ArrayList<String>();        
+        List<String> dimensionNames = new ArrayList<String>();
         List<Metric> metrics = null;
-           
+
         if (!entries.isEmpty()) {
             DataEntry singleEntry = entries.get(0);
             dimensions = singleEntry.getDimensions();
@@ -133,7 +132,7 @@ public class FeedDumper {
             cw.writeNext(row.toArray(new String[]{}));
         }
         l.debug("Dumped "+entries.size()+" rows from GA feed.");
-        return entries.size() - 1;   
+        return entries.size() - 1;
     }
 
 }
