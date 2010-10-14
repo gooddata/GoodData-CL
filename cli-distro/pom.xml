@@ -55,13 +55,19 @@
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>8.4-701.jdbc4</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.jtds</groupId>
 			<artifactId>jtds</artifactId>
-			<version>1.2.4</version>
 		</dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+        </dependency>
 	</dependencies>
 	<build>
 		<plugins>

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.gooddata.connector.Constants;
+import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.util.CSVReader;
 
 import com.gooddata.modeling.model.SourceColumn;
@@ -163,6 +164,9 @@ public class DataTypeGuess {
 	        int countdown = 1000;
 	        while(row != null && countdown-- >0) {
 	            for(int i=0; i< row.length; i++) {
+                    if(i >= excludedColumnTypes.size())
+                        throw new InvalidParameterException("The CSV file contains rows with different number of columns." +
+                                " Quitting.");
 	                Set<String> types = excludedColumnTypes.get(i);
 	                String value = row[i];
 	                String dateFormat = getDateFormat(value);
@@ -186,6 +190,9 @@ public class DataTypeGuess {
             if (defaultLdmType != null)
             	ldmType = defaultLdmType;
         	else {
+                if(i >= excludedColumnTypes.size())
+                        throw new InvalidParameterException("The CSV file contains rows with different number of columns." +
+                                " Quitting.");
         		final Set<String> excludedColumnType = excludedColumnTypes.get(i);
         		if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_DATE))
 	            	ldmType = SourceColumn.LDM_TYPE_DATE;

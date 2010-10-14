@@ -54,8 +54,6 @@ ExecuteMaql(maqlFile="tests/drop_snapshots/salary.maql");
 # Transfer the salary data
 TransferLastSnapshot(incremental="false");
 
-DropSnapshots();
-
 # Load the salary data file, using the XML file describing the data
 LoadCsv(csvDataFile="tests/drop_snapshots/salary.csv",header="true",configFile="tests/drop_snapshots/salary.xml");
 

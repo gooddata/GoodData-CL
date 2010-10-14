@@ -35,6 +35,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gooddata.connector.Constants;
 import com.gooddata.exception.ModelException;
 import com.gooddata.util.StringUtil;
 import com.thoughtworks.xstream.XStream;

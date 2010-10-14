@@ -138,6 +138,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
         if (configStream != null) {
         	srcSchm = SourceSchema.createSchema(configStream);
         } else {
+            int idmax = Constants.MAX_SCHEMA_NAME_LENGTH - 3;
+            if (name.length() > idmax)
+                name = name.substring(0, idmax);
         	srcSchm = SourceSchema.createSchema(name);
         }
         final int knownColumns = srcSchm.getColumns().size();
@@ -148,6 +151,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
         		int idmax = Constants.MAX_TABLE_NAME_LENGTH - srcSchm.getName().length() - 3; // good enough for 999 long names
         		if (idorig.length() <= idmax)
         			return idorig;
+                if(idmax < 8)
+                    throw new InvalidParameterException("The schema name '"+srcSchm+"' is too long. Please use a name " +
+                            "up to 32 characters.");
         		return idorig.substring(0, idmax);
         		
         	}
@@ -169,6 +175,12 @@ public class CsvConnector extends AbstractConnector implements Connector {
 	            final SourceColumn sc;
 	            final String identifier = idGen.transform(header);
 	            final String title = titleGen.transform(header);
+                if(identifier == null || identifier.length() <= 0) {
+                    throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
+                }
+                if(title == null || title.length() <= 0) {
+                    throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
+                }
 	            if (defaultLdmType != null) {
 	            	sc = new SourceColumn(identifier, defaultLdmType, title, folder);
 	            } else {
