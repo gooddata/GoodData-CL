@@ -5,20 +5,25 @@ CreateProject(name="Google Analytics",templateUri="/projectTemplates/GoogleAnaly
 
 StoreProject(fileName="examples/ga/pid");   
 
-LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.browser.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:isMobile|ga:flashVersion|ga:javaEnabled",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-08-01",endDate="2010-10-09");
+# Please uncomment the following block (3 lines) if you want to load multiple GA profiles to a single GoodData project
+#LoadCsv(csvDataFile="examples/ga/profile.csv",header="true",configFile="examples/ga/ga.profile.xml");
+#ExecuteMaql(maqlFile="examples/ga/profile.maql");
+#TransferLastSnapshot(incremental="true");
+
+LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.browser.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:isMobile|ga:flashVersion|ga:javaEnabled",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-10-01",endDate="2010-10-09");
 TransferLastSnapshot(incremental="true");
 
-LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.os.xml",dimensions="ga:date|ga:screenColors|ga:screenResolution|ga:operatingSystem|ga:operatingSystemVersion",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-08-01",endDate="2010-10-09");
+LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.os.xml",dimensions="ga:date|ga:screenColors|ga:screenResolution|ga:operatingSystem|ga:operatingSystemVersion",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-10-01",endDate="2010-10-09");
 TransferLastSnapshot(incremental="true");
 
-LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.visitor.xml",dimensions="ga:date|ga:visitorType|ga:connectionSpeed|ga:hostname|ga:networkDomain|ga:networkLocation",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-08-01",endDate="2010-10-09");
+LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.visitor.xml",dimensions="ga:date|ga:visitorType|ga:connectionSpeed|ga:hostname|ga:networkDomain|ga:networkLocation",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-10-01",endDate="2010-10-09");
 TransferLastSnapshot(incremental="true");
 
-LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.geography.xml",dimensions="ga:date|ga:continent|ga:subContinent|ga:country|ga:region|ga:city",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-08-01",endDate="2010-10-09");
+LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.geography.xml",dimensions="ga:date|ga:continent|ga:subContinent|ga:country|ga:region|ga:city",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-10-01",endDate="2010-10-09");
 TransferLastSnapshot(incremental="true");
 
-LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.content.xml",dimensions="ga:date|ga:exitPagePath|ga:landingPagePath|ga:pagePath|ga:pageTitle|ga:previousPagePath|ga:nextPagePath",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-08-01",endDate="2010-10-09");
+LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.content.xml",dimensions="ga:date|ga:exitPagePath|ga:landingPagePath|ga:pagePath|ga:pageTitle|ga:previousPagePath|ga:nextPagePath",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-10-01",endDate="2010-10-09");
 TransferLastSnapshot(incremental="true");
 
-LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.campaign.xml",dimensions="ga:date|ga:adSlot|ga:campaign|ga:keyword|ga:medium|ga:referralPath|ga:source",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-08-01",endDate="2010-10-09");
+LoadGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.campaign.xml",dimensions="ga:date|ga:adSlot|ga:campaign|ga:keyword|ga:medium|ga:referralPath|ga:source",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-10-01",endDate="2010-10-09");
 TransferLastSnapshot(incremental="true");

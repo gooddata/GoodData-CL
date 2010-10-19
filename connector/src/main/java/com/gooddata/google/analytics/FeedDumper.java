@@ -23,6 +23,7 @@
 
 package com.gooddata.google.analytics;
 
+import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.connector.GaConnector;
 import com.google.gdata.data.analytics.DataEntry;
@@ -59,10 +60,14 @@ public class FeedDumper {
      * Dupmps the gdata feed to CSV
      * @param cw CSVWriter
      * @param feed Google feed
+     * @param gaq Google Analytics Query
      * @throws IOException in case of an IO problem
      */
-    public static int dump(CSVWriter cw, DataFeed feed) throws IOException {
+    public static int dump(CSVWriter cw, DataFeed feed, GaQuery gaq) throws IOException {
         l.debug("Dumping GA feed.");
+        String profileId = gaq.getIds();
+        if(profileId == null || profileId.length() <=0)
+            throw new InvalidParameterException("Empty Google Analytics profile ID in query.");
         List<DataEntry> entries = feed.getEntries();
         List<Dimension> dimensions = null;
         List<String> dimensionNames = new ArrayList<String>();
@@ -122,12 +127,14 @@ public class FeedDumper {
                 }
                 row.add(valueOut);
             }
+            key += profileId;
             digest.update(key.getBytes());
             byte[] hash = digest.digest();
             String hex = "";
             for(byte b : hash) {
                 hex += Integer.toHexString(b);
             }
+            row.add(0,profileId);
             row.add(0,hex);
             cw.writeNext(row.toArray(new String[]{}));
         }

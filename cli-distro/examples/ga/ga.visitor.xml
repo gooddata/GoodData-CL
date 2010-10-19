@@ -9,6 +9,13 @@
       <ldmType>CONNECTION_POINT</ldmType>
     </column>
     <column>
+      <name>profileId</name>
+      <title>Profile ID</title>
+      <ldmType>REFERENCE</ldmType>
+      <schemaReference>Profile</schemaReference>
+      <reference>id</reference>
+    </column>
+    <column>
       <name>date</name>
       <title>Date (Visitor)</title>
       <ldmType>DATE</ldmType>

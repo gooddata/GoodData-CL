@@ -54,3 +54,13 @@ When you have defined the source of your data, you need to describe the data set
 The script `ga.update.txt` refreshes the Google Analytics data in a GoodData project that has been previously created via the `ga.create.txt` script. If you modify the dimensions and metrics in the `ga.create.txt`, you need to replicate these changes to the `ga.update.txt` script.
 
 Don't worry about the overlapping dates (the `startDate` and the `endDate` parameters), the overlapping records are not going to be duplicated.
+
+## Loading Multiple Google Analytics Profiles?
+
+If you want to load multiple Google Analytics profiles into a single GoodData project, you must execute the `ga.update.txt` multiple times with different Google Analytics `profileId` parameters. To set this scenario up, you must perform following steps:
+
+# Modify the default Google Analytics template model by executing the `profile.maql`. Uncomment the three lines in the `ga.create.txt` and create your project by executing this script. 
+# List all your Google Analytics profiles in the `profile.csv`. The `id` column value must be the `profileId`, the `name` column is whatever you want to call the profile. 
+# Uncomment the two lines in the `ga.update.txt` script to load the `profile.csv` data to the project.
+
+Now you can load multiple Google Analytics profiles to your project.     

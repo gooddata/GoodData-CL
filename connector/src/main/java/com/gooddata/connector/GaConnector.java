@@ -96,6 +96,8 @@ public class GaConnector extends AbstractConnector implements Connector {
         SourceSchema s = SourceSchema.createSchema(name);
         SourceColumn cp = new SourceColumn("id",SourceColumn.LDM_TYPE_CONNECTION_POINT, "id");
         s.addColumn(cp);
+        cp = new SourceColumn("profileId",SourceColumn.LDM_TYPE_ATTRIBUTE, "profileId");
+        s.addColumn(cp);
         if(dims != null && dims.length() > 0) {
             String[] dimensions = dims.split("\\|");
             for(String dim : dimensions) {
@@ -175,7 +177,7 @@ public class GaConnector extends AbstractConnector implements Connector {
                 gaq.setStartIndex(startIndex);
                 DataFeed feed = as.getFeed(gaq.getUrl(), DataFeed.class);
                 l.debug("Retrieving GA data from index="+startIndex);
-                cnt = FeedDumper.dump(cw, feed);
+                cnt = FeedDumper.dump(cw, feed, gaq);
                 l.debug("Retrieved "+cnt+" entries.");
             }
             cw.flush();
