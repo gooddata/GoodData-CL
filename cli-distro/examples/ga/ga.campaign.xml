@@ -1,0 +1,109 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<schema>
+  <name>Campaign</name>
+  <columns>
+    <column>
+      <name>id</name>
+      <title>ID (Campaign)</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+    </column>
+    <column>
+      <name>date</name>
+      <title>Date (Campaign)</title>
+      <ldmType>DATE</ldmType>
+      <format>yyyy-MM-dd</format>
+      <schemaReference>Visit</schemaReference>
+    </column>
+    <column>
+      <name>adSlot</name>
+      <title>Ad Slot</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>campaign</name>
+      <title>Campaign</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>keyword</name>
+      <title>Keyword</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>medium</name>
+      <title>Medium</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>referralPath</name>
+      <title>Referral Path</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>source</name>
+      <title>Source</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>bounces</name>
+      <title>Bounces (Campaign)</title>
+      <ldmType>FACT</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>newVisits</name>
+      <title>New Visits (Campaign)</title>
+      <ldmType>FACT</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>pageViews</name>
+      <title>Page Views (Campaign)</title>
+      <ldmType>FACT</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>visits</name>
+      <title>Visits (Campaign)</title>
+      <ldmType>FACT</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>timeOnSite</name>
+      <title>Time On Site (Campaign)</title>
+      <ldmType>FACT</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>uniquePageviews</name>
+      <title>Unique Page Views (Campaign)</title>
+      <ldmType>FACT</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>timeOnPage</name>
+      <title>Time On Page (Campaign)</title>
+      <ldmType>FACT</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>exits</name>
+      <title>Exits (Campaign)</title>
+      <ldmType>FACT</ldmType>
+      <folder>Campaign</folder>
+    </column>
+    <column>
+      <name>entrances</name>
+      <title>Entrances (Campaign)</title>
+      <ldmType>FACT</ldmType>
+      <folder>Campaign</folder>
+    </column>
+  </columns>
+</schema>

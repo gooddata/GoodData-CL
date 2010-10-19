@@ -35,7 +35,7 @@ import com.gooddata.naming.N;
 import com.ibm.icu.text.Transliterator;
 
 /**
- * GoodData
+ * GoodData String utilities
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0

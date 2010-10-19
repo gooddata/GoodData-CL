@@ -1,0 +1,344 @@
+/*
+ * Copyright (c) 2009, GoodData Corporation. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ *        the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+ *        and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the GoodData Corporation nor the names of its contributors may be used to endorse
+ *        or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package com.gooddata.pivotal;
+
+import com.gooddata.exception.GdcLoginException;
+import com.gooddata.exception.GdcRestApiException;
+import com.gooddata.exception.HttpMethodException;
+import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.util.CSVReader;
+import com.gooddata.util.CSVWriter;
+import com.gooddata.util.FileUtil;
+import com.gooddata.util.XPathReader;
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.auth.AuthPolicy;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.log4j.Logger;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import java.io.*;
+import java.net.HttpCookie;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+/**
+ * GoodData Pivotal API wrapper
+ *
+ * @author zd <zd@gooddata.com>
+ * @version 1.0
+ */
+public class PivotalApi {
+
+    private static Logger l = Logger.getLogger(PivotalApi.class);
+
+    /**
+     * PT username
+     */
+    private String userName;
+    /**
+     * PT password
+     */
+    private String password;
+
+    /**
+     * PT project ID (integer)
+     */
+    private String projectId;
+
+    /**
+     * List of column headers that will be included in the STORY dataset
+     */
+    private Set RECORD_STORIES = new HashSet();
+    /**
+     * List of DATE column headers (we need to convert dates to the ISO format)
+     */
+    private Set DATE_COLUMNS = new HashSet();
+    /**
+     * Labels column header
+     */
+    private String HEADER_LABEL = "Labels";
+    /**
+     * Id column header
+     */
+    private String HEADER_STORY_ID = "Id";
+    /**
+     * Shared HTTP client
+     */
+    private HttpClient client = new HttpClient();
+
+    /**
+     * The Pivotal API wrapper constructor
+     * @param usr - PT username
+     * @param psw - PT password
+     * @param prjId  - PT project ID (integer)
+     */
+    public PivotalApi(String usr, String psw, String prjId) {
+        this.setUserName(usr);
+        this.setPassword(psw);
+        this.setProjectId(prjId);
+        // populate the STORY dataset columns
+        RECORD_STORIES.addAll(Arrays.asList(new String[] {"Id", "Labels", "Story", "Iteration", "Iteration Start",
+                "Iteration End", "Story Type", "Estimate", "Current State", "Created At", "Accepted At", "Deadline",
+                "Requested By", "Owned By", "URL"}));
+
+        DATE_COLUMNS.addAll(Arrays.asList(new String[] {"Iteration Start", "Iteration End", "Created At", "Accepted At",
+                "Deadline"}));
+    }
+
+    /**
+     * Sign into the PT
+     * @throws Exception in case of an IO error
+     */
+    public void signin() throws Exception {
+        PostMethod m = new PostMethod("https://www.pivotaltracker.com/signin");
+        m.getParams().setCookiePolicy(CookiePolicy.NETSCAPE);
+        m.addParameter("credentials[username]",getUserName());
+        m.addParameter("credentials[password]",getPassword());
+        try {
+            client.executeMethod(m);
+            if (m.getStatusCode() != HttpStatus.SC_OK && m.getStatusCode() != HttpStatus.SC_MOVED_TEMPORARILY) {
+                throw new InvalidParameterException("Invalid PT credentials. HTTP reply code "+m.getStatusCode());
+            }
+        }
+        finally {
+            m.releaseConnection();
+        }
+    }
+
+    /**
+     * Retrieves the PT data in the CSV format
+     * @param ptCsv - the filename to store the PT CSV data
+     * @throws Exception in case of an IO error
+     */
+    public void getCsvData(String ptCsv) throws Exception {
+        String url = "http://www.pivotaltracker.com/projects/"+getProjectId()+"/export";
+        PostMethod m = new PostMethod(url);
+        
+        m.getParams().setCookiePolicy(CookiePolicy.NETSCAPE);
+        m.addParameter("options[include_current_backlog_stories]","1");
+        m.addParameter("options[include_icebox_stories]","1");
+        m.addParameter("options[include_done_stories]","1");
+
+        try {
+            client.executeMethod(m);
+            if (m.getStatusCode() == HttpStatus.SC_OK) {
+                final int BUFLEN = 2048;
+                byte[] buf = new byte[BUFLEN];
+                BufferedInputStream is = new BufferedInputStream(m.getResponseBodyAsStream());
+                BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(ptCsv));
+                int cnt = is.read(buf,0,BUFLEN);
+                while(cnt >0) {
+                    os.write(buf, 0, cnt);
+                    cnt = is.read(buf,0,BUFLEN);
+                }
+                is.close();
+                os.flush();
+                os.close();
+            }
+            else {
+                throw new InvalidParameterException("Error retrieveing the PT data. HTTP reply code "+m.getStatusCode());
+            }
+        }
+        finally {
+            m.releaseConnection();
+        }
+    }
+
+    /**
+     * Writes a record to CSV writer
+     * @param cw CSV writer
+     * @param rec record as a list
+     */
+    private void writeRecord(CSVWriter cw, List<String> rec) {
+        cw.writeNext(rec.toArray(new String[] {}));
+    }
+
+    private SimpleDateFormat reader = new SimpleDateFormat("MMM dd,yyyy");
+    private SimpleDateFormat writer = new SimpleDateFormat("yyyy-MM-dd");
+
+    /**
+     * Converts the date format (if needed)
+     * @param header the CSV column header
+     * @param value the value
+     * @return the converted date
+     */
+    private String convertDate(String header, String value) {
+        if(DATE_COLUMNS.contains(header)) {
+            if(value != null && value.length()>0) {
+                Date dt = null;
+                try {
+                    dt = reader.parse(value);
+                } catch (ParseException e) {
+                    l.debug("Error parsing PT date value '"+value+"'");
+                    System.err.println("Error parsing PT date value '"+value+"'");
+                }
+                return writer.format(dt);
+            }
+            else {
+                return "";
+            }
+        }
+        else
+            return value;
+    }
+
+    /**
+     * Parses the PT CSV file into the STORY, LABEL, and LABEL_TO_STORY CSV files
+     * @param csvFile the incoming PT CSV file
+     * @param storiesCsv the output STORY CSV file
+     * @param labelsCsv the output LABEL CSV file
+     * @param labelsToStoriesCsv  the output LABEL_TO_STORY CSV file
+     * @throws Exception in case of an IO issue
+     */
+    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv) throws Exception {
+        CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
+        String[] row = cr.readNext();
+        if(row != null && row.length > 0) {
+            List<String> headers = Arrays.asList(row);
+            List<String> storiesRecord = new ArrayList<String>();
+            List<String> labelsRecord = new ArrayList<String>();
+            List<String> labelsToStoriesRecord = new ArrayList<String>();
+            CSVWriter storiesWriter = new CSVWriter(new FileWriter(storiesCsv));
+            CSVWriter labelsWriter = new CSVWriter(new FileWriter(labelsCsv));
+            CSVWriter labelsToStoriesWriter = new CSVWriter(new FileWriter(labelsToStoriesCsv));
+            labelsRecord.add("Id");
+            labelsRecord.add("Label");
+            labelsToStoriesRecord.add("Story Id");
+            labelsToStoriesRecord.add("Label Id");            
+
+            for(String header : headers) {
+                if(RECORD_STORIES.contains(header))
+                    storiesRecord.add(header);
+            }
+            writeRecord(storiesWriter, storiesRecord);
+            writeRecord(labelsWriter, labelsRecord);
+            writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
+
+            Map<String,String> labels = new HashMap<String, String>();
+            int labelId = 0;
+            row = cr.readNext();
+            while(row != null && row.length > 0) {
+                storiesRecord.clear();
+                labelsRecord.clear();
+                labelsToStoriesRecord.clear();
+                String storyId = "";
+                String label = "";
+                for(int i=0; i < headers.size(); i++) {
+                    String header = headers.get(i);
+                    if(RECORD_STORIES.contains(header)) {
+                        storiesRecord.add(convertDate(header, row[i]));
+                    }
+                    if(HEADER_LABEL.equals(header)) {
+                        label = row[i];
+                    }
+                    if(HEADER_STORY_ID.equals(header)) {
+                        storyId = row[i];
+                    }
+                }
+                String[] lbls = label.split(",");
+                for(String lbl : lbls) {
+                    lbl = lbl.trim();
+                    if(lbl.length() > 0) {
+                        if(labels.containsKey(lbl)) {
+                            String lblId = labels.get(lbl);
+                            labelsToStoriesRecord.add(storyId);
+                            labelsToStoriesRecord.add(lblId);
+                            writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
+                        }
+                        else {
+                            labelId++;
+                            String lblIds = Integer.toString(labelId);
+                            labels.put(lbl, lblIds);
+                            labelsRecord.add(lblIds);
+                            labelsRecord.add(lbl);
+                            labelsToStoriesRecord.add(storyId);
+                            labelsToStoriesRecord.add(lblIds);
+                            writeRecord(labelsWriter, labelsRecord);
+                            writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
+
+                        }
+                    }
+                    labelsRecord.clear();
+                    labelsToStoriesRecord.clear();                   
+                }
+                writeRecord(storiesWriter, storiesRecord);
+                row = cr.readNext();
+            }
+            storiesWriter.flush();
+            storiesWriter.close();
+            labelsWriter.flush();
+            labelsWriter.close();
+            labelsToStoriesWriter.flush();
+            labelsToStoriesWriter.close();
+        }
+        else {
+            throw new InvalidParameterException("The Pivotal extract doesn't contain any row.");
+        }
+
+
+
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }    
+
+    public static void main(String[] arg) throws Exception {
+        PivotalApi p = new PivotalApi("zd@gooddata.com","heslo1","38292");
+        p.signin();
+        p.getCsvData("/Users/zdenek/Downloads/pt.csv");
+        p.parse("/Users/zdenek/Downloads/pt.csv",
+                "/Users/zdenek/Downloads/stories.csv",
+                "/Users/zdenek/Downloads/labels.csv",
+                "/Users/zdenek/Downloads/labelsToStories.csv");
+    }
+
+}
