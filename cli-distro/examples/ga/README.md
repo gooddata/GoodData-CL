@@ -21,6 +21,8 @@ For example, if you log into your Google Analytics user interface with username 
                         metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits",
                         startDate="2008-01-01",endDate="2010-06-15");
 
+I'm sure you have noticed the `startDate` and the `endDate` parameters and guessed what these are for.
+
 ### How to run it
 
 After you have customized the `cmd.create.txt` script, you can try the Google Analytics example by running the following command:
@@ -41,7 +43,7 @@ _Unix like OS (Linux, Mac OS X and others):_
 
 This example creates a project with pre-defined reports and dashboards. The project contains six data sets. However, you mean to include additional dimension or metrics into your production project, or you may want to reduce the complexity by dropping fields you are not interested in.
 
-First, you will have to edit the list of dimensions and metrics to download. This can be done by editing the `dimensions` and `metrics` parameters of the `LoadGoogleAnalytics` command in the `ga.create.txt` script. 
+First, you will have to edit the list of dimensions and metrics to download. This can be done by editing the `dimensions` and `metrics` parameters of the `LoadGoogleAnalytics` command in the `ga.create.txt` script.
 
 For a complete list of available metrics and dimensions refer to the [Google Analytics documentation](http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html).
 
@@ -50,3 +52,5 @@ There are two Google Analytics limitation that must be taken into account. First
 When you have defined the source of your data, you need to describe the data set in the XML configuration file. You can either do it manually by editing the `ga.config.xml` file or you can generate it by using the `GenerateGaConfig` command.
 
 The script `ga.update.txt` refreshes the Google Analytics data in a GoodData project that has been previously created via the `ga.create.txt` script. If you modify the dimensions and metrics in the `ga.create.txt`, you need to replicate these changes to the `ga.update.txt` script.
+
+Don't worry about the overlapping dates (the `startDate` and the `endDate` parameters), the overlapping records are not going to be duplicated.
