@@ -1,0 +1,77 @@
+# A simple example that loads a flat file with a stock quote data and connect a time dimension
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+#GenerateCsvConfig(csvHeaderFile="examples/pt/stories.csv", configFile="examples/pt/stories.xml", folder="Story");
+#GenerateCsvConfig(csvHeaderFile="examples/pt/labels.csv", configFile="examples/pt/labels.xml", folder="Label");
+#GenerateCsvConfig(csvHeaderFile="examples/pt/labelsToStories.csv", configFile="examples/pt/labelsToStories.xml", folder="Label to Story");
+
+# Create a new project
+CreateProject(name="PT");
+
+# Store the project ID to file for possible other scripts
+StoreProject(fileName="examples/pt/pid");
+
+# Loads time dimension to the project
+LoadDateDimension(name="Iteration Start");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/pt/iteration_start_date.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/pt/iteration_start_date.maql");
+
+LoadDateDimension(name="Iteration End");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/pt/iteration_end_date.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/pt/iteration_end_date.maql");
+
+
+LoadDateDimension(name="Deadline");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/pt/deadline_date.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/pt/deadline_date.maql");
+
+# load the STORY data file
+# the data file config has been generated
+LoadCsv(csvDataFile="examples/pt/stories.csv",header="true",configFile="examples/pt/stories.xml");
+
+# generate the STORY MAQL
+GenerateMaql(maqlFile="examples/pt/stories.maql");
+
+# execute the STORY MAQL
+ExecuteMaql(maqlFile="examples/pt/stories.maql");
+
+# transfer the STORY data
+TransferLastSnapshot(incremental="true");
+
+# load the LABEL data file
+# the data file config has been generated
+LoadCsv(csvDataFile="examples/pt/labels.csv",header="true",configFile="examples/pt/labels.xml");
+
+# generate the LABEL MAQL
+GenerateMaql(maqlFile="examples/pt/labels.maql");
+
+# execute the LABEL MAQL
+ExecuteMaql(maqlFile="examples/pt/labels.maql");
+
+# transfer the LABEL data
+TransferLastSnapshot(incremental="true");
+
+# load the LABEL to STORY data file
+# the data file config has been generated
+LoadCsv(csvDataFile="examples/pt/labelsToStories.csv",header="true",configFile="examples/pt/labelsToStories.xml");
+
+# generate the LABEL MAQL
+GenerateMaql(maqlFile="examples/pt/labelsToStories.maql");
+
+# execute the LABEL MAQL
+ExecuteMaql(maqlFile="examples/pt/labelsToStories.maql");
+
+# transfer the LABEL data
+TransferLastSnapshot(incremental="true");
