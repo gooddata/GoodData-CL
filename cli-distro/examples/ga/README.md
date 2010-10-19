@@ -43,7 +43,7 @@ _Unix like OS (Linux, Mac OS X and others):_
 
 This example creates a project with pre-defined reports and dashboards. The project contains six data sets. However, you mean to include additional dimension or metrics into your production project, or you may want to reduce the complexity by dropping fields you are not interested in.
 
-First, you will have to edit the list of dimensions and metrics to download. This can be done by editing the `dimensions` and `metrics` parameters of the `LoadGoogleAnalytics` command in the `ga.create.txt` script.
+First, you will have to edit the list of dimensions and metrics to download. This can be done by editing the `dimensions` and `metrics` parameters of the `LoadGoogleAnalytics` command in the `cmd.create.txt` script.
 
 For a complete list of available metrics and dimensions refer to the [Google Analytics documentation](http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html).
 
@@ -51,15 +51,15 @@ There are two Google Analytics limitation that must be taken into account. First
 
 When you have defined the source of your data, you need to describe the data set in the XML configuration file. You can either do it manually by editing the `ga.config.xml` file or you can generate it by using the `GenerateGaConfig` command.
 
-The script `ga.update.txt` refreshes the Google Analytics data in a GoodData project that has been previously created via the `ga.create.txt` script. If you modify the dimensions and metrics in the `ga.create.txt`, you need to replicate these changes to the `ga.update.txt` script.
+The script `cmd.update.txt` refreshes the Google Analytics data in a GoodData project that has been previously created via the `cmd.create.txt` script. If you modify the dimensions and metrics in the `cmd.create.txt`, you need to replicate these changes to the `cmd.update.txt` script.
 
 Don't worry about the overlapping dates (the `startDate` and the `endDate` parameters), the overlapping records are not going to be duplicated.
 
 ## Loading Multiple Google Analytics Profiles?
 
-If you want to load multiple Google Analytics profiles into a single GoodData project, you must execute the `ga.update.txt` multiple times with different Google Analytics `profileId` parameters. To set this scenario up, you must perform following steps:
+If you want to load multiple Google Analytics profiles into a single GoodData project, you must execute the `cmd.update.txt` multiple times with different Google Analytics `profileId` parameters. To set this scenario up, you must perform following steps:
 
-1. Uncomment three lines in the `cmd.create.txt` that talk about multiple GA profiles. This will modify your project's existing GA data model by executing the `profile.maql`. Run the `ga.create.txt` to create your project (as described above).
+1. Uncomment three lines in the `cmd.create.txt` that talk about multiple GA profiles. This will modify your project's existing GA data model by executing the `profile.maql`. Run the `cmd.create.txt` to create your project (as described above).
 * List all your Google Analytics profiles in the `profile.csv`. The `profileId` column values should be your Google Analytics profile ID (including the `ga:` prefix) , the `profileName` column values contain your name for the profile (as it will appear in GoodData).
 * Uncomment two lines in the `cmd.update.txt` that talk about multiple GA profiles and run the script to load the `profile.csv` data to the project.
 
