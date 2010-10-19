@@ -30,11 +30,10 @@ import com.google.gdata.data.analytics.DataEntry;
 import com.google.gdata.data.analytics.DataFeed;
 import com.google.gdata.data.analytics.Dimension;
 import com.google.gdata.data.analytics.Metric;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -90,15 +89,6 @@ public class FeedDumper {
             headers.add(metric.getName());
         }
 
-        MessageDigest digest = null;
-
-        try {
-            digest = java.security.MessageDigest.getInstance("MD5");
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new IOException(e);
-        }
-
         for (DataEntry entry : entries) {
             final List<String> row = new ArrayList<String>();
             String key = "";
@@ -128,12 +118,7 @@ public class FeedDumper {
                 row.add(valueOut);
             }
             key += profileId;
-            digest.update(key.getBytes());
-            byte[] hash = digest.digest();
-            String hex = "";
-            for(byte b : hash) {
-                hex += Integer.toHexString(b);
-            }
+            String hex = DigestUtils.md5Hex(key);
             row.add(0,profileId);
             row.add(0,hex);
             cw.writeNext(row.toArray(new String[]{}));

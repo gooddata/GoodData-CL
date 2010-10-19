@@ -4,6 +4,12 @@
   <name>labelsToStories</name>
   <columns>
     <column>
+      <name>id</name>
+      <title>Id</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+      <folder>Label to Story</folder>
+    </column>  
+    <column>
       <name>storyid</name>
       <title>Story Id</title>
       <ldmType>REFERENCE</ldmType>

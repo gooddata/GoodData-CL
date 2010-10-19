@@ -31,6 +31,7 @@ import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.XPathReader;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthPolicy;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -45,6 +46,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.net.HttpCookie;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -231,6 +234,7 @@ public class PivotalApi {
             CSVWriter labelsToStoriesWriter = new CSVWriter(new FileWriter(labelsToStoriesCsv));
             labelsRecord.add("Id");
             labelsRecord.add("Label");
+            labelsToStoriesRecord.add("Id");
             labelsToStoriesRecord.add("Story Id");
             labelsToStoriesRecord.add("Label Id");            
 
@@ -271,6 +275,9 @@ public class PivotalApi {
                             String lblId = labels.get(lbl);
                             labelsToStoriesRecord.add(storyId);
                             labelsToStoriesRecord.add(lblId);
+                            String key = storyId + "|" + lblId;
+                            String hex = DigestUtils.md5Hex(key);
+                            labelsToStoriesRecord.add(0, hex);
                             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
                         }
                         else {
@@ -282,8 +289,10 @@ public class PivotalApi {
                             labelsToStoriesRecord.add(storyId);
                             labelsToStoriesRecord.add(lblIds);
                             writeRecord(labelsWriter, labelsRecord);
+                            String key = storyId + "|" + lblIds;
+                            String hex = DigestUtils.md5Hex(key);
+                            labelsToStoriesRecord.add(0, hex);
                             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
-
                         }
                     }
                     labelsRecord.clear();
