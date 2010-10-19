@@ -201,7 +201,6 @@ public class PivotalApi {
                     dt = reader.parse(value);
                 } catch (ParseException e) {
                     l.debug("Error parsing PT date value '"+value+"'");
-                    System.err.println("Error parsing PT date value '"+value+"'");
                 }
                 return writer.format(dt);
             }

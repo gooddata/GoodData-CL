@@ -5,7 +5,7 @@
   <columns>
     <column>
       <name>id</name>
-      <title>Id</title>
+      <title>Label Id</title>
       <ldmType>CONNECTION_POINT</ldmType>
       <folder>Label</folder>
     </column>
