@@ -5,7 +5,7 @@ Usage: gdi.sh -u username -p password [ -h hostname ] [ -i project_id ] [-e comm
  -s, --insecure        Disable encryption for HTTP and FTP (prefer this to -t)
  -p,--password <arg>   GoodData password
  -u,--username <arg>   GoodData username
- -i,--project <arg>    GoodData project identifier (takes the form of an MD5 hash)
+ -i,--project <arg>    GoodData project identifier (takes the form of an com.gooddata.MD5 hash)
  -e,--execute <arg>    Commands to execute
  -b,--backend <arg>    Local database backend (DERBY or MYSQL, DERBY by default)
  -d,--dbusername <arg> Database backend username (not required for the local Derby SQL)
@@ -31,7 +31,7 @@ Project Management Commands:
  DropIntegrationDatabase() - drop the project's local transformation database
 
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
-  identifier - id of an existing project (takes the form of an MD5 hash)
+  identifier - id of an existing project (takes the form of an com.gooddata.MD5 hash)
 
  StoreProject(fileName=<file>) - saves the current project identifier into the specified file
   fileName - file to save the project identifier
@@ -63,6 +63,13 @@ Project Management Commands:
    overwrite - if true overwrite the existing objects in the project
 
  Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
+
+ ExportTablesToCsv(dir=<dir>, driver=<jdbc-driver>, url=<jdbc-url> [, username=<jdbc-username>] [, password=<jdbc-password>])  - exports all tables from the database to CSV file
+  dir - target directory
+  driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
+  url - JDBC url (e.g. "jdbc:derby:mydb")
+  username - JDBC username
+  password - JDBC password
 
 Logical Model Management Commands:
 ----------------------------------
@@ -169,7 +176,15 @@ SalesForce Connector Commands:
   username - SFDC username
   password - SFDC password
   token - SFDC security token (you may append the security token to the password instead using this parameter)
-  
+
+Pivotal Tracker Connector Commands:
+------------------------------
+
+ DownloadPivotalTrackerData(dir=<dir>, username=<pt-username>, password=<pt-password>, projectId=<pt-project-id>) - downloads and transforms the PT data. The resulting CSVs must be loaded via the CSV connector.
+  dir - target directory where the CSV files are going to be stored
+  username - PT username
+  password - PT password
+  projectId - PT project ID (integer)
 
 Time Dimension Connector Commands:
 ----------------------------------

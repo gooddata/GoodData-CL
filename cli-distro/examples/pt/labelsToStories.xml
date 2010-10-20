@@ -4,7 +4,7 @@
   <name>labelsToStories</name>
   <columns>
     <column>
-      <name>id</name>
+      <name>cpId</name>
       <title>Label to Story Id</title>
       <ldmType>CONNECTION_POINT</ldmType>
       <folder>Label to Story</folder>
@@ -15,7 +15,7 @@
       <ldmType>REFERENCE</ldmType>
       <folder>Label to Story</folder>
       <schemaReference>stories</schemaReference>
-      <reference>id</reference>
+      <reference>cpId</reference>
     </column>
     <column>
       <name>labelid</name>
@@ -23,7 +23,7 @@
       <ldmType>REFERENCE</ldmType>
       <folder>Label to Story</folder>
       <schemaReference>labels</schemaReference>
-      <reference>id</reference>
+      <reference>cpId</reference>
     </column>
   </columns>
 </schema>

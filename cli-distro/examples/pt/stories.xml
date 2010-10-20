@@ -3,10 +3,16 @@
 <schema>
   <name>stories</name>
   <columns>
+      <column>
+        <name>cpId</name>
+        <title>Historical Story Id</title>
+        <ldmType>CONNECTION_POINT</ldmType>
+        <folder>Story</folder>
+      </column>
     <column>
       <name>id</name>
       <title>Story Id</title>
-      <ldmType>CONNECTION_POINT</ldmType>
+      <ldmType>ATTRIBUTE</ldmType>
       <folder>Story</folder>
     </column>
     <column>

@@ -31,6 +31,8 @@ import java.util.Properties;
 
 import com.gooddata.connector.*;
 import com.gooddata.integration.rest.MetadataObject;
+import com.gooddata.pivotal.PivotalApi;
+import com.gooddata.util.DatabaseToCsv;
 import com.gooddata.util.StringUtil;
 import net.sf.json.JSONObject;
 import org.apache.commons.cli.CommandLine;
@@ -601,6 +603,9 @@ public class GdcDI implements Executor {
             else if(c.match("CopyObjects")) {
                 copyObjects(c, cli, ctx);
             }
+            else if(c.match("ExportTablesToCsv")) {
+                exportTablesToCsv(c, cli, ctx);
+            }
             else {
                 l.debug("No match command "+c.getCommand());
                 return false;
@@ -639,6 +644,36 @@ public class GdcDI implements Executor {
         }
         catch (InterruptedException e) {
             throw new InternalErrorException(e);
+        }
+    }
+
+    /**
+     * Exports all DB tables to CSV
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void exportTablesToCsv(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        try {
+            String usr = null;
+            if(c.checkParam("username"))
+                usr = c.getParam("username");
+            String psw = null;
+            if(c.checkParam("password"))
+                psw = c.getParam("password");
+            String drv = c.getParamMandatory("driver");
+            String url = c.getParamMandatory("url");
+            String fl = c.getParamMandatory("dir");
+            File dir = new File(fl);
+            if(!dir.exists() || !dir.isDirectory()) {
+                throw new InvalidParameterException("The dir parameter in the ExportTablesToCsv command must be an existing directory.");
+            }
+            DatabaseToCsv d = new DatabaseToCsv(drv, url, usr, psw);
+            d.export(dir.getAbsolutePath());
+            l.info("All tables succesfully exported to "+dir.getAbsolutePath());
+        }
+        catch (SQLException e) {
+            throw new IOException(e);
         }
     }
 
@@ -910,6 +945,7 @@ public class GdcDI implements Executor {
             GaConnector.createConnector(),
             SfdcConnector.createConnector(),
             JdbcConnector.createConnector(),
+            PtConnector.createConnector(),    
             DateDimensionConnector.createConnector()    
         };
     }

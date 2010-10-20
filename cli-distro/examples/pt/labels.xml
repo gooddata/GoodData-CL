@@ -3,10 +3,16 @@
 <schema>
   <name>labels</name>
   <columns>
+      <column>
+        <name>cpId</name>
+        <title>Id</title>
+        <ldmType>CONNECTION_POINT</ldmType>
+        <folder>Label</folder>
+      </column>
     <column>
       <name>id</name>
       <title>Label Id</title>
-      <ldmType>CONNECTION_POINT</ldmType>
+      <ldmType>ATTRIBUTE</ldmType>
       <folder>Label</folder>
     </column>
     <column>

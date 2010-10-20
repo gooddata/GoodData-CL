@@ -1,15 +1,15 @@
-# A simple example that loads a flat file with a stock quote data and connect a time dimension
+# A simple example that loads a Pivotal Tracker data
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
-
-#GenerateCsvConfig(csvHeaderFile="examples/pt/stories.csv", configFile="examples/pt/stories.xml", folder="Story");
-#GenerateCsvConfig(csvHeaderFile="examples/pt/labels.csv", configFile="examples/pt/labels.xml", folder="Label");
-#GenerateCsvConfig(csvHeaderFile="examples/pt/labelsToStories.csv", configFile="examples/pt/labelsToStories.xml", folder="Label to Story");
 
 # Create a new project
 CreateProject(name="PT");
 
 # Store the project ID to file for possible other scripts
 StoreProject(fileName="examples/pt/pid");
+
+# Download the PT data to 4 CSVs.
+# The resulting CSVs are loaded via the CSV connector
+DownloadPivotalTrackerData(dir="examples/pt", username="pt-username", password="pt-password", projectId="pid");
 
 # Loads time dimension to the project
 LoadDateDimension(name="Iteration Start");
@@ -36,6 +36,15 @@ GenerateMaql(maqlFile="examples/pt/deadline_date.maql");
 
 # Execute the date dimension MAQL script
 ExecuteMaql(maqlFile="examples/pt/deadline_date.maql");
+
+# Loads time dimension to the project
+LoadDateDimension(name="Snapshot");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/pt/snapshot_date.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/pt/snapshot_date.maql");
 
 # load the STORY data file
 # the data file config has been generated
@@ -74,4 +83,17 @@ GenerateMaql(maqlFile="examples/pt/labelsToStories.maql");
 ExecuteMaql(maqlFile="examples/pt/labelsToStories.maql");
 
 # transfer the LABEL data
+TransferLastSnapshot(incremental="true");
+
+# load the SNAPSHOT data file
+# the data file config has been generated
+LoadCsv(csvDataFile="examples/pt/snapshots.csv",header="true",configFile="examples/pt/snapshots.xml");
+
+# generate the SNAPSHOT MAQL
+GenerateMaql(maqlFile="examples/pt/snapshots.maql");
+
+# execute the SNAPSHOT MAQL
+ExecuteMaql(maqlFile="examples/pt/snapshots.maql");
+
+# transfer the SNAPSHOT data
 TransferLastSnapshot(incremental="true");

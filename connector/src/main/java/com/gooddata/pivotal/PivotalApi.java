@@ -120,7 +120,7 @@ public class PivotalApi {
      * Sign into the PT
      * @throws Exception in case of an IO error
      */
-    public void signin() throws Exception {
+    public void signin() throws IOException {
         PostMethod m = new PostMethod("https://www.pivotaltracker.com/signin");
         m.getParams().setCookiePolicy(CookiePolicy.NETSCAPE);
         m.addParameter("credentials[username]",getUserName());
@@ -141,7 +141,7 @@ public class PivotalApi {
      * @param ptCsv - the filename to store the PT CSV data
      * @throws Exception in case of an IO error
      */
-    public void getCsvData(String ptCsv) throws Exception {
+    public void getCsvData(String ptCsv) throws IOException {
         String url = "http://www.pivotaltracker.com/projects/"+getProjectId()+"/export";
         PostMethod m = new PostMethod(url);
         
@@ -218,9 +218,11 @@ public class PivotalApi {
      * @param storiesCsv the output STORY CSV file
      * @param labelsCsv the output LABEL CSV file
      * @param labelsToStoriesCsv  the output LABEL_TO_STORY CSV file
+     * @param snapshotCsv  the output SNAPSHOTs CSV file
      * @throws Exception in case of an IO issue
      */
-    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv) throws Exception {
+    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, String snapshotCsv) throws IOException {
+        String today = writer.format(new Date());
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
         String[] row = cr.readNext();
         if(row != null && row.length > 0) {
@@ -228,19 +230,28 @@ public class PivotalApi {
             List<String> storiesRecord = new ArrayList<String>();
             List<String> labelsRecord = new ArrayList<String>();
             List<String> labelsToStoriesRecord = new ArrayList<String>();
+            List<String> snapshotsRecord = new ArrayList<String>();
+
             CSVWriter storiesWriter = new CSVWriter(new FileWriter(storiesCsv));
             CSVWriter labelsWriter = new CSVWriter(new FileWriter(labelsCsv));
             CSVWriter labelsToStoriesWriter = new CSVWriter(new FileWriter(labelsToStoriesCsv));
-            labelsRecord.add("Id");
+            CSVWriter snapshotsWriter = new CSVWriter(new FileWriter(snapshotCsv));
+
+            labelsRecord.add("cpId");
+            labelsRecord.add("Label Id");
             labelsRecord.add("Label");
-            labelsToStoriesRecord.add("Id");
+            labelsToStoriesRecord.add("cpId");
             labelsToStoriesRecord.add("Story Id");
-            labelsToStoriesRecord.add("Label Id");            
+            labelsToStoriesRecord.add("Label Id");
+            snapshotsRecord.add("cpId");
+            snapshotsRecord.add("Story Id");
+            snapshotsRecord.add("Date");
 
             for(String header : headers) {
                 if(RECORD_STORIES.contains(header))
                     storiesRecord.add(header);
             }
+            storiesRecord.add(0, "cpId");
             writeRecord(storiesWriter, storiesRecord);
             writeRecord(labelsWriter, labelsRecord);
             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
@@ -252,20 +263,25 @@ public class PivotalApi {
                 storiesRecord.clear();
                 labelsRecord.clear();
                 labelsToStoriesRecord.clear();
+                snapshotsRecord.clear();
                 String storyId = "";
                 String label = "";
+                String key = "";
                 for(int i=0; i < headers.size(); i++) {
                     String header = headers.get(i);
                     if(RECORD_STORIES.contains(header)) {
+                        key += row[i] + "|";
                         storiesRecord.add(convertDate(header, row[i]));
                     }
                     if(HEADER_LABEL.equals(header)) {
                         label = row[i];
                     }
-                    if(HEADER_STORY_ID.equals(header)) {
-                        storyId = row[i];
-                    }
                 }
+                storyId = DigestUtils.md5Hex(key);
+                storiesRecord.add(0, storyId);
+                snapshotsRecord.add(storyId);
+                snapshotsRecord.add(today);
+                snapshotsRecord.add(0, DigestUtils.md5Hex(storyId+"|"+today));
                 String[] lbls = label.split(",");
                 for(String lbl : lbls) {
                     lbl = lbl.trim();
@@ -274,23 +290,21 @@ public class PivotalApi {
                             String lblId = labels.get(lbl);
                             labelsToStoriesRecord.add(storyId);
                             labelsToStoriesRecord.add(lblId);
-                            String key = storyId + "|" + lblId;
-                            String hex = DigestUtils.md5Hex(key);
-                            labelsToStoriesRecord.add(0, hex);
+                            labelsToStoriesRecord.add(0, DigestUtils.md5Hex(storyId + "|" + lblId));
                             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
                         }
                         else {
                             labelId++;
-                            String lblIds = Integer.toString(labelId);
-                            labels.put(lbl, lblIds);
-                            labelsRecord.add(lblIds);
+                            String lblId = Integer.toString(labelId);
+                            String id = DigestUtils.md5Hex(lblId + "|" + lbl);
+                            labels.put(lbl, id);
+                            labelsRecord.add(lblId);
                             labelsRecord.add(lbl);
+                            labelsRecord.add(0, id);
                             labelsToStoriesRecord.add(storyId);
-                            labelsToStoriesRecord.add(lblIds);
+                            labelsToStoriesRecord.add(id);
                             writeRecord(labelsWriter, labelsRecord);
-                            String key = storyId + "|" + lblIds;
-                            String hex = DigestUtils.md5Hex(key);
-                            labelsToStoriesRecord.add(0, hex);
+                            labelsToStoriesRecord.add(0, DigestUtils.md5Hex(storyId + "|" + id));
                             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
                         }
                     }
@@ -298,10 +312,13 @@ public class PivotalApi {
                     labelsToStoriesRecord.clear();                   
                 }
                 writeRecord(storiesWriter, storiesRecord);
+                writeRecord(snapshotsWriter, snapshotsRecord);
                 row = cr.readNext();
             }
             storiesWriter.flush();
             storiesWriter.close();
+            snapshotsWriter.flush();
+            snapshotsWriter.close();
             labelsWriter.flush();
             labelsWriter.close();
             labelsToStoriesWriter.flush();
@@ -338,15 +355,5 @@ public class PivotalApi {
     public void setProjectId(String projectId) {
         this.projectId = projectId;
     }    
-
-    public static void main(String[] arg) throws Exception {
-        PivotalApi p = new PivotalApi("zd@gooddata.com","heslo1","38292");
-        p.signin();
-        p.getCsvData("/Users/zdenek/Downloads/pt.csv");
-        p.parse("/Users/zdenek/Downloads/pt.csv",
-                "/Users/zdenek/Downloads/stories.csv",
-                "/Users/zdenek/Downloads/labels.csv",
-                "/Users/zdenek/Downloads/labelsToStories.csv");
-    }
 
 }

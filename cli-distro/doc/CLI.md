@@ -41,7 +41,7 @@ The following paragraphs describe the specific GoodData CL commands.
 
 * `OpenProject`(id=&lt;identifier&gt;) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
 
-  - identifier - id of an existing project (takes the form of an MD5 hash)
+  - identifier - id of an existing project (takes the form of an com.gooddata.MD5 hash)
 
 * `StoreProject`(fileName=&lt;file&gt;) - saves the current project identifier into the specified file
 
