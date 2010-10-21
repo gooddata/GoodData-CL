@@ -330,8 +330,6 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             l.debug("Retrieved " + result.size() + " rows of SFDC data.");
             cw.flush();
             cw.close();
-            //getConnectorBackend().extract(dataFile, false,',');
-            FileUtil.recursiveDelete(dataFile);
             l.debug("Extracted SFDC data.");
         }
         else {

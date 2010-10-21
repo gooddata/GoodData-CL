@@ -43,7 +43,7 @@ echo 'Running sfdc demo'
 bin/gdi.sh examples/sfdc/sfdc.txt
 
 echo 'Dropping the sfdc project and snapshots'
-drop "`cat examples/sfdc/pid`"
+drop "`cat examples/sfdc/pid`"                                   c
 
 echo 'Running jdbc demo'
 bin/gdi.sh examples/jdbc/fundamentals.txt
@@ -52,10 +52,16 @@ echo 'Dropping the jdbc project and snapshots'
 drop "`cat examples/jdbc/pid`"
 
 echo 'Running ga demo'
-bin/gdi.sh examples/ga/ga.txt
+bin/gdi.sh examples/ga/cmd.create.txt
 
 echo 'Dropping the ga project and snapshots'
 drop "`cat examples/ga/pid`"
+
+echo 'Running pt demo'
+bin/gdi.sh examples/pt/cmd.txt
+
+echo 'Dropping the pt project and snapshots'
+drop "`cat examples/pt/pid`"
 
 echo 'Running naming test'
 bin/gdi.sh tests/naming/cmd.txt

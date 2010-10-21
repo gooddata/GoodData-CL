@@ -184,7 +184,6 @@ public class FileUtil {
      * @return true if all files are successfully deleted
      */
     public static boolean recursiveDelete(File fileOrDir) {
-        /*
         l.debug("Deleting "+fileOrDir+" recursively.");
         if (fileOrDir.isDirectory()) {
             // recursively delete contents
@@ -196,8 +195,6 @@ public class FileUtil {
         }
         l.debug("Deleted"+fileOrDir+" recursively.");
         return fileOrDir.delete();
-        */
-        return true;
     }
 
     /**

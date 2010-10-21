@@ -24,6 +24,7 @@
 package com.gooddata.integration.ftp;
 
 import com.gooddata.exception.GdcUploadErrorException;
+import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.util.FileUtil;
 import org.apache.commons.net.ftp.FTPClient;
@@ -42,7 +43,7 @@ import java.security.NoSuchAlgorithmException;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class GdcFTPApiWrapper {
+public class GdcFTPApiWrapper implements GdcDataTransferAPI {
 
     private static Logger l = Logger.getLogger(GdcFTPApiWrapper.class);
 

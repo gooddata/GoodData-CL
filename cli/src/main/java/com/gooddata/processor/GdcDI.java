@@ -78,15 +78,10 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_HOST = {"host","h"};
     public static String[] CLI_PARAM_FTP_HOST = {"ftphost","f"};
     public static String[] CLI_PARAM_PROJECT = {"project","i"};
-    public static String[] CLI_PARAM_BACKEND = {"backend","b"};
-    public static String[] CLI_PARAM_DB_USERNAME = {"dbusername","d"};
-    public static String[] CLI_PARAM_DB_PASSWORD = {"dbpassword","c"};
-    public static String[] CLI_PARAM_DB_HOST = {"dbhost","l"};
     public static String[] CLI_PARAM_PROTO = {"proto","t"};
     public static String[] CLI_PARAM_INSECURE = {"insecure","s"};
     public static String[] CLI_PARAM_EXECUTE = {"execute","e"};
     public static String[] CLI_PARAM_VERSION = {"version","V"};
-    public static String[] CLI_PARAM_MEMORY = {"memory","m"};
     public static String[] CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY = {"default-date-fk","D"};
     public static String CLI_PARAM_SCRIPT = "script";
     
@@ -102,11 +97,6 @@ public class GdcDI implements Executor {
         new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host"),
         new Option(CLI_PARAM_FTP_HOST[1], CLI_PARAM_FTP_HOST[0], true, "GoodData FTP host"),
         new Option(CLI_PARAM_PROJECT[1], CLI_PARAM_PROJECT[0], true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)"),
-        new Option(CLI_PARAM_BACKEND[1], CLI_PARAM_BACKEND[0], true, "Database backend DERBY or MYSQL"),
-        new Option(CLI_PARAM_DB_USERNAME[1], CLI_PARAM_DB_USERNAME[0], true, "Database backend username (not required for the local Derby SQL)"),
-        new Option(CLI_PARAM_DB_PASSWORD[1], CLI_PARAM_DB_PASSWORD[0], true, "Database backend password (not required for the local Derby SQL)"),
-        new Option(CLI_PARAM_DB_HOST[1], CLI_PARAM_DB_HOST[0], true, "Database backend hostname (e.g. dbmachine-ip:3306, not required for the local Derby SQL)"),
-        new Option(CLI_PARAM_MEMORY[1], CLI_PARAM_MEMORY[0], true, "Turns the in-memory  (fast) processing mode for the MySQL. Accepts the available memory size in MB."),    
         new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
         new Option(CLI_PARAM_INSECURE[1], CLI_PARAM_INSECURE[0], false, "Disable encryption"),
         new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version."),    
@@ -132,6 +122,7 @@ public class GdcDI implements Executor {
                     cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
                     cliParams.get(CLI_PARAM_HOST[0]),
                     cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
+            //TODO: Webdav http : https vs. FTP ftp vs ftps
             cliParams.setFtpConfig(new NamePasswordConfiguration(
                     cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "ftp" : "ftps",
                     cliParams.get(CLI_PARAM_FTP_HOST[0]),
@@ -393,19 +384,6 @@ public class GdcDI implements Executor {
             cp.put(CLI_PARAM_INSECURE[0], "true");
 
         l.debug("Using " + (cp.containsKey(CLI_PARAM_INSECURE[0]) ? "in" : "") + "secure protocols");
-
-        // use default backend if there is no host in the CLI params
-        if(!cp.containsKey(CLI_PARAM_BACKEND[0])) {
-            cp.put(CLI_PARAM_BACKEND[0], Defaults.DEFAULT_BACKEND);
-        }
-        else {
-            String b = cp.get(CLI_PARAM_BACKEND[0]).toLowerCase();
-            if(!"mysql".equalsIgnoreCase(b) && !"derby".equalsIgnoreCase(b))
-                b = "derby";
-            cp.put(CLI_PARAM_BACKEND[0], b);
-        }
-
-        l.debug("Using backend "+cp.get(CLI_PARAM_BACKEND[0]));
 
         if (ln.getArgs().length == 0 && !ln.hasOption("execute")) {
             throw new InvalidArgumentException("No command has been given, quitting.");
