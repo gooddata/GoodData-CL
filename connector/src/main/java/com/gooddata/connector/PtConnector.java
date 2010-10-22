@@ -289,7 +289,6 @@ public class PtConnector extends AbstractConnector implements Connector {
         l.info("Pivotal Tracker Connector Loaded (id: " + getPivotalProjectId() + ")");
     }
 
-
     public SourceSchema getLabelSchema() {
         return labelSchema;
     }
