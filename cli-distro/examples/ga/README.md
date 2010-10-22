@@ -61,6 +61,7 @@ If you want to load multiple Google Analytics profiles into a single GoodData pr
 
 1. Uncomment three lines in the `cmd.create.txt` that talk about multiple GA profiles. This will modify your project's existing GA data model by executing the `profile.maql`. Run the `cmd.create.txt` to create your project (as described above).
 * List all your Google Analytics profiles in the `profile.csv`. The `profileId` column values should be your Google Analytics profile ID (including the `ga:` prefix) , the `profileName` column values contain your name for the profile (as it will appear in GoodData).
-* Uncomment two lines in the `cmd.update.txt` that talk about multiple GA profiles and run the script to load the `profile.csv` data to the project.
+* Change the `IGNORE` ldmType in all XML configurations to the `REFERENCE`.
+* Uncomment two lines in the `cmd.update.txt` that talk about multiple GA profiles. These run the script to load the `profile.csv` data to the project.
 
 Now you can load multiple Google Analytics profiles to your project. By default, your reports and dashboards will show data for all profiles together. If you want to report on data from a specific profile only, you need to [add a filter](https://secure.gooddata.com/docs/html/reference.guide.createreports.filters.html) to your report for a specific Profile (or even add an [interactive variable](https://secure.gooddata.com/docs/html/reference.guide.dashboard.filters.html) to your dashboard).

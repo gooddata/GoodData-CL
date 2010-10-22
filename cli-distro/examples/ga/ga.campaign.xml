@@ -11,7 +11,7 @@
     <column>
       <name>profileId</name>
       <title>Profile ID</title>
-      <ldmType>REFERENCE</ldmType>
+      <ldmType>IGNORE</ldmType>
       <schemaReference>Profile</schemaReference>
       <reference>id</reference>
     </column>
