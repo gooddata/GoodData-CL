@@ -221,8 +221,8 @@ public class PivotalApi {
      * @param snapshotCsv  the output SNAPSHOTs CSV file
      * @throws Exception in case of an IO issue
      */
-    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, String snapshotCsv) throws IOException {
-        String today = writer.format(new Date());
+    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, String snapshotCsv, Date t) throws IOException {
+        String today = writer.format(t);
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
         String[] row = cr.readNext();
         if(row != null && row.length > 0) {
@@ -245,7 +245,7 @@ public class PivotalApi {
             labelsToStoriesRecord.add("Label Id");
             snapshotsRecord.add("cpId");
             snapshotsRecord.add("Story Id");
-            snapshotsRecord.add("Date");
+            snapshotsRecord.add("Snapshot Date");
 
             for(String header : headers) {
                 if(RECORD_STORIES.contains(header))
@@ -255,11 +255,12 @@ public class PivotalApi {
             writeRecord(storiesWriter, storiesRecord);
             writeRecord(labelsWriter, labelsRecord);
             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
+            writeRecord(snapshotsWriter , snapshotsRecord);
 
             Map<String,String> labels = new HashMap<String, String>();
             int labelId = 0;
             row = cr.readNext();
-            while(row != null && row.length > 0) {
+            while(row != null && row.length > 1) {
                 storiesRecord.clear();
                 labelsRecord.clear();
                 labelsToStoriesRecord.clear();
@@ -354,6 +355,6 @@ public class PivotalApi {
 
     public void setProjectId(String projectId) {
         this.projectId = projectId;
-    }    
+    }
 
 }

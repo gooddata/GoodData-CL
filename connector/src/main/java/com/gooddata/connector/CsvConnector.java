@@ -54,9 +54,6 @@ public class CsvConnector extends AbstractConnector implements Connector {
 
     // data file
     private File dataFile;
-    
-     //hasheader flag
-    private boolean hasHeader;
 
     // field separator
     private char separator = ',';
@@ -88,9 +85,8 @@ public class CsvConnector extends AbstractConnector implements Connector {
             throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
                     "it's configuration file!");
         }
-        if(this.getHasHeader())
-            row = cr.readNext();
         cw.writeNext(header);
+        row = cr.readNext();
         while (row != null) {
             cw.writeNext(row);
             row = cr.readNext();
@@ -213,22 +209,6 @@ public class CsvConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * hasHeader getter
-     * @return hasHeader flag
-     */
-    public boolean getHasHeader() {
-        return hasHeader;
-    }
-
-    /**
-     * hasHeader setter
-     * @param hasHeader flag value
-     */
-    public void setHasHeader(boolean hasHeader) {
-        this.hasHeader = hasHeader;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
@@ -258,12 +238,8 @@ public class CsvConnector extends AbstractConnector implements Connector {
     private void loadCsv(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
         String csvDataFile = c.getParamMandatory("csvDataFile");
-        String hdr = c.getParamMandatory("header");
         File conf = FileUtil.getFile(configFile);
         File csvf = FileUtil.getFile(csvDataFile);
-        boolean hasHeader = false;
-        if(hdr.equalsIgnoreCase("true"))
-            hasHeader = true;
         String sep = c.getParam("separator");
         if(sep != null) {
             if(sep.length() == 0 || (sep.length() > 1 && !"\\t".equals(sep)))
@@ -276,7 +252,6 @@ public class CsvConnector extends AbstractConnector implements Connector {
         }
         initSchema(conf.getAbsolutePath());
         setDataFile(new File(csvf.getAbsolutePath()));
-        setHasHeader(hasHeader);
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);

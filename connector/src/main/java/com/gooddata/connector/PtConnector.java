@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Date;
 
 /**
  * GoodData Pivotal Tracker Connector
@@ -121,7 +122,7 @@ public class PtConnector extends AbstractConnector implements Connector {
                 dir.getAbsolutePath() + System.getProperty("file.separator") + "stories.csv",
                 dir.getAbsolutePath() + System.getProperty("file.separator") + "labels.csv",
                 dir.getAbsolutePath() + System.getProperty("file.separator") + "labelsToStories.csv",
-                dir.getAbsolutePath() + System.getProperty("file.separator") + "snapshots.csv");
+                dir.getAbsolutePath() + System.getProperty("file.separator") + "snapshots.csv", new Date());
 
         l.info("Pivotal Tracker data successfully downloaded (id: " + id + ") into " + dir.getAbsolutePath());
     }
