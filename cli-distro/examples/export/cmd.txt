@@ -1,4 +1,4 @@
-# This example shows how to export all tables in a database to set ofCSV files
+# This example shows how to export all tables in a database to set of CSV files
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
 # load JDBC data

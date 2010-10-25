@@ -27,4 +27,4 @@ GenerateMaql(maqlFile="tests/separators/separators.maql");
 ExecuteMaql(maqlFile="tests/separators/separators.maql");
 
 # transfer the stock quotes data
-TransferLastSnapshot();
+TransferData();

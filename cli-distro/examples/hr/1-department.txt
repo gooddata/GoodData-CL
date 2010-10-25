@@ -19,4 +19,4 @@ GenerateMaql(maqlFile="examples/hr/department.maql");
 ExecuteMaql(maqlFile="examples/hr/department.maql");
 
 # Transfer the department data
-TransferLastSnapshot(incremental="false");
+TransferData(incremental="false");

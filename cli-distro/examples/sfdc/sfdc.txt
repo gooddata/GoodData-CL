@@ -42,7 +42,7 @@ GenerateMaql(maqlFile="examples/sfdc/account.maql");
 ExecuteMaql(maqlFile="examples/sfdc/account.maql");
 
 # TRANSFER THE ACCOUNT DATA
-TransferLastSnapshot(incremental="true");
+TransferData(incremental="true");
 
 # GENERATE THE OPPORTUNITY CONFIG 
 # INTENTIONALLY COMMENTED OUT, A PRE-GENERATED CONFIG FILE IS INCLUDED ALREADY IN THE 'sfdc' FOLDER
@@ -58,4 +58,4 @@ GenerateMaql(maqlFile="examples/sfdc/opportunity.maql");
 ExecuteMaql(maqlFile="examples/sfdc/opportunity.maql");
 
 # TRANSFER THE OPPORTUNITY DATA
-TransferLastSnapshot(incremental="true");
+TransferData(incremental="true");

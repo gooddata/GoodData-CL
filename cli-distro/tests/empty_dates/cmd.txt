@@ -27,4 +27,4 @@ GenerateMaql(maqlFile="tests/empty_dates/empty_dates.maql");
 ExecuteMaql(maqlFile="tests/empty_dates/empty_dates.maql");
 
 # transfer the stock quotes data
-TransferLastSnapshot();
+TransferData();

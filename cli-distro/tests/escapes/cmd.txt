@@ -27,4 +27,4 @@ GenerateMaql(maqlFile="tests/escapes/escapes.maql");
 ExecuteMaql(maqlFile="tests/escapes/escapes.maql");
 
 # transfer the stock quotes data
-TransferLastSnapshot();
+TransferData();

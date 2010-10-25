@@ -4,4 +4,4 @@ GenerateCsvConfig(csvHeaderFile="tests/naming/data.csv", configFile="tests/namin
 LoadCsv(csvDataFile="tests/naming/data.csv",header="true",configFile="tests/naming/config.xml");
 GenerateMaql(maqlFile="tests/naming/naming.maql");
 ExecuteMaql(maqlFile="tests/naming/naming.maql");
-TransferLastSnapshot();
+TransferData();

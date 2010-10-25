@@ -7,6 +7,7 @@ CREATE FOLDER {dim.profile} VISUAL(TITLE "Profile") TYPE ATTRIBUTE;
 # CREATE ATTRIBUTES.
 # ATTRIBUTES ARE CATEGORIES THAT ARE USED FOR SLICING AND DICING THE NUMBERS (FACTS)
 CREATE ATTRIBUTE {attr.profile.id} VISUAL(TITLE "Profile ID", FOLDER {dim.profile}) AS KEYS {d_profile_id.id} FULLSET, {f_browser.profile_id}, {f_campaign.profile_id}, {f_content.profile_id}, {f_geography.profile_id}, {f_os.profile_id}, {f_visitor.profile_id} WITH LABELS {label.profile.id} VISUAL(TITLE "Profile Id") AS {d_profile_id.nm_profile_id}, {label.profile.id.name} VISUAL(TITLE "Profile Name") AS {d_profile_id.nm_profile_name};
+ALTER ATTRIBUTE {attr.profile.id} DEFAULT LABEL {label.profile.id.name};
 ALTER DATASET {dataset.profile} ADD {attr.profile.id};
 
 # SYNCHRONIZE THE STORAGE AND DATA LOADING INTERFACES WITH THE NEW LOGICAL MODEL

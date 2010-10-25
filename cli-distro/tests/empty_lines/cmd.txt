@@ -3,4 +3,4 @@ StoreProject(fileName="tests/empty_lines/pid");
 LoadCsv(csvDataFile="tests/empty_lines/data.csv",header="true",configFile="tests/empty_lines/config.xml");
 GenerateMaql(maqlFile="tests/empty_lines/test.maql");
 ExecuteMaql(maqlFile="tests/empty_lines/test.maql");
-TransferLastSnapshot(incremental="false");
+TransferData(incremental="false");

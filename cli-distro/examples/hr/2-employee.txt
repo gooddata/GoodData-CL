@@ -16,4 +16,4 @@ GenerateMaql(maqlFile="examples/hr/employee.maql");
 ExecuteMaql(maqlFile="examples/hr/employee.maql");
 
 # Transfer the employee data
-TransferLastSnapshot(incremental="false");
+TransferData(incremental="false");

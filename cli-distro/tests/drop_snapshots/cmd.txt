@@ -19,7 +19,7 @@ GenerateMaql(maqlFile="tests/drop_snapshots/department.maql");
 ExecuteMaql(maqlFile="tests/drop_snapshots/department.maql");
 
 # Transfer the department data
-TransferLastSnapshot(incremental="false");
+TransferData(incremental="false");
 
 # Load the employee data file, using the XML file describing the data
 LoadCsv(csvDataFile="tests/drop_snapshots/employee.csv",header="true",configFile="tests/drop_snapshots/employee.xml");
@@ -31,7 +31,7 @@ GenerateMaql(maqlFile="tests/drop_snapshots/employee.maql");
 ExecuteMaql(maqlFile="tests/drop_snapshots/employee.maql");
 
 # Transfer the employee data
-TransferLastSnapshot(incremental="false");
+TransferData(incremental="false");
 
 # Loads time dimension to the project
 LoadDateDimension(name="Payment");
@@ -52,16 +52,16 @@ GenerateMaql(maqlFile="tests/drop_snapshots/salary.maql");
 ExecuteMaql(maqlFile="tests/drop_snapshots/salary.maql");
 
 # Transfer the salary data
-TransferLastSnapshot(incremental="false");
+TransferData(incremental="false");
 
 # Load the salary data file, using the XML file describing the data
 LoadCsv(csvDataFile="tests/drop_snapshots/salary.csv",header="true",configFile="tests/drop_snapshots/salary.xml");
 
 # Transfer the salary data
-TransferLastSnapshot(incremental="true");
+TransferData(incremental="true");
 
 # Load the employee data file, using the XML file describing the data
 LoadCsv(csvDataFile="tests/drop_snapshots/employee.csv",header="true",configFile="tests/drop_snapshots/employee.xml");
 
 # Transfer the employee data
-TransferLastSnapshot(incremental="true");
+TransferData(incremental="true");

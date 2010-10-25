@@ -25,4 +25,4 @@ GenerateMaql(maqlFile="examples/hr/salary.maql");
 ExecuteMaql(maqlFile="examples/hr/salary.maql");
 
 # Transfer the salary data
-TransferLastSnapshot(incremental="false");
+TransferData(incremental="false");

@@ -21,4 +21,4 @@ GenerateMaql(maqlFile="examples/jdbc/fundamentals.maql");
 ExecuteMaql(maqlFile="examples/jdbc/fundamentals.maql");
 
 # Transfer the Fundamentals data
-TransferLastSnapshot(incremental="true");
+TransferData(incremental="true");

@@ -57,7 +57,7 @@ GenerateMaql(maqlFile="examples/pt/stories.maql");
 ExecuteMaql(maqlFile="examples/pt/stories.maql");
 
 # transfer the STORY data
-TransferLastSnapshot(incremental="true");
+TransferData(incremental="true");
 
 # load the LABEL data file
 # the data file config has been generated
@@ -70,7 +70,7 @@ GenerateMaql(maqlFile="examples/pt/labels.maql");
 ExecuteMaql(maqlFile="examples/pt/labels.maql");
 
 # transfer the LABEL data
-TransferLastSnapshot(incremental="true");
+TransferData(incremental="true");
 
 # load the LABEL to STORY data file
 # the data file config has been generated
@@ -83,7 +83,7 @@ GenerateMaql(maqlFile="examples/pt/labelsToStories.maql");
 ExecuteMaql(maqlFile="examples/pt/labelsToStories.maql");
 
 # transfer the LABEL data
-TransferLastSnapshot(incremental="true");
+TransferData(incremental="true");
 
 # load the SNAPSHOT data file
 # the data file config has been generated
@@ -96,4 +96,4 @@ GenerateMaql(maqlFile="examples/pt/snapshots.maql");
 ExecuteMaql(maqlFile="examples/pt/snapshots.maql");
 
 # transfer the SNAPSHOT data
-TransferLastSnapshot(incremental="true");
+TransferData(incremental="true");
