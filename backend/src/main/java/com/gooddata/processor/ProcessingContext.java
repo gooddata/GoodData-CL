@@ -108,11 +108,10 @@ public class ProcessingContext {
     public GdcDataTransferAPI getFtpApi(CliParams cliParams) {
     	if (_ftpApi == null) {
             NamePasswordConfiguration ftpConfig = cliParams.getFtpConfig();
-            //TODO: Webdav vs. FTP 
             checkConfig(ftpConfig);
 	        l.debug("Using the GoodData FTP host '" + ftpConfig.getGdcHost() + "'.");
-	        _ftpApi = new GdcFTPApiWrapper(ftpConfig);
-            //_ftpApi = new GdcWebDavApiWrapper(ftpConfig);
+	        //_ftpApi = new GdcFTPApiWrapper(ftpConfig);
+            _ftpApi = new GdcWebDavApiWrapper(ftpConfig);
     	}
     	return _ftpApi;
     }

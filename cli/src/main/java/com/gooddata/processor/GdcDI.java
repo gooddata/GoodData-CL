@@ -122,9 +122,8 @@ public class GdcDI implements Executor {
                     cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
                     cliParams.get(CLI_PARAM_HOST[0]),
                     cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
-            //TODO: Webdav http : https vs. FTP ftp vs ftps
             cliParams.setFtpConfig(new NamePasswordConfiguration(
-                    cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "ftp" : "ftps",
+                    cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
                     cliParams.get(CLI_PARAM_FTP_HOST[0]),
                     cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
             connectors = instantiateConnectors();
