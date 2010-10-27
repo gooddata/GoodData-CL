@@ -6,13 +6,13 @@ Run `gdi.sh` with the `cmd.txt` script as follows:
 
 _Windows:_
 
-        c:> bin\gdi.bat -u <username> -p <password> examples\quotes\cmd.txt
-        Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
+    c:> bin\gdi.bat -u <username> -p <password> examples\quotes\cmd.txt
+    Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
 
 _Unix like OS (Linux, Mac OS X and others):_
 
-        $ ./bin/gdi.sh -u <username> -p <password> examples/quotes/cmd.txt
-        Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
+    $ ./bin/gdi.sh -u <username> -p <password> examples/quotes/cmd.txt
+    Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
 
 This creates a "Quotes" project in GoodData, sets up the data model and loads the data file into the project.
 
@@ -22,17 +22,19 @@ Each line of the CSV file contain fields titled `Id`, `Company`, `Symbol`, `Sect
 
 These fields are described in the pre-created `examples/quotes/config.xml` configuration file that consists of records such as:
 
-    <column>
-      <name>MARKET</name>
-      <title>Market</title>
-      <ldmType>ATTRIBUTE</ldmType>
-    </column>
-    ...
-    <column>
-      <name>CLOSE_PRICE</name>
-      <title>Close Price</title>
-      <ldmType>FACT</ldmType>
-    </column>
+{% highlight xml %}
+<column>
+  <name>MARKET</name>
+  <title>Market</title>
+  <ldmType>ATTRIBUTE</ldmType>
+</column>
+...
+<column>
+  <name>CLOSE_PRICE</name>
+  <title>Close Price</title>
+  <ldmType>FACT</ldmType>
+</column>
+{% endhighlight %}
 
 First `<column>` record describes the first column of the CSV file, second record the second column and so on. Most of fields is either a number to be aggregated, such as a Stock Price (its `ldmType` is `FACT`) or it can be used to break down an aggregated number, e.g Market or Industry - these fields have `ldmType` set to `ATTRIBUTE`.
 
@@ -40,14 +42,15 @@ Other `ldmType`s include `CONNECTION_POINT` (a unique identifier of a record wit
 
 Note the `schemaReference` property tells GoodData to connect this date field to the date dimension named _Quote_. This date dimension is created in the model by the following lines at the begining of the `cmd.txt` script:
 
-    LoadDateDimension(name="Quote");
-    GenerateMaql(maqlFile="examples/quotes/quote_date.maql");
-    ExecuteMaql(maqlFile="examples/quotes/quote_date.maql");
-
+{% highlight ruby %}
+LoadDateDimension(name="Quote");
+GenerateMaql(maqlFile="examples/quotes/quote_date.maql");
+ExecuteMaql(maqlFile="examples/quotes/quote_date.maql");
+{% endhighlight %}
 
 The structure of the logical model built on the top of this data set is as follows:
 
-![Quotes Logical Model Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/quotes/quotes_ldm.png "Quotes Logical Model Diagram")
+![Quotes Logical Model Diagram](http://developer.gooddata.com/images/gdcl/examples/quotes/quotes_ldm.png "Quotes Logical Model Diagram")
 
 The light green boxes depict attributes including the `Id` connection point, the ovals represent facts. Labels and most of the attributes of the `Date (Quotes)` dimension hidden for the sake of simplicity. The attributes belonging to the date dimension are shown using double border line. 
 
