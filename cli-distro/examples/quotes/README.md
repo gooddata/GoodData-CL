@@ -23,17 +23,19 @@ Each line of the CSV file contain fields titled `Id`, `Company`, `Symbol`, `Sect
 These fields are described in the pre-created `examples/quotes/config.xml` configuration file that consists of records such as:
 
 {% highlight xml %}
-<column>
-  <name>MARKET</name>
-  <title>Market</title>
-  <ldmType>ATTRIBUTE</ldmType>
-</column>
-...
-<column>
-  <name>CLOSE_PRICE</name>
-  <title>Close Price</title>
-  <ldmType>FACT</ldmType>
-</column>
+
+    <column>
+      <name>MARKET</name>
+      <title>Market</title>
+      <ldmType>ATTRIBUTE</ldmType>
+    </column>
+    ...
+    <column>
+      <name>CLOSE_PRICE</name>
+      <title>Close Price</title>
+      <ldmType>FACT</ldmType>
+    </column>
+
 {% endhighlight %}
 
 First `<column>` record describes the first column of the CSV file, second record the second column and so on. Most of fields is either a number to be aggregated, such as a Stock Price (its `ldmType` is `FACT`) or it can be used to break down an aggregated number, e.g Market or Industry - these fields have `ldmType` set to `ATTRIBUTE`.
@@ -43,9 +45,11 @@ Other `ldmType`s include `CONNECTION_POINT` (a unique identifier of a record wit
 Note the `schemaReference` property tells GoodData to connect this date field to the date dimension named _Quote_. This date dimension is created in the model by the following lines at the begining of the `cmd.txt` script:
 
 {% highlight ruby %}
-LoadDateDimension(name="Quote");
-GenerateMaql(maqlFile="examples/quotes/quote_date.maql");
-ExecuteMaql(maqlFile="examples/quotes/quote_date.maql");
+
+    LoadDateDimension(name="Quote");
+    GenerateMaql(maqlFile="examples/quotes/quote_date.maql");
+    ExecuteMaql(maqlFile="examples/quotes/quote_date.maql");
+
 {% endhighlight %}
 
 The structure of the logical model built on the top of this data set is as follows:

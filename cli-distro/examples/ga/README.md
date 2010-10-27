@@ -14,13 +14,15 @@ The value of the `profileId` parameter is the same as the value of the `id` fiel
 For example, if you log into your Google Analytics user interface with username `jane@example.com` and password `jabberwocky78` and the web address of your profile's Google Analytics dashboard is `https://www.google.com/analytics/reporting/?reset=1&id=7468896&pdr=20100527-20100626` then your `LoadGoogleAnalytics` command will be as follows:
 
 {% highlight ruby %}
-LoadGoogleAnalytics(configFile="examples/ga/ga.config.xml",
-    username="jane@example.com",
-    password="jabberwocky78",
-    profileId="ga:7468896",
-    dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",
-    metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits",
-    startDate="2008-01-01",endDate="2010-06-15");
+
+    LoadGoogleAnalytics(configFile="examples/ga/ga.config.xml",
+        username="jane@example.com",
+        password="jabberwocky78",
+        profileId="ga:7468896",
+        dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",
+        metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits",
+        startDate="2008-01-01",endDate="2010-06-15");
+
 {% endhighlight %}
 
 ### How to run it
