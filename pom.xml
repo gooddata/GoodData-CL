@@ -45,6 +45,8 @@
 
     <modules>
         <module>cli</module>
+        <module>notification</module>
+        <module>sfdc</module>
         <module>gooddata-snaplogic</module>
         <module>snaplogic</module>
         <module>backend</module>
@@ -109,6 +111,22 @@
                 <artifactId>javacc</artifactId>
                 <version>2.3.0</version>
             </dependency>
+            <dependency>
+                <artifactId>sfdc-partner</artifactId>
+                <groupId>com.sforce.partner</groupId>
+                <version>18</version>
+            </dependency>
+            <dependency>
+                <artifactId>sfdc-ws</artifactId>
+                <groupId>com.sforce.ws</groupId>
+                <version>20</version>
+            </dependency>
+            <dependency>
+                <artifactId>gooddata-notification</artifactId>
+                <groupId>com.gooddata.cl</groupId>
+                <version>1.2.2-SNAPSHOT</version>
+            </dependency>
+
 
             <!-- 3rd party dependencies -->
             <dependency>

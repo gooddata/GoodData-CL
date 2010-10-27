@@ -21,17 +21,43 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.gooddata.processor;
+package com.gooddata.integration.rest;
+
+import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import com.gooddata.processor.Command;
+import junit.framework.TestCase;
+import org.apache.log4j.Logger;
+
+import java.io.InputStream;
+import java.util.List;
 
 /**
- * GoodData CLI defaults
+ * GoodData
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class Defaults {
+public class TestGdcRestApiWrapper extends TestCase {
 
-    public static String DEFAULT_HOST = "secure.gooddata.com";
+    private static Logger l = Logger.getLogger(TestGdcRestApiWrapper.class);
 
-    public static final String DEFAULT_SFDC_HOST = "na1.salesforce.com";
+    NamePasswordConfiguration config = null;
+
+    //NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","username","password");
+
+    public void testComputeMetric() throws Exception {
+        try {
+            if(config != null) {
+                GdcRESTApiWrapper rest = new GdcRESTApiWrapper(config);
+                rest.login();
+                double value = rest.computeMetric("/gdc/md/uikbr0t694tnh3uje22yedukbyzyt30o/obj/1177");
+                System.err.println("ret val = "+value);
+            }
+        }
+        catch(Exception e) {
+           e.printStackTrace();
+        }
+    }
+
+
 }

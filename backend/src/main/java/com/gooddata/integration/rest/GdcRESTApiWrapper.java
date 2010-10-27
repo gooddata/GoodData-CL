@@ -46,6 +46,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The GoodData REST API Java wrapper.
@@ -582,6 +584,112 @@ public class GdcRESTApiWrapper {
         }
     }
 
+    private String getProjectIdFromObjectUri(String uri) {
+        Pattern regexp = Pattern.compile("gdc/md/.*?/");
+        Matcher m = regexp.matcher(uri);
+        if(m.find()) {
+            return m.group().split("/")[2];
+        }
+        else {
+            l.debug("The passed string '"+uri+"' doesn't have the GoodData URI structure!");
+            throw new InvalidParameterException("The passed string '"+uri+"' doesn't have the GoodData URI structure!");
+        }
+    }
+
+    /**
+     * Computes the metric value
+     * @param metricUri metric URI
+     * @return the metric value
+     */
+    public double computeMetric(String metricUri) {
+        l.debug("Computing metric uri="+metricUri);
+        double retVal = 0;
+        String projectId = getProjectIdFromObjectUri(metricUri);
+        JSONObject reportDefinition = new JSONObject();
+
+        JSONObject metric = new JSONObject();
+        metric.put("alias", "");
+        metric.put("uri", metricUri);
+        JSONArray metrics = new JSONArray();
+        metrics.add(metric);
+        JSONArray columns = new JSONArray();
+        columns.add("metricGroup");
+        JSONObject grid = new JSONObject();
+        grid.put("metrics", metrics);
+        grid.put("columns", columns);
+        grid.put("rows",new JSONArray());
+        grid.put("columnWidths",new JSONArray());
+
+        JSONObject sort = new JSONObject();
+        sort.put("columns",new JSONArray());
+        sort.put("rows",new JSONArray());
+
+        grid.put("sort", sort);
+
+        JSONObject content = new JSONObject();
+        content.put("grid", grid);
+        content.put("filters",new JSONArray());
+        
+        reportDefinition.put("content", content);
+
+        JSONObject meta = new JSONObject();
+        meta.put("category","reportDefinition");
+        meta.put("title", "N/A");
+       
+        reportDefinition.put("meta", meta);
+
+        MetadataObject obj = new MetadataObject();
+        obj.put("reportDefinition", reportDefinition);
+        MetadataObject resp = new MetadataObject(createMetadataObject(projectId, obj));
+
+        String dataResultUri = executeReportDefinition(resp.getUri());
+        JSONObject result = getObject(dataResultUri);
+        if(result != null && !result.isEmpty() && !result.isNullObject()) {
+            JSONObject xtabData = result.getJSONObject("xtab_data");
+            if(xtabData != null && !xtabData.isEmpty() && !xtabData.isNullObject()) {
+                JSONArray data = xtabData.getJSONArray("data");
+                if(data != null && !data.isEmpty()) {
+                    retVal = data.getJSONArray(0).getDouble(0);
+                }
+                else {
+                    l.debug("Can't compute the metric. No data structure in result.");
+                    throw new InvalidParameterException("Can't compute the metric. No data structure in result.");
+                }
+            }
+            else {
+                l.debug("Can't compute the metric. No xtab_data structure in result.");
+                throw new InvalidParameterException("Can't compute the metric. No xtab_data structure in result.");
+            }
+        }
+        else {
+            l.debug("Can't compute the metric. No result from XTAB.");
+            throw new InvalidParameterException("Can't compute the metric. No result from XTAB.");
+        }
+        l.debug("Metric uri="+metricUri+ " computed. Result is "+retVal);
+        return retVal;
+    }
+
+    /**
+     * Retrieves a metadata object definition
+     * @param objectUri object uri
+     * @return the object to get
+     */
+    public JSONObject getObject(String objectUri) {
+        l.debug("Executing getObject uri="+objectUri);
+        HttpMethod req = createGetMethod(getServerUrl() + objectUri);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if(parsedResp.isNullObject()) {
+                l.debug("Can't getObject object uri="+objectUri);
+                throw new GdcRestApiException("Can't getObject object uri="+objectUri);
+            }
+            return parsedResp;
+        }
+        finally {
+            req.releaseConnection();
+        }
+    }
 
     /**
      * Report definition to execute
@@ -1174,31 +1282,19 @@ public class GdcRESTApiWrapper {
      */
     public MetadataObject getMetadataObject(String objectUri) {
         l.debug("Executing getMetadataObject uri="+objectUri);
-        HttpMethod req = createGetMethod(getServerUrl() + objectUri);
-        try {
-            String resp = executeMethodOk(req);
-            JSONObject parsedResp = JSONObject.fromObject(resp);
-            if(parsedResp.isNullObject()) {
-                l.debug("Can't getMetadataObject object uri="+objectUri);
-                throw new GdcRestApiException("Can't getMetadataObject object uri="+objectUri);
+        MetadataObject o = new MetadataObject(getObject(objectUri));
+        String tp = o.getType();
+        if(tp.equalsIgnoreCase("report")) {
+            try {
+                String rdf = getReportDefinition(objectUri);
+                JSONObject c = o.getContent();
+                c.put("defaultReportDefinition",rdf);
             }
-            MetadataObject o = new MetadataObject(parsedResp);
-            String tp = o.getType();
-            if(tp.equalsIgnoreCase("report")) {
-                try {
-                    String rdf = getReportDefinition(objectUri);
-                    JSONObject c = o.getContent();
-                    c.put("defaultReportDefinition",rdf);
-                }
-                catch (GdcProjectAccessException e) {
-                    l.debug("Can't extract the default report definition.");
-                }
+            catch (GdcProjectAccessException e) {
+                l.debug("Can't extract the default report definition.");
             }
-            return o;
         }
-        finally {
-            req.releaseConnection();
-        }
+        return o;
     }
 
     /**

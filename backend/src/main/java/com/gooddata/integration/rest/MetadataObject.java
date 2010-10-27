@@ -50,6 +50,10 @@ public class MetadataObject implements JSON, Map, Comparable {
         jsonObject = o;
     }
 
+    public MetadataObject() {
+        jsonObject = new JSONObject();
+    }
+
     /**
      * Extracts the dependent objects uris from the content
      * @return list of depenedent object uris

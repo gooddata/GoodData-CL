@@ -8,32 +8,34 @@ idea
 *~
 **/~
 
-GoodData-CL.iml
+gooddata-cl.iml
 tmp/
 target/
 
 backend/target/
-backend/backend.iml
+backend/gooddata-cl-backend.iml
 
 cli/target/
-cli/cli.iml
+cli/gooddata-cl-cli.iml
 
 common/target/
-common/common.iml
+common/gooddata-cl-common.iml
 
 gooddata-snaplogic/target/
-gooddata-snaplogic/gooddata-snaplogic.iml
+gooddata-snaplogic/gooddata-cl-snaplogic.iml
 
 connector/target/
-connector/connector.iml
+connector/gooddata-cl-connector.iml
 
 snaplogic/target
-snaplogic/snaplogic.iml
+snaplogic/gooddata-cl-snaplogic-lib.iml
 
 cli-distro/target/
 cli-distro/cli-distro.iml
 cli-distro/gooddata-di-cli.iml
 
 snap-distro/target/
-snap-distro/snap-distro.iml
-snap-distro/gooddata-snap.iml
+snap-distro/gooddata-cl-snap.iml
+
+cli-distro/gooddata-cli.iml
+
