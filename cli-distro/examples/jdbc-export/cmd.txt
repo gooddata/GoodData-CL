@@ -2,4 +2,4 @@
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
 # load JDBC data
-ExportTablesToCsv(dir="examples/export",driver="org.apache.derby.jdbc.EmbeddedDriver",url="jdbc:derby:examples/jdbc/fundamentals");
+ExportJdbcToCsv(dir="examples/export",driver="org.apache.derby.jdbc.EmbeddedDriver",url="jdbc:derby:examples/jdbc/fundamentals");

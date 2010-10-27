@@ -580,8 +580,8 @@ public class GdcDI implements Executor {
             else if(c.match("CopyObjects")) {
                 copyObjects(c, cli, ctx);
             }
-            else if(c.match("ExportTablesToCsv")) {
-                exportTablesToCsv(c, cli, ctx);
+            else if(c.match("ExportJdbcToCsv")) {
+                exportJdbcToCsv(c, cli, ctx);
             }
             else {
                 l.debug("No match command "+c.getCommand());
@@ -630,7 +630,7 @@ public class GdcDI implements Executor {
      * @param p cli parameters
      * @param ctx current context
      */
-    private void exportTablesToCsv(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+    private void exportJdbcToCsv(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         try {
             String usr = null;
             if(c.checkParam("username"))
@@ -643,7 +643,7 @@ public class GdcDI implements Executor {
             String fl = c.getParamMandatory("dir");
             File dir = new File(fl);
             if(!dir.exists() || !dir.isDirectory()) {
-                throw new InvalidParameterException("The dir parameter in the ExportTablesToCsv command must be an existing directory.");
+                throw new InvalidParameterException("The dir parameter in the ExportJdbcToCsv command must be an existing directory.");
             }
             DatabaseToCsv d = new DatabaseToCsv(drv, url, usr, psw);
             d.export(dir.getAbsolutePath());

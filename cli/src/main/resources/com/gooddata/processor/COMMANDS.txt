@@ -64,13 +64,6 @@ Project Management Commands:
 
  Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 
- ExportTablesToCsv(dir=<dir>, driver=<jdbc-driver>, url=<jdbc-url> [, username=<jdbc-username>] [, password=<jdbc-password>])  - exports all tables from the database to CSV file
-  dir - target directory
-  driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
-  url - JDBC url (e.g. "jdbc:derby:mydb")
-  username - JDBC username
-  password - JDBC password
-
 Logical Model Management Commands:
 ----------------------------------
 
@@ -155,6 +148,13 @@ JDBC Connector Commands:
   driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
   url - JDBC url (e.g. "jdbc:derby:mydb")
   query - SQL query (e.g. "SELECT employee,dept,salary FROM payroll")
+  username - JDBC username
+  password - JDBC password
+
+ ExportJdbcToCsv(dir=<dir>, driver=<jdbc-driver>, url=<jdbc-url> [, username=<jdbc-username>] [, password=<jdbc-password>])  - exports all tables from the database to CSV file
+  dir - target directory
+  driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
+  url - JDBC url (e.g. "jdbc:derby:mydb")
   username - JDBC username
   password - JDBC password
 

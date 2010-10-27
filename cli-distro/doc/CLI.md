@@ -155,6 +155,13 @@ The following paragraphs describe the specific GoodData CL commands.
   - username - JDBC username  
   - password - JDBC password
 
+* `ExportJdbcToCsv`(dir=&lt;dir&gt;, driver=&lt;jdbc-driver&gt;, url=&lt;jdbc-url&gt; \[, username=&lt;jdbc-username&gt;\] \[, password=&lt;jdbc-password&gt;\])  - exports all tables from the database to CSV file
+  - dir - target directory
+  - driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
+  - url - JDBC url (e.g. "jdbc:derby:mydb")
+  - username - JDBC username
+  - password - JDBC password
+
 ## SalesForce Connector Commands
 
 * `GenerateSfdcConfig`(name=&lt;name&gt;, configFile=&lt;config&gt;, query=&lt;soql-query&gt;, username=&lt;sfdc-username&gt;, password=&lt;sfdc-password&gt;, token=&lt;sfdc-security-token&gt;)  - generate an XML config file based on the fields from your SFDC query.  
