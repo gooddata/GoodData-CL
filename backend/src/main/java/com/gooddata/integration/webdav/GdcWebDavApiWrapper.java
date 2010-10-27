@@ -109,7 +109,7 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
         String ret = executeMethodOk(ls);
         String[] files = ret.split(",");
         for(String file : files) {
-            if(file.endsWith(".log")) {
+            if(file.endsWith(".log") || file.endsWith(".json")) {
                 GetMethod get = new GetMethod(this.config.getUrl()+file);
                 String content = executeMethodOk(get);
                 result.put(file, content);                                    
@@ -179,14 +179,6 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
             l.debug("Error invoking GoodData REST API.",e);
             throw new HttpMethodException("Error invoking GoodData WebDav API.",e);
         }
-    }
-
-
-    public static void main(String[] args) throws Exception {
-        NamePasswordConfiguration c = new NamePasswordConfiguration("https", "master.dev.getgooddata.com", "zd@gooddata.com", "jindrisska");
-        GdcWebDavApiWrapper w = new GdcWebDavApiWrapper(c);
-        Map<String,String> m = w.getTransferLogs("1116db8a-da6a-49b7-989c-31c51d8dd47b");
-        System.err.println(m);
     }
 
 }

@@ -27,18 +27,21 @@
       <title>Exit Page Path</title>
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Content</folder>
+      <dataType>VARCHAR(255)</dataType>
     </column>
     <column>
       <name>landingPagePath</name>
       <title>Landing Page Path</title>
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Content</folder>
+      <dataType>VARCHAR(255)</dataType>
     </column>
     <column>
       <name>pagePath</name>
       <title>Page Path</title>
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Content</folder>
+      <dataType>VARCHAR(255)</dataType>  
     </column>
     <column>
       <name>pageTitle</name>
@@ -51,12 +54,14 @@
       <title>Previous Page Path</title>
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Content</folder>
+      <dataType>VARCHAR(255)</dataType>  
     </column>
     <column>
       <name>nextPagePath</name>
       <title>Next Page Path</title>
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Content</folder>
+      <dataType>VARCHAR(255)</dataType>  
     </column>
     <column>
       <name>bounces</name>

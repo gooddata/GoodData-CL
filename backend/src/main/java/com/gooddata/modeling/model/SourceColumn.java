@@ -79,6 +79,11 @@ public class SourceColumn {
     private String format;
 
     /**
+     * Column's datatype
+     */
+    private String dataType;
+
+    /**
      * Ordered list of elements to be preloaded into an attribute upon table creation
      */
     private String elements;
@@ -264,7 +269,15 @@ public class SourceColumn {
 		this.elements = elements;
 	}
 
-	@Override
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
+    @Override
 	public String toString() {
 		return new StringBuffer(getName()).append("(").append(getLdmType()).append(")").toString();
 	}

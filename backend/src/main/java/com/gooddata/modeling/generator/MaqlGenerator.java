@@ -83,7 +83,6 @@ public class MaqlGenerator {
 
     /**
      * Generate MAQL for specified (new) columns
-     * @param columns list of columns
      * @return MAQL as String
      */
     public String generateMaqlAdd(Iterable<SourceColumn> newColumns, Iterable<SourceColumn> knownColumns) {
@@ -402,7 +401,16 @@ public class MaqlGenerator {
                 // The connection point are going to have labels in the fact table
 	            script += " WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
 	                    + lcn + "\") AS {" + table + "."+N.NM_PFX + scn + "};\n"
-	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + "." + scn + "};\n\n";
+	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + "." + scn + "};\n";
+
+                String dataType = column.getDataType();
+                if(dataType != null && dataType.length() > 0) {
+                    script += "ALTER DATATYPE {" + table + "."+N.NM_PFX + scn + "} "+dataType+";\n";
+                }
+                else {
+                    script += "\n";
+                }
+
 	            return script;
 	        }
 	    }
@@ -423,9 +431,17 @@ public class MaqlGenerator {
 	                folderStatement = ", FOLDER {ffld." + sfn + "}";
 	            }
 
-	            return "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
+	            String script =  "CREATE FACT {fact." + ssn + "." + scn + "} VISUAL(TITLE \"" + lcn
 	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.FCT_PFX + scn + "};\n"
-	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {" + identifier + "};\n\n";
+	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {" + identifier + "};\n";
+                String dataType = column.getDataType();
+                if(dataType != null && dataType.length() > 0) {
+                    script += "ALTER DATATYPE {" + getFactTableName() + "."+N.FCT_PFX + scn + "} "+dataType+";\n";
+                }
+                else {
+                    script += "\n";
+                }
+                return script;
 	        }
 	    }
 
@@ -446,8 +462,16 @@ public class MaqlGenerator {
 	            }
 	            String script = "# ADD LABELS TO ATTRIBUTES\n";
 	            script += "ALTER ATTRIBUTE {attr." + ssn + "." + scnPk + "} ADD LABELS {label." + ssn + "." + scnPk + "."
-	                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + "."+N.NM_PFX + scn + "};\n\n";
-	            return script;
+	                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + "."+N.NM_PFX + scn + "};\n";
+
+                String dataType = column.getDataType();
+                if(dataType != null && dataType.length() > 0) {
+                    script += "ALTER DATATYPE {" + attr.table + "."+N.NM_PFX + scn + "} "+dataType+";\n";
+                }
+                else {
+                    script += "\n";
+                }
+                return script;
 	        }
 	        
 	        public String generateMaqlDdlDrop() {

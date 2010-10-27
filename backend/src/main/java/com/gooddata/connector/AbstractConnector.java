@@ -390,14 +390,24 @@ public abstract class AbstractConnector implements Connector {
             l.info("Data loading succeeded with warnings. Status: "+status);
             Map<String,String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
             for(String file : result.keySet()) {
-                l.info(file+":\n"+result.get(file));
+                if(file.endsWith(".json"))
+                    l.info(file+":\n"+result.get(file));
+            }
+            for(String file : result.keySet()) {
+                if(!file.endsWith(".json"))
+                    l.info(file+":\n"+result.get(file));
             }
         }
         else {
             l.info("Data loading failed. Status: "+status);
             Map<String,String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
             for(String file : result.keySet()) {
-                l.info(file+":\n"+result.get(file));
+                if(file.endsWith(".json"))
+                    l.info(file+":\n"+result.get(file));
+            }
+            for(String file : result.keySet()) {
+                if(!file.endsWith(".json"))
+                    l.info(file+":\n"+result.get(file));
             }
         }
 
@@ -456,7 +466,6 @@ public abstract class AbstractConnector implements Connector {
 	/**
      * Finds the attributes and facts with no appropriate part or part column
      * TODO: a generic detector of new labels etc could be added too
-     * @param parts SLI parts
      * @param schema former source schema
      * @return list of new columns
      */
