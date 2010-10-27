@@ -39,3 +39,11 @@ snap-distro/gooddata-cl-snap.iml
 
 cli-distro/gooddata-cli.iml
 
+notification-distro/gooddata-alert.iml
+notification-distro/target
+
+notification/gooddata-notification.iml
+notification-distro/target
+
+sfdc/gooddata-sfdc-lib.iml
+sfdc/target
