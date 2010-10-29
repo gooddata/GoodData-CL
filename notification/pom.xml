@@ -59,6 +59,10 @@
         </dependency>
 		<dependency>
 			<groupId>com.gooddata.cl</groupId>
+			<artifactId>gooddata-sfdc-lib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.gooddata.cl</groupId>
 			<artifactId>gooddata-cl-backend</artifactId>
 		</dependency>
 		<dependency>

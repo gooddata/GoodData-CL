@@ -102,6 +102,11 @@
                 <version>1.2.2-SNAPSHOT</version>
             </dependency>
             <dependency>
+                <groupId>com.gooddata.cl</groupId>
+                <artifactId>gooddata-sfdc-lib</artifactId>
+                <version>1.2.2-SNAPSHOT</version>
+            </dependency>
+            <dependency>
                 <groupId>org.snaplogic</groupId>
                 <artifactId>snapi</artifactId>
                 <version>2.3.0</version>
