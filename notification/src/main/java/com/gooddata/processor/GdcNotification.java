@@ -154,7 +154,6 @@ public class GdcNotification {
             }
             l.debug("Error logging to GoodData. Please check your GoodData username and password.",e);
         }
-        /*
         catch (IOException e) {
             l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '"+e.getMessage()+"'");
             Throwable c = e.getCause();
@@ -164,7 +163,6 @@ public class GdcNotification {
             }
             l.debug("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '"+e.getMessage()+"'",e);
         }
-        */
         catch (InternalErrorException e) {
             Throwable c = e.getCause();
             if( c != null && c instanceof SQLException) {
@@ -235,7 +233,7 @@ public class GdcNotification {
 
     private boolean processMessage(NotificationMessage m) {
         
-
+        return false;
     }
 
     private void execute(String config) throws ConnectionException, IOException {
