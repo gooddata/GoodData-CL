@@ -43,7 +43,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
     private static Logger l = Logger.getLogger(DateDimensionConnector.class);
 
     //Time dimension context (e.g. created, closed etc.)
-    private String ctx;
+    private String name;
 
     /**
      * Creates a new Time Dimension Connector
@@ -70,11 +70,11 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
      * {@inheritDoc}
      */
     public String generateMaqlCreate() {
-        l.debug("Generating time dimension MAQL with context "+ctx);
-        if(ctx != null && ctx.trim().length()>0) {
-            String idp = StringUtil.toIdentifier(ctx);
-            String ts = StringUtil.toTitle(ctx);
-            l.debug("Generated time dimension MAQL with context "+ctx);
+        l.debug("Generating time dimension MAQL with context "+name);
+        if(name != null && name.trim().length()>0) {
+            String idp = StringUtil.toIdentifier(name);
+            String ts = StringUtil.toTitle(name);
+            l.debug("Generated time dimension MAQL with context "+name);
             return "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\" MODIFY (IDENTIFIER \""+idp+"\", TITLE \""+ts+"\");";
         }
         else {
@@ -116,9 +116,23 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         String ct = "";
         if(c.checkParam("name"))
             ct = c.getParam( "name");
-        this.ctx = ct;
+        this.name = ct;
         // sets the current connector
         ctx.setConnector(this);
         l.info("Time Dimension Connector successfully loaded (name: " + ct + ").");
     }
+
+	/**
+	 * @return the date dimension name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the date dimension name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 }
