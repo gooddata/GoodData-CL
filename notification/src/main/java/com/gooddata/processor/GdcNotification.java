@@ -26,11 +26,17 @@ package com.gooddata.processor;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.gooddata.config.Metric;
 import com.gooddata.config.NotificationConfig;
 import com.gooddata.config.NotificationMessage;
+import com.gooddata.exception.*;
+import com.gooddata.integration.rest.GdcRESTApiWrapper;
+import com.gooddata.transport.NotificationTransport;
+import com.gooddata.transport.SfdcChatterTransport;
 import com.sforce.ws.ConnectionException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -44,13 +50,6 @@ import org.apache.commons.jexl.JexlHelper;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import com.gooddata.exception.GdcException;
-import com.gooddata.exception.GdcLoginException;
-import com.gooddata.exception.GdcRestApiException;
-import com.gooddata.exception.HttpMethodException;
-import com.gooddata.exception.InternalErrorException;
-import com.gooddata.exception.InvalidArgumentException;
-import com.gooddata.exception.SfdcException;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.util.FileUtil;
 
@@ -69,12 +68,10 @@ public class GdcNotification {
     public static String[] CLI_PARAM_GDC_USERNAME = {"username","u"};
     public static String[] CLI_PARAM_GDC_PASSWORD = {"password","p"};
 
-    public static String[] CLI_PARAM_SFDC_USERNAME = {"sfdcusername","d"};
-    public static String[] CLI_PARAM_SFDC_PASSWORD = {"sfdcpassword","c"};
+    public static String[] CLI_PARAM_TRANSPORT_USERNAME = {"transportusername","d"};
+    public static String[] CLI_PARAM_TRANSPORT_PASSWORD = {"transportpassword","c"};
 
     public static String[] CLI_PARAM_GDC_HOST = {"host","h"};
-    public static String[] CLI_PARAM_PROJECT = {"project","i"};
-    public static String[] CLI_PARAM_PROTO = {"proto","t"};
     public static String[] CLI_PARAM_VERSION = {"version","V"};
     public static String CLI_PARAM_CONFIG = "config";
 
@@ -87,11 +84,9 @@ public class GdcNotification {
     public static Option[] optionalOptions = {
         new Option(CLI_PARAM_GDC_USERNAME[1], CLI_PARAM_GDC_USERNAME[0], true, "GoodData username"),
         new Option(CLI_PARAM_GDC_PASSWORD[1], CLI_PARAM_GDC_PASSWORD[0], true, "GoodData password"),
-        new Option(CLI_PARAM_SFDC_USERNAME[1], CLI_PARAM_SFDC_USERNAME[0], true, "Salesforce username"),
-        new Option(CLI_PARAM_SFDC_PASSWORD[1], CLI_PARAM_SFDC_PASSWORD[0], true, "Salesforce password"),
+        new Option(CLI_PARAM_TRANSPORT_USERNAME[1], CLI_PARAM_TRANSPORT_USERNAME[0], true, "Salesforce username"),
+        new Option(CLI_PARAM_TRANSPORT_PASSWORD[1], CLI_PARAM_TRANSPORT_PASSWORD[0], true, "Salesforce password"),
         new Option(CLI_PARAM_GDC_HOST[1], CLI_PARAM_GDC_HOST[0], true, "GoodData host"),
-        new Option(CLI_PARAM_PROJECT[1], CLI_PARAM_PROJECT[0], true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)"),
-        new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
         new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version."),
     };
 
@@ -231,48 +226,67 @@ public class GdcNotification {
         }
     }
 
-    private boolean processMessage(NotificationMessage m) {
-        
-        return false;
+    private boolean decide(Object result) {
+        if(result == null)
+            return false;
+        else if(result instanceof Boolean)
+            return ((Boolean)result).booleanValue();
+        else if (result instanceof Number)
+            return ((Number)result).doubleValue() != 0;
+        else if(result instanceof String)
+            return ((String)result).length() > 0;
+        else
+            return false;        
     }
+
+
+    private NotificationTransport selectTransport(String uri) {
+        if(uri.startsWith("sfdc")) {            
+            return SfdcChatterTransport.createTransport(cliParams.get(CLI_PARAM_TRANSPORT_USERNAME[0]),
+                    cliParams.get(CLI_PARAM_TRANSPORT_PASSWORD[0]));
+        }
+        throw new InvalidParameterException("Can't find transport for uri "+uri);
+    }
+
 
     private void execute(String config) throws ConnectionException, IOException {
 
         NotificationConfig c = NotificationConfig.fromXml(new File(config));
 
-        for(NotificationMessage m : c.getMessages()) {
-            
-        }
-
-        /*
-        GdcRESTApiWrapper rest = new GdcRESTApiWrapper(cliParams.getHttpConfig());
-        rest.login();
-        String projectId = cliParams.get(CLI_PARAM_PROJECT);
-        String metricUri = "/gdc/md/uikbr0t694tnh3uje22yedukbyzyt30o/obj/1177";
-        double val = rest.computeMetric(metricUri);
-        System.out.println("VALUE is "+val);
-
-        
-        */
-
-        String exp = "(M1 + 2*M2) == 0";
-
-        Expression e = null;
         try {
-            e = ExpressionFactory.createExpression(exp);
-            JexlContext jc = JexlHelper.createContext();
-            Map<String, Number> vars = new HashMap<String, Number>();
-            vars.put("M1", new Float(16));
-            vars.put("M2", new Float(10));
-            jc.setVars(vars);
-
-            Object result = (Object)e.evaluate(jc);
-            System.err.println("RESULT is "+result.toString());
-            
-        } catch (Exception e1) {
-            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            for(NotificationMessage m : c.getMessages()) {
+                GdcRESTApiWrapper rest = new GdcRESTApiWrapper(cliParams.getHttpConfig());
+                rest.login();
+                Expression e = null;
+                e = ExpressionFactory.createExpression(m.getCondition());
+                JexlContext jc = JexlHelper.createContext();
+                Map<String, Number> vars = new HashMap<String, Number>();
+                List<Metric> metrics = m.getMetrics();
+                double[] values = null;
+                if(metrics != null && metrics.size() >0) {
+                    values = new double[metrics.size()];
+                    for(int i=0; i<metrics.size(); i++) {
+                        values[i] = rest.computeMetric(metrics.get(i).getUri());
+                        vars.put(metrics.get(i).getAlias(), new Double(values[i]));
+                    }
+                }
+                jc.setVars(vars);
+                boolean result = decide(e.evaluate(jc));
+                if(result) {
+                    NotificationTransport t = selectTransport(m.getUri());
+                    String msg = m.getMessage();
+                    if(values != null && values.length > 0 && metrics != null && metrics.size() > 0) {
+                        for(int i = 0 ; i < metrics.size(); i++) {
+                            msg = msg.replace("%"+metrics.get(i).getAlias()+"%", Double.toString(values[i]));
+                        }
+                    }
+                    t.send(msg);
+                }
+            }
         }
-
+        catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 
     /**
@@ -320,7 +334,7 @@ public class GdcNotification {
         }
 
         if(cp.containsKey(CLI_PARAM_VERSION[0])) {
-            l.info("GoodData CL version 1.2.2-SNAPSHOT" +
+            l.info("GoodData Notification Tool version 1.2.2-SNAPSHOT" +
                     ((BUILD_NUMBER.length()>0) ? ", build "+BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -334,13 +348,18 @@ public class GdcNotification {
 
         l.debug("Using host "+cp.get(CLI_PARAM_GDC_HOST[0]));
 
-        if(cp.containsKey(CLI_PARAM_PROTO[0])) {
-            String proto = ln.getOptionValue(CLI_PARAM_PROTO[0]).toLowerCase();
-            if(!"http".equalsIgnoreCase(proto) && !"https".equalsIgnoreCase(proto)) {
-                throw new InvalidArgumentException("Invalid '"+CLI_PARAM_PROTO[0]+"' parameter. Use HTTP or HTTPS.");
-            }
+        if (ln.getArgs().length == 0) {
+            throw new InvalidArgumentException("No config file has been given, quitting.");
         }
 
+        String configs = "";
+        for (final String arg : ln.getArgs()) {
+            if(configs.length()>0)
+                configs += ","+arg;
+            else
+                configs += arg;
+        }
+        cp.put(CLI_PARAM_CONFIG, configs);
 
         return cp;
     }

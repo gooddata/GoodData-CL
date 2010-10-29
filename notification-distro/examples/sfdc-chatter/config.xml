@@ -1,0 +1,17 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<notification>
+  <messages>
+    <message>
+      <condition>Visits>100000</condition>
+      <metrics>
+        <metric>
+          <alias>Visits</alias>
+          <uri>/gdc/md/ca6a1r1lbfwpt2v05k36nbc0cjpu7lh9/obj/200002998</uri>
+        </metric>
+      </metrics>
+      <message>Visits today %Visits%! Check out what's up!</message>
+      <uri>sfdc://mh@gooddata.blank</uri>
+    </message>
+  </messages>
+</notification>

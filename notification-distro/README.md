@@ -1,4 +1,4 @@
-This is GoodData command-line utility. The utility contains data modeling, transformation and loading functionality that work on top of the [GoodData REST APIs](http://developer.gooddata.com/api/).
+This is GoodData Notification command-line utility.
 
 See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 
@@ -11,9 +11,9 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 2. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
    Please note that only the Java versions 1.5 and 1.6 are currently supported.
 
-3. run the gdi.sh without arguments to get help from the unpacked distribution:
+3. run the gdn.sh without arguments to get help from the unpacked distribution:
 
-        $ ./bin/gdi.sh
+        $ ./bin/gdn.sh
         usage: GdcDI
          -h,--host <arg>       GoodData host
          -p,--password <arg>   GoodData password
@@ -28,7 +28,7 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 2. Make sure that your JAVA_HOME environment variable points to your Java installation directory.
    Please note that only the Java versions 1.5 and 1.6 are currently supported.
 
-3. run the gdi.bat without arguments to get help from the unpacked distribution:
+3. run the gdn.bat without arguments to get help from the unpacked distribution:
 
         bin\gdi.bat
         usage: GdcDI
@@ -36,16 +36,6 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
          -p,--password <arg>   GoodData password
          -u,--username <arg>   GoodData username
         [...]
-
-# Using GoodData CL with the MySQL Database
-
-GoodData CL uses the embedded Derby SQL database engine by default. This database engine provides sufficient
-performance for datasets up to 300k records. We recommend you to use the MySQL database in case you wish to
-transfer larger amounts of data. You must install the MySQL on the local machine and make sure that it listens
-on the standard 3306 TCP port. Once you have the MySQL engine up and running, you can switch to it using the
- `-b`, `-d`, and `-c` flags.
-
- e.g. `bin/gdi.sh -u username -p password -b mysql -d mysql-user -c mysql-psw <script-file>`
 
 # Next Steps
 

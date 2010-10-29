@@ -31,6 +31,11 @@ import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * SalesForce Chatter com.gooddata.transport
@@ -45,7 +50,6 @@ public class SfdcChatterTransport implements NotificationTransport {
 
     private String username;
     private String password;
-    private String token;
 
     private PartnerConnection connection;
 
@@ -57,14 +61,6 @@ public class SfdcChatterTransport implements NotificationTransport {
         this.username = username;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -73,13 +69,41 @@ public class SfdcChatterTransport implements NotificationTransport {
         this.password = password;
     }
 
+    private static Map<String, NotificationTransport> transports = new HashMap<String,NotificationTransport>();
+
+    /**
+     * Creates a new Sfdc Chatter transport
+     * @param usr - username
+     * @param psw - password
+     * @return
+     */
+    public synchronized static NotificationTransport createTransport(String usr, String psw) {
+        if(transports.containsKey(usr))
+            return transports.get(usr);
+        else {
+            NotificationTransport t = new SfdcChatterTransport(usr, psw);
+            transports.put(usr, t);
+            return t;
+        }
+    }
+
+    /**
+     * Creates a new Sfdc Chatter transport
+     * @param usr - username
+     * @param psw - password
+     * @param tkn - token
+     * @return
+     */
+    public synchronized static NotificationTransport createTransport(String usr, String psw, String tkn) {
+        return createTransport(usr, psw+tkn);
+    }
+
     /**
      * {@inheritDoc}
      */
-    public SfdcChatterTransport(String usr, String psw, String tkn) {
+    protected SfdcChatterTransport(String usr, String psw) {
         this.setUsername(usr);
         this.setPassword(psw);
-        this.setToken(tkn);
 
         ConnectorConfig config = new ConnectorConfig();
         config.setUsername(getUsername());
@@ -91,6 +115,7 @@ public class SfdcChatterTransport implements NotificationTransport {
             throw new SfdcException("Error connecting to SFDC.", e);
         }
     }
+
 
     /**
      * {@inheritDoc}

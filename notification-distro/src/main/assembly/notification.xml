@@ -41,6 +41,12 @@
 	   <include>**/*.*</include>
 	  </includes>
 	 </fileSet>
+      <fileSet>
+        <directory>${project.basedir}/examples</directory>
+        <includes>
+         <include>**/*.*</include>
+        </includes>
+      </fileSet>      
 	<fileSet>
 	  <directory>${project.basedir}</directory>
 	  <includes>
