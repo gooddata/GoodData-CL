@@ -11,7 +11,7 @@ GoodData Cl supports following groups of commands:
 Usually you want to initialize your project with following commands:
 
 1. `CreateProject` or `OpenProject`. 
-2. Optionally you generate [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) for your data source using a `Generate<Source-Type>Config` command that yields an XML configuration file. This file describes your data structure and a way how the GoodData Logical Data Model is going to be generated. Sometimes you might want to review the XML config file and perform some changes. You'll most probably want to comment out the `Generate<Source-Type>Config` after the first run. 
+2. Optionally you generate [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) for your data source using a `Generate<Source-Type>Config` command that yields an XML configuration file. This file describes your data structure and a way how the GoodData Logical Data Model is going to be generated. Sometimes you might want to review the XML config file and perform some changes. You'll most probably want to comment out the `Generate<Source-Type>Config` after the first run.
 3. Initialize your data source Connector using a `Load<Source-Type>` command. The `Load<Source-Type>` command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
 4. Generate and execute [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) for your data source using the `GenerateMaql` and `ExecuteMaql` commands. The [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) generates your project's Logical Data Model (LDM) and Data Loading Interface (DLI). The DLI is later used by the following Data Transfer commands. You need to generate your LDM and DLI only once per each project. That is why the scripts that transfer data on regular basis don't use the the `GenerateMaql` and `ExecuteMaql` commands.
 5. `TransferAllSnapshots` or `TransferLastSnapshot` commands that transform, package, and transfer the data.
@@ -147,7 +147,7 @@ The following paragraphs describe the specific GoodData CL commands.
   - username - JDBC username  
   - password - JDBC password
   
-* `LoadJdbc`(configFile=&lt;config&gt;, driver=&lt;jdbc-driver&gt;, url=&lt;jdbc-url&gt;, query=&lt;sql-query&gt; \[, username=&lt;jdbc-username&gt;\] \[, password=&lt;jdbc-password&gt;\])  - load JDBC data file using config file describing the file structure, must call CreateProject or OpenProject before  
+* `LoadJdbc`(configFile=&lt;config&gt;, driver=&lt;jdbc-driver&gt;, url=&lt;jdbc-url&gt;, query=&lt;sql-query&gt; \[, username=&lt;jdbc-username&gt;\] \[, password=&lt;jdbc-password&gt;\])  - load JDBC data file using config file describing the file structure, must call CreateProject or OpenProject before
   - configFile  - path to configuration file (will be overwritten)  
   - driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory  
   - url - JDBC url (e.g. "jdbc:derby:mydb")  
@@ -164,7 +164,7 @@ The following paragraphs describe the specific GoodData CL commands.
 
 ## SalesForce Connector Commands
 
-* `GenerateSfdcConfig`(name=&lt;name&gt;, configFile=&lt;config&gt;, query=&lt;soql-query&gt;, username=&lt;sfdc-username&gt;, password=&lt;sfdc-password&gt;, token=&lt;sfdc-security-token&gt;)  - generate an XML config file based on the fields from your SFDC query.  
+* `GenerateSfdcConfig`(name=&lt;name&gt;, configFile=&lt;config&gt;, query=&lt;soql-query&gt;, username=&lt;sfdc-username&gt;, password=&lt;sfdc-password&gt;, token=&lt;sfdc-security-token&gt;)  - generate an XML config file based on the fields from your SFDC query.
   - name - the new dataset name  
   - configFile  - path to configuration file (will be overwritten)  
   - query - SOQL query (e.g. "SELECT Id, Name FROM Account"), see [Salesforce API](http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm)  
@@ -172,7 +172,7 @@ The following paragraphs describe the specific GoodData CL commands.
   - password - SFDC password  
   - token - SFDC security token (you may append the security token to the password instead using this parameter)
   
-* `LoadSfdc`(configFile=&lt;config&gt;, query=&lt;soql-query&gt;, username=&lt;sfdc-username&gt;, password=&lt;sfdc-password&gt;, token=&lt;sfdc-security-token&gt;)  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before  
+* `LoadSfdc`(configFile=&lt;config&gt;, query=&lt;soql-query&gt;, username=&lt;sfdc-username&gt;, password=&lt;sfdc-password&gt;, token=&lt;sfdc-security-token&gt;)  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
   - configFile  - path to configuration file (will be overwritten)  
   - query - SOQL query (e.g. "SELECT Id, Name FROM Account"), see [Salesforce API](http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm)
   - username - SFDC username  

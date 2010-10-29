@@ -20,17 +20,19 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gooddata.security;
 
-package com.gooddata.processor;
 
 /**
- * GoodData CLI defaults
- *
- * @author zd <zd@gooddata.com>
- * @version 1.0
+ * Security storage (HashMap)
  */
-public class Defaults {
+public interface SecureVault {
 
-    public static String DEFAULT_HOST = "secure.gooddata.com";
-
+    /**
+     * Retrieves password for a username
+     * @param username
+     * @return
+     */
+    public String getPassword(String username);
+    
 }

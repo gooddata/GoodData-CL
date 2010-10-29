@@ -21,16 +21,40 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.gooddata.processor;
+package com.goodata.config;
 
-/**
- * GoodData CLI defaults
- *
- * @author zd <zd@gooddata.com>
- * @version 1.0
- */
-public class Defaults {
+import com.gooddata.config.Metric;
+import com.gooddata.config.NotificationConfig;
+import com.gooddata.config.NotificationMessage;
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.modeling.model.SourceSchema;
+import junit.framework.TestCase;
 
-    public static String DEFAULT_HOST = "secure.gooddata.com";
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+
+public class NotificationConfigTest extends TestCase {
+
+	public void testCreateConfig() throws IOException {
+        List<Metric> metrics = new ArrayList<Metric>();
+
+        metrics.add(new Metric("M1","/gdc/md/dk529t1rsra3fxvolt9d8ap2ctxr3kt7/obj/855"));
+        NotificationMessage m = new NotificationMessage("M1>20",metrics,"Bounce rate is too high (%M1% %)",
+                "sfdc://zsvoboda@gmail.com");
+        List<NotificationMessage> messages = new ArrayList<NotificationMessage>();
+        messages.add(m);
+        NotificationConfig c = new NotificationConfig(messages);
+
+        File f = new File("/Users/zdenek/temp/config.xml");
+        //c.writeConfig(f);
+        c = NotificationConfig.fromXml(f);
+        return;
+
+	}
+	
 }

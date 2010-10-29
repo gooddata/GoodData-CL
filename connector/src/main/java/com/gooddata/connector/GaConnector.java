@@ -24,7 +24,6 @@
 package com.gooddata.connector;
 
 import com.gooddata.exception.*;
-import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.google.analytics.FeedDumper;
 import com.gooddata.google.analytics.GaQuery;
@@ -82,7 +81,7 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Saves a template of the config file
-     * @param name the new config file name 
+     * @param name the new config file name
      * @param configFileName the new config file name
      * @param gQuery the Google Analytics query
      * @throws com.gooddata.exception.InvalidArgumentException if there is a problem with arguments

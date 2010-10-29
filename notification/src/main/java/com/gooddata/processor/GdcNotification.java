@@ -25,20 +25,22 @@ package com.gooddata.processor;
 
 import java.io.*;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
-import com.gooddata.integration.rest.GdcRESTApiWrapper;
-import com.sforce.soap.partner.Connector;
-import com.sforce.soap.partner.PartnerConnection;
-import com.sforce.soap.partner.SaveResult;
-import com.sforce.soap.partner.sobject.SObject;
+import com.gooddata.config.NotificationConfig;
+import com.gooddata.config.NotificationMessage;
 import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.jexl.Expression;
+import org.apache.commons.jexl.ExpressionFactory;
+import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl.JexlHelper;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -71,10 +73,10 @@ public class GdcNotification {
     public static String[] CLI_PARAM_SFDC_PASSWORD = {"sfdcpassword","c"};
 
     public static String[] CLI_PARAM_GDC_HOST = {"host","h"};
-    public static String[] CLI_PARAM_SFDC_HOST = {"sfdchost","s"};
     public static String[] CLI_PARAM_PROJECT = {"project","i"};
     public static String[] CLI_PARAM_PROTO = {"proto","t"};
     public static String[] CLI_PARAM_VERSION = {"version","V"};
+    public static String CLI_PARAM_CONFIG = "config";
 
     private static String DEFAULT_PROPERTIES = "gdi.properties";
 
@@ -88,17 +90,13 @@ public class GdcNotification {
         new Option(CLI_PARAM_SFDC_USERNAME[1], CLI_PARAM_SFDC_USERNAME[0], true, "Salesforce username"),
         new Option(CLI_PARAM_SFDC_PASSWORD[1], CLI_PARAM_SFDC_PASSWORD[0], true, "Salesforce password"),
         new Option(CLI_PARAM_GDC_HOST[1], CLI_PARAM_GDC_HOST[0], true, "GoodData host"),
-        new Option(CLI_PARAM_SFDC_HOST[1], CLI_PARAM_SFDC_HOST[0], true, "SalesForce host"),
         new Option(CLI_PARAM_PROJECT[1], CLI_PARAM_PROJECT[0], true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)"),
         new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
         new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version."),
     };
 
     private CliParams cliParams = null;
-    private ProcessingContext context = new ProcessingContext();
     private boolean finishedSucessfuly = false;
-
-    private static long  LOCK_EXPIRATION_TIME = 1000 * 3600; // 1 hour
 
     private final static String BUILD_NUMBER = "";
 
@@ -108,7 +106,15 @@ public class GdcNotification {
             cliParams.setHttpConfig(new NamePasswordConfiguration("https",
                     cliParams.get(CLI_PARAM_GDC_HOST[0]),
                     cliParams.get(CLI_PARAM_GDC_USERNAME[0]), cliParams.get(CLI_PARAM_GDC_PASSWORD[0])));
-            execute();
+            String config = cliParams.get(CLI_PARAM_CONFIG);
+            if(config != null && config.length()>0) {
+                execute(config);
+            }
+            else {
+                l.error("No config file given.");
+                commandsHelp();
+                System.exit(1);
+            }
             finishedSucessfuly = true;
         }
         catch (ConnectionException e) {
@@ -227,12 +233,20 @@ public class GdcNotification {
         }
     }
 
-    static final String USERNAME = "zsvoboda@gmail.com";
-    static final String PASSWORD = "heslo1";
-    static final String TOKEN = "wiXBKx942NuJBzyFTnTEZmET";
+    private boolean processMessage(NotificationMessage m) {
+        
 
+    }
 
-    private void execute() throws ConnectionException {
+    private void execute(String config) throws ConnectionException, IOException {
+
+        NotificationConfig c = NotificationConfig.fromXml(new File(config));
+
+        for(NotificationMessage m : c.getMessages()) {
+            
+        }
+
+        /*
         GdcRESTApiWrapper rest = new GdcRESTApiWrapper(cliParams.getHttpConfig());
         rest.login();
         String projectId = cliParams.get(CLI_PARAM_PROJECT);
@@ -240,22 +254,27 @@ public class GdcNotification {
         double val = rest.computeMetric(metricUri);
         System.out.println("VALUE is "+val);
 
-        PartnerConnection connection;
-        ConnectorConfig config = new ConnectorConfig();
-        config.setUsername(USERNAME);
-        config.setPassword(PASSWORD+TOKEN);
-        connection = Connector.newConnection(config);
+        
+        */
 
-        SObject user = new SObject();
-        user.setType("User");
-        user.setId(connection.getUserInfo().getUserId());
-        user.setField("CurrentStatus", "The new GDC metric value is "+val+" today.");
-        SaveResult[] results = connection.update(new SObject[] { user });
-        if (!results[0].isSuccess()) {
-            l.error("Error updating user status: "+ results[0].getErrors()[0].getMessage());
-        } else {
-            l.info("User status successfully updated.");
+        String exp = "(M1 + 2*M2) == 0";
+
+        Expression e = null;
+        try {
+            e = ExpressionFactory.createExpression(exp);
+            JexlContext jc = JexlHelper.createContext();
+            Map<String, Number> vars = new HashMap<String, Number>();
+            vars.put("M1", new Float(16));
+            vars.put("M2", new Float(10));
+            jc.setVars(vars);
+
+            Object result = (Object)e.evaluate(jc);
+            System.err.println("RESULT is "+result.toString());
+            
+        } catch (Exception e1) {
+            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+
     }
 
     /**
@@ -315,15 +334,7 @@ public class GdcNotification {
             cp.put(CLI_PARAM_GDC_HOST[0], Defaults.DEFAULT_HOST);
         }
 
-        // use default host if there is no host in the CLI params
-        if(!cp.containsKey(CLI_PARAM_SFDC_HOST[0])) {
-            cp.put(CLI_PARAM_SFDC_HOST[0], Defaults.DEFAULT_SFDC_HOST);
-        }
-
         l.debug("Using host "+cp.get(CLI_PARAM_GDC_HOST[0]));
-
-
-        l.debug("Using SFDC host "+cp.get(CLI_PARAM_SFDC_HOST[0]));
 
         if(cp.containsKey(CLI_PARAM_PROTO[0])) {
             String proto = ln.getOptionValue(CLI_PARAM_PROTO[0]).toLowerCase();

@@ -31,10 +31,8 @@ import java.util.Properties;
 
 import com.gooddata.connector.*;
 import com.gooddata.integration.rest.MetadataObject;
-import com.gooddata.pivotal.PivotalApi;
 import com.gooddata.util.DatabaseToCsv;
 import com.gooddata.util.StringUtil;
-import net.sf.json.JSONObject;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;

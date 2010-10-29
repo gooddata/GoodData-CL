@@ -21,16 +21,44 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.gooddata.processor;
+package com.gooddata.config;
+
+import java.util.List;
 
 /**
- * GoodData CLI defaults
- *
- * @author zd <zd@gooddata.com>
+ * Notification metric
+ * @author zd@gooddata.com
  * @version 1.0
  */
-public class Defaults {
+public class Metric {
 
-    public static String DEFAULT_HOST = "secure.gooddata.com";
+    private String alias;
 
+    private String uri;
+
+    /**
+     * Constructor
+     * @param alias metric alias (name) is whatever you want to call it in your expressions
+     * @param uri the GDC metric URI
+     */
+    public Metric (String alias, String uri) {
+        setAlias(alias);
+        setUri(uri);
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 }

@@ -20,17 +20,26 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gooddata.transport;
 
-package com.gooddata.processor;
 
 /**
- * GoodData CLI defaults
- *
- * @author zd <zd@gooddata.com>
- * @version 1.0
+ * Ntification transport abstraction
+ * @author zd@gooddata.com
+ * @version: 1.0
  */
-public class Defaults {
+public interface NotificationTransport {
 
-    public static String DEFAULT_HOST = "secure.gooddata.com";
+    /**
+     * Sends the message
+     * @param message mesage
+     */
+    public void send(String message);
+
+    /**
+     * Returns the notification transport protocol
+     * @return
+     */
+    public String getProtocol();
 
 }

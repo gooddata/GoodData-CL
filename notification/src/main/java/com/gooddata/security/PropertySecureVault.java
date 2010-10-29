@@ -20,17 +20,43 @@
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.gooddata.security;
 
-package com.gooddata.processor;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
- * GoodData CLI defaults
- *
- * @author zd <zd@gooddata.com>
- * @version 1.0
+ * Stores passwords in a property file
  */
-public class Defaults {
+public class PropertySecureVault implements SecureVault {
 
-    public static String DEFAULT_HOST = "secure.gooddata.com";
 
+    private String secureFile;
+    private Properties properties;
+
+    /**
+     * Constructor
+     * @param propertyFile file for storing the passwords
+     */
+    public PropertySecureVault(String propertyFile) throws IOException {
+        setSecureFile(propertyFile);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public String getPassword(String username) {
+        return (String)this.properties.get(username);
+    }
+
+    public String getSecureFile() {
+        return secureFile;
+    }
+
+    public void setSecureFile(String propertyFile) throws IOException {
+        this.secureFile = propertyFile;
+        this.properties = new Properties();
+        this.properties.load(new FileReader(propertyFile));
+    }
 }

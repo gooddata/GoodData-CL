@@ -24,12 +24,8 @@
 package com.gooddata.integration.rest;
 
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.processor.Command;
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;
-
-import java.io.InputStream;
-import java.util.List;
 
 /**
  * GoodData
