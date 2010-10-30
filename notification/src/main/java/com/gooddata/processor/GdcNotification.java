@@ -25,6 +25,7 @@ package com.gooddata.processor;
 
 import java.io.*;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -248,6 +249,7 @@ public class GdcNotification {
         throw new InvalidParameterException("Can't find transport for uri "+uri);
     }
 
+    private final static String DEFAULT_FORMAT = "#,###.00";
 
     private void execute(String config) throws ConnectionException, IOException {
 
@@ -277,10 +279,15 @@ public class GdcNotification {
                     String msg = m.getMessage();
                     if(values != null && values.length > 0 && metrics != null && metrics.size() > 0) {
                         for(int i = 0 ; i < metrics.size(); i++) {
-                            msg = msg.replace("%"+metrics.get(i).getAlias()+"%", Double.toString(values[i]));
+                            String fmt = metrics.get(i).getFormat();
+                            if(fmt == null || fmt.length() <= 0)
+                                fmt = DEFAULT_FORMAT;
+                            DecimalFormat df = new DecimalFormat(fmt);
+                            msg = msg.replace("%"+metrics.get(i).getAlias()+"%", df.format(values[i]));
                         }
                     }
                     t.send(msg);
+                    l.info("Notification sent.");
                 }
             }
         }

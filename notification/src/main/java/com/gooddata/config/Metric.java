@@ -36,6 +36,8 @@ public class Metric {
 
     private String uri;
 
+    private String format;
+
     /**
      * Constructor
      * @param alias metric alias (name) is whatever you want to call it in your expressions
@@ -60,5 +62,13 @@ public class Metric {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 }

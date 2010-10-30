@@ -8,6 +8,7 @@
         <metric>
           <alias>Visits</alias>
           <uri>/gdc/md/ca6a1r1lbfwpt2v05k36nbc0cjpu7lh9/obj/200002998</uri>
+          <format>#,###</format>
         </metric>
       </metrics>
       <message>Visits today %Visits%! Check out what's up!</message>

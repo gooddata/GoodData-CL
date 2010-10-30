@@ -67,7 +67,7 @@
                             <artifactId>sfdc-ws</artifactId>
                             <groupId>com.sforce.ws</groupId>
                             <version>20</version>
-                            <file>lib/wsc-18.jar</file>
+                            <file>lib/wsc-20.jar</file>
                         </configuration>
                     </execution>
                 </executions>
