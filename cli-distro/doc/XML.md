@@ -5,6 +5,8 @@ The XML configuration file is generated using the GenerateCsvConfig() command. I
 ### Basic Structure
 The file contains a name of the schema and entries for all your data columns:
 
+{% highlight xml %}
+
         <schema>
           <name>[SCHEMA NAME]</name>
           <columns>
@@ -14,6 +16,8 @@ The file contains a name of the schema and entries for all your data columns:
             [...]
           </columns>
         </schema>
+
+{% endhighlight %}
 
 The schema name will ultimately be represented as a name of the dataset in the product.
 
