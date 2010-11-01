@@ -40,7 +40,7 @@ Other `ldmType`s include `CONNECTION_POINT` (a unique identifier of a record wit
 
 Note the `schemaReference` property tells GoodData to connect this date field to the date dimension named _Quote_. This date dimension is created in the model by the following lines at the begining of the `cmd.txt` script:
 
-    LoadDateDimension(name="Quote");
+    UseDateDimension(name="Quote");
     GenerateMaql(maqlFile="examples/quotes/quote_date.maql");
     ExecuteMaql(maqlFile="examples/quotes/quote_date.maql");
 

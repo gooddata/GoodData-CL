@@ -8,7 +8,7 @@ CreateProject(name="Empty Dates");
 StoreProject(fileName="tests/empty_dates/pid");
 
 # Loads time dimension to the project
-LoadDateDimension(name="Empty Date");
+UseDateDimension(name="Empty Date");
 
 # Generate the MAQL script describing the data model for the date dimension
 GenerateMaql(maqlFile="tests/empty_dates/date.maql");
@@ -18,7 +18,7 @@ ExecuteMaql(maqlFile="tests/empty_dates/date.maql");
 
 # load the stock quotes data file
 # the data file config has been generated
-LoadCsv(csvDataFile="tests/empty_dates/data.csv",header="true",configFile="tests/empty_dates/config.xml");
+UseCsv(csvDataFile="tests/empty_dates/data.csv",header="true",configFile="tests/empty_dates/config.xml");
 
 # generate the stock quotes MAQL
 GenerateMaql(maqlFile="tests/empty_dates/empty_dates.maql");

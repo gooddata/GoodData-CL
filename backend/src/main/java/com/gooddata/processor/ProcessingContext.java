@@ -77,7 +77,7 @@ public class ProcessingContext {
     public Connector getConnectorMandatory() {
         Connector cc = getConnector();
         if(cc == null)
-            throw new InvalidCommandException("No conector initialized. Please load connector using a LoadXXX command.");
+            throw new InvalidCommandException("No connector initialized. Please load connector using a UseXXX command.");
         return cc;
     }
 

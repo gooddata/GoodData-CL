@@ -789,7 +789,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 						String ddName = ddNames.get(dd.getKey());
 						info("Creating date dimension " + ddName);
 						DateDimensionConnector ddConnector = DateDimensionConnector.createConnector();
-						Command c = new Command("LoadDateDimension");
+						Command c = new Command("UseDateDimension");
 						Properties prop = new Properties();
 						prop.put("name", ddName);
 						c.setParameters(prop);

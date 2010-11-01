@@ -12,7 +12,7 @@ StoreProject(fileName="examples/pt/pid");
 DownloadPivotalTrackerData(dir="examples/pt", username="pt-username", password="pt-password", projectId="pid");
 
 # Loads time dimension to the project
-LoadDateDimension(name="Iteration Start");
+UseDateDimension(name="Iteration Start");
 
 # Generate the MAQL script describing the data model for the date dimension
 GenerateMaql(maqlFile="examples/pt/iteration_start_date.maql");
@@ -20,7 +20,7 @@ GenerateMaql(maqlFile="examples/pt/iteration_start_date.maql");
 # Execute the date dimension MAQL script
 ExecuteMaql(maqlFile="examples/pt/iteration_start_date.maql");
 
-LoadDateDimension(name="Iteration End");
+UseDateDimension(name="Iteration End");
 
 # Generate the MAQL script describing the data model for the date dimension
 GenerateMaql(maqlFile="examples/pt/iteration_end_date.maql");
@@ -29,7 +29,7 @@ GenerateMaql(maqlFile="examples/pt/iteration_end_date.maql");
 ExecuteMaql(maqlFile="examples/pt/iteration_end_date.maql");
 
 
-LoadDateDimension(name="Deadline");
+UseDateDimension(name="Deadline");
 
 # Generate the MAQL script describing the data model for the date dimension
 GenerateMaql(maqlFile="examples/pt/deadline_date.maql");
@@ -38,7 +38,7 @@ GenerateMaql(maqlFile="examples/pt/deadline_date.maql");
 ExecuteMaql(maqlFile="examples/pt/deadline_date.maql");
 
 # Loads time dimension to the project
-LoadDateDimension(name="Snapshot");
+UseDateDimension(name="Snapshot");
 
 # Generate the MAQL script describing the data model for the date dimension
 GenerateMaql(maqlFile="examples/pt/snapshot_date.maql");
@@ -48,7 +48,7 @@ ExecuteMaql(maqlFile="examples/pt/snapshot_date.maql");
 
 # load the STORY data file
 # the data file config has been generated
-LoadCsv(csvDataFile="examples/pt/stories.csv",header="true",configFile="examples/pt/stories.xml");
+UseCsv(csvDataFile="examples/pt/stories.csv",header="true",configFile="examples/pt/stories.xml");
 
 # generate the STORY MAQL
 GenerateMaql(maqlFile="examples/pt/stories.maql");
@@ -61,7 +61,7 @@ TransferData(incremental="true");
 
 # load the LABEL data file
 # the data file config has been generated
-LoadCsv(csvDataFile="examples/pt/labels.csv",header="true",configFile="examples/pt/labels.xml");
+UseCsv(csvDataFile="examples/pt/labels.csv",header="true",configFile="examples/pt/labels.xml");
 
 # generate the LABEL MAQL
 GenerateMaql(maqlFile="examples/pt/labels.maql");
@@ -74,7 +74,7 @@ TransferData(incremental="true");
 
 # load the LABEL to STORY data file
 # the data file config has been generated
-LoadCsv(csvDataFile="examples/pt/labelsToStories.csv",header="true",configFile="examples/pt/labelsToStories.xml");
+UseCsv(csvDataFile="examples/pt/labelsToStories.csv",header="true",configFile="examples/pt/labelsToStories.xml");
 
 # generate the LABEL MAQL
 GenerateMaql(maqlFile="examples/pt/labelsToStories.maql");
@@ -87,7 +87,7 @@ TransferData(incremental="true");
 
 # load the SNAPSHOT data file
 # the data file config has been generated
-LoadCsv(csvDataFile="examples/pt/snapshots.csv",header="true",configFile="examples/pt/snapshots.xml");
+UseCsv(csvDataFile="examples/pt/snapshots.csv",header="true",configFile="examples/pt/snapshots.xml");
 
 # generate the SNAPSHOT MAQL
 GenerateMaql(maqlFile="examples/pt/snapshots.maql");

@@ -318,7 +318,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             if(c.match("GenerateJdbcConfig")) {
                 generateJdbcConfig(c, cli, ctx);
             }
-            else if(c.match("LoadJdbc")) {
+            else if(c.match("LoadJdbc") || c.match("UseJdbc")) {
                 loadJdbc(c, cli, ctx);
             }
             else {

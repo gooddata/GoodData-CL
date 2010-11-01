@@ -12,7 +12,7 @@ StoreProject(fileName="examples/jdbc/pid");
 #GenerateJdbcConfig(name="FUNDAMENTALS",configFile="examples/jdbc/fundamentals.config.xml",driver="org.apache.derby.jdbc.EmbeddedDriver",url="jdbc:derby:examples/jdbc/fundamentals",query="SELECT * FROM FUNDAMENTALS");
 
 # load JDBC data
-LoadJdbc(configFile="examples/jdbc/fundamentals.config.xml",driver="org.apache.derby.jdbc.EmbeddedDriver",url="jdbc:derby:examples/jdbc/fundamentals",query="SELECT * FROM FUNDAMENTALS");
+UseJdbc(configFile="examples/jdbc/fundamentals.config.xml",driver="org.apache.derby.jdbc.EmbeddedDriver",url="jdbc:derby:examples/jdbc/fundamentals",query="SELECT * FROM FUNDAMENTALS");
 
 # Generate the data model MAQL script
 GenerateMaql(maqlFile="examples/jdbc/fundamentals.maql");

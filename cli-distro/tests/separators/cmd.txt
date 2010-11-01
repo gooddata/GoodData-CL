@@ -8,7 +8,7 @@ CreateProject(name="Separators");
 StoreProject(fileName="tests/separators/pid");
 
 # Loads time dimension to the project
-LoadDateDimension(name="Separators Date");
+UseDateDimension(name="Separators Date");
 
 # Generate the MAQL script describing the data model for the date dimension
 GenerateMaql(maqlFile="tests/separators/date.maql");
@@ -18,7 +18,7 @@ ExecuteMaql(maqlFile="tests/separators/date.maql");
 
 # load the stock quotes data file
 # the data file config has been generated
-LoadCsv(csvDataFile="tests/separators/data.csv",header="true",configFile="tests/separators/config.xml", separator="|");
+UseCsv(csvDataFile="tests/separators/data.csv",header="true",configFile="tests/separators/config.xml", separator="|");
 
 # generate the stock quotes MAQL
 GenerateMaql(maqlFile="tests/separators/separators.maql");
