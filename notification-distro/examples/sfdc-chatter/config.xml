@@ -13,6 +13,9 @@
       </metrics>
       <message>Visits today %Visits%! Check out what's up!</message>
       <uri>sfdc://mh@gooddata.blank</uri>
-    </message>
+      <dupFilterExact>1m</dupFilterExact>
+<!--  <dupFilterKind>1m</dupFilterKind> -->  
+      <messageTimestampFormat>MM/dd/yyyy hh:mm</messageTimestampFormat>
+   </message>
   </messages>
 </notification>

@@ -26,15 +26,15 @@ package com.gooddata.processor;
 import java.io.*;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import com.gooddata.config.Metric;
 import com.gooddata.config.NotificationConfig;
 import com.gooddata.config.NotificationMessage;
 import com.gooddata.exception.*;
+import com.gooddata.filter.DuplicateMessageFilter;
+import com.gooddata.filter.MessageFilter;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.transport.NotificationTransport;
 import com.gooddata.transport.SfdcChatterTransport;
@@ -255,8 +255,18 @@ public class GdcNotification {
 
         NotificationConfig c = NotificationConfig.fromXml(new File(config));
 
+        MessageFilter dupFilter = DuplicateMessageFilter.createFilter();
+
         try {
             for(NotificationMessage m : c.getMessages()) {
+                String dupFilterKind = m.getDupFilterKind();
+                if(dupFilterKind != null && dupFilterKind.length()>0) {
+                    if(!dupFilter.filter(m.getMessage(), dupFilterKind)) {
+                        l.debug("Message filtered out by the dup kind filter.");
+                        l.info("Message filtered out by the dup kind filter.");
+                        continue;
+                    }
+                }
                 GdcRESTApiWrapper rest = new GdcRESTApiWrapper(cliParams.getHttpConfig());
                 rest.login();
                 Expression e = null;
@@ -286,14 +296,34 @@ public class GdcNotification {
                             msg = msg.replace("%"+metrics.get(i).getAlias()+"%", df.format(values[i]));
                         }
                     }
-                    t.send(msg);
+                    String dupFilterExact = m.getDupFilterExact();
+                    if(dupFilterExact != null && dupFilterExact.length()>0) {
+                        if(!dupFilter.filter(msg, dupFilterExact)) {
+                            l.debug("Message filtered out by the dup exact filter.");
+                            l.info("Message filtered out by the dup exact filter.");
+                            continue;
+                        }
+                    }
+                    String fmt = m.getMessageTimestampFormat();
+                    if(fmt != null && fmt.length() > 0)
+                        t.send(msg+" (at "+getTimestamp(fmt)+")");
+                    else
+                        t.send(msg);
+                    dupFilter.update(msg);
+                    dupFilter.update(m.getMessage());
                     l.info("Notification sent.");
                 }
             }
+            dupFilter.save();
         }
         catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+    private String getTimestamp(String fmt) {
+        SimpleDateFormat f = new SimpleDateFormat(fmt);
+        return f.format(new Date());
     }
 
     /**

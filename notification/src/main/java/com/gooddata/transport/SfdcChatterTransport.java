@@ -50,7 +50,7 @@ public class SfdcChatterTransport implements NotificationTransport {
 
     private String username;
     private String password;
-
+    
     private PartnerConnection connection;
 
     public String getUsername() {

@@ -41,6 +41,10 @@ public class NotificationMessage {
 
     private String uri;
 
+    private String dupFilterExact;
+    private String dupFilterKind;
+    private String messageTimestampFormat;
+
     /**
      * Constructor
      * @param condition the expression that uses the metric aliases. must resolve to boolean
@@ -89,5 +93,29 @@ public class NotificationMessage {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public String getDupFilterExact() {
+        return dupFilterExact;
+    }
+
+    public void setDupFilterExact(String dupFilterExact) {
+        this.dupFilterExact = dupFilterExact;
+    }
+
+    public String getDupFilterKind() {
+        return dupFilterKind;
+    }
+
+    public void setDupFilterKind(String dupFilterKind) {
+        this.dupFilterKind = dupFilterKind;
+    }
+
+    public String getMessageTimestampFormat() {
+        return messageTimestampFormat;
+    }
+
+    public void setMessageTimestampFormat(String messageTimestampFormat) {
+        this.messageTimestampFormat = messageTimestampFormat;
     }
 }

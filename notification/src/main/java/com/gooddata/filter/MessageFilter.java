@@ -21,22 +21,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.gooddata.exception;
+package com.gooddata.filter;
+
+import java.io.IOException;
 
 /**
- * GoodData
- *
- * @author zd <zd@gooddata.com>
+ * Filters the duplicate messages.
  * @version 1.0
+ * @author zd@gooddata.com
  */
-public class InvalidParameterException extends GdcException {
+public interface MessageFilter {
 
-    public InvalidParameterException(String msg) {
-        super(msg);
-    }
+    /**
+     * Save the filter config
+     * @throws IOException
+     */
+    public void save() throws IOException;
 
-    public InvalidParameterException(String msg, Throwable e) {
-        super(msg, e);
-    }
+    /**
+     * Returns the filter decision
+     * @param message
+     * @return
+     */
+    public boolean filter(String message, String condition);
+
+    /**
+     * Updates the DB with new message
+     * @param message - the message content
+     * @return
+     */
+    public void update(String message);
 
 }
