@@ -12,9 +12,9 @@
         </metric>
       </metrics>
       <message>Visits today %Visits%! Check out what's up!</message>
-      <uri>sfdc://mh@gooddata.blank</uri>
+      <uri>sfdc://www.salesforce.com</uri>
       <dupFilterExact>1m</dupFilterExact>
-<!--  <dupFilterKind>1m</dupFilterKind> -->  
+<!--  <dupFilterKind>1m</dupFilterKind> -->
       <messageTimestampFormat>MM/dd/yyyy hh:mm</messageTimestampFormat>
    </message>
   </messages>
