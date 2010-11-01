@@ -55,6 +55,13 @@
 	  </includes>
     </fileSet>
 	<fileSet>
+	  <directory>${project.basedir}</directory>
+	  <includes>
+	   <include>build.*</include>
+	   <include>README.md</include>
+	  </includes>
+    </fileSet>
+	<fileSet>
 	  <directory>${project.build.directory}/lib</directory>
       <outputDirectory>lib</outputDirectory>
 	  <includes>
