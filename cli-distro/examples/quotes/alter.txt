@@ -6,7 +6,7 @@ RetrieveProject(fileName="examples/quotes/pid");
 
 # load the stock quotes data file
 # the data file config has been generated
-LoadCsv(csvDataFile="examples/quotes/quotes_altered.csv",header="true",configFile="examples/quotes/quotes_altered.config.xml");
+UseCsv(csvDataFile="examples/quotes/quotes_altered.csv",header="true",configFile="examples/quotes/quotes_altered.config.xml");
 
 # generate the MAQL DDL snippet to modify the server-side data model
 GenerateUpdateMaql(maqlFile="examples/quotes/quotes.alter.maql");

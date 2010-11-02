@@ -522,7 +522,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             if(c.match("GenerateSfdcConfig")) {
                 generateSfdcConfig(c, cli, ctx);
             }
-            else if(c.match("LoadSfdc")) {
+            else if(c.match("LoadSfdc") || c.match("UseSfdc")) {
                 loadSfdc(c, cli, ctx);
             }
             else {

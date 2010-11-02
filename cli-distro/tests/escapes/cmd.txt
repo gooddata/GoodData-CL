@@ -8,7 +8,7 @@ CreateProject(name="Escapes");
 StoreProject(fileName="tests/escapes/pid");
 
 # Loads time dimension to the project
-LoadDateDimension(name="Escapes Date");
+UseDateDimension(name="Escapes Date");
 
 # Generate the MAQL script describing the data model for the date dimension
 GenerateMaql(maqlFile="tests/escapes/date.maql");
@@ -18,7 +18,7 @@ ExecuteMaql(maqlFile="tests/escapes/date.maql");
 
 # load the stock quotes data file
 # the data file config has been generated
-LoadCsv(csvDataFile="tests/escapes/data.csv",header="true",configFile="tests/escapes/config.xml", separator="|");
+UseCsv(csvDataFile="tests/escapes/data.csv",header="true",configFile="tests/escapes/config.xml", separator="|");
 
 # generate the stock quotes MAQL
 GenerateMaql(maqlFile="tests/escapes/escapes.maql");

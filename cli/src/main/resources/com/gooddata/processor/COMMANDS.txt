@@ -62,13 +62,13 @@ Project Management Commands:
 Logical Model Management Commands:
 ----------------------------------
 
- GenerateMaql(maqlFile=<maql>) - generate MAQL DDL script describing data model from the local config file, must call CreateProject or OpenProject and a LoadXXX before
+ GenerateMaql(maqlFile=<maql>) - generate MAQL DDL script describing data model from the local config file, must call CreateProject or OpenProject and a UseXXX before
   maqlFile - path to MAQL file (will be overwritten)
   
- GenerateUpdateMaql(maqlFile=<maql>) - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project, must call CreateProject or OpenProject and LoadXXX before
+ GenerateUpdateMaql(maqlFile=<maql>) - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project, must call CreateProject or OpenProject and UseXXX before
   maqlFile - path to MAQL file (will be overwritten)
 
- ExecuteMaql(maqlFile=<maql> [, ifExists=<true | false>]) - run MAQL DDL script on server to generate data model, must call CreateProject or OpenProject and LoadXXX before
+ ExecuteMaql(maqlFile=<maql> [, ifExists=<true | false>]) - run MAQL DDL script on server to generate data model, must call CreateProject or OpenProject and UseXXX before
   maqlFile - path to the MAQL file (relative to PWD)
   ifExists - if set to true the command quits silently if the maqlFile does not exist, default is false
 
@@ -99,7 +99,7 @@ CSV Connector Commands:
   folder - folder where to place new attributes
   separator - optional field separator, the default is ','  
 
- LoadCsv(csvDataFile=<data>, configFile=<config>, [separator = <separator-char>]) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
+ UseCsv(csvDataFile=<data>, configFile=<config>, [separator = <separator-char>]) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
   csvDataFile    - path to CSV datafile
   configFile  - path to XML configuration file (see the GenerateCsvConfig command that generates the config file template)
   separator - optional field separator, the default is ','. Use '\t' or type the tab char for tabulator.
@@ -114,7 +114,7 @@ GenerateGoogleAnalyticsConfig(name=<name>, configFile=<config>, dimensions=<pipe
   metrics - pipe (|) separated list of Google Analytics metrics (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html)
 
 
-LoadGoogleAnalytics(configFile=<config>, username=<ga-username>, password=<ga-password>, profileId=<ga-profile-id>, dimensions=<pipe-separated-ga-dimensions>, metrics=<pipe-separated-ga-metrics>, startDate=<date>, endDate=<date>, filters=<ga-filter-string>)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
+UseGoogleAnalytics(configFile=<config>, username=<ga-username>, password=<ga-password>, profileId=<ga-profile-id>, dimensions=<pipe-separated-ga-dimensions>, metrics=<pipe-separated-ga-metrics>, startDate=<date>, endDate=<date>, filters=<ga-filter-string>)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
   configFile  - path to configuration file (will be overwritten)
   token - Google Analytics AuthSub token (you must specify either the token or username/password)
   username - Google Analytics username (you must specify either the token or username/password)
@@ -138,7 +138,7 @@ JDBC Connector Commands:
   username - JDBC username
   password - JDBC password
   
- LoadJdbc(configFile=<config>, driver=<jdbc-driver>, url=<jdbc-url>, query=<sql-query> [, username=<jdbc-username>] [, password=<jdbc-password>])  - load JDBC data file using config file describing the file structure, must call CreateProject or OpenProject before
+ UseJdbc(configFile=<config>, driver=<jdbc-driver>, url=<jdbc-url>, query=<sql-query> [, username=<jdbc-username>] [, password=<jdbc-password>])  - load JDBC data file using config file describing the file structure, must call CreateProject or OpenProject before
   configFile  - path to configuration file (will be overwritten)
   driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
   url - JDBC url (e.g. "jdbc:derby:mydb")
@@ -164,7 +164,7 @@ SalesForce Connector Commands:
   password - SFDC password
   token - SFDC security token (you may append the security token to the password instead using this parameter)
   
- LoadSfdc(configFile=<config>, query=<soql-query>, username=<sfdc-username>, password=<sfdc-password>, token=<sfdc-security-token>)  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
+ UseSfdc(configFile=<config>, query=<soql-query>, username=<sfdc-username>, password=<sfdc-password>, token=<sfdc-security-token>)  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
   configFile  - path to configuration file (will be overwritten)
   query - SOQL query (e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
   username - SFDC username
@@ -183,5 +183,5 @@ Pivotal Tracker Connector Commands:
 Time Dimension Connector Commands:
 ----------------------------------
 
- LoadDateDimension(name=<name>)  - load new time dimension into the project, must call CreateProject or OpenProject before
+ UseDateDimension(name=<name>)  - load new time dimension into the project, must call CreateProject or OpenProject before
   name - the time dimension name differentiates the time dimension form others. This is typically something like "closed", "created" etc.

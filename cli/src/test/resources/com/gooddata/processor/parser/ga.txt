@@ -8,7 +8,7 @@ CreateProject(name='GA');
 #GenerateGaConfig(name="GA",configFile="examples/ga/ga.config.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits");
 
 # Loads a new time dimension to the project
-LoadDateDimension(name="ga");
+UseDateDimension(name="ga");
 
 # Generate the time dimension MAQL
 GenerateMaql(maqlFile="examples/ga/time.maql");
@@ -19,7 +19,7 @@ GenerateMaql(maqlFile="examples/ga/time.maql");
 ExecuteMaql(maqlFile="examples/ga/time.maql");
 
 # Load the Google Analytics data
-LoadGoogleAnalytics(configFile="examples/ga/ga.config.xml",username="example@gmail.com",password="",profileId="ga:7468896",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits",startDate="2008-01-01",endDate="2010-06-15");
+UseGoogleAnalytics(configFile="examples/ga/ga.config.xml",username="example@gmail.com",password="",profileId="ga:7468896",dimensions="ga:date|ga:browser|ga:browserVersion|ga:country|ga:isMobile",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits",startDate="2008-01-01",endDate="2010-06-15");
 
 # Generate the GA MAQL
 # Check out the GA config that connects the data column to the time dimension that we have generated above

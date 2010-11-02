@@ -7,7 +7,7 @@ CreateProject(name="SFDC");
 StoreProject(fileName="examples/sfdc/pid");
 
 # LOADS A NEW TIME DIMENSION TO THE PROJECT
-LoadDateDimension(name="Created");
+UseDateDimension(name="Created");
 
 # GENERATE THE TIME DIMENSION MAQL
 GenerateMaql(maqlFile="examples/sfdc/created.maql");
@@ -18,7 +18,7 @@ GenerateMaql(maqlFile="examples/sfdc/created.maql");
 ExecuteMaql(maqlFile="examples/sfdc/created.maql");
 
 # LOADS A NEW TIME DIMENSION TO THE PROJECT
-LoadDateDimension(name="Closed");
+UseDateDimension(name="Closed");
 
 # GENERATE THE TIME DIMENSION MAQL
 GenerateMaql(maqlFile="examples/sfdc/closed.maql");
@@ -33,7 +33,7 @@ ExecuteMaql(maqlFile="examples/sfdc/closed.maql");
 #GenerateSfdcConfig(name="Account", configFile="examples/sfdc/account.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name FROM Account");
 
 # LOAD THE ACCOUNT
-LoadSfdc(configFile="examples/sfdc/account.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name FROM Account");
+UseSfdc(configFile="examples/sfdc/account.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name FROM Account");
 
 # GENERATE THE ACCOUNT MAQL
 GenerateMaql(maqlFile="examples/sfdc/account.maql");
@@ -49,7 +49,7 @@ TransferData(incremental="true");
 #GenerateSfdcConfig(name="Opportunity", configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
 
 # LOAD THE OPPORTUNITY
-LoadSfdc(configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
+UseSfdc(configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
 
 # GENERATE THE OPPORTUNITY MAQL
 GenerateMaql(maqlFile="examples/sfdc/opportunity.maql");

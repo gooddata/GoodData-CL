@@ -159,7 +159,7 @@ public class GaConnector extends AbstractConnector implements Connector {
                 as.setUserCredentials(googleAnalyticsUsername, googleAnalyticsPassword, ClientLoginAccountType.GOOGLE);
             }
             else {
-                throw new InvalidCommandException("The LoadGoogleAnalytics command requires either GA token or " +
+                throw new InvalidCommandException("The UseGoogleAnalytics command requires either GA token or " +
                     "username and password!");
             }
             File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
@@ -247,7 +247,7 @@ public class GaConnector extends AbstractConnector implements Connector {
             if(c.match("GenerateGoogleAnalyticsConfig")) {
                 generateGAConfig(c, cli, ctx);
             }
-            else if(c.match("LoadGoogleAnalytics")) {
+            else if(c.match("UseGoogleAnalytics")) {
                 loadGA(c, cli, ctx);
             }
             else {
@@ -292,7 +292,7 @@ public class GaConnector extends AbstractConnector implements Connector {
             setGoogleAnalyticsPassword(psw);
         }
         else {
-            throw new InvalidCommandException("The LoadGoogleAnalytics command requires either GA token or " +
+            throw new InvalidCommandException("The UseGoogleAnalytics command requires either GA token or " +
                     "username and password!");            
         }
         setGoogleAnalyticsQuery(gq);

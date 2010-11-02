@@ -90,7 +90,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         l.debug("Processing command "+c.getCommand());
         try {
-            if(c.match("LoadDateDimension")) {
+            if(c.match("LoadDateDimension") || c.match("UseDateDimension")) {
                 loadDateDimension(c, cli, ctx);
             }
             else {

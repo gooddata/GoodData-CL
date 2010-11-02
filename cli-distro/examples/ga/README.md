@@ -4,16 +4,16 @@ This example demonstrates the built-in Google Analytics data connector that allo
 
 ### Before you start
 
-Edit the `examples/ga/cmd.create.txt` file and locate the lines starting with the `LoadGoogleAnalytics` command. Change the values of parameters `username`, `password` and `profileId`; don't forget to keep the leading `ga:` string in the `profileId` parameter.
+Edit the `examples/ga/cmd.create.txt` file and locate the lines starting with the `UseGoogleAnalytics` command. Change the values of parameters `username`, `password` and `profileId`; don't forget to keep the leading `ga:` string in the `profileId` parameter.
 
 Make sure you provide `username` and `password` of an account that can log on to the Google Analytics user interface to access the statistics of the entered profile.
 
 The value of the `profileId` parameter is the same as the value of the `id` field in the web address of your Google Analytics reports:
  ![Google Analytics profileId in the web address screenshot](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/ga/ga_profileId.png "Google Analytics profileId in the web address screenshot")
 
-For example, if you log into your Google Analytics user interface with username `jane@example.com` and password `jabberwocky78` and the web address of your profile's Google Analytics dashboard is `https://www.google.com/analytics/reporting/?reset=1&id=7468896&pdr=20100527-20100626` then your `LoadGoogleAnalytics` commands will be as follows:
+For example, if you log into your Google Analytics user interface with username `jane@example.com` and password `jabberwocky78` and the web address of your profile's Google Analytics dashboard is `https://www.google.com/analytics/reporting/?reset=1&id=7468896&pdr=20100527-20100626` then your `UseGoogleAnalytics` commands will be as follows:
 
-    LoadGoogleAnalytics(configFile="examples/ga/ga.config.xml",
+    UseGoogleAnalytics(configFile="examples/ga/ga.config.xml",
                         username="jane@example.com",
                         password="jabberwocky78",
                         profileId="ga:7468896",
@@ -43,7 +43,7 @@ _Unix like OS (Linux, Mac OS X and others):_
 
 This example creates a project with pre-defined reports and dashboards. The project contains six data sets. However, you mean to include additional dimension or metrics into your production project, or you may want to reduce the complexity by dropping fields you are not interested in.
 
-First, you will have to edit the list of dimensions and metrics to download. This can be done by editing the `dimensions` and `metrics` parameters of the `LoadGoogleAnalytics` command in the `cmd.create.txt` script.
+First, you will have to edit the list of dimensions and metrics to download. This can be done by editing the `dimensions` and `metrics` parameters of the `UseGoogleAnalytics` command in the `cmd.create.txt` script.
 
 For a complete list of available metrics and dimensions refer to the [Google Analytics documentation](http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html).
 

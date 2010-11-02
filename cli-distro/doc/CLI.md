@@ -73,15 +73,15 @@ The following paragraphs describe the specific GoodData CL commands.
 
 ## Logical Model Management Commands
 
-* `GenerateMaql`(maqlFile=&lt;maql&gt;) - generate MAQL DDL script describing data model from the local config file, must call `CreateProject` or `OpenProject` and a `LoadXXX` before
+* `GenerateMaql`(maqlFile=&lt;maql&gt;) - generate MAQL DDL script describing data model from the local config file, must call `CreateProject` or `OpenProject` and a `UseXXX` before
 
   - maqlFile - path to MAQL file (will be overwritten)
 
-* `GenerateUpdateMaql`(maqlFile=&lt;maql&gt;) - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project, must call `CreateProject` or OpenProject and `LoadXXX` before
+* `GenerateUpdateMaql`(maqlFile=&lt;maql&gt;) - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project, must call `CreateProject` or OpenProject and `UseXXX` before
 
   - maqlFile - path to MAQL file (will be overwritten)
 
-* `ExecuteMaql`(maqlFile=&lt;maql&gt; \[, ifExists=&lt;true | false&gt;\]) - run MAQL DDL script on server to generate data model, must call `CreateProject` or `OpenProject` and `LoadXXX` before
+* `ExecuteMaql`(maqlFile=&lt;maql&gt; \[, ifExists=&lt;true | false&gt;\]) - run MAQL DDL script on server to generate data model, must call `CreateProject` or `OpenProject` and `UseXXX` before
   - maqlFile - path to the MAQL file (relative to PWD)
   - ifExists - if set to true the command quits silently if the maqlFile does not exist, default is false
 
@@ -110,7 +110,7 @@ The following paragraphs describe the specific GoodData CL commands.
   - folder - folder where to place new attributes
   - separator - optional field separator, the default is ','
 
-* `LoadCsv`(csvDataFile=&lt;data&gt;, configFile=&lt;config&gt;, header=&lt;true | false&gt;, \[separator = &lt;separator-char&gt;\]) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
+* `UseCsv`(csvDataFile=&lt;data&gt;, configFile=&lt;config&gt;, header=&lt;true | false&gt;, \[separator = &lt;separator-char&gt;\]) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
   - csvDataFile    - path to CSV datafile
   - configFile  - path to XML configuration file (see the GenerateCsvConfig command that generates the config file template)
   - header - true if the CSV file has header in the first row, false otherwise
@@ -124,7 +124,7 @@ The following paragraphs describe the specific GoodData CL commands.
   - dimensions - pipe (|) separated list of Google Analytics dimensions (see [GData Reference](http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html))
   - metrics - pipe (|) separated list of Google Analytics metrics (see [GData Reference](http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html))
 
-* `LoadGoogleAnalytics`(configFile=&lt;config&gt;, username=&lt;ga-username&gt;, password=&lt;ga-password&gt;, profileId=&lt;ga-profile-id&gt;, dimensions=&lt;pipe-separated-ga-dimensions&gt;, metrics=&lt;pipe-separated-ga-metrics&gt;, startDate=&lt;date&gt;, endDate=&lt;date&gt;, filters=&lt;ga-filter-string&gt;)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
+* `UseGoogleAnalytics`(configFile=&lt;config&gt;, username=&lt;ga-username&gt;, password=&lt;ga-password&gt;, profileId=&lt;ga-profile-id&gt;, dimensions=&lt;pipe-separated-ga-dimensions&gt;, metrics=&lt;pipe-separated-ga-metrics&gt;, startDate=&lt;date&gt;, endDate=&lt;date&gt;, filters=&lt;ga-filter-string&gt;)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
   - configFile  - path to configuration file (will be overwritten)
   - token - Google Analytics AuthSub token (you must specify either the token or username/password)
   - username - Google Analytics username (you must specify either the token or username/password)
@@ -147,7 +147,7 @@ The following paragraphs describe the specific GoodData CL commands.
   - username - JDBC username  
   - password - JDBC password
   
-* `LoadJdbc`(configFile=&lt;config&gt;, driver=&lt;jdbc-driver&gt;, url=&lt;jdbc-url&gt;, query=&lt;sql-query&gt; \[, username=&lt;jdbc-username&gt;\] \[, password=&lt;jdbc-password&gt;\])  - load JDBC data file using config file describing the file structure, must call CreateProject or OpenProject before
+* `UseJdbc`(configFile=&lt;config&gt;, driver=&lt;jdbc-driver&gt;, url=&lt;jdbc-url&gt;, query=&lt;sql-query&gt; \[, username=&lt;jdbc-username&gt;\] \[, password=&lt;jdbc-password&gt;\])  - load JDBC data file using config file describing the file structure, must call CreateProject or OpenProject before
   - configFile  - path to configuration file (will be overwritten)  
   - driver - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory  
   - url - JDBC url (e.g. "jdbc:derby:mydb")  
@@ -172,7 +172,7 @@ The following paragraphs describe the specific GoodData CL commands.
   - password - SFDC password  
   - token - SFDC security token (you may append the security token to the password instead using this parameter)
   
-* `LoadSfdc`(configFile=&lt;config&gt;, query=&lt;soql-query&gt;, username=&lt;sfdc-username&gt;, password=&lt;sfdc-password&gt;, token=&lt;sfdc-security-token&gt;)  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
+* `UseSfdc`(configFile=&lt;config&gt;, query=&lt;soql-query&gt;, username=&lt;sfdc-username&gt;, password=&lt;sfdc-password&gt;, token=&lt;sfdc-security-token&gt;)  - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
   - configFile  - path to configuration file (will be overwritten)  
   - query - SOQL query (e.g. "SELECT Id, Name FROM Account"), see [Salesforce API](http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm)
   - username - SFDC username  
@@ -182,6 +182,6 @@ The following paragraphs describe the specific GoodData CL commands.
 
 ## Time Dimension Connector Commands
 
-* `LoadDateDimension`(name=&lt;name&gt;)  - load new time dimension into the project, must call CreateProject or OpenProject before
+* `UseDateDimension`(name=&lt;name&gt;)  - load new time dimension into the project, must call CreateProject or OpenProject before
 
   - name - the time dimension name differentiates the time dimension form others. This is typically something like "closed", "created" etc.

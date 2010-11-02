@@ -18,7 +18,7 @@ bin/gdi.sh examples/quotes/quotes.txt
 
 echo 'Updating the data set in the quotes demo'
 echo "RetrieveProject(fileName = \"examples/quotes/pid\");" > "$tmp"
-grep '^\(LoadCsv\|Transfer\)' examples/quotes/quotes.txt >> "$tmp"
+grep '^\(UseCsv\|Transfer\)' examples/quotes/quotes.txt >> "$tmp"
 bin/gdi.sh "$tmp"
 
 echo 'Altering the server-side model (-2 attributes -1 fact +1 fact)'
@@ -33,7 +33,7 @@ bin/gdi.sh examples/hr/3-salary.txt
 
 echo 'Updating the employee dataset'
 echo "RetrieveProject(fileName = \"examples/hr/pid\");" > "$tmp"
-grep '^\(LoadCsv\|Transfer\)' examples/hr/2-employee.txt >> "$tmp"
+grep '^\(UseCsv\|Transfer\)' examples/hr/2-employee.txt >> "$tmp"
 bin/gdi.sh "$tmp"
 
 echo 'Dropping the HR project and snapshots'

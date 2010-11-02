@@ -24,12 +24,12 @@ Note: this example fetches sample data from GoodData's demo account at SalesForc
 
 The `sfdc.txt` script brings the following entities into the project:
 
- - date dimension associated with the opportunity creation using the `LoadDateDimension(name="Created");`
- - date dimension associated with closing an opportunity using the `LoadDateDimension(name="Closed");`
- - SFDC `Account` object; only the `Id` and `Name` fields are loaded as specified by the `query` parameter of the first `LoadSfdc` command
- - SFDC `Opportunity` object with `Id`, `AccountId`, `IsWon`, `IsClosed`, `CloseDate`, `StageName`, `CreatedDate`, `ExpectedRevenue` and  `Amount` fields as specified by the query parameter of the second `LoadSfdc` command
+ - date dimension associated with the opportunity creation using the `UseDateDimension(name="Created");`
+ - date dimension associated with closing an opportunity using the `UseDateDimension(name="Closed");`
+ - SFDC `Account` object; only the `Id` and `Name` fields are loaded as specified by the `query` parameter of the first `UseSfdc` command
+ - SFDC `Opportunity` object with `Id`, `AccountId`, `IsWon`, `IsClosed`, `CloseDate`, `StageName`, `CreatedDate`, `ExpectedRevenue` and  `Amount` fields as specified by the query parameter of the second `UseSfdc` command
 
-The _Account_ and _Opportunity_ data sets loaded by the `LoadSfdc` commands are described by the `account.xml` and `opportunity.xml` configuration files. The configuration files describe the fields of the data sets in the order of fields occurence within the data sets.
+The _Account_ and _Opportunity_ data sets loaded by the `UseSfdc` commands are described by the `account.xml` and `opportunity.xml` configuration files. The configuration files describe the fields of the data sets in the order of fields occurence within the data sets.
 
 For example, the `opportunity.xml` file describes the first field of the _Opportunity_ data set as a `CONNECTION_POINT`, second as a `REFERENCE` to the _Account_ data set, fourth and sixth as date fields belonging to _closed_ and _created_ date dimension and seventh and eighth as _FACT_s, i.e. a numeric value to be aggregated in GoodData.
 
@@ -44,7 +44,7 @@ For a more detailed description of joining multiple data sets refer to the [HR e
 
 ## What next?
 
-In order to customize this example to import your own SalesForce data into GoodData, you will need to change the SFDC username, password and security token parameters that are passed to `LoadSfdc` and optionally `GenerateSfdcConfig` commands in the `sfdc.txt` script file.
+In order to customize this example to import your own SalesForce data into GoodData, you will need to change the SFDC username, password and security token parameters that are passed to `UseSfdc` and optionally `GenerateSfdcConfig` commands in the `sfdc.txt` script file.
 
 **Note:** you need the _Enterprise Editition_ of Salesforce to be able to access your Salesforce data using the API. Alternatively, the _Professional Edition_ users may enable API access as an extra option.
 
@@ -65,9 +65,9 @@ An e-mail with the SFDC security token will arrive into your mailbox soon; pleas
 
 ### Add more objects and fields
 
-In order to add more objects and/or fields you'll need to pay attention to the `LoadSfdc` and `GenerateSfdcConfig` commands in the `sfdc.txt` script. Note the `GenerateSfdcConfig` command is commented out in the `sfdc.txt` script, don't forget to uncomment it first.
+In order to add more objects and/or fields you'll need to pay attention to the `UseSfdc` and `GenerateSfdcConfig` commands in the `sfdc.txt` script. Note the `GenerateSfdcConfig` command is commented out in the `sfdc.txt` script, don't forget to uncomment it first.
 
-The `query` attribute of the `LoadSfdc` command specifies a query writen in the [Salesforce.com Object Query language](http://www.salesforce.com/us/developer/docs/api/Content/sforce_api_calls_soql.htm) also known as SOQL. 
+The `query` attribute of the `UseSfdc` command specifies a query writen in the [Salesforce.com Object Query language](http://www.salesforce.com/us/developer/docs/api/Content/sforce_api_calls_soql.htm) also known as SOQL. 
 
 The most simple data set takes the form of `SELECT <field1>, <field2>, ... FROM <object>` such as the `SELECT Id, Name FROM Account` query used to defined the _Accounts_ data set in this example. The API names of standard objects and their fields are listed in the [Salesforce API documentation](http://www.salesforce.com/us/developer/docs/api/Content/sforce_api_objects_list.htm).
 
@@ -80,4 +80,4 @@ When adding a data set featuring custom fields or even custom object you need to
  3. **Check the _API Name_ field** in the following screen:
  ![SFDC API Name](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/sfdc/sfdc_fields_03_api_name.png)
 
-So the last thing I need to add the `Contract_Value__c` field API name to the `query` parameter of the opportunity related occurences of the `LoadSfdc` and `GenerateSfdcConfig` commands in the `sfdc.txt` script.
+So the last thing I need to add the `Contract_Value__c` field API name to the `query` parameter of the opportunity related occurences of the `UseSfdc` and `GenerateSfdcConfig` commands in the `sfdc.txt` script.
