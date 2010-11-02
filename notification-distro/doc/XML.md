@@ -16,7 +16,7 @@ Your XML configuration file contains notification section as the root element an
 
 Each message can contain the following tags:
 
-* `<condition>` - specifies when the email is being sent. Supported are simple numeric comparisons and can contain metric names. Exact specification of what each metric name means are specified in the `metrics` tag
+* `<condition>` - specifies when the email is being sent. All arithmetic and boolean operations are supported and the expression can contain metric names specified in the `metrics` tag. For exact syntax, see documentation for [Apache JEXL](http://commons.apache.org/jexl/reference/syntax.html).
     
 * `<message>` - text of the message to send. Placeholder for metric values are wrapped in %percentage% characters.
 
