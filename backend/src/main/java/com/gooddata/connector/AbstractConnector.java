@@ -273,6 +273,11 @@ public abstract class AbstractConnector implements Connector {
                     else {
                         c.setPopulates(new String[] {"label." + ssn + "." + scn});   
                     }
+                    // add a new column for the date fact
+                    Column dfc = new Column(sc.getName() + N.DT_SLI_PFX);
+                    dfc.setMode(Column.LM_FULL);
+                    dfc.setPopulates(new String[] {N.DT + "." + ssn + "." + scn});
+                    columns.add(dfc);
                 }
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT))
                     c.setPopulates(new String[] {"fact." + ssn + "." + scn});

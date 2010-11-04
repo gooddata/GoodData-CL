@@ -72,6 +72,15 @@ public class SourceSchema {
     }
 
     /**
+     * Returns the column's index
+     * @param c column
+     * @return the column's index
+     */
+    public int getColumnIndex(SourceColumn c) {
+        return columns.indexOf(c);
+    }
+
+    /**
      * Creates a new empty schema
      * @param name the schema name
      * @return new SourceSchema

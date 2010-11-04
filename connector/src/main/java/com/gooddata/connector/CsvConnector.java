@@ -26,11 +26,12 @@ package com.gooddata.connector;
 import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.integration.model.Column;
+import com.gooddata.naming.N;
 import com.gooddata.util.*;
 import org.apache.log4j.Logger;
 
@@ -41,6 +42,10 @@ import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * GoodData CSV Connector
@@ -73,6 +78,12 @@ public class CsvConnector extends AbstractConnector implements Connector {
         return new CsvConnector();    
     }
 
+    private String[] mergeArrays(String[] a, String[] b) {
+        List<String> lst = new ArrayList<String>(Arrays.asList(a));
+        lst.addAll(Arrays.asList(b));
+        return lst.toArray(a);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -85,10 +96,52 @@ public class CsvConnector extends AbstractConnector implements Connector {
             throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
                     "it's configuration file!");
         }
-        cw.writeNext(header);
+        List<Integer> dateColumnIndexes = new ArrayList<Integer>();
+        List<DateTimeFormatter> dateColumnFormats = new ArrayList<DateTimeFormatter>();
+        List<SourceColumn> dates = schema.getDates();
+        String[] rowExt = new String[dates.size()];
+        for(int i= 0; i < dates.size(); i++)  {
+            SourceColumn c = dates.get(i);
+            rowExt[i] = StringUtil.toIdentifier(c.getName()) + N.DT_SLI_PFX;
+            dateColumnIndexes.add(schema.getColumnIndex(c));
+            String fmt = c.getFormat();
+            if(fmt == null || fmt.length() <= 0)
+                fmt = "yyyy-MM-dd";
+            dateColumnFormats.add(DateTimeFormat.forPattern(fmt));
+        }
+        if(rowExt.length > 0) {
+            cw.writeNext(mergeArrays(header, rowExt));
+        }
+        else
+            cw.writeNext(header);
         row = cr.readNext();
+        final DateTimeFormatter baseFmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        final DateTime base = baseFmt.parseDateTime("1900-01-01");
         while (row != null) {
-            cw.writeNext(row);
+            rowExt = new String[dateColumnIndexes.size()];
+            for(int i = 0; i < dateColumnIndexes.size(); i++) {
+                String dateValue = row[dateColumnIndexes.get(i)];
+                if(dateValue != null && dateValue.trim().length()>0) {
+                    try {
+                        DateTimeFormatter formatter = dateColumnFormats.get(i);
+                        DateTime dt = formatter.parseDateTime(dateValue);
+                        Days ds = Days.daysBetween(base, dt);
+                        rowExt[i] = Integer.toString(ds.getDays() + 1);
+                    }
+                    catch (IllegalArgumentException e) {
+                        l.debug("Can't parse date "+dateValue);
+                        rowExt[i] = "";
+                    }
+                }
+                else {
+                    rowExt[i] = "";
+                }
+            }
+            if(rowExt.length > 0) {
+                cw.writeNext(mergeArrays(row, rowExt));
+            }
+            else
+                cw.writeNext(row);
             row = cr.readNext();
         }
         cw.flush();

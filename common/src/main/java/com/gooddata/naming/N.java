@@ -39,12 +39,10 @@ public class N {
     public final static String DT = "dt";
     public final static String DT_PFX = DT+"_";
     public final static String ID = "id";
-    public final static String HSH = "hashid";
-    public final static String SRC_ID = SRC_PFX+"_"+ID;
     public final static String DT_ATTR_NAME = "date";
-    public final static String MEM_TBL_PREFIX = "m";
 
 
+    public final static String DT_SLI_PFX = "_dt";
 
     public static final String FACTS_OF = "factsof";
 
@@ -52,8 +50,4 @@ public class N {
     //public final static String FTP_SRV_SUFFIX = "-upload";
     public final static String FTP_SRV_SUFFIX = "-di";
 
-    // database name prefix
-    public final static String DB_PREFIX = "db_";
-    // database name suffix
-    public final static String DB_SUFFIX = "_gdi";
 }
