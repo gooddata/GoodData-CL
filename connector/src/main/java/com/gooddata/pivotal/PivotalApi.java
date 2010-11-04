@@ -38,6 +38,8 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 import org.apache.log4j.Logger;
 
 import javax.xml.xpath.XPath;
@@ -88,6 +90,9 @@ public class PivotalApi {
      * Labels column header
      */
     private String HEADER_LABEL = "Labels";
+
+    private static String PIVOTAL_URL = "https://www.pivotaltracker.com";
+
     /**
      * Id column header
      */
@@ -107,6 +112,7 @@ public class PivotalApi {
         this.setUserName(usr);
         this.setPassword(psw);
         this.setProjectId(prjId);
+        client.getHostConfiguration().setHost(PIVOTAL_URL);
         // populate the STORY dataset columns
         RECORD_STORIES.addAll(Arrays.asList(new String[] {"Id", "Labels", "Story", "Iteration", "Iteration Start",
                 "Iteration End", "Story Type", "Estimate", "Current State", "Created At", "Accepted At", "Deadline",
@@ -116,18 +122,58 @@ public class PivotalApi {
                 "Deadline"}));
     }
 
+
+    /**
+     * Get token
+     * @throws Exception in case of an IO error
+     */
+    public void getToken() throws IOException {
+        PostMethod m = new PostMethod("/services/tokens/active");
+        m.getParams().setCookiePolicy(CookiePolicy.NETSCAPE);
+        m.setParameter("username",getUserName());
+        m.setParameter("password",getPassword());
+        try {
+            client.executeMethod(m);
+            System.err.println(m.getResponseBodyAsString());
+            if (m.getStatusCode() != HttpStatus.SC_OK && m.getStatusCode() != HttpStatus.SC_MOVED_TEMPORARILY) {
+                throw new InvalidParameterException("Invalid PT credentials. HTTP reply code "+m.getStatusCode());
+            }
+        }
+        finally {
+            m.releaseConnection();
+        }
+    }
+
+    private String authCookie = "";
+
     /**
      * Sign into the PT
      * @throws Exception in case of an IO error
      */
     public void signin() throws IOException {
-        PostMethod m = new PostMethod("https://www.pivotaltracker.com/signin");
-        m.getParams().setCookiePolicy(CookiePolicy.NETSCAPE);
+        PostMethod m = new PostMethod(PIVOTAL_URL+"/signin");
+        m.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
         m.addParameter("credentials[username]",getUserName());
         m.addParameter("credentials[password]",getPassword());
         try {
             client.executeMethod(m);
             if (m.getStatusCode() != HttpStatus.SC_OK && m.getStatusCode() != HttpStatus.SC_MOVED_TEMPORARILY) {
+                throw new InvalidParameterException("Invalid PT credentials. HTTP reply code "+m.getStatusCode());
+            }
+            Header[] cookies = m.getResponseHeaders("Set-Cookie");
+            for(int i=0; i < cookies.length; i++) {
+                if(i==0)
+                    authCookie += cookies[i].getValue();
+                else
+                    authCookie += "; "+cookies[i].getValue();
+            }
+            Header l = m.getResponseHeader("Location");
+            String location = l.getValue();
+            GetMethod gm = new GetMethod(location);
+            gm.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+            gm.setRequestHeader("Cookie",authCookie);
+            client.executeMethod(gm);
+            if (gm.getStatusCode() != HttpStatus.SC_OK && gm.getStatusCode() != HttpStatus.SC_MOVED_TEMPORARILY) {
                 throw new InvalidParameterException("Invalid PT credentials. HTTP reply code "+m.getStatusCode());
             }
         }
@@ -142,10 +188,11 @@ public class PivotalApi {
      * @throws Exception in case of an IO error
      */
     public void getCsvData(String ptCsv) throws IOException {
-        String url = "http://www.pivotaltracker.com/projects/"+getProjectId()+"/export";
+        String url = PIVOTAL_URL+"/projects/"+getProjectId()+"/export/";
         PostMethod m = new PostMethod(url);
-        
-        m.getParams().setCookiePolicy(CookiePolicy.NETSCAPE);
+      
+        m.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+        m.setRequestHeader("Cookie",authCookie);
         m.addParameter("options[include_current_backlog_stories]","1");
         m.addParameter("options[include_icebox_stories]","1");
         m.addParameter("options[include_done_stories]","1");
@@ -167,7 +214,7 @@ public class PivotalApi {
                 os.close();
             }
             else {
-                throw new InvalidParameterException("Error retrieveing the PT data. HTTP reply code "+m.getStatusCode());
+                throw new InvalidParameterException("Error retrieving the PT data. HTTP reply code "+m.getStatusCode());
             }
         }
         finally {

@@ -116,6 +116,7 @@ public class PtConnector extends AbstractConnector implements Connector {
 
         PivotalApi papi = new PivotalApi(usr, psw, id);
         papi.signin();
+        //papi.getToken();
         File ptf = FileUtil.getTempFile();
         papi.getCsvData(ptf.getAbsolutePath());
         papi.parse(ptf.getAbsolutePath(),
