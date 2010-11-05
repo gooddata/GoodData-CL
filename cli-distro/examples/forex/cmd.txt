@@ -1,0 +1,30 @@
+# A simple example that loads a flat file with a stock quote data and connect a time dimension
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+CreateProject(name="Forex");
+
+# Store the project ID to file for possible other scripts
+StoreProject(fileName="examples/forex/pid");
+
+# Loads time dimension to the project
+UseDateDimension(name="Forex");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/forex/forex_date.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/forex/forex_date.maql");
+
+# load the Forex data file
+# the data file config has been generated
+UseCsv(csvDataFile="examples/forex/forex.csv",header="true",configFile="examples/forex/forex.xml");
+
+# generate the Forex MAQL
+GenerateMaql(maqlFile="examples/forex/forex.maql");
+
+# execute the Forex MAQL
+ExecuteMaql(maqlFile="examples/forex/forex.maql");
+
+# transfer the Forex data
+TransferData();
