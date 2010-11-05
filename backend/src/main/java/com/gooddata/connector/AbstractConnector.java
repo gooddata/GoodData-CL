@@ -246,7 +246,8 @@ public abstract class AbstractConnector implements Connector {
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
                    sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
                    sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||                         
-                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
+                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE) ||
+                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATETIME))
                     c.setReferenceKey(1);
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
                    sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT))
@@ -257,13 +258,17 @@ public abstract class AbstractConnector implements Connector {
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL))
                     c.setPopulates(new String[] {"label." + ssn + "." + StringUtil.toIdentifier(sc.getReference()) +
                             "." + scn});
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE) ||
+                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATETIME) ) {
                     String fmt = sc.getFormat();
                     if(fmt != null && fmt.length() > 0) {
                         c.setFormat(fmt);
                     }
                     else {
-                        c.setFormat(Constants.DEFAULT_DATE_FMT_STRING); 
+                        if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
+                            c.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
+                        else if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATETIME))
+                            c.setFormat(Constants.DEFAULT_DATETIME_FMT_STRING);
                     }
                     String sr = sc.getSchemaReference();
                     if(sr != null && sr.length() > 0) {
@@ -274,10 +279,18 @@ public abstract class AbstractConnector implements Connector {
                         c.setPopulates(new String[] {"label." + ssn + "." + scn});   
                     }
                     // add a new column for the date fact
-                    Column dfc = new Column(sc.getName() + N.DT_SLI_PFX);
+                    Column dfc = new Column(sc.getName() + N.DT_SLI_SFX);
                     dfc.setMode(Column.LM_FULL);
                     dfc.setPopulates(new String[] {N.DT + "." + ssn + "." + scn});
                     columns.add(dfc);
+
+                    if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATETIME)) {
+                        Column tfc = new Column(sc.getName() + N.TM_SLI_SFX);
+                        tfc.setMode(Column.LM_FULL);
+                        tfc.setPopulates(new String[] {N.TM + "." + N.DT + "." + ssn + "." + scn});
+                        columns.add(tfc);
+                        //TODO also add the foreign key column that loads the reference to the time dimension here
+                    }
                 }
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT))
                     c.setPopulates(new String[] {"fact." + ssn + "." + scn});

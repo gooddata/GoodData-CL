@@ -227,7 +227,8 @@ public class MaqlGenerator {
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL) ||
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
+                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE) ||
+                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATETIME))
                 {
                     if (!attributeFolders.contains(folder))
                         attributeFolders.add(folder);
@@ -303,6 +304,14 @@ public class MaqlGenerator {
 		    } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
                 if(column.getSchemaReference() != null && column.getSchemaReference().length() > 0) {
 		            dates.add(new DateColumn(column));
+                }
+                else {
+                    Attribute attr = new Attribute(column);
+		            attributes.put(attr.scn, attr);
+                }
+		    } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATETIME)) {
+                if(column.getSchemaReference() != null && column.getSchemaReference().length() > 0) {
+		            dates.add(new DateTimeColumn(column));
                 }
                 else {
                     Attribute attr = new Attribute(column);
@@ -499,7 +508,7 @@ public class MaqlGenerator {
 	            if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
                     stat += "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
-	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn +"};\n"
+	                    + " (Date)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn +"};\n"
 	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
 	                stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
 	                stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() + 
@@ -519,6 +528,40 @@ public class MaqlGenerator {
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
 	            }
 	        	return script;
+	        }
+	    }
+
+
+        // dates
+	    private class DateTimeColumn extends DateColumn {
+
+	        DateTimeColumn(SourceColumn column) {
+	            super(column);
+	        }
+
+	        @Override
+	        public String generateMaqlDdlAdd() {
+                String folderStatement = "";
+                String folder = column.getFolder();
+                String reference = column.getSchemaReference();
+                if (folder != null && folder.length() > 0) {
+                    String sfn = StringUtil.toIdentifier(folder);
+                    folderStatement = ", FOLDER {ffld." + sfn + "}";
+                }
+                String stat = super.generateMaqlDdlAdd();
+                if(reference != null && reference.length() > 0) {
+                    stat += "CREATE FACT {" + N.TM + "." + identifier + "} VISUAL(TITLE \"" + lcn
+	                    + " (Time)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.TM_PFX + scn +"};\n"
+	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ N.TM + "." + identifier + "};\n\n";
+                    // TODO add a time schema reference to schema and tie this to a selected time dimension here (ALTER ATTRIBUTE)
+                }
+                return stat;
+	        }
+
+	        public String generateMaqlDdlDrop() {
+	        	String script = super.generateMaqlDdlDrop();
+                script += "DROP {" + N.TM_PFX + identifier + "};\n";
+                return script;
 	        }
 	    }
 

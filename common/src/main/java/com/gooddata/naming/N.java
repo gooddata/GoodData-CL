@@ -38,11 +38,14 @@ public class N {
     public final static String FCT_PFX = "f_";
     public final static String DT = "dt";
     public final static String DT_PFX = DT+"_";
+    public final static String TM = "tm";
+    public final static String TM_PFX = TM+"_";
     public final static String ID = "id";
     public final static String DT_ATTR_NAME = "date";
 
 
-    public final static String DT_SLI_PFX = "_dt";
+    public final static String DT_SLI_SFX = "_dt";
+    public final static String TM_SLI_SFX = "_tm";
 
     public static final String FACTS_OF = "factsof";
 

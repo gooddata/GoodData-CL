@@ -291,6 +291,14 @@ public class SourceSchema {
     public List<SourceColumn> getDates() {
         return getColumnByType(SourceColumn.LDM_TYPE_DATE);
     }
+
+    /**
+     * Returns all DATE columns
+     * @return all DATE POINT columns
+     */
+    public List<SourceColumn> getDatetimes() {
+        return getColumnByType(SourceColumn.LDM_TYPE_DATETIME);
+    }
     
     @Override
     public String toString() {

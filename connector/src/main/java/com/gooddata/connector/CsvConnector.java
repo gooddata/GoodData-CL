@@ -96,28 +96,48 @@ public class CsvConnector extends AbstractConnector implements Connector {
             throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
                     "it's configuration file!");
         }
+
+        // Add column headers for the extra date columns
         List<Integer> dateColumnIndexes = new ArrayList<Integer>();
         List<DateTimeFormatter> dateColumnFormats = new ArrayList<DateTimeFormatter>();
         List<SourceColumn> dates = schema.getDates();
         String[] rowExt = new String[dates.size()];
         for(int i= 0; i < dates.size(); i++)  {
             SourceColumn c = dates.get(i);
-            rowExt[i] = StringUtil.toIdentifier(c.getName()) + N.DT_SLI_PFX;
+            rowExt[i] = StringUtil.toIdentifier(c.getName()) + N.DT_SLI_SFX;
             dateColumnIndexes.add(schema.getColumnIndex(c));
             String fmt = c.getFormat();
             if(fmt == null || fmt.length() <= 0)
-                fmt = "yyyy-MM-dd";
+                fmt = Constants.DEFAULT_DATE_FMT_STRING;
             dateColumnFormats.add(DateTimeFormat.forPattern(fmt));
         }
-        if(rowExt.length > 0) {
-            cw.writeNext(mergeArrays(header, rowExt));
+        if(rowExt.length > 0)
+            header = mergeArrays(header, rowExt);
+
+        // Add column headers for the extra datetime columns
+        List<Integer> dateTimeColumnIndexes = new ArrayList<Integer>();
+        List<DateTimeFormatter> dateTimeColumnFormats = new ArrayList<DateTimeFormatter>();
+        List<SourceColumn> dateTimes = schema.getDatetimes();
+        rowExt = new String[2*dateTimes.size()];
+        for(int i= 0; i < dateTimes.size(); i++)  {
+            SourceColumn c = dateTimes.get(i);
+            rowExt[i] = StringUtil.toIdentifier(c.getName()) + N.DT_SLI_SFX;
+            rowExt[i+dateTimes.size()] = StringUtil.toIdentifier(c.getName()) + N.TM_SLI_SFX;
+            dateTimeColumnIndexes.add(schema.getColumnIndex(c));
+            String fmt = c.getFormat();
+            if(fmt == null || fmt.length() <= 0)
+                fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
+            dateTimeColumnFormats.add(DateTimeFormat.forPattern(fmt));
         }
-        else
-            cw.writeNext(header);
+        if(rowExt.length > 0)
+            header = mergeArrays(header, rowExt);
+
+        cw.writeNext(header);
         row = cr.readNext();
-        final DateTimeFormatter baseFmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+        final DateTimeFormatter baseFmt = DateTimeFormat.forPattern(Constants.DEFAULT_DATE_FMT_STRING);
         final DateTime base = baseFmt.parseDateTime("1900-01-01");
         while (row != null) {
+            // add the extra date columns
             rowExt = new String[dateColumnIndexes.size()];
             for(int i = 0; i < dateColumnIndexes.size(); i++) {
                 String dateValue = row[dateColumnIndexes.get(i)];
@@ -137,11 +157,35 @@ public class CsvConnector extends AbstractConnector implements Connector {
                     rowExt[i] = "";
                 }
             }
-            if(rowExt.length > 0) {
-                cw.writeNext(mergeArrays(row, rowExt));
+            if(rowExt.length > 0)
+                 row = mergeArrays(row, rowExt);
+
+            // add the extra datetime columns
+            rowExt = new String[2*dateTimeColumnIndexes.size()];
+            for(int i = 0; i < dateTimeColumnIndexes.size(); i++) {
+                String dateTimeValue = row[dateTimeColumnIndexes.get(i)];
+                if(dateTimeValue != null && dateTimeValue.trim().length()>0) {
+                    try {
+                        DateTimeFormatter formatter = dateTimeColumnFormats.get(i);
+                        DateTime dt = formatter.parseDateTime(dateTimeValue);
+                        Days ds = Days.daysBetween(base, dt);
+                        rowExt[i] = Integer.toString(ds.getDays() + 1);
+                        int  ts = dt.getSecondOfDay();
+                        rowExt[i+dateTimeColumnIndexes.size()] = Integer.toString(ts);
+                    }
+                    catch (IllegalArgumentException e) {
+                        l.debug("Can't parse datetime "+dateTimeValue);
+                        rowExt[i] = "";
+                    }
+                }
+                else {
+                    rowExt[i] = "";
+                }
             }
-            else
-                cw.writeNext(row);
+            if(rowExt.length > 0)
+                 row = mergeArrays(row, rowExt);
+
+            cw.writeNext(row);
             row = cr.readNext();
         }
         cw.flush();
