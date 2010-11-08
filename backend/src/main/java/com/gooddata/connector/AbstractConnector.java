@@ -270,8 +270,19 @@ public abstract class AbstractConnector implements Connector {
                     if(sr != null && sr.length() > 0) {
                         sr = StringUtil.toIdentifier(sr);
                         c.setPopulates(new String[] {sr + "." + Constants.DEFAULT_DATE_LABEL});
+                        // add a new column for the date fact
+                        Column dfc = new Column(sc.getName() + N.DT_SLI_SFX);
+                        dfc.setMode(Column.LM_FULL);
+                        dfc.setPopulates(new String[] {N.DT + "." + ssn + "." + scn});
+                        columns.add(dfc);
+
 
                         if(sc.isDatetime()) {
+                            Column tfc = new Column(sc.getName() + N.TM_SLI_SFX);
+                            tfc.setMode(Column.LM_FULL);
+                            tfc.setPopulates(new String[] {N.TM + "." + N.DT + "." + ssn + "." + scn});
+                            columns.add(tfc);
+
                             Column tid = new Column(N.TM_PFX+StringUtil.toIdentifier(sc.getName())+"_"+N.ID);
                             tid.setMode(Column.LM_FULL);
                             tid.setPopulates(new String[] {Constants.DEFAULT_TIME_LABEL+sr});
@@ -282,18 +293,7 @@ public abstract class AbstractConnector implements Connector {
                     else {
                         c.setPopulates(new String[] {"label." + ssn + "." + scn});   
                     }
-                    // add a new column for the date fact
-                    Column dfc = new Column(sc.getName() + N.DT_SLI_SFX);
-                    dfc.setMode(Column.LM_FULL);
-                    dfc.setPopulates(new String[] {N.DT + "." + ssn + "." + scn});
-                    columns.add(dfc);
 
-                    if(sc.isDatetime()) {
-                        Column tfc = new Column(sc.getName() + N.TM_SLI_SFX);
-                        tfc.setMode(Column.LM_FULL);
-                        tfc.setPopulates(new String[] {N.TM + "." + N.DT + "." + ssn + "." + scn});
-                        columns.add(tfc);
-                    }
                 }
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT))
                     c.setPopulates(new String[] {"fact." + ssn + "." + scn});
