@@ -164,18 +164,20 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
             String idp = StringUtil.toIdentifier(name);
             String ts = StringUtil.toTitle(name);
             String script = "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\" MODIFY (IDENTIFIER \""+idp+"\", TITLE \""+ts+"\");\n\n";
-            try {
-                BufferedReader is = new BufferedReader(new InputStreamReader(
-                        DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/TimeDimension.maql")));
-                String line = is.readLine();
-                while (line != null) {
-                    script += line.replace("%id%", idp).replace("%name%", ts) + "\n";
-                    line = is.readLine();
+            if(includeTime) {
+                try {
+                    BufferedReader is = new BufferedReader(new InputStreamReader(
+                            DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/TimeDimension.maql")));
+                    String line = is.readLine();
+                    while (line != null) {
+                        script += line.replace("%id%", idp).replace("%name%", ts) + "\n";
+                        line = is.readLine();
+                    }
+                }
+                catch (IOException e) {
+                    throw new InternalErrorException("Can't read the time dimension MAQL,", e);
                 }
             }
-            catch (IOException e) {
-                throw new InternalErrorException("Can't read the time dimension MAQL,", e);
-            }                
             l.debug("Generated time dimension MAQL with context "+name);
             return script;
         }
