@@ -206,12 +206,10 @@ public abstract class AbstractConnector implements Connector {
      * @throws IOException IO issues
      * @throws InterruptedException internal problem with making file writable
      */
-    private void transferData(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
+    protected void transferData(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
         l.debug("Transferring data.");
         Connector cc = ctx.getConnectorMandatory();
         String pid = ctx.getProjectIdMandatory();
-        // connector's schema name
-        String ssn = StringUtil.toIdentifier(cc.getSchema().getName());
         
         boolean waitForFinish = true;
         if(c.checkParam("waitForFinish")) {
@@ -219,7 +217,7 @@ public abstract class AbstractConnector implements Connector {
             if(w != null && w.equalsIgnoreCase("false"))
                 waitForFinish = false;
         }
-        extractAndTransfer(c, pid, cc, null, waitForFinish, p, ctx);
+        cc.extractAndTransfer(c, pid, cc, waitForFinish, p, ctx);
         l.debug("Data transfer finished.");
         l.info("Data transfer finished.");
     }
@@ -246,8 +244,7 @@ public abstract class AbstractConnector implements Connector {
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
                    sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
                    sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||                         
-                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE) ||
-                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATETIME))
+                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
                     c.setReferenceKey(1);
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
                    sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT))
@@ -258,8 +255,7 @@ public abstract class AbstractConnector implements Connector {
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL))
                     c.setPopulates(new String[] {"label." + ssn + "." + StringUtil.toIdentifier(sc.getReference()) +
                             "." + scn});
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE) ||
-                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATETIME) ) {
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
                     String fmt = sc.getFormat();
                     if(fmt != null && fmt.length() > 0) {
                         c.setFormat(fmt);
@@ -267,13 +263,21 @@ public abstract class AbstractConnector implements Connector {
                     else {
                         if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
                             c.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
-                        else if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATETIME))
+                        else if(sc.isDatetime())
                             c.setFormat(Constants.DEFAULT_DATETIME_FMT_STRING);
                     }
                     String sr = sc.getSchemaReference();
                     if(sr != null && sr.length() > 0) {
                         sr = StringUtil.toIdentifier(sr);
                         c.setPopulates(new String[] {sr + "." + Constants.DEFAULT_DATE_LABEL});
+
+                        if(sc.isDatetime()) {
+                            Column tid = new Column(N.TM_PFX+StringUtil.toIdentifier(sc.getName())+"_"+N.ID);
+                            tid.setMode(Column.LM_FULL);
+                            tid.setPopulates(new String[] {Constants.DEFAULT_TIME_LABEL+sr});
+                            tid.setReferenceKey(1);
+                            columns.add(tid);
+                        }
                     }
                     else {
                         c.setPopulates(new String[] {"label." + ssn + "." + scn});   
@@ -284,12 +288,11 @@ public abstract class AbstractConnector implements Connector {
                     dfc.setPopulates(new String[] {N.DT + "." + ssn + "." + scn});
                     columns.add(dfc);
 
-                    if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATETIME)) {
+                    if(sc.isDatetime()) {
                         Column tfc = new Column(sc.getName() + N.TM_SLI_SFX);
                         tfc.setMode(Column.LM_FULL);
                         tfc.setPopulates(new String[] {N.TM + "." + N.DT + "." + ssn + "." + scn});
                         columns.add(tfc);
-                        //TODO also add the foreign key column that loads the reference to the time dimension here
                     }
                 }
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT))
@@ -301,18 +304,9 @@ public abstract class AbstractConnector implements Connector {
     }
 
     /**
-     * Extract data from the internal database and transfer them to a GoodData project
-     * @param c command
-     * @param pid project id
-     * @param cc connector
-     * @param p cli parameters
-     * @param ctx current context
-     * @param snapshots transferred snapshots
-     * @param waitForFinish synchronous execution flag
-     * @throws IOException IO issues
-     * @throws InterruptedException internal problem with making file writable
+     * {@inheritDoc}
      */
-    private void extractAndTransfer(Command c, String pid, Connector cc, int[] snapshots, boolean waitForFinish, CliParams p, ProcessingContext ctx)
+    public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
     	throws IOException, InterruptedException
     {
         // connector's schema name
@@ -392,7 +386,7 @@ public abstract class AbstractConnector implements Connector {
      * @throws IOException IO issues
      * @throws InterruptedException internal problem with making file writable
      */
-    private void checkLoadingStatus(String taskUri, String tmpDir, CliParams p, ProcessingContext ctx) throws InterruptedException,IOException {
+    protected void checkLoadingStatus(String taskUri, String tmpDir, CliParams p, ProcessingContext ctx) throws InterruptedException,IOException {
         l.debug("Checking data transfer status.");
         String status = "";
         while(!status.equalsIgnoreCase("OK") && !status.equalsIgnoreCase("ERROR") && !status.equalsIgnoreCase("WARNING")) {

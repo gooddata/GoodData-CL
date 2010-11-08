@@ -6,7 +6,8 @@
     <column>
       <name>time</name>
       <title>TIME</title>
-      <ldmType>DATETIME</ldmType>
+      <ldmType>DATE</ldmType>
+      <datetime>true</datetime>
       <folder>Forex</folder>
       <schemaReference>Forex</schemaReference>
       <format>dd-MM-yyyy HH:mm:ss</format>          

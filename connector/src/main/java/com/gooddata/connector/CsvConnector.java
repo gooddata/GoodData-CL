@@ -101,36 +101,26 @@ public class CsvConnector extends AbstractConnector implements Connector {
         List<Integer> dateColumnIndexes = new ArrayList<Integer>();
         List<DateTimeFormatter> dateColumnFormats = new ArrayList<DateTimeFormatter>();
         List<SourceColumn> dates = schema.getDates();
-        String[] rowExt = new String[dates.size()];
+        List<String> rowExt = new ArrayList<String>();
         for(int i= 0; i < dates.size(); i++)  {
             SourceColumn c = dates.get(i);
-            rowExt[i] = StringUtil.toIdentifier(c.getName()) + N.DT_SLI_SFX;
+            rowExt.add(StringUtil.toIdentifier(c.getName()) + N.DT_SLI_SFX);
             dateColumnIndexes.add(schema.getColumnIndex(c));
             String fmt = c.getFormat();
-            if(fmt == null || fmt.length() <= 0)
-                fmt = Constants.DEFAULT_DATE_FMT_STRING;
+            if(fmt == null || fmt.length() <= 0) {
+                if(c.isDatetime())
+                    fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
+                else
+                    fmt = Constants.DEFAULT_DATE_FMT_STRING;
+            }
             dateColumnFormats.add(DateTimeFormat.forPattern(fmt));
+            if(c.isDatetime()) {
+                rowExt.add(StringUtil.toIdentifier(c.getName()) + N.TM_SLI_SFX);
+                rowExt.add(N.TM_PFX+StringUtil.toIdentifier(c.getName())+"_"+N.ID);
+            }
         }
-        if(rowExt.length > 0)
-            header = mergeArrays(header, rowExt);
-
-        // Add column headers for the extra datetime columns
-        List<Integer> dateTimeColumnIndexes = new ArrayList<Integer>();
-        List<DateTimeFormatter> dateTimeColumnFormats = new ArrayList<DateTimeFormatter>();
-        List<SourceColumn> dateTimes = schema.getDatetimes();
-        rowExt = new String[2*dateTimes.size()];
-        for(int i= 0; i < dateTimes.size(); i++)  {
-            SourceColumn c = dateTimes.get(i);
-            rowExt[i] = StringUtil.toIdentifier(c.getName()) + N.DT_SLI_SFX;
-            rowExt[i+dateTimes.size()] = StringUtil.toIdentifier(c.getName()) + N.TM_SLI_SFX;
-            dateTimeColumnIndexes.add(schema.getColumnIndex(c));
-            String fmt = c.getFormat();
-            if(fmt == null || fmt.length() <= 0)
-                fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
-            dateTimeColumnFormats.add(DateTimeFormat.forPattern(fmt));
-        }
-        if(rowExt.length > 0)
-            header = mergeArrays(header, rowExt);
+        if(rowExt.size() > 0)
+            header = mergeArrays(header, rowExt.toArray(new String[]{}));
 
         cw.writeNext(header);
         row = cr.readNext();
@@ -138,52 +128,37 @@ public class CsvConnector extends AbstractConnector implements Connector {
         final DateTime base = baseFmt.parseDateTime("1900-01-01");
         while (row != null) {
             // add the extra date columns
-            rowExt = new String[dateColumnIndexes.size()];
+            rowExt = new ArrayList<String>();
             for(int i = 0; i < dateColumnIndexes.size(); i++) {
+                SourceColumn c = dates.get(i);
                 String dateValue = row[dateColumnIndexes.get(i)];
                 if(dateValue != null && dateValue.trim().length()>0) {
                     try {
                         DateTimeFormatter formatter = dateColumnFormats.get(i);
                         DateTime dt = formatter.parseDateTime(dateValue);
                         Days ds = Days.daysBetween(base, dt);
-                        rowExt[i] = Integer.toString(ds.getDays() + 1);
+                        rowExt.add(Integer.toString(ds.getDays() + 1));
+                        if(c.isDatetime()) {
+                            int  ts = dt.getSecondOfDay();
+                            rowExt.add(Integer.toString(ts));
+                            rowExt.add(Integer.toString(ts));                            
+                        }
                     }
                     catch (IllegalArgumentException e) {
                         l.debug("Can't parse date "+dateValue);
-                        rowExt[i] = "";
-                    }
+                        rowExt.add("");
+                        if(c.isDatetime()) {
+                            rowExt.add("");
+                            rowExt.add("0");
+                        }
+                    }                    
                 }
                 else {
-                    rowExt[i] = "";
+                    rowExt.add("");
                 }
             }
-            if(rowExt.length > 0)
-                 row = mergeArrays(row, rowExt);
-
-            // add the extra datetime columns
-            rowExt = new String[2*dateTimeColumnIndexes.size()];
-            for(int i = 0; i < dateTimeColumnIndexes.size(); i++) {
-                String dateTimeValue = row[dateTimeColumnIndexes.get(i)];
-                if(dateTimeValue != null && dateTimeValue.trim().length()>0) {
-                    try {
-                        DateTimeFormatter formatter = dateTimeColumnFormats.get(i);
-                        DateTime dt = formatter.parseDateTime(dateTimeValue);
-                        Days ds = Days.daysBetween(base, dt);
-                        rowExt[i] = Integer.toString(ds.getDays() + 1);
-                        int  ts = dt.getSecondOfDay();
-                        rowExt[i+dateTimeColumnIndexes.size()] = Integer.toString(ts);
-                    }
-                    catch (IllegalArgumentException e) {
-                        l.debug("Can't parse datetime "+dateTimeValue);
-                        rowExt[i] = "";
-                    }
-                }
-                else {
-                    rowExt[i] = "";
-                }
-            }
-            if(rowExt.length > 0)
-                 row = mergeArrays(row, rowExt);
+            if(rowExt.size() > 0)
+                row = mergeArrays(row, rowExt.toArray(new String[]{}));
 
             cw.writeNext(row);
             row = cr.readNext();

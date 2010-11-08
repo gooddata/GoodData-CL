@@ -23,14 +23,22 @@
 
 package com.gooddata.connector;
 
+import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
+import com.gooddata.integration.model.Column;
+import com.gooddata.integration.model.SLI;
+import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
 
 /**
  * GoodData Google Analytics Connector
@@ -44,6 +52,9 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
 
     //Time dimension context (e.g. created, closed etc.)
     private String name;
+
+    // Include time dimension
+    private boolean includeTime = false;
 
     /**
      * Creates a new Time Dimension Connector
@@ -59,11 +70,89 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         return new DateDimensionConnector();
     }
 
+    private final int BUF_LEN = 2048;
+
     /**
      * {@inheritDoc}
      */
     public void extract(String dir) throws IOException {
+        l.debug("Extracting time dimension data "+name);
+        if(name == null || name.trim().length()<=0)
+            name = "";
+        InputStream r = DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/data.csv");
+        FileOutputStream w = new FileOutputStream(dir +
+                System.getProperty("file.separator") + "data.csv");
+        byte[] buf = new byte[BUF_LEN];
+        int cnt = r.read(buf,0,BUF_LEN);
+        while(cnt > 0) {
+            w.write(buf,0,cnt);
+            cnt = r.read(buf,0,BUF_LEN);
+        }
+        w.flush();
+        w.close();
+        l.debug("Extracted time dimension data "+name);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
+    	throws IOException, InterruptedException {
+        if(includeTime) {
+            l.debug("Extracting data.");
+            File tmpDir = FileUtil.createTempDir();
+            File tmpZipDir = FileUtil.createTempDir();
+            String archiveName = tmpDir.getName();
+            MDC.put("GdcDataPackageDir",archiveName);
+            String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
+                archiveName + ".zip";
+
+            // extract the data to the CSV that is going to be transferred to the server
+            this.extract(tmpDir.getAbsolutePath());
+
+            this.deploy(tmpDir.getAbsolutePath(), archivePath);
+            // transfer the data package to the GoodData server
+            ctx.getFtpApi(p).transferDir(archivePath);
+            // kick the GooDData server to load the data package to the project
+            String taskUri = ctx.getRestApi(p).startLoading(pid, archiveName);
+            if(waitForFinish) {
+                checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
+            }
+            //cleanup
+            l.debug("Cleaning the temporary files.");
+            FileUtil.recursiveDelete(tmpDir);
+            FileUtil.recursiveDelete(tmpZipDir);
+            MDC.remove("GdcDataPackageDir");
+            l.debug("Data extract finished.");
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void deploy(String dir, String archiveName)
+            throws IOException {
+        l.debug("Extracting time dimension manifest "+name);
+        String fn = dir + System.getProperty("file.separator") +
+                GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
+
+        if(name == null || name.trim().length()<=0)
+            name = "";
+        String idp = StringUtil.toIdentifier(name);
+        String ts = StringUtil.toTitle(name);
+        String script = "";
+        BufferedReader is = new BufferedReader(new InputStreamReader(
+                DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/upload_info.json")));
+        String line = is.readLine();
+        while (line != null) {
+            script += line.replace("%id%", idp) + "\n";
+            line = is.readLine();
+        }
+        FileUtil.writeStringToFile(script, fn);
+        l.debug("Manifest file written to file '"+fn+"'. Content: "+script);
+        FileUtil.compressDir(dir, archiveName);
+        l.debug("Extracted time dimension manifest "+name);
     }
 
     /**
@@ -74,8 +163,21 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         if(name != null && name.trim().length()>0) {
             String idp = StringUtil.toIdentifier(name);
             String ts = StringUtil.toTitle(name);
+            String script = "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\" MODIFY (IDENTIFIER \""+idp+"\", TITLE \""+ts+"\");\n\n";
+            try {
+                BufferedReader is = new BufferedReader(new InputStreamReader(
+                        DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/TimeDimension.maql")));
+                String line = is.readLine();
+                while (line != null) {
+                    script += line.replace("%id%", idp).replace("%name%", ts) + "\n";
+                    line = is.readLine();
+                }
+            }
+            catch (IOException e) {
+                throw new InternalErrorException("Can't read the time dimension MAQL,", e);
+            }                
             l.debug("Generated time dimension MAQL with context "+name);
-            return "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\" MODIFY (IDENTIFIER \""+idp+"\", TITLE \""+ts+"\");";
+            return script;
         }
         else {
             l.debug("Generated time dimension MAQL with no context ");
@@ -117,6 +219,10 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         if(c.checkParam("name"))
             ct = c.getParam( "name");
         this.name = ct;
+        if(c.checkParam("includeTime")) {
+            String ic = c.getParam( "includeTime");
+            includeTime = (ic != null && "true".equalsIgnoreCase(ic));
+        }
         // sets the current connector
         ctx.setConnector(this);
         l.info("Time Dimension Connector successfully loaded (name: " + ct + ").");

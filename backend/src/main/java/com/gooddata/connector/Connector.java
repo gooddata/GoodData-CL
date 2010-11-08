@@ -26,7 +26,10 @@ package com.gooddata.connector;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.SLI;
 import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.processor.CliParams;
+import com.gooddata.processor.Command;
 import com.gooddata.processor.Executor;
+import com.gooddata.processor.ProcessingContext;
 
 import java.io.IOException;
 import java.util.List;
@@ -59,7 +62,20 @@ public interface Connector extends Executor {
      * @throws IOException in case of IO issues
      */
     public void extract(String dir) throws IOException;
-    
+
+    /**
+     * Extract data from the internal database and transfer them to a GoodData project
+     * @param c command
+     * @param pid project id
+     * @param cc connector
+     * @param p cli parameters
+     * @param ctx current context
+     * @param waitForFinish synchronous execution flag
+     * @throws IOException IO issues
+     * @throws InterruptedException internal problem with making file writable
+     */
+    public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
+    	throws IOException, InterruptedException;
 
     /**
      * LDM schema setter

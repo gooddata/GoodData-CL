@@ -8,13 +8,16 @@ CreateProject(name="Forex");
 StoreProject(fileName="examples/forex/pid");
 
 # Loads time dimension to the project
-UseDateDimension(name="Forex");
+UseDateDimension(name="Forex", includeTime="true");
 
 # Generate the MAQL script describing the data model for the date dimension
 GenerateMaql(maqlFile="examples/forex/forex_date.maql");
 
 # Execute the date dimension MAQL script
 ExecuteMaql(maqlFile="examples/forex/forex_date.maql");
+
+# transfer the time dimension data
+TransferData();
 
 # load the Forex data file
 # the data file config has been generated

@@ -39,6 +39,7 @@ public class Constants {
 	public final static String DEFAULT_DATE_FMT_STRING = "yyyy-MM-dd";
     public final static String DEFAULT_DATETIME_FMT_STRING = "yyyy-MM-dd hh:mm:ss";
     public final static String DEFAULT_DATE_LABEL = "date.mdyy";
+    public final static String DEFAULT_TIME_LABEL = "label.time.second.of.day.";
 	public final static DateFormat DEFAULT_DATE_FMT = new SimpleDateFormat(DEFAULT_DATE_FMT_STRING);
 
 

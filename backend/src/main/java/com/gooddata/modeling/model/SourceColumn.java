@@ -38,7 +38,6 @@ public class SourceColumn {
     public final static String LDM_TYPE_FACT = "FACT";
     public final static String LDM_TYPE_LABEL = "LABEL";
     public final static String LDM_TYPE_DATE = "DATE";
-    public final static String LDM_TYPE_DATETIME = "DATETIME";
 	public static final String LDM_TYPE_CONNECTION_POINT = "CONNECTION_POINT";
 	public static final String LDM_TYPE_REFERENCE = "REFERENCE";
 	
@@ -83,6 +82,11 @@ public class SourceColumn {
      * Column's datatype
      */
     private String dataType;
+
+    /**
+     * Include time
+     */
+    private String datetime;
 
 
     /**
@@ -256,6 +260,18 @@ public class SourceColumn {
 
     public void setDataType(String dataType) {
         this.dataType = dataType;
+    }
+
+    public String getDatetime() {
+        return datetime;
+    }
+
+    public boolean isDatetime() {
+        return (datetime != null && ("true".equalsIgnoreCase(datetime) || "1".equalsIgnoreCase(datetime)));
+    }
+
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
     }
 
     @Override

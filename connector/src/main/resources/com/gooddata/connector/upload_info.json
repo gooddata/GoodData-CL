@@ -14,8 +14,7 @@
             "populates" : [
                "label.time.%id%"
             ],
-            "mode" : "FULL",
-            "referenceKey" : 1
+            "mode" : "FULL"
          },
          {
             "columnName" : "time12",
@@ -29,7 +28,8 @@
             "populates" : [
                "label.time.second.of.day.%id%"
             ],
-            "mode" : "FULL"
+            "mode" : "FULL",
+            "referenceKey" : 1
          },
          {
             "columnName" : "hour",
