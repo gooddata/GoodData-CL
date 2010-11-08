@@ -64,8 +64,11 @@ class DataSetDiffMaker {
 				ldmType = SourceColumn.LDM_TYPE_DATE;
 				name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "").replaceAll("_id$", "");
 				for (String pop : c.getPopulates()) {
-					if (pop.endsWith(".date.mdyy")) { // HACK - where is this naming convention defined?
-						schemaReference = pop.replaceAll("\\.date\\.mdyy$", "");
+				    // HACK - where is this naming convention defined?
+					if (pop.endsWith(".date.long") || pop.endsWith(".date.mdyy")) { // date fact
+						schemaReference = pop.replaceAll("\\.date\\.(mdyy|long)$", "");
+					} else if (pop.startsWith("dt.")) { // date attribute
+					    schemaReference = pop.replaceAll("^dt\\..*\\.", "").replaceAll("_date$", "");
 					}
 				}
 				
