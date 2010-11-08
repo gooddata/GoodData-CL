@@ -298,6 +298,11 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
         String[] header = this.populateCsvHeaderFromSchema();
+
+        // add the extra date headers
+        DateColumnsExtender dateExt = new DateColumnsExtender(schema);
+        header = dateExt.extendHeader(header);
+
         cw.writeNext(header);
         SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
         List<SObject> result;
@@ -325,6 +330,8 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                     if(colTypes[i].equals(SourceColumn.LDM_TYPE_DATE))
                         vals[i] = vals[i].substring(0,10);
                 }
+                // add the extra date columns
+                vals = dateExt.extendRow(vals);
                 cw.writeNext(vals);
             }
             l.debug("Retrieved " + result.size() + " rows of SFDC data.");

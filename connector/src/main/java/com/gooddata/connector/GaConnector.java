@@ -170,13 +170,18 @@ public class GaConnector extends AbstractConnector implements Connector {
             CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);
 
             String[] header = this.populateCsvHeaderFromSchema();
+
+            // add the extra date headers
+            final DateColumnsExtender dateExt = new DateColumnsExtender(schema);
+            header = dateExt.extendHeader(header);
+
             cw.writeNext(header);
             
             for(int startIndex = 1; cnt > 0; startIndex += cnt + 1) {
                 gaq.setStartIndex(startIndex);
                 DataFeed feed = as.getFeed(gaq.getUrl(), DataFeed.class);
                 l.debug("Retrieving GA data from index="+startIndex);
-                cnt = FeedDumper.dump(cw, feed, gaq);
+                cnt = FeedDumper.dump(cw, feed, gaq, dateExt);
                 l.debug("Retrieved "+cnt+" entries.");
             }
             cw.flush();

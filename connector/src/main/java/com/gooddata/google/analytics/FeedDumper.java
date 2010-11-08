@@ -23,6 +23,7 @@
 
 package com.gooddata.google.analytics;
 
+import com.gooddata.connector.DateColumnsExtender;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.connector.GaConnector;
@@ -60,9 +61,10 @@ public class FeedDumper {
      * @param cw CSVWriter
      * @param feed Google feed
      * @param gaq Google Analytics Query
+     * @param dateExt date columns extender
      * @throws IOException in case of an IO problem
      */
-    public static int dump(CSVWriter cw, DataFeed feed, GaQuery gaq) throws IOException {
+    public static int dump(CSVWriter cw, DataFeed feed, GaQuery gaq, DateColumnsExtender dateExt) throws IOException {
         l.debug("Dumping GA feed.");
         String profileId = gaq.getIds();
         if(profileId == null || profileId.length() <=0)
@@ -121,7 +123,12 @@ public class FeedDumper {
             String hex = DigestUtils.md5Hex(key);
             row.add(0,profileId);
             row.add(0,hex);
-            cw.writeNext(row.toArray(new String[]{}));
+
+            String[] r = row.toArray(new String[]{});
+            // add the extra date columns
+            r = dateExt.extendRow(r);
+
+            cw.writeNext(r);
         }
         l.debug("Dumped "+entries.size()+" rows from GA feed.");
         return entries.size() - 1;

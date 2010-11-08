@@ -330,7 +330,7 @@ public class GdcDI implements Executor {
         }
 
         if(cp.containsKey(CLI_PARAM_VERSION[0])) {
-            l.info("GoodData CL version 1.2.2-SNAPSHOT" +
+            l.info("GoodData CL version 1.2.3-SNAPSHOT" +
                     ((BUILD_NUMBER.length()>0) ? ", build "+BUILD_NUMBER : "."));
             System.exit(0);
 

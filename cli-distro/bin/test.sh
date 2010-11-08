@@ -63,6 +63,12 @@ bin/gdi.sh examples/pt/cmd.txt
 echo 'Dropping the pt project and snapshots'
 drop "`cat examples/pt/pid`"
 
+echo 'Running forex demo'
+bin/gdi.sh examples/forex/cmd.txt
+
+echo 'Dropping the forex project and snapshots'
+drop "`cat examples/forex/pid`"
+
 echo 'Running naming test'
 bin/gdi.sh tests/naming/cmd.txt
 

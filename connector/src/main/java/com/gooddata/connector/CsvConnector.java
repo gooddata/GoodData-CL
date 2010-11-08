@@ -26,11 +26,9 @@ package com.gooddata.connector;
 import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.gooddata.exception.InvalidParameterException;
-import com.gooddata.integration.model.Column;
 import com.gooddata.naming.N;
 import com.gooddata.util.*;
 import org.apache.log4j.Logger;
@@ -78,12 +76,6 @@ public class CsvConnector extends AbstractConnector implements Connector {
         return new CsvConnector();    
     }
 
-    private String[] mergeArrays(String[] a, String[] b) {
-        List<String> lst = new ArrayList<String>(Arrays.asList(a));
-        lst.addAll(Arrays.asList(b));
-        return lst.toArray(a);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -96,70 +88,14 @@ public class CsvConnector extends AbstractConnector implements Connector {
             throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
                     "it's configuration file!");
         }
-
-        // Add column headers for the extra date columns
-        List<Integer> dateColumnIndexes = new ArrayList<Integer>();
-        List<DateTimeFormatter> dateColumnFormats = new ArrayList<DateTimeFormatter>();
-        List<SourceColumn> dates = schema.getDates();
-        List<String> rowExt = new ArrayList<String>();
-        for(int i= 0; i < dates.size(); i++)  {
-            SourceColumn c = dates.get(i);
-            rowExt.add(StringUtil.toIdentifier(c.getName()) + N.DT_SLI_SFX);
-            dateColumnIndexes.add(schema.getColumnIndex(c));
-            String fmt = c.getFormat();
-            if(fmt == null || fmt.length() <= 0) {
-                if(c.isDatetime())
-                    fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
-                else
-                    fmt = Constants.DEFAULT_DATE_FMT_STRING;
-            }
-            dateColumnFormats.add(DateTimeFormat.forPattern(fmt));
-            if(c.isDatetime()) {
-                rowExt.add(StringUtil.toIdentifier(c.getName()) + N.TM_SLI_SFX);
-                rowExt.add(N.TM_PFX+StringUtil.toIdentifier(c.getName())+"_"+N.ID);
-            }
-        }
-        if(rowExt.size() > 0)
-            header = mergeArrays(header, rowExt.toArray(new String[]{}));
-
+        // add the extra date headers
+        DateColumnsExtender dateExt = new DateColumnsExtender(schema);
+        header = dateExt.extendHeader(header);
         cw.writeNext(header);
         row = cr.readNext();
-        final DateTimeFormatter baseFmt = DateTimeFormat.forPattern(Constants.DEFAULT_DATE_FMT_STRING);
-        final DateTime base = baseFmt.parseDateTime("1900-01-01");
         while (row != null) {
             // add the extra date columns
-            rowExt = new ArrayList<String>();
-            for(int i = 0; i < dateColumnIndexes.size(); i++) {
-                SourceColumn c = dates.get(i);
-                String dateValue = row[dateColumnIndexes.get(i)];
-                if(dateValue != null && dateValue.trim().length()>0) {
-                    try {
-                        DateTimeFormatter formatter = dateColumnFormats.get(i);
-                        DateTime dt = formatter.parseDateTime(dateValue);
-                        Days ds = Days.daysBetween(base, dt);
-                        rowExt.add(Integer.toString(ds.getDays() + 1));
-                        if(c.isDatetime()) {
-                            int  ts = dt.getSecondOfDay();
-                            rowExt.add(Integer.toString(ts));
-                            rowExt.add(Integer.toString(ts));                            
-                        }
-                    }
-                    catch (IllegalArgumentException e) {
-                        l.debug("Can't parse date "+dateValue);
-                        rowExt.add("");
-                        if(c.isDatetime()) {
-                            rowExt.add("");
-                            rowExt.add("0");
-                        }
-                    }                    
-                }
-                else {
-                    rowExt.add("");
-                }
-            }
-            if(rowExt.size() > 0)
-                row = mergeArrays(row, rowExt.toArray(new String[]{}));
-
+            row = dateExt.extendRow(row);
             cw.writeNext(row);
             row = cr.readNext();
         }
@@ -378,4 +314,5 @@ public class CsvConnector extends AbstractConnector implements Connector {
     public void setSeparator(char separator) {
         this.separator = separator;
     }
+    
 }

@@ -199,8 +199,50 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             l.debug("Extracting JDBC data to file="+dataFile.getAbsolutePath());
             CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
             String[] header = this.populateCsvHeaderFromSchema();
+
+            // add the extra date headers
+            final DateColumnsExtender dateExt = new DateColumnsExtender(schema);
+            header = dateExt.extendHeader(header);
+            
             cw.writeNext(header);
             s = con.createStatement();
+
+            class ResultSetCsvWriter implements ResultSetHandler {
+
+                private final CSVWriter cw;
+                protected int rowCnt = 0;
+
+                public ResultSetCsvWriter(CSVWriter cw) {
+                    this.cw = cw;
+                }
+
+                public void handle(ResultSet rs) throws SQLException {
+                    final int length = rs.getMetaData().getColumnCount();
+                    String[] line = new String[length];
+                    for (int i = 1; i <= length; i++) {
+                        final int sqlType = rs.getMetaData().getColumnType(i);
+                        final Object value = rs.getObject(i);
+                        if (value == null)
+                            line[i - 1] = "\\N";
+                        else {
+                            switch (sqlType) {
+                                case Types.DATE:
+                                case Types.TIMESTAMP:
+                                    Date date = (Date)value;
+                                    line[i - 1] = Constants.DEFAULT_DATE_FMT.format(date);
+                                    break;
+                                default:
+                                    line[i - 1] = value.toString();
+                            }
+                        }
+                    }
+                    // add the extra date columns
+                    line = dateExt.extendRow(line);
+                    cw.writeNext(line);
+                    rowCnt++;
+                }
+            }
+
             ResultSetCsvWriter rw = new ResultSetCsvWriter(cw);
             JdbcUtil.executeQuery(con, getSqlQuery(), rw, FETCH_SIZE);
             l.debug("Finished retrieving JDBC data. Retrieved "+rw.rowCnt+" rows.");
@@ -410,37 +452,5 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         l.info("JDBC Connector configuration successfully generated. See config file: "+configFile);
     }
 
-    private static class ResultSetCsvWriter implements ResultSetHandler {
-    	
-    	private final CSVWriter cw;
-        protected int rowCnt = 0;
-    	
-    	public ResultSetCsvWriter(CSVWriter cw) {
-    		this.cw = cw;
-		}
-    	
-    	public void handle(ResultSet rs) throws SQLException {
-    		final int length = rs.getMetaData().getColumnCount();
-    		final String[] line = new String[length];
-    		for (int i = 1; i <= length; i++) {
-    			final int sqlType = rs.getMetaData().getColumnType(i);
-    			final Object value = rs.getObject(i);
-    			if (value == null)
-    				line[i - 1] = "\\N";
-    			else {
-	    			switch (sqlType) {
-	    				case Types.DATE:
-	    				case Types.TIMESTAMP:
-	    					Date date = (Date)value;
-	    					line[i - 1] = Constants.DEFAULT_DATE_FMT.format(date);
-	    					break;
-	    				default:
-	    					line[i - 1] = value.toString();
-	    			}
-    			}
-    		}
-    		cw.writeNext(line);
-            rowCnt++;
-    	}
-    }
+
 }
