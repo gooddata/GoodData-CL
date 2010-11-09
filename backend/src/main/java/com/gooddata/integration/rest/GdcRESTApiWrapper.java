@@ -33,6 +33,9 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.cookie.CookieSpec;
+import org.apache.commons.httpclient.cookie.MalformedCookieException;
+import org.apache.commons.httpclient.cookie.RFC2109Spec;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
@@ -41,7 +44,6 @@ import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -80,6 +82,8 @@ public class GdcRESTApiWrapper {
     protected NamePasswordConfiguration config;
     private String ssToken;
     private JSONObject profile;
+
+    private static final CookieSpec COOKIE_SPEC = new RFC2109Spec();
 
     private static HashMap<String,Integer> ROLES = new HashMap<String,Integer>();
 
@@ -167,15 +171,28 @@ public class GdcRESTApiWrapper {
     }
     
     private String extractCookie(HttpMethod method, String cookieName) {
-    	for (final Header cookieHeader : method.getResponseHeaders("Set-Cookie")) {
-	    	for (final HttpCookie cookie : HttpCookie.parse(cookieHeader.getValue())) {
-	    		if (cookieName.equals(cookie.getName())) {
-	    			return cookie.getValue();
-	    		}
-	    	}
-    	}
-    	throw new GdcRestApiException(cookieName + " cookie not found in the response to "
-    			+ method.getName() + " to " + method.getPath());
+
+        for (final Header cookieHeader : method.getResponseHeaders("Set-Cookie")) {
+            try {
+                final Cookie[] cookies = COOKIE_SPEC.parse(
+                        config.getGdcHost(),
+                        "https".equals(config.getProtocol()) ? 443 : 80,
+                        "/",  // force all cookie paths to be accepted
+                        "https".equals(config.getProtocol()),
+                        cookieHeader);
+
+                for (final Cookie cookie : cookies) {
+                    if (cookieName.equals(cookie.getName())) {
+                        return cookie.getValue();
+                    }
+                }
+            } catch (MalformedCookieException e) {
+                l.warn("Ignoring malformed cookie: " + e.getMessage());
+                l.debug("Ignoring malformed cookie", e);
+            }
+        }
+        throw new GdcRestApiException(cookieName + " cookie not found in the response to "
+                + method.getName() + " to " + method.getPath());
     }
 
     /**
