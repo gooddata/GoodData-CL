@@ -167,8 +167,14 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
             if(getHost() != null) {
                 hostName = "//"+getHost()+"/";
             }
+            final String jdbcUrl = new StringBuilder(protocol)
+                .append(hostName)
+                .append(dbName)
+                .append("?jdbcCompliantTruncation=false&useUnicode=true&characterEncoding=utf-8")
+                .toString();
+
 	        try {
-	        	connection = DriverManager.getConnection(protocol + hostName + dbName + "?jdbcCompliantTruncation=false", getUsername(), getPassword());
+	        	connection = DriverManager.getConnection(jdbcUrl, getUsername(), getPassword());
 	        }
 	        catch (SQLException e) {
 	        	connection = DriverManager.getConnection(protocol + hostName+"mysql", getUsername(), getPassword());
@@ -176,13 +182,9 @@ public class MySqlConnectorBackend extends AbstractSqlConnectorBackend implement
 	                "CREATE DATABASE IF NOT EXISTS " + dbName + " CHARACTER SET utf8"
 	            );
 	            connection.close();
-	            connection = DriverManager.getConnection(protocol + hostName + dbName + "?jdbcCompliantTruncation=false", getUsername(), getPassword());
+	            connection = DriverManager.getConnection(jdbcUrl, getUsername(), getPassword());
 	        }
     	}
-    	Properties props = new Properties();
-    	props.setProperty("useUnicode", "true");
-    	props.setProperty("characterEncoding", "utf-8");
-    	connection.setClientInfo(props);
         return connection;
     }
 
