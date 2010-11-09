@@ -52,8 +52,8 @@ public class FeedDumper {
 
 	private static final String UNKNOWN_DATE = "(other)";
 
-    private static DateFormat inFmt = new SimpleDateFormat("yyyyMMdd");
-    private static DateFormat outFmt = new SimpleDateFormat("yyyy-MM-dd");
+    private static final String IN_FMT = "yyyyMMdd";
+    private static final String OUT_FMT = "yyyy-MM-dd";
     private static Logger l = Logger.getLogger(FeedDumper.class);
 
     /**
@@ -91,6 +91,8 @@ public class FeedDumper {
             headers.add(metric.getName());
         }
 
+        final DateFormat inFmt = new SimpleDateFormat(IN_FMT);
+        final DateFormat outFmt = new SimpleDateFormat(OUT_FMT);
         for (DataEntry entry : entries) {
             final List<String> row = new ArrayList<String>();
             String key = "";
