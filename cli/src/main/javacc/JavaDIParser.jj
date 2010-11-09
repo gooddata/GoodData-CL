@@ -68,7 +68,7 @@ TOKEN: /*RESERVED TOKENS FOR UQL */
 TOKEN : /* the keywords and comparators - QUOTEDVALUE accounts for escaped quotes as well */
 {
         <NAME: (["A"-"Z","a"-"z","0"-"9"])+ >
-|       <STRING: "\""(~["\""])*"\"" >
+|       <STRING: "\""(~["\""])*"\"" | "'"(~["'"])*"'" >
 |       <COMMENT: "#"(~["\n","\r"])* ("\n"|"\r"|"\r\n")? >
 }
 
@@ -107,5 +107,5 @@ String[] parameter() :
     Token value;
 }
 {
-	name=<NAME><EQUALS>value=<STRING>{return new String[]{name.image,value.image.replace("\"","")};}
+	name=<NAME><EQUALS>value=<STRING>{return new String[]{name.image,value.image.substring(1,value.image.length()-1)};}
 }

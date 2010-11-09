@@ -10,16 +10,16 @@ Run `gdi.sh` script with the `1-department.txt` file to create a new GoodData pr
 
 _Windows:_
 
-        c:> bin\gdi.bat -u <username> -p <password> examples\hr\1-department.txt
-        Project id = 'nfh4zj3itxkxhevu4a22t4xgeg41d5h0' created.
-        Data successfully loaded.
+    c:> bin\gdi.bat -u <username> -p <password> examples\hr\1-department.txt
+    Project id = 'nfh4zj3itxkxhevu4a22t4xgeg41d5h0' created.
+    Data successfully loaded.
 
 
 _Unix like OS (Linux, Mac OS X and others):_
 
-        $ ./bin/gdi.sh -u <username> -p <password> examples/hr/1-department.txt
-        Project id = 'nfh4zj3itxkxhevu4a22t4xgeg41d5h0' created.
-        Data successfully loaded.
+    $ ./bin/gdi.sh -u <username> -p <password> examples/hr/1-department.txt
+    Project id = 'nfh4zj3itxkxhevu4a22t4xgeg41d5h0' created.
+    Data successfully loaded.
 
 ### What's Inside
 
@@ -27,7 +27,7 @@ This data set will be populated with records from the `department.csv` CSV file.
 
 The model is described by the _logical data model (LDM) diagram_ below:
 
-![Department LDM Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/hr/hr_1_department_ldm.png "Department LDM Diagram")
+![Department LDM Diagram](http://developer.gooddata.com/images/gdcl/examples/hr/hr_1_department_ldm.png "Department LDM Diagram")
 
 The _Department_ box represents both the `Department` connection point and its label and the `Records of Department` box refers to the entire data set. These boxes are called _attributes_ in GoodData jargon.
 
@@ -40,14 +40,14 @@ Run `gdi.sh` with the `2-employee.txt` file to add the 'Employee' dataset, conne
 
 _Windows:_
 
-        c:> bin\gdi.bat -u <username> -p <password> examples\hr\2-employee.txt
-        Data successfully loaded.
+    c:> bin\gdi.bat -u <username> -p <password> examples\hr\2-employee.txt
+    Data successfully loaded.
 
 
 _Unix like OS (Linux, Mac OS X and others):_
 
-        $ ./bin/gdi.sh -u <username> -p <password> examples/hr/2-employee.txt
-        Data successfully loaded.
+    $ ./bin/gdi.sh -u <username> -p <password> examples/hr/2-employee.txt
+    Data successfully loaded.
 
 
 ### What's Inside?
@@ -58,7 +58,7 @@ The `REFERENCE` field always connects to the target data set using the value of 
 
 The logical model diagram of these two connected data sets will be as follows:
 
-![Employee and Department LDM Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/hr/hr_2_employee_ldm.png "Employee and Deparment LDM Diagram")
+![Employee and Department LDM Diagram](http://developer.gooddata.com/images/gdcl/examples/hr/hr_2_employee_ldm.png "Employee and Deparment LDM Diagram")
  
 ### Salary Data Set
 
@@ -68,14 +68,14 @@ It will be added, connected and populated by running the following command:
 
 _Windows:_
 
-        c:> bin\gdi.bat -u <username> -p <password> examples\hr\3-salary.txt
-        Data successfully loaded.
+    c:> bin\gdi.bat -u <username> -p <password> examples\hr\3-salary.txt
+    Data successfully loaded.
 
 
 _Unix like OS (Linux, Mac OS X and others):_
 
-        $ ./bin/gdi.sh -u <username> -p <password> examples/hr/3-salary.txt
-        Data successfully loaded.
+    $ ./bin/gdi.sh -u <username> -p <password> examples/hr/3-salary.txt
+    Data successfully loaded.
 
        
 ### What's Inside?
@@ -84,7 +84,7 @@ As described in the `salary.xml` configuration file, this data set connnects to 
 
 The complete logical data model can be illustrated by the following diagram:
 
-![Full HR Diagram](http://github.com/gooddata/GoodData-CL/raw/master/cli-distro/examples/hr/hr_3_salary_ldm.png "Full HR Diagram")
+![Full HR Diagram](http://developer.gooddata.com/images/gdcl/examples/hr/hr_3_salary_ldm.png "Full HR Diagram")
 
 For the sake of simplicity, only some of the date related attributes are displayed.
 

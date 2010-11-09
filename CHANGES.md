@@ -1,9 +1,18 @@
 # GoodData CL Change Log
 
+## 1.1.10-beta
+
+* Fixed Java5 incompatibility
+* Minor documentation fixes
+* Support for apostrophes in the language parser (enables using the -e switch on Windows)
+
 ## 1.1.9-beta
 
 * Authentication handling updated to be forward compatible with API change in the upcoming
   GoodData platform release 41 (~ end of October)
+
+Note:  By accident, the released build of 1.1.9-beta errorneously reports version 1.1.8, sorry 
+  about that
 
 ## 1.1.8-beta
 
