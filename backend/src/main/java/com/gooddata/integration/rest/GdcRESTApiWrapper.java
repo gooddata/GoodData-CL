@@ -34,6 +34,9 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.cookie.CookieSpec;
+import org.apache.commons.httpclient.cookie.MalformedCookieException;
+import org.apache.commons.httpclient.cookie.RFC2109Spec;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
@@ -44,7 +47,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,14 +100,16 @@ public class GdcRESTApiWrapper {
 
     private static HashMap<String,Integer> ROLES = new HashMap<String,Integer>();
 
+    private static final CookieSpec COOKIE_SPEC = new RFC2109Spec();
 
-    /* TODO This is fragile and may not work for all projects and/or future versions. 
+
+    /* TODO This is fragile and may not work for all projects and/or future versions.
      * Use /gdc/projects/{projectId}/roles to retrieve roles for a particular project.
      */
     static {
         ROLES.put("ADMIN",new Integer(1));
         ROLES.put("EDITOR",new Integer(2));
-        ROLES.put("DASHBOARD ONLY",new Integer(3));        
+        ROLES.put("DASHBOARD ONLY",new Integer(3));
     }
 
     /**
@@ -116,14 +120,14 @@ public class GdcRESTApiWrapper {
     public GdcRESTApiWrapper(NamePasswordConfiguration config) {
         this.config = config;
         client = new HttpClient();
-    	
-        final String proxyHost = System.getProperty("http.proxyHost");
-    	final int proxyPort = System.getProperty("http.proxyPort") == null
-    		? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
 
-    	if (proxyHost != null) {
-    		client.getHostConfiguration().setProxy(proxyHost,proxyPort);
-    	}
+        final String proxyHost = System.getProperty("http.proxyHost");
+        final int proxyPort = System.getProperty("http.proxyPort") == null
+            ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
+
+        if (proxyHost != null) {
+            client.getHostConfiguration().setProxy(proxyHost,proxyPort);
+        }
     }
 
     /**
@@ -183,15 +187,28 @@ public class GdcRESTApiWrapper {
     }
 
     private String extractCookie(HttpMethod method, String cookieName) {
-    	for (final Header cookieHeader : method.getResponseHeaders("Set-Cookie")) {
-	    	for (final HttpCookie cookie : HttpCookie.parse(cookieHeader.getValue())) {
-	    		if (cookieName.equals(cookie.getName())) {
-	    			return cookie.getValue();
-	    		}
-	    	}
-    	}
-    	throw new GdcRestApiException(cookieName + " cookie not found in the response to "
-    			+ method.getName() + " to " + method.getPath());
+
+        for (final Header cookieHeader : method.getResponseHeaders("Set-Cookie")) {
+            try {
+                final Cookie[] cookies = COOKIE_SPEC.parse(
+                        config.getGdcHost(),
+                        "https".equals(config.getProtocol()) ? 443 : 80,
+                        "/",  // force all cookie paths to be accepted
+                        "https".equals(config.getProtocol()),
+                        cookieHeader);
+
+                for (final Cookie cookie : cookies) {
+                    if (cookieName.equals(cookie.getName())) {
+                        return cookie.getValue();
+                    }
+                }
+            } catch (MalformedCookieException e) {
+                l.warn("Ignoring malformed cookie: " + e.getMessage());
+                l.debug("Ignoring malformed cookie", e);
+            }
+        }
+        throw new GdcRestApiException(cookieName + " cookie not found in the response to "
+                + method.getName() + " to " + method.getPath());
     }
 
     /**
@@ -629,13 +646,13 @@ public class GdcRESTApiWrapper {
         JSONObject content = new JSONObject();
         content.put("grid", grid);
         content.put("filters",new JSONArray());
-        
+
         reportDefinition.put("content", content);
 
         JSONObject meta = new JSONObject();
         meta.put("category","reportDefinition");
         meta.put("title", "N/A");
-       
+
         reportDefinition.put("meta", meta);
 
         MetadataObject obj = new MetadataObject();
@@ -1004,7 +1021,7 @@ public class GdcRESTApiWrapper {
      * @throws HttpMethodException
      */
     protected String executeMethodOk(HttpMethod method) throws HttpMethodException {
-    	return executeMethodOk(method, true);
+        return executeMethodOk(method, true);
     }
 
     /**
@@ -1016,17 +1033,17 @@ public class GdcRESTApiWrapper {
      * @throws HttpMethodException
      */
     private String executeMethodOk(HttpMethod method, boolean reLoginOn401) throws HttpMethodException {
-    	if (reLoginOn401) {
-    		setTokenCookie();
-    	}
+        if (reLoginOn401) {
+            setTokenCookie();
+        }
         try {
             client.executeMethod(method);
             if (method.getStatusCode() == HttpStatus.SC_OK) {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reLoginOn401) {
-            	// refresh the temporary token
-            	setTokenCookie();
-            	return executeMethodOk(method, false);
+                // refresh the temporary token
+                setTokenCookie();
+                return executeMethodOk(method, false);
             } else if (method.getStatusCode() == HttpStatus.SC_CREATED) {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
@@ -1569,7 +1586,7 @@ public class GdcRESTApiWrapper {
      * Stores all metadata objects from a specified directory and adjusts the IDs by identifiers
      * Always creates new objects
      * @param srcDir source objects input directory
-     * @param dstDir destination objects input directory 
+     * @param dstDir destination objects input directory
      * @throws IOException
      */
     public void copyMetadataObjects(final String pid, String srcDir, String dstDir, final boolean overwriteExisting) throws IOException {
@@ -1674,12 +1691,12 @@ public class GdcRESTApiWrapper {
                 }
                 return r.getUri();
             }
-            
+
         }
-        
+
         Store storage = new Store();
         for(MetadataObject obj : sourceObjectsByIdentifier.values()) {
-            storage.storeObjectWithDependencies(obj);            
+            storage.storeObjectWithDependencies(obj);
         }
     }
 
@@ -1774,24 +1791,24 @@ public class GdcRESTApiWrapper {
             req.releaseConnection();
         }
     }
-    
+
     private static GetMethod createGetMethod(String path) {
-    	return configureHttpMethod(new GetMethod(path));
+        return configureHttpMethod(new GetMethod(path));
     }
-    
+
     private static PostMethod createPostMethod(String path) {
-    	return configureHttpMethod(new PostMethod(path));
+        return configureHttpMethod(new PostMethod(path));
     }
-    
+
     private static DeleteMethod createDeleteMethod(String path) {
-    	return configureHttpMethod(new DeleteMethod(path));
+        return configureHttpMethod(new DeleteMethod(path));
     }
-    
+
     private static <T extends HttpMethod> T configureHttpMethod(T request) {
         request.setRequestHeader("Content-Type", "application/json");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("User-Agent", "GoodData CL/1.2.3-SNAPSHOT");
-    	return request;
+        return request;
     }
 
 
