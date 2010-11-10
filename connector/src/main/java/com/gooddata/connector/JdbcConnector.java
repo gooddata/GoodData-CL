@@ -223,7 +223,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                         final int sqlType = rs.getMetaData().getColumnType(i);
                         final Object value = rs.getObject(i);
                         if (value == null)
-                            line[i - 1] = "\\N";
+                            line[i - 1] = "";
                         else {
                             switch (sqlType) {
                                 case Types.DATE:
