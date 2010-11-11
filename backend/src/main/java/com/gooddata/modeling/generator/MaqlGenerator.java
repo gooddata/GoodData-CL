@@ -23,17 +23,19 @@
 
 package com.gooddata.modeling.generator;
 
-import com.gooddata.modeling.generator.MaqlGenerator.State.Column;
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.naming.N;
-import com.gooddata.util.StringUtil;
-import com.sun.corba.se.spi.ior.Identifiable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.gooddata.modeling.generator.MaqlGenerator.State.Attribute;
+import com.gooddata.modeling.generator.MaqlGenerator.State.Column;
+import com.gooddata.modeling.generator.MaqlGenerator.State.ConnectionPoint;
+import com.gooddata.modeling.generator.MaqlGenerator.State.Label;
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.naming.N;
+import com.gooddata.util.StringUtil;
 
 /**
  * GoodData MAQL Generator generates the MAQL from the LDM schema object
@@ -170,8 +172,17 @@ public class MaqlGenerator {
 
         String script = "# CREATE ATTRIBUTES.\n# ATTRIBUTES ARE CATEGORIES THAT ARE USED FOR SLICING AND DICING THE " +
                     "NUMBERS (FACTS)\n";
+        
+        ConnectionPoint connectionPoint = null; // holt the CP's default label to be created at the end
         for (final Column c : state.attributes.values()) {
             script += c.generateMaqlDdlAdd();
+            if (c instanceof ConnectionPoint) {
+                connectionPoint = (ConnectionPoint)c;
+            } else {
+                final Attribute a = (Attribute)c;
+                script += a.generateOriginalLabelMaqlDdl();
+                script += a.generateDefaultLabelMaqlDdl();
+            }
         }
         script += "# CREATE FACTS\n# FACTS ARE NUMBERS THAT ARE AGGREGATED BY ATTRIBUTES.\n";
         for (final Column c : state.facts) {
@@ -199,8 +210,19 @@ public class MaqlGenerator {
     	state.addKnownColumns(knownColumns);
 
         // labels last
+    	boolean cpDefLabelSet = false;
         for (final Column c : state.labels) {
             script += c.generateMaqlDdlAdd();
+            Label l = (Label)c;
+            if (!cpDefLabelSet && l.attr.identifier.equals(connectionPoint.identifier)) {
+                script += l.generateMaqlDdlDefaultLabel();
+                cpDefLabelSet = true;
+            }
+        }
+        
+        // CP's default label after all other labels
+        if (connectionPoint != null) {
+            script += connectionPoint.generateOriginalLabelMaqlDdl();
         }
         
         // finally 
@@ -372,13 +394,18 @@ public class MaqlGenerator {
 
 
 	    // attributes
-	    private class Attribute extends Column {
+	    class Attribute extends Column {
 
 	        protected final String table;
+	        protected final String defaultLabelIdentifier; 
+	        protected final String defaultLabelDdl;
 
 	        Attribute(SourceColumn column, String table) {
 	            super(column, "attr");
 	            this.table = (table == null) ? createAttributeTableName(schema, column) : table;
+	            this.defaultLabelIdentifier = "label." + ssn + "." + scn;
+	            this.defaultLabelDdl = "{" + defaultLabelIdentifier + "} VISUAL(TITLE \""
+                                    + lcn + "\") AS {" + this.table + "."+N.NM_PFX + scn + "}";
 	        }
 
 	        Attribute(SourceColumn column) {
@@ -398,10 +425,9 @@ public class MaqlGenerator {
                 String fks = createForeignKeyMaqlDdl();
                 // FK can be null in case of the connection point
 	            script += (fks != null && fks.length() > 0) ? (", "+fks) : ("");
+	            script += ";\n";
                 // The connection point are going to have labels in the fact table
-	            script += " WITH LABELS {label." + ssn + "." + scn + "} VISUAL(TITLE \""
-	                    + lcn + "\") AS {" + table + "."+N.NM_PFX + scn + "};\n"
-	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + "." + scn + "};\n";
+	            script += "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + "." + scn + "};\n";
 
                 String dataType = column.getDataType();
                 if(dataType != null && dataType.length() > 0) {
@@ -412,6 +438,15 @@ public class MaqlGenerator {
                 }
 
 	            return script;
+	        }
+	        
+	        public String generateOriginalLabelMaqlDdl() {
+	            String script = "ALTER ATTRIBUTE {" + identifier + "} ADD LABELS " + defaultLabelDdl + "; # blah \n";
+	            return script;
+	        }
+	        
+	        public String generateDefaultLabelMaqlDdl() {
+	           return "ALTER ATTRIBUTE  {" + identifier + "} DEFAULT LABEL {" + defaultLabelIdentifier + "};\n";
 	        }
 	    }
 
@@ -446,17 +481,19 @@ public class MaqlGenerator {
 	    }
 
 	    //labels
-	    private class Label extends Column {
+	    class Label extends Column {
+	        
+	        final String scnPk;
+	        Attribute attr;
 
 	        Label(SourceColumn column) {
 	            super(column, "label");
+	            scnPk = StringUtil.toIdentifier(column.getReference());
 	        }
 
 	        @Override
 	        public String generateMaqlDdlAdd() {
-	            String scnPk = StringUtil.toIdentifier(column.getReference());
-	            Attribute attr = attributes.get(scnPk);
-	            
+	            attr = attributes.get(scnPk);
 	            if (attr == null) {
 	            	throw new IllegalArgumentException("Label " + scn + " points to non-existing attribute " + scnPk);
 	            }
@@ -476,6 +513,16 @@ public class MaqlGenerator {
 	        
 	        public String generateMaqlDdlDrop() {
 	        	throw new UnsupportedOperationException("Generate MAQL Drop is not supported for LABELS yet");
+	        }
+	        
+	        public String generateMaqlDdlDefaultLabel() {
+	            attr = attributes.get(scnPk);
+	            if (attr == null) {
+	                throw new IllegalArgumentException("Label " + scn + " points to non-existing attribute " + scnPk);
+	            }
+	            // TODO why is this different than this.identifier?
+	            final String labelId = "label." + ssn + "." + scnPk + "." + scn;
+	            return "ALTER ATTRIBUTE  {" + attr.identifier + "} DEFAULT LABEL {" + labelId + "};\n";	            
 	        }
 	    }
 
@@ -539,7 +586,7 @@ public class MaqlGenerator {
 
 
 	    // connection points
-	    private class ConnectionPoint extends Attribute {
+	    class ConnectionPoint extends Attribute {
 	        public ConnectionPoint(SourceColumn column) {
 	            super(column, getFactTableName());
 	            hasCp = true;
