@@ -49,6 +49,7 @@ import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import com.gooddata.util.JdbcUtil.ResultSetHandler;
+import org.joda.time.DateTime;
 
 /**
  * GoodData JDBC Connector
@@ -198,7 +199,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             con = connect();
             l.debug("Extracting JDBC data to file="+dataFile.getAbsolutePath());
             CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-            String[] header = this.populateCsvHeaderFromSchema();
+            String[] header = this.populateCsvHeaderFromSchema(schema);
 
             // add the extra date headers
             final DateColumnsExtender dateExt = new DateColumnsExtender(schema);
@@ -228,8 +229,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                             switch (sqlType) {
                                 case Types.DATE:
                                 case Types.TIMESTAMP:
-                                    Date date = (Date)value;
-                                    line[i - 1] = Constants.DEFAULT_DATE_FMT.format(date);
+                                    DateTime date = new DateTime((Date)value);
+                                    line[i - 1] = Constants.DEFAULT_DATE_FMT.print(date);
                                     break;
                                 default:
                                     line[i - 1] = value.toString();

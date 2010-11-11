@@ -33,11 +33,13 @@ import com.google.gdata.data.analytics.Dimension;
 import com.google.gdata.data.analytics.Metric;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -91,8 +93,8 @@ public class FeedDumper {
             headers.add(metric.getName());
         }
 
-        final DateFormat inFmt = new SimpleDateFormat(IN_FMT);
-        final DateFormat outFmt = new SimpleDateFormat(OUT_FMT);
+        final DateTimeFormatter inFmt = DateTimeFormat.forPattern(IN_FMT);
+        final DateTimeFormatter outFmt = DateTimeFormat.forPattern(OUT_FMT);
         for (DataEntry entry : entries) {
             final List<String> row = new ArrayList<String>();
             String key = "";
@@ -108,10 +110,10 @@ public class FeedDumper {
                         l.debug("Invalid date value '"+valueIn+"'");
                 	} else {
                         try {
-                            Date dt = inFmt.parse(valueIn);
-                            valueOut = outFmt.format(dt);
+                            DateTime dt = inFmt.parseDateTime(valueIn);
+                            valueOut = outFmt.print(dt);
                         }
-                        catch(ParseException e) {
+                        catch(IllegalArgumentException e) {
                             valueOut = "";
                             l.debug("Invalid date value '"+valueIn+"'");
                         }

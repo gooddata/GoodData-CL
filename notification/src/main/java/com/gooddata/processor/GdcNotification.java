@@ -26,7 +26,6 @@ package com.gooddata.processor;
 import java.io.*;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.gooddata.config.Metric;
@@ -53,6 +52,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.util.FileUtil;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * The GoodData Data Integration CLI processor.
@@ -322,8 +324,8 @@ public class GdcNotification {
     }
 
     private String getTimestamp(String fmt) {
-        SimpleDateFormat f = new SimpleDateFormat(fmt);
-        return f.format(new Date());
+        DateTimeFormatter f = DateTimeFormat.forPattern(fmt);
+        return f.print(new DateTime());
     }
 
     /**

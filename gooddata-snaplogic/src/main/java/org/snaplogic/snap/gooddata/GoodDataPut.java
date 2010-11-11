@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +36,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.snaplogic.cc.Capabilities;
 import org.snaplogic.cc.Capability;
 import org.snaplogic.cc.InputView;
@@ -391,7 +393,7 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 						} else if (val instanceof BigDecimal) {
 							stringVal = val.toString();
 						} else if (val instanceof Timestamp) {
-							stringVal = ISO_DATE_FORMAT.format((Timestamp) val);
+							stringVal = ISO_DATE_FORMAT.print(new DateTime((Timestamp) val));
 						}
 						if (first) {
 							first = false;
@@ -446,7 +448,7 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 		}
 	}
 
-	public static final SimpleDateFormat ISO_DATE_FORMAT = new SimpleDateFormat(ConvertUtils.DATE_FORMAT_1);
+	public static final DateTimeFormatter ISO_DATE_FORMAT = DateTimeFormat.forPattern(ConvertUtils.DATE_FORMAT_1);
 
 	@Override
 	public void execute(Map<String, InputView> inputViews, Map<String, OutputView> outputViews) {

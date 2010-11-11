@@ -23,10 +23,8 @@
 
 package com.gooddata.connector;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-import com.gooddata.naming.N;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class Constants {
 
@@ -40,7 +38,8 @@ public class Constants {
     public final static String DEFAULT_DATETIME_FMT_STRING = "yyyy-MM-dd hh:mm:ss";
     public final static String DEFAULT_DATE_LABEL = "date.mdyy";
     public final static String DEFAULT_TIME_LABEL = "label.time.second.of.day.";
-	public final static DateFormat DEFAULT_DATE_FMT = new SimpleDateFormat(DEFAULT_DATE_FMT_STRING);
+	public final static DateTimeFormatter DEFAULT_DATE_FMT = DateTimeFormat.forPattern(DEFAULT_DATE_FMT_STRING);
+    public final static DateTimeFormatter DEFAULT_DATETIME_FMT = DateTimeFormat.forPattern(DEFAULT_DATETIME_FMT_STRING);
 
 
 }

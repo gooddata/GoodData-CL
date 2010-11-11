@@ -41,6 +41,9 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -50,8 +53,6 @@ import java.io.*;
 import java.net.HttpCookie;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -231,8 +232,8 @@ public class PivotalApi {
         cw.writeNext(rec.toArray(new String[] {}));
     }
 
-    private SimpleDateFormat reader = new SimpleDateFormat("MMM dd,yyyy");
-    private SimpleDateFormat writer = new SimpleDateFormat("yyyy-MM-dd");
+    private DateTimeFormatter reader = DateTimeFormat.forPattern("MMM dd,yyyy");
+    private DateTimeFormatter writer = DateTimeFormat.forPattern("yyyy-MM-dd");
 
     /**
      * Converts the date format (if needed)
@@ -243,13 +244,13 @@ public class PivotalApi {
     private String convertDate(String header, String value) {
         if(DATE_COLUMNS.contains(header)) {
             if(value != null && value.length()>0) {
-                Date dt = null;
+                DateTime dt = null;
                 try {
-                    dt = reader.parse(value);
-                } catch (ParseException e) {
+                    dt = reader.parseDateTime(value);
+                } catch (IllegalArgumentException e) {
                     l.debug("Error parsing PT date value '"+value+"'");
                 }
-                return writer.format(dt);
+                return writer.print(dt);
             }
             else {
                 return "";
@@ -268,8 +269,8 @@ public class PivotalApi {
      * @param snapshotCsv  the output SNAPSHOTs CSV file
      * @throws Exception in case of an IO issue
      */
-    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, String snapshotCsv, Date t) throws IOException {
-        String today = writer.format(t);
+    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, String snapshotCsv, DateTime t) throws IOException {
+        String today = writer.print(t);
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
         String[] row = cr.readNext();
         if(row != null && row.length > 0) {

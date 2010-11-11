@@ -921,7 +921,8 @@ public class GdcDI implements Executor {
             SfdcConnector.createConnector(),
             JdbcConnector.createConnector(),
             PtConnector.createConnector(),    
-            DateDimensionConnector.createConnector()    
+            DateDimensionConnector.createConnector(),
+            SfdcSalesConnector.createConnector2()
         };
     }
     

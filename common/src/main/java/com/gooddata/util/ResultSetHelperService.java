@@ -15,11 +15,14 @@
  */
 package com.gooddata.util;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,8 +90,8 @@ public class ResultSetHelperService implements ResultSetHelper {
         java.sql.Date date = rs.getDate(columnIndex);
         String value = null;
         if (date != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-            value =  dateFormat.format(date);
+            DateTimeFormatter dateFormat = DateTimeFormat.forPattern("dd-MMM-yyyy");
+            value =  dateFormat.print(new DateTime(date));
         }
         return value;
     }
@@ -98,8 +101,8 @@ public class ResultSetHelperService implements ResultSetHelper {
     }
 
     private String handleTimestamp(Timestamp timestamp) {
-        SimpleDateFormat timeFormat = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-        return timestamp == null ? null : timeFormat.format(timestamp);
+        DateTimeFormatter timeFormat = DateTimeFormat.forPattern("dd-MMM-yyyy HH:mm:ss");
+        return timestamp == null ? null : timeFormat.print(new DateTime(timestamp));
     }
 
     private String getColumnValue(ResultSet rs, int colType, int colIndex)

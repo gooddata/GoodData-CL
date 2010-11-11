@@ -25,17 +25,18 @@ package com.gooddata.processor;
 
 import com.gooddata.pivotal.PivotalApi;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class PT {
 
     private static Logger l = Logger.getLogger(PT.class);
 
-    private static SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+    private static DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
 
     public static void main(String[] args) throws Exception {
         String inDirs = "./data";
@@ -50,7 +51,7 @@ public class PT {
             if(csvFile.isDirectory()) {
                 String pd = csvFile.getPath();
                 String processingDir = pd+"/pivotal/";
-                Date dt = fmt.parse(csvFile.getName().split("\\_")[0]);
+                DateTime dt = fmt.parseDateTime(csvFile.getName().split("\\_")[0]);
                 System.err.println("Processing file "+pd+"/pivotal/38292.csv");
                 papi.parse(pd+"/pivotal/38292.csv",
                     processingDir + System.getProperty("file.separator") + "stories.csv",

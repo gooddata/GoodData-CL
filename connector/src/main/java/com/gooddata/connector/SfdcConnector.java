@@ -23,6 +23,7 @@
 
 package com.gooddata.connector;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.axis.message.MessageElement;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
 import com.gooddata.util.CSVWriter;
@@ -101,7 +103,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @return results as List of SObjects
      * @throws SfdcException in case of SFDC communication errors
      */
-    private static List<SObject> executeQuery(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
+    protected static List<SObject> executeQuery(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
         l.debug("Executing SFDC query "+sfdcQuery);
         List<SObject> result = new ArrayList<SObject>();
         QueryOptions qo = new QueryOptions();
@@ -154,7 +156,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @return results as List of SObjects
      * @throws SfdcException in case of SFDC communication errors
      */
-    private static SObject executeQueryFirstRow(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
+    protected static SObject executeQueryFirstRow(SoapBindingStub binding, String sfdcQuery) throws SfdcException {
         l.debug("Executing SFDC query "+sfdcQuery);
         List<SObject> result = new ArrayList<SObject>();
         QueryOptions qo = new QueryOptions();
@@ -202,7 +204,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @return Map of fields
      * @throws RemoteException communication error
      */
-    private static Map<String, Field> describeObject(SoapBindingStub c, String name) throws RemoteException {
+    protected static Map<String, Field> describeObject(SoapBindingStub c, String name) throws RemoteException {
         l.debug("Retrieving SFDC object "+name+" metadata.");
         Map<String,Field> result = new HashMap<String,Field>();
         DescribeSObjectResult describeSObjectResult = c.describeSObject(name);
@@ -266,7 +268,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @param fieldName the field name
      * @return LDM type
      */
-    private static String getColumnType(Map<String,Field> fields, String fieldName) {
+    protected static String getColumnType(Map<String,Field> fields, String fieldName) {
         String type = SourceColumn.LDM_TYPE_ATTRIBUTE;
         Field f = fields.get(fieldName);
         if(f != null) {
@@ -297,7 +299,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
         l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-        String[] header = this.populateCsvHeaderFromSchema();
+        String[] header = this.populateCsvHeaderFromSchema(schema);
 
         // add the extra date headers
         DateColumnsExtender dateExt = new DateColumnsExtender(schema);
@@ -328,7 +330,10 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 for(int i=0; i<vals.length; i++) {
                     vals[i] = cols[i].getValue();
                     if(colTypes[i].equals(SourceColumn.LDM_TYPE_DATE))
-                        vals[i] = vals[i].substring(0,10);
+                        if(vals[i] != null && vals[i].length()>0)
+                            vals[i] = vals[i].substring(0,10);
+                        else
+                            vals[i] = "";
                 }
                 // add the extra date columns
                 vals = dateExt.extendRow(vals);
@@ -345,6 +350,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         }
     }
 
+
     /**
      * Connect the SFDC
      * @param usr SFDC username
@@ -353,7 +359,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @return SFDC stub
      * @throws SfdcException in case of connection issues
      */
-    private static SoapBindingStub connect(String usr, String psw, String token) throws SfdcException {
+    protected static SoapBindingStub connect(String usr, String psw, String token) throws SfdcException {
         SoapBindingStub binding;
         LoginResult loginResult;
         if (token != null) {

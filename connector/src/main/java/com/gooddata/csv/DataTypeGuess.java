@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -40,6 +39,9 @@ import com.gooddata.util.CSVReader;
 
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.util.FileUtil;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * GoodData CSV data type guessing
@@ -48,17 +50,19 @@ import com.gooddata.util.FileUtil;
  * @version 1.0
  */
 public class DataTypeGuess {
-	
-    private static final SimpleDateFormat[] KNOWN_FORMATS = {new SimpleDateFormat("yyyy-MM-dd"), new SimpleDateFormat("MM/dd/yyyy"),
-            new SimpleDateFormat("M/d/yyyy"), new SimpleDateFormat("MM-dd-yyyy"),new SimpleDateFormat("yyyy-M-d"),
-            new SimpleDateFormat("M-d-yyyy")
-    };
-    
+
+    private static final String[] DATE_FORMATS = {"MM/dd/yyyy","M/d/yyyy","MM-dd-yyyy","yyyy-M-d","M-d-yyyy"};
+    private static DateTimeFormatter[] KNOWN_FORMATS;
+
 	private final boolean hasHeader;
 	private String defaultLdmType = null;
 	
 	public DataTypeGuess(boolean hasHeader) {
 		this.hasHeader = hasHeader;
+        KNOWN_FORMATS = new DateTimeFormatter[DATE_FORMATS.length];
+        for(int i=0; i<DATE_FORMATS.length; i++) {
+            KNOWN_FORMATS[i] = DateTimeFormat.forPattern(DATE_FORMATS[i]);
+        }
 	}
 	
 	/**
@@ -104,15 +108,11 @@ public class DataTypeGuess {
      * @return true if the String is date, false otherwise
      */
     public static String getDateFormat(String t) {
-        for(SimpleDateFormat d : KNOWN_FORMATS) {
-            try {
-                Date dt = d.parse(t);
-                if(t.equals(d.format(dt)))
-                    return d.toPattern();
-            }
-            catch (ParseException e) {
-                //NOTHING HERE
-            }
+        for(int i=0; i<KNOWN_FORMATS.length; i++) {
+            DateTimeFormatter d = KNOWN_FORMATS[i];
+            DateTime dt = d.parseDateTime(t);
+            if(t.equals(d.print(dt)))
+                return DATE_FORMATS[i];
         }
         return null;
     }

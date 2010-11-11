@@ -169,7 +169,7 @@ public class GaConnector extends AbstractConnector implements Connector {
 
             CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);
 
-            String[] header = this.populateCsvHeaderFromSchema();
+            String[] header = this.populateCsvHeaderFromSchema(schema);
 
             // add the extra date headers
             final DateColumnsExtender dateExt = new DateColumnsExtender(schema);

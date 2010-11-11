@@ -40,6 +40,7 @@ import com.google.gdata.data.analytics.DataFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,7 +124,7 @@ public class PtConnector extends AbstractConnector implements Connector {
                 dir.getAbsolutePath() + System.getProperty("file.separator") + "stories.csv",
                 dir.getAbsolutePath() + System.getProperty("file.separator") + "labels.csv",
                 dir.getAbsolutePath() + System.getProperty("file.separator") + "labelsToStories.csv",
-                dir.getAbsolutePath() + System.getProperty("file.separator") + "snapshots.csv", new Date());
+                dir.getAbsolutePath() + System.getProperty("file.separator") + "snapshots.csv", new DateTime());
 
         l.info("Pivotal Tracker data successfully downloaded (id: " + id + ") into " + dir.getAbsolutePath());
     }

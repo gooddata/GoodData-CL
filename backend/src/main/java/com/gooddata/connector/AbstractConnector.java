@@ -222,8 +222,7 @@ public abstract class AbstractConnector implements Connector {
         l.info("Data transfer finished.");
     }
 
-    protected String[] populateCsvHeaderFromSchema() {
-        SourceSchema schema = getSchema();
+    protected String[] populateCsvHeaderFromSchema(SourceSchema schema) {
         List<SourceColumn> columns = schema.getColumns();
         String[] header = new String[columns.size()];
         for(int i = 0; i < header.length; i++) {
@@ -370,7 +369,7 @@ public abstract class AbstractConnector implements Connector {
      * Sets the incremental loading status for a part
      * @param cols SLI columns
      */
-    private void setIncremental(List<Column> cols) {
+    protected void setIncremental(List<Column> cols) {
         for(Column col : cols) {
             col.setMode(Column.LM_INCREMENTAL);
         }

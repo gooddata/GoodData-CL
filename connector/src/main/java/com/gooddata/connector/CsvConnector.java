@@ -82,7 +82,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
     public void extract(String dir) throws IOException {
         CSVReader cr = FileUtil.createUtf8CsvReader(this.getDataFile(), this.getSeparator());
         CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(dir + System.getProperty("file.separator") + "data.csv"));
-        String[] header = this.populateCsvHeaderFromSchema();
+        String[] header = this.populateCsvHeaderFromSchema(schema);
         String[] row = cr.readNext();
         if(row.length != header.length) {
             throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
