@@ -7,7 +7,7 @@
       <name>id</name>
       <title>UserId</title>
       <ldmType>CONNECTION_POINT</ldmType>
-      <dataType>IDENTITY</dataType>  
+      <dataType>IDENTITY</dataType>
       <folder>User</folder>
     </column>
     <column>

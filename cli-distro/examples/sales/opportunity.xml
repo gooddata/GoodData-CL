@@ -7,7 +7,7 @@
       <name>id</name>
       <title>OpportunityId</title>
       <ldmType>CONNECTION_POINT</ldmType>
-      <dataType>IDENTITY</dataType>  
+      <dataType>IDENTITY</dataType>
       <folder>Opportunity</folder>
     </column>
     <column>
