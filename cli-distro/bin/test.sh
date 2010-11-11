@@ -69,6 +69,12 @@ bin/gdi.sh examples/forex/cmd.txt
 echo 'Dropping the forex project and snapshots'
 drop "`cat examples/forex/pid`"
 
+echo 'Running salesforce sales demo'
+bin/gdi.sh examples/sales/cmd.txt
+
+echo 'Dropping the salesforce sales project and snapshots'
+drop "`cat examples/sales/pid`"
+
 echo 'Running naming test'
 bin/gdi.sh tests/naming/cmd.txt
 

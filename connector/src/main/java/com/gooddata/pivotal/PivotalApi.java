@@ -163,10 +163,11 @@ public class PivotalApi {
             }
             Header[] cookies = m.getResponseHeaders("Set-Cookie");
             for(int i=0; i < cookies.length; i++) {
+                String value = cookies[i].getValue();
                 if(i==0)
-                    authCookie += cookies[i].getValue();
+                    authCookie += value.split(";")[0];
                 else
-                    authCookie += "; "+cookies[i].getValue();
+                    authCookie += "; "+value.split(";")[0];
             }
             Header l = m.getResponseHeader("Location");
             String location = l.getValue();

@@ -7,10 +7,6 @@ CreateProject(name="PT");
 # Store the project ID to file for possible other scripts
 StoreProject(fileName="examples/pt/pid");
 
-# Download the PT data to 4 CSVs.
-# The resulting CSVs are loaded via the CSV connector
-DownloadPivotalTrackerData(dir="examples/pt", username="pt-username", password="pt-password", projectId="pid");
-
 # Loads time dimension to the project
 UseDateDimension(name="Iteration Start");
 
@@ -20,6 +16,7 @@ GenerateMaql(maqlFile="examples/pt/iteration_start_date.maql");
 # Execute the date dimension MAQL script
 ExecuteMaql(maqlFile="examples/pt/iteration_start_date.maql");
 
+# Loads time dimension to the project
 UseDateDimension(name="Iteration End");
 
 # Generate the MAQL script describing the data model for the date dimension
@@ -28,7 +25,7 @@ GenerateMaql(maqlFile="examples/pt/iteration_end_date.maql");
 # Execute the date dimension MAQL script
 ExecuteMaql(maqlFile="examples/pt/iteration_end_date.maql");
 
-
+# Loads time dimension to the project
 UseDateDimension(name="Deadline");
 
 # Generate the MAQL script describing the data model for the date dimension
@@ -46,54 +43,8 @@ GenerateMaql(maqlFile="examples/pt/snapshot_date.maql");
 # Execute the date dimension MAQL script
 ExecuteMaql(maqlFile="examples/pt/snapshot_date.maql");
 
-# load the STORY data file
-# the data file config has been generated
-UseCsv(csvDataFile="examples/pt/stories.csv",header="true",configFile="examples/pt/stories.xml");
-
-# generate the STORY MAQL
-GenerateMaql(maqlFile="examples/pt/stories.maql");
-
-# execute the STORY MAQL
-ExecuteMaql(maqlFile="examples/pt/stories.maql");
-
-# transfer the STORY data
-TransferData(incremental="true");
-
-# load the LABEL data file
-# the data file config has been generated
-UseCsv(csvDataFile="examples/pt/labels.csv",header="true",configFile="examples/pt/labels.xml");
-
-# generate the LABEL MAQL
-GenerateMaql(maqlFile="examples/pt/labels.maql");
-
-# execute the LABEL MAQL
-ExecuteMaql(maqlFile="examples/pt/labels.maql");
-
-# transfer the LABEL data
-TransferData(incremental="true");
-
-# load the LABEL to STORY data file
-# the data file config has been generated
-UseCsv(csvDataFile="examples/pt/labelsToStories.csv",header="true",configFile="examples/pt/labelsToStories.xml");
-
-# generate the LABEL MAQL
-GenerateMaql(maqlFile="examples/pt/labelsToStories.maql");
-
-# execute the LABEL MAQL
-ExecuteMaql(maqlFile="examples/pt/labelsToStories.maql");
-
-# transfer the LABEL data
-TransferData(incremental="true");
-
-# load the SNAPSHOT data file
-# the data file config has been generated
-UseCsv(csvDataFile="examples/pt/snapshots.csv",header="true",configFile="examples/pt/snapshots.xml");
-
-# generate the SNAPSHOT MAQL
-GenerateMaql(maqlFile="examples/pt/snapshots.maql");
-
-# execute the SNAPSHOT MAQL
-ExecuteMaql(maqlFile="examples/pt/snapshots.maql");
-
-# transfer the SNAPSHOT data
+# Pivotal Tracker Connector
+UsePivotalTracker(username="pt-username", password="pt-password", pivotalProjectId="pt-pid", storyConfigFile="examples/pt/stories.xml", labelConfigFile="examples/pt/labels.xml", labelToStoryConfigFile="examples/pt/labelsToStories.xml", snapshotConfigFile="examples/pt/snapshots.xml");
+GenerateMaql(maqlFile="examples/pt/pt.maql");
+ExecuteMaql(maqlFile="examples/pt/pt.maql");
 TransferData(incremental="true");

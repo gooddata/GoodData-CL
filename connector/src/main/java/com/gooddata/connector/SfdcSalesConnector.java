@@ -114,29 +114,35 @@ public class SfdcSalesConnector extends SfdcConnector {
     /**
      * {@inheritDoc}
      */
-    public Map<String, String> extractAccount(String dir) throws IOException {
+    public Map<String, String> extract(SourceSchema schema, String query, String dir, Map<String, String> accountIds,
+                                 Map<String, String> userIds, Map<String, String> oppIds) throws IOException {
+        l.debug("Extracting SFDC data.");
         Map<String, String> r = new HashMap<String, String>();
-        l.debug("Extracting SFDC accounts.");
+
+        DateTime snapshotDate = new DateTime();
+        String snapshotDateText = Constants.DEFAULT_DATE_FMT.print(snapshotDate);
+        String snapshotMillis = Long.toString(snapshotDate.getMillis());
+
         File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        l.debug("Extracting SFDC accounts to file=" + dataFile.getAbsolutePath());
+        l.debug("Extracting SFDC data to file=" + dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-        String[] header = this.populateCsvHeaderFromSchema(getAccountSchema());
+        String[] header = this.populateCsvHeaderFromSchema(schema);
 
         // add the extra date headers
-        DateColumnsExtender dateExt = new DateColumnsExtender(getAccountSchema());
+        DateColumnsExtender dateExt = new DateColumnsExtender(schema);
         header = dateExt.extendHeader(header);
 
         cw.writeNext(header);
         SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
         List<SObject> result;
         try {
-            result = executeQuery(c, getAccountQuery());
+            result = executeQuery(c, query);
         } catch (SfdcException e) {
-            l.debug("SFDC account query execution failed.", e);
-            throw new InternalErrorException("SFDC account query execution failed: ", e);
+            l.debug("SFDC query execution failed.", e);
+            throw new InternalErrorException("SFDC query execution failed: ", e);
         }
         if (result != null && result.size() > 0) {
-            l.debug("Started retrieving SFDC accounts.");
+            l.debug("Started retrieving SFDC data.");
             SObject firstRow = result.get(0);
             Map<String, Field> fields = describeObject(c, firstRow.getType());
             MessageElement[] frCols = firstRow.get_any();
@@ -153,8 +159,16 @@ public class SfdcSalesConnector extends SfdcConnector {
                 for (int i = 0; i < cols.length; i++) {
                     String val = cols[i].getValue();
                     String nm = frCols[i].getName();
-                    if (nm.equalsIgnoreCase(SFDC_ID_NAME))
+                    if (nm.equalsIgnoreCase(SFDC_ID_NAME)) {
                         id = val;
+                        if(oppIds != null)
+                            val = oppIds.get(val);
+                    }
+                    if (nm.equalsIgnoreCase(SFDC_ACCOUNT_REF_NAME) && accountIds != null)
+                        val = accountIds.get(val);
+                    if (nm.equalsIgnoreCase(SFDC_USER_REF_NAME) && userIds != null)
+                        val = userIds.get(val);
+
                     if (colTypes[i].equals(SourceColumn.LDM_TYPE_DATE)) {
                         if (val != null && val.length() > 0)
                             val = val.substring(0, 10);
@@ -166,15 +180,20 @@ public class SfdcSalesConnector extends SfdcConnector {
                 }
                 String digest = DigestUtils.md5Hex(digestData.toString());
                 r.put(id, digest);
+                // processing final snapshots
+                if(oppIds != null && accountIds != null && userIds != null) {
+                    vals.add(0, snapshotMillis);
+                    vals.add(0, snapshotDateText);
+                }
                 vals.add(0, digest);
                 // add the extra date columns
                 String[] data = dateExt.extendRow(vals.toArray(new String[]{}));
                 cw.writeNext(data);
             }
-            l.debug("Retrieved " + result.size() + " SFDC accounts.");
+            l.debug("Retrieved " + result.size() + " SFDC data.");
             cw.flush();
             cw.close();
-            l.debug("Extracted SFDC accounts.");
+            l.debug("Extracted SFDC date.");
             return r;
         } else {
             l.debug("The SFDC account query hasn't returned any row.");
@@ -185,236 +204,14 @@ public class SfdcSalesConnector extends SfdcConnector {
     /**
      * {@inheritDoc}
      */
-    public Map<String, String> extractUser(String dir) throws IOException {
-        Map<String, String> r = new HashMap<String, String>();
-        l.debug("Extracting SFDC users.");
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        l.debug("Extracting SFDC users to file=" + dataFile.getAbsolutePath());
-        CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-        String[] header = this.populateCsvHeaderFromSchema(getUserSchema());
-
-        // add the extra date headers
-        DateColumnsExtender dateExt = new DateColumnsExtender(getUserSchema());
-        header = dateExt.extendHeader(header);
-
-        cw.writeNext(header);
-        SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
-        List<SObject> result;
-        try {
-            result = executeQuery(c, getUserQuery());
-        } catch (SfdcException e) {
-            l.debug("SFDC user query execution failed.", e);
-            throw new InternalErrorException("SFDC user query execution failed: ", e);
-        }
-        if (result != null && result.size() > 0) {
-            l.debug("Started retrieving SFDC users.");
-            SObject firstRow = result.get(0);
-            Map<String, Field> fields = describeObject(c, firstRow.getType());
-            MessageElement[] frCols = firstRow.get_any();
-            String[] colTypes = new String[frCols.length];
-            for (int i = 0; i < frCols.length; i++) {
-                String nm = frCols[i].getName();
-                colTypes[i] = getColumnType(fields, nm);
-            }
-            for (SObject row : result) {
-                MessageElement[] cols = row.get_any();
-                List<String> vals = new ArrayList<String>();
-                StringBuffer digestData = new StringBuffer();
-                String id = "";
-                for (int i = 0; i < cols.length; i++) {
-                    String val = cols[i].getValue();
-                    String nm = frCols[i].getName();
-                    if (nm.equalsIgnoreCase(SFDC_ID_NAME))
-                        id = val;
-                    if (colTypes[i].equals(SourceColumn.LDM_TYPE_DATE)) {
-                        if (val != null && val.length() > 0)
-                            val = val.substring(0, 10);
-                        else
-                            val = "";
-                    }
-                    vals.add(val);
-                    digestData.append(val);
-                }
-                String digest = DigestUtils.md5Hex(digestData.toString());
-                r.put(id, digest);
-                vals.add(0, digest);
-                // add the extra date columns
-                String[] data = dateExt.extendRow(vals.toArray(new String[]{}));
-                cw.writeNext(data);
-            }
-            l.debug("Retrieved " + result.size() + " SFDC users.");
-            cw.flush();
-            cw.close();
-            l.debug("Extracted SFDC users.");
-            return r;
-        } else {
-            l.debug("The SFDC user query hasn't returned any row.");
-            throw new SfdcException("The SFDC user query hasn't returned any row.");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Map<String, String> extractOpportunities(String dir) throws IOException {
-        l.debug("Extracting SFDC opportunities.");
-        Map<String, String> r = new HashMap<String, String>();
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        l.debug("Extracting SFDC opportunities to file=" + dataFile.getAbsolutePath());
-        CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-        String[] header = this.populateCsvHeaderFromSchema(getOppSchema());
-
-        // add the extra date headers
-        DateColumnsExtender dateExt = new DateColumnsExtender(getOppSchema());
-        header = dateExt.extendHeader(header);
-
-        cw.writeNext(header);
-        SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
-        List<SObject> result;
-        try {
-            result = executeQuery(c, getOppQuery());
-        } catch (SfdcException e) {
-            l.debug("SFDC opportunity query execution failed.", e);
-            throw new InternalErrorException("SFDC opportunity query execution failed: ", e);
-        }
-        if (result != null && result.size() > 0) {
-            l.debug("Started retrieving SFDC opportunities.");
-            SObject firstRow = result.get(0);
-            Map<String, Field> fields = describeObject(c, firstRow.getType());
-            MessageElement[] frCols = firstRow.get_any();
-            String[] colTypes = new String[frCols.length];
-            for (int i = 0; i < frCols.length; i++) {
-                String nm = frCols[i].getName();
-                colTypes[i] = getColumnType(fields, nm);
-            }
-            for (SObject row : result) {
-                MessageElement[] cols = row.get_any();
-                List<String> vals = new ArrayList<String>();
-                StringBuffer digestData = new StringBuffer();
-                String id = "";
-                for (int i = 0; i < cols.length; i++) {
-                    String val = cols[i].getValue();
-                    String nm = frCols[i].getName();
-                    if (nm.equalsIgnoreCase(SFDC_ID_NAME))
-                        id = val;
-                    if (colTypes[i].equals(SourceColumn.LDM_TYPE_DATE)) {
-                        if (val != null && val.length() > 0)
-                            val = val.substring(0, 10);
-                        else
-                            val = "";
-                    }
-                    vals.add(val);
-                    digestData.append(val);
-                }
-                String digest = DigestUtils.md5Hex(digestData.toString());
-                r.put(id, digest);
-                vals.add(0, digest);
-                // add the extra date columns
-                String[] data = dateExt.extendRow(vals.toArray(new String[]{}));
-                cw.writeNext(data);
-            }
-            l.debug("Retrieved " + result.size() + " SFDC opportunities.");
-            cw.flush();
-            cw.close();
-            l.debug("Extracted SFDC opportunities.");
-            return r;
-        } else {
-            l.debug("The SFDC opportunity query hasn't returned any row.");
-            throw new SfdcException("The SFDC opportunity query hasn't returned any row.");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void extractSnapshots(String dir, Map<String, String> accountIds,
-                                 Map<String, String> userIds, Map<String, String> oppIds) throws IOException {
-        l.debug("Extracting SFDC opportunities.");
-        DateTime snapshotDate = new DateTime();
-        String snapshotDateText = Constants.DEFAULT_DATE_FMT.print(snapshotDate);
-        String snapshotMillis = Long.toString(snapshotDate.getMillis());
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        l.debug("Extracting SFDC opportunities to file=" + dataFile.getAbsolutePath());
-        CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-        String[] header = this.populateCsvHeaderFromSchema(getSnapshotSchema());
-
-        // add the extra date headers
-        DateColumnsExtender dateExt = new DateColumnsExtender(getSnapshotSchema());
-        header = dateExt.extendHeader(header);
-
-        cw.writeNext(header);
-        SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
-        List<SObject> result;
-        try {
-            result = executeQuery(c, getSnapshotQuery());
-        } catch (SfdcException e) {
-            l.debug("SFDC opportunity query execution failed.", e);
-            throw new InternalErrorException("SFDC opportunity query execution failed: ", e);
-        }
-        if (result != null && result.size() > 0) {
-            l.debug("Started retrieving SFDC opportunities.");
-            SObject firstRow = result.get(0);
-            Map<String, Field> fields = describeObject(c, firstRow.getType());
-            MessageElement[] frCols = firstRow.get_any();
-            String[] colTypes = new String[frCols.length];
-            for (int i = 0; i < frCols.length; i++) {
-                String nm = frCols[i].getName();
-                colTypes[i] = getColumnType(fields, nm);
-            }
-            for (SObject row : result) {
-                MessageElement[] cols = row.get_any();
-                List<String> vals = new ArrayList<String>();
-                StringBuffer digestData = new StringBuffer();
-                String id = "";
-                for (int i = 0; i < cols.length; i++) {
-                    String val = cols[i].getValue();
-                    String nm = frCols[i].getName();
-                    if (nm.equalsIgnoreCase(SFDC_ID_NAME))
-                        val = oppIds.get(val);
-                    if (nm.equalsIgnoreCase(SFDC_ACCOUNT_REF_NAME))
-                        val = accountIds.get(val);
-                    if (nm.equalsIgnoreCase(SFDC_USER_REF_NAME))
-                        val = userIds.get(val);
-                    if (colTypes[i].equals(SourceColumn.LDM_TYPE_DATE)) {
-                        if (val != null && val.length() > 0)
-                            val = val.substring(0, 10);
-                        else
-                            val = "";
-                    }
-                    vals.add(val);
-                    digestData.append(val);
-                }
-                String digest = DigestUtils.md5Hex(digestData.toString());
-                vals.add(0, snapshotMillis);
-                vals.add(0, snapshotDateText);
-                vals.add(0, digest);
-                // add the extra date columns
-                String[] data = dateExt.extendRow(vals.toArray(new String[]{}));
-                cw.writeNext(data);
-            }
-            l.debug("Retrieved " + result.size() + " SFDC opportunities.");
-            cw.flush();
-            cw.close();
-            l.debug("Extracted SFDC opportunities.");
-        } else {
-            l.debug("The SFDC opportunity query hasn't returned any row.");
-            throw new SfdcException("The SFDC opportunity query hasn't returned any row.");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void extract(String dir) throws IOException {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
-    	throws IOException, InterruptedException {
-        l.debug("Extracting data.");
-
+    private Map<String,String> transfer(SourceSchema schema, String query,
+                          Command c, String pid, boolean waitForFinish, CliParams p, ProcessingContext ctx,
+                          Map<String, String> accountIds, Map<String, String> userIds, Map<String, String> oppIds
+                        ) throws IOException, InterruptedException {
+        Map<String,String> r = null;
         File tmpDir = FileUtil.createTempDir();
         File tmpZipDir = FileUtil.createTempDir();
         String archiveName = tmpDir.getName();
@@ -423,10 +220,10 @@ public class SfdcSalesConnector extends SfdcConnector {
             archiveName + ".zip";
 
         // get information about the data loading package
-        String ssn = StringUtil.toIdentifier(getAccountSchema().getName());
+        String ssn = StringUtil.toIdentifier(schema.getName());
         SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
         List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
-        List<Column> columns = populateColumnsFromSchema(getAccountSchema());
+        List<Column> columns = populateColumnsFromSchema(schema);
         if(sliColumns.size() > columns.size())
             throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");
         String incremental = c.getParam("incremental");
@@ -437,7 +234,7 @@ public class SfdcSalesConnector extends SfdcConnector {
         }
 
         // extract the data to the CSV that is going to be transferred to the server
-        Map accountIds = extractAccount(tmpDir.getAbsolutePath());
+        r = extract(schema, query, tmpDir.getAbsolutePath(), accountIds, userIds, oppIds);
         this.deploy(sli, columns, tmpDir.getAbsolutePath(), archivePath);
         // transfer the data package to the GoodData server
         ctx.getFtpApi(p).transferDir(archivePath);
@@ -451,117 +248,26 @@ public class SfdcSalesConnector extends SfdcConnector {
         FileUtil.recursiveDelete(tmpDir);
         FileUtil.recursiveDelete(tmpZipDir);
         MDC.remove("GdcDataPackageDir");
+        return r;
+    }
 
-        tmpDir = FileUtil.createTempDir();
-        tmpZipDir = FileUtil.createTempDir();
-        archiveName = tmpDir.getName();
-        MDC.put("GdcDataPackageDir",archiveName);
-        archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
-            archiveName + ".zip";
+    /**
+     * {@inheritDoc}
+     */
+    public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
+    	throws IOException, InterruptedException {
+        l.debug("Extracting data.");
 
-        // get information about the data loading package
-        ssn = StringUtil.toIdentifier(getUserSchema().getName());
-        sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
-        sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
-        columns = populateColumnsFromSchema(getUserSchema());
-        if(sliColumns.size() > columns.size())
-            throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");
-        incremental = c.getParam("incremental");
-        if(incremental != null && incremental.length() > 0 &&
-                incremental.equalsIgnoreCase("true")) {
-            l.debug("Using incremental mode.");
-            setIncremental(columns);
-        }
+        Map<String,String> accountIds = transfer(getAccountSchema(), getAccountQuery(), c, pid, waitForFinish, p, ctx,
+                null, null, null);
+        Map<String,String> userIds = transfer(getUserSchema(), getUserQuery(), c, pid, waitForFinish, p, ctx,
+                null, null, null);
 
-        // extract the data to the CSV that is going to be transferred to the server
-        Map userIds = extractUser(tmpDir.getAbsolutePath());
-        this.deploy(sli, columns, tmpDir.getAbsolutePath(), archivePath);
-        // transfer the data package to the GoodData server
-        ctx.getFtpApi(p).transferDir(archivePath);
-        // kick the GooDData server to load the data package to the project
-        taskUri = ctx.getRestApi(p).startLoading(pid, archiveName);
-        if(waitForFinish) {
-            checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
-        }
-        //cleanup
-        l.debug("Cleaning the temporary files.");
-        FileUtil.recursiveDelete(tmpDir);
-        FileUtil.recursiveDelete(tmpZipDir);
-        MDC.remove("GdcDataPackageDir");
+        Map<String,String> oppIds = transfer(getOppSchema(), getOppQuery(), c, pid, waitForFinish, p, ctx,
+                null, null, null);
 
-        tmpDir = FileUtil.createTempDir();
-        tmpZipDir = FileUtil.createTempDir();
-        archiveName = tmpDir.getName();
-        MDC.put("GdcDataPackageDir",archiveName);
-        archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
-            archiveName + ".zip";
-
-        // get information about the data loading package
-        ssn = StringUtil.toIdentifier(getOppSchema().getName());
-        sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
-        sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
-        columns = populateColumnsFromSchema(getOppSchema());
-        if(sliColumns.size() > columns.size())
-            throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");
-        incremental = c.getParam("incremental");
-        if(incremental != null && incremental.length() > 0 &&
-                incremental.equalsIgnoreCase("true")) {
-            l.debug("Using incremental mode.");
-            setIncremental(columns);
-        }
-
-        // extract the data to the CSV that is going to be transferred to the server
-        Map oppIds = extractOpportunities(tmpDir.getAbsolutePath());
-        this.deploy(sli, columns, tmpDir.getAbsolutePath(), archivePath);
-        // transfer the data package to the GoodData server
-        ctx.getFtpApi(p).transferDir(archivePath);
-        // kick the GooDData server to load the data package to the project
-        taskUri = ctx.getRestApi(p).startLoading(pid, archiveName);
-        if(waitForFinish) {
-            checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
-        }
-        //cleanup
-        l.debug("Cleaning the temporary files.");
-        FileUtil.recursiveDelete(tmpDir);
-        FileUtil.recursiveDelete(tmpZipDir);
-        MDC.remove("GdcDataPackageDir");
-
-        tmpDir = FileUtil.createTempDir();
-        tmpZipDir = FileUtil.createTempDir();
-        archiveName = tmpDir.getName();
-        MDC.put("GdcDataPackageDir",archiveName);
-        archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
-            archiveName + ".zip";
-
-        // get information about the data loading package
-        ssn = StringUtil.toIdentifier(getSnapshotSchema().getName());
-        sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
-        sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
-        columns = populateColumnsFromSchema(getSnapshotSchema());
-        if(sliColumns.size() > columns.size())
-            throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");
-        incremental = c.getParam("incremental");
-        if(incremental != null && incremental.length() > 0 &&
-                incremental.equalsIgnoreCase("true")) {
-            l.debug("Using incremental mode.");
-            setIncremental(columns);
-        }
-
-        // extract the data to the CSV that is going to be transferred to the server
-        extractSnapshots(tmpDir.getAbsolutePath(), accountIds, userIds, oppIds);
-        this.deploy(sli, columns, tmpDir.getAbsolutePath(), archivePath);
-        // transfer the data package to the GoodData server
-        ctx.getFtpApi(p).transferDir(archivePath);
-        // kick the GooDData server to load the data package to the project
-        taskUri = ctx.getRestApi(p).startLoading(pid, archiveName);
-        if(waitForFinish) {
-            checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
-        }
-        //cleanup
-        l.debug("Cleaning the temporary files.");
-        FileUtil.recursiveDelete(tmpDir);
-        FileUtil.recursiveDelete(tmpZipDir);
-        MDC.remove("GdcDataPackageDir");
+        Map<String,String> snapIds = transfer(getSnapshotSchema(), getSnapshotQuery(), c, pid, waitForFinish, p, ctx,
+                accountIds, userIds, oppIds);
 
         l.debug("Data extract finished.");
     }

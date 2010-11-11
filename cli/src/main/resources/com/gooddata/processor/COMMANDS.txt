@@ -158,7 +158,7 @@ SalesForce Connector Commands:
 
  GenerateSfdcConfig(name=<name>, configFile=<config>, query=<soql-query>, username=<sfdc-username>, password=<sfdc-password>, token=<sfdc-security-token>)  - generate an XML config file based on the fields from your SFDC query.
   name - the new dataset name
-  configFile  - path to configuration file (will be overwritten)
+  configFile  - path to configuration file
   query - SOQL query (e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
   username - SFDC username
   password - SFDC password
@@ -171,14 +171,34 @@ SalesForce Connector Commands:
   password - SFDC password
   token - SFDC security token (you may append the security token to the password instead using this parameter)
 
+SalesForce Sales Connector Commands:
+------------------------------------
+
+ UseSfdcSales(username=<sfdc-username>, password=<sfdc-password>, token=<sfdc-security-token>, accountQuery=<account-query>, userQuery=<user-query>, opportunityQuery=<opportunity-query>, snapshotQuery=<snapshot-query>, accountConfigFile=<account-config>, userConfigFile=<user-config>, opportunityConfigFile=<opportunity-config>, snapshotConfigFile=<snapshot-config>)  - load SalesForce sales data, must call CreateProject or OpenProject before
+  username - SFDC username
+  password - SFDC password
+  token - SFDC security token (you may append the security token to the password instead using this parameter)
+  accountQuery - Account SOQL query (must contain Id, e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
+  userQuery - Account SOQL query (must contain Id, e.g. "SELECT Id, Name FROM User"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
+  opportunityQuery - Opportunity SOQL query (must contain Id, e.g. "SELECT Id, Name FROM Opportunity"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
+  snapshotQuery - Opportunity snapshot SOQL query (must contain Id, AccountId, and OwnerId, e.g. "SELECT Id, AccountId, OwnerId, Name FROM Opportunity"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
+  accountConfigFile - Account XML schema config file
+  userConfigFile - User XML schema config file
+  opportunityConfigFile - Opportunity XML schema config file
+  snapshotConfigFile - Opportunity snapshot XML schema config file
+
+
 Pivotal Tracker Connector Commands:
 ------------------------------
 
- DownloadPivotalTrackerData(dir=<dir>, username=<pt-username>, password=<pt-password>, projectId=<pt-project-id>) - downloads and transforms the PT data. The resulting CSVs must be loaded via the CSV connector.
-  dir - target directory where the CSV files are going to be stored
+ UsePivotalTracker(username=<pt-username>, password=<pt-password>, pivotalProjectId=<pt-project-id>, storyConfigFile=<story-config>, labelConfigFile=<label-config>, labelToStoryConfigFile=<label-to-story-config>, snapshotConfigFile=<snapshot-config>) - downloads and transforms the PT data.
   username - PT username
   password - PT password
-  projectId - PT project ID (integer)
+  pivotalProjectId - PT project ID (integer)
+  storyConfigFile - PT stories XML schema config
+  labelConfigFile - PT labels XML schema config
+  labelToStoryConfigFile - PT labels to stories XML schema config
+  snapshotConfigFile - PT snapshots XML schema config 
 
 Time Dimension Connector Commands:
 ----------------------------------

@@ -51,7 +51,8 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public class DataTypeGuess {
 
-    private static final String[] DATE_FORMATS = {"MM/dd/yyyy","M/d/yyyy","MM-dd-yyyy","yyyy-M-d","M-d-yyyy"};
+    private static final String[] DATE_FORMATS = {"yyyy-MM-dd", "MM/dd/yyyy","M/d/yyyy","MM-dd-yyyy",
+            "yyyy-M-d","M-d-yyyy"};
     private static DateTimeFormatter[] KNOWN_FORMATS;
 
 	private final boolean hasHeader;
@@ -110,9 +111,14 @@ public class DataTypeGuess {
     public static String getDateFormat(String t) {
         for(int i=0; i<KNOWN_FORMATS.length; i++) {
             DateTimeFormatter d = KNOWN_FORMATS[i];
-            DateTime dt = d.parseDateTime(t);
-            if(t.equals(d.print(dt)))
-                return DATE_FORMATS[i];
+            try {
+                DateTime dt = d.parseDateTime(t);
+                if(t.equals(d.print(dt)))
+                    return DATE_FORMATS[i];
+            }
+            catch(IllegalArgumentException e) {
+                // do nothing    
+            }
         }
         return null;
     }

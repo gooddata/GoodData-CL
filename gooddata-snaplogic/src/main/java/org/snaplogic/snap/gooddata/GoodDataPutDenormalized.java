@@ -405,7 +405,7 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 				// One file - exactly what's expected
 				// Setup backend
 				//DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
-				//derbyConnectorBackend.setProjectId(projectId);
+				//derbyConnectorBackend.setPivotalProjectId(projectId);
 				//derbyConnectorBackend.setPdm(PdmSchema.createSchema(sourceSchema));
 
 				// setup CSV connector

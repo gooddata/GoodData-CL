@@ -853,7 +853,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 				// TODO Replace the Derby backend with stream backend
 				// Initialize embedded DB backend
 				//DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
-				//derbyConnectorBackend.setProjectId(projectId);
+				//derbyConnectorBackend.setPivotalProjectId(projectId);
 				//derbyConnectorBackend.setPdm(pdm);
 				// Setup CSV connector that will be used for reading the data
 				//CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
