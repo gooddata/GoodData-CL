@@ -52,6 +52,10 @@ If unsure, please consult your database administrator or the following list of c
     - driver: `net.sourceforge.jtds.jdbc.Driver`
     - sample url: jdbc:jtds:sqlserver://localhost:1433/AdventureWorks
 
+**Tip:** If you're retrieving date fields from MySQL and some of them could be empty, use the `zeroDateTimeBehavior` parameter in the JDBC URL. (This is specific to MySQL.)
+
+    jdbc:mysql://<host>/<database>?zeroDateTimeBehavior=convertToNull
+
 ### Define your data set
 
 The JDBC data set is a result of an SQL `SELECT` statement. Test this statement gainst your database and put it to the `query` parameter of the `LoadJdbc` command. Don't forget to specify your database credentials using the `username` and `password` parameters of the `LoadJdbc` file.
