@@ -35,6 +35,7 @@ import org.snaplogic.snapi.Snapi;
 import org.snaplogic.snapi.PropertyConstraint.Type;
 import org.snaplogic.util.ConvertUtils;
 
+import com.gooddata.connector.CsvConnector;
 import com.gooddata.connector.DateDimensionConnector;
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.GdcRestApiException;
@@ -846,31 +847,16 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 				ss.addColumn(column);
 			}
 
-            /*
-			try {
-				// PdmSchema is a representation of SourceSchema in the ConnectorBackend
-				//PdmSchema pdm = PdmSchema.createSchema(ss);
-				// TODO Replace the Derby backend with stream backend
-				// Initialize embedded DB backend
-				//DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
-				//derbyConnectorBackend.setPivotalProjectId(projectId);
-				//derbyConnectorBackend.setPdm(pdm);
-				// Setup CSV connector that will be used for reading the data
-				//CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
-				//csvConnector.setSchema(ss);
-				//csvConnector.initialize();
-				// Generate MAQL for Source Schema
-				//String maql = csvConnector.generateMaqlCreate();
-				// Execute the MAQL (creates SLI)
-				info("Going to create a new SLI " + dliName + " in project " + projectName);
-				//restApi.executeMAQL(projectId, maql);
-				info("SLI " + dliName + " created");
-				// We are done here, project is set up in GoodData
-			} catch (IOException e) {
-				elog(e);
-				throw new SnapComponentException(e);
-			}
-			*/
+			// Setup CSV connector that will be used for reading the data
+			CsvConnector csvConnector = CsvConnector.createConnector();
+			csvConnector.setSchema(ss);
+			// Generate MAQL for Source Schema
+			String maql = csvConnector.generateMaqlCreate();
+			// Execute the MAQL (creates SLI)
+			info("Going to create a new SLI " + dliName + " in project " + projectName);
+			restApi.executeMAQL(projectId, maql);
+			info("SLI " + dliName + " created");
+			// We are done here, project is set up in GoodData
 
 			info("Parsing output view of the source component...");
 			String gdInput = enrichWithServerUrl(getStringPropertyValue(PROP_GD_INPUT));
