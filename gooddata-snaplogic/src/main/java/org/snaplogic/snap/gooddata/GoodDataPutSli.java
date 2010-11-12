@@ -56,6 +56,7 @@ import org.snaplogic.snapi.ResDef;
 import org.snaplogic.snapi.PropertyConstraint.Type;
 import org.snaplogic.util.ConvertUtils;
 
+import com.gooddata.connector.CsvConnector;
 import com.gooddata.exception.GdcProjectAccessException;
 import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.exception.GdcUploadErrorException;
@@ -68,7 +69,7 @@ import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 
-public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
+public class GoodDataPutSli extends AbstractGoodDataComponent {
 
 	private static final String ALL_SNAPSHOTS = "All Snapshots";
 	private static final String LAST_SNAPSHOT = "Last Snapshot";
@@ -403,33 +404,25 @@ public class GoodDataPutDenormalized extends AbstractGoodDataComponent {
 
 			if (stagedCSVs.size() == 1) {
 				// One file - exactly what's expected
-				// Setup backend
-				//DerbyConnectorBackend derbyConnectorBackend = DerbyConnectorBackend.create();
-				//derbyConnectorBackend.setPivotalProjectId(projectId);
-				//derbyConnectorBackend.setPdm(PdmSchema.createSchema(sourceSchema));
-
-				// setup CSV connector
-				//CsvConnector csvConnector = CsvConnector.createConnector(derbyConnectorBackend);
-				//csvConnector.setSchema(sourceSchema);
-				//csvConnector.initialize();
-				//csvConnector.setHasHeader(false);
-				//csvConnector.setDataFile(stagedCSVs.entrySet().iterator().next().getValue());
+				// setup CSV connector				
+				CsvConnector csvConnector = CsvConnector.createConnector();
+				csvConnector.setSchema(sourceSchema);
+				csvConnector.setDataFile(stagedCSVs.entrySet().iterator().next().getValue());
 
 				// Setup processing context
 				ProcessingContext context = new ProcessingContext();
-				//context.setConnector(csvConnector);
-				//context.setConnectorBackend(derbyConnectorBackend);
+				context.setConnector(csvConnector);
 				context.setProjectId(projectId);
 								
 				// Finally, do the job
 				if (transferSnapshots.equals(LAST_SNAPSHOT)) {
 					Command cmd = new Command("TransferLastSnapshot");
 					cmd.setParameters(props);
-					//csvConnector.processCommand(cmd, cliParams, context);
+					csvConnector.processCommand(cmd, cliParams, context);
 				} else if (transferSnapshots.equals(ALL_SNAPSHOTS)) {
 					Command cmd = new Command("TransferAllSnapshots");
 					cmd.setParameters(props);
-					//csvConnector.processCommand(cmd, cliParams, context);
+					csvConnector.processCommand(cmd, cliParams, context);
 				}
 				
 			} else {

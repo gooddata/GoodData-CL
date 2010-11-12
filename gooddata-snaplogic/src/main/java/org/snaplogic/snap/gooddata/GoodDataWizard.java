@@ -885,14 +885,14 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			String componentName = getStringPropertyValue(PROP_GD_COMP_NAME);
 			String gdPutUri = gdUriPrefix + "/" + componentName;
 			info("Creating new GoodDataPutDelimited component '" + componentName + "'. Its URI will be " + gdPutUri);
-			ResDef putResDef = snapi.createResourceObject(serverUri, GoodDataPutDenormalized.class.getName(), null);
+			ResDef putResDef = snapi.createResourceObject(serverUri, GoodDataPutSli.class.getName(), null);
 			putResDef.setResourceRef(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF, gdConnUri);
-			putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_NAME, projectName);
-			putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_PROJECT_ID, projectId);
-			putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_DLI, dliName);
+			putResDef.setPropertyValue(GoodDataPutSli.PROP_PROJECT_NAME, projectName);
+			putResDef.setPropertyValue(GoodDataPutSli.PROP_PROJECT_ID, projectId);
+			putResDef.setPropertyValue(GoodDataPutSli.PROP_DLI, dliName);
 			try {
 				// since the component will need the Source Schema, we need to serialize it into the string and save it
-				putResDef.setPropertyValue(GoodDataPutDenormalized.PROP_SOURCE_SCHEMA, ss.getConfig());
+				putResDef.setPropertyValue(GoodDataPutSli.PROP_SOURCE_SCHEMA, ss.getConfig());
 			} catch (IOException e) {
 				elog(e);
 				throw new SnapComponentException(e);
