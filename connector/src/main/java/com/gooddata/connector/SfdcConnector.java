@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -291,6 +292,8 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         return type;
     }
 
+    protected DecimalFormat nf = new DecimalFormat("###.00");
+
     /**
      * {@inheritDoc}
      */
@@ -329,11 +332,26 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 String[] vals = new String[cols.length];
                 for(int i=0; i<vals.length; i++) {
                     vals[i] = cols[i].getValue();
-                    if(colTypes[i].equals(SourceColumn.LDM_TYPE_DATE))
+                    if(colTypes[i].equals(SourceColumn.LDM_TYPE_DATE)) {
                         if(vals[i] != null && vals[i].length()>0)
                             vals[i] = vals[i].substring(0,10);
                         else
                             vals[i] = "";
+                    }
+                    else if(colTypes[i].equals(SourceColumn.LDM_TYPE_FACT)) {
+                        if(vals[i] != null && vals[i].length()>0) {
+                            try {
+                                double d = Double.parseDouble(vals[i]);
+                                vals[i] = nf.format(d);
+                            }
+                            catch (NumberFormatException e) {
+                                vals[i] = "";
+                            }
+                        }
+                        else {
+                            vals[i] = "";
+                        }
+                    }
                 }
                 // add the extra date columns
                 vals = dateExt.extendRow(vals);

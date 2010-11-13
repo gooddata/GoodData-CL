@@ -175,6 +175,20 @@ public class SfdcSalesConnector extends SfdcConnector {
                         else
                             val = "";
                     }
+                    else if(colTypes[i].equals(SourceColumn.LDM_TYPE_FACT)) {
+                        if(val != null && val.length()>0) {
+                            try {
+                                double d = Double.parseDouble(val);
+                                val = nf.format(d);
+                            }
+                            catch (NumberFormatException e) {
+                                val = "";
+                            }
+                        }
+                        else {
+                            val = "";
+                        }
+                    }
                     vals.add(val);
                     digestData.append(val);
                 }

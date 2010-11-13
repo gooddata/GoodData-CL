@@ -163,30 +163,32 @@ public class DataTypeGuess {
 
         if (defaultLdmType == null) {
 	        String[] row = cr.readNext();
-	        for(int i=0; i < row.length; i++) {
-	            HashSet<String> allTypes = new HashSet<String>();
-	            excludedColumnTypes.add(allTypes);
-	        }
-	        int countdown = 1000;
-	        while(row != null && countdown-- >0) {
-	            for(int i=0; i< row.length; i++) {
-                    if(i >= excludedColumnTypes.size())
-                        throw new InvalidParameterException("The CSV file contains rows with different number of columns." +
-                                " Quitting.");
-	                Set<String> types = excludedColumnTypes.get(i);
-	                String value = row[i];
-	                String dateFormat = getDateFormat(value);
-	                if(dateFormat == null) {
-	                    types.add(SourceColumn.LDM_TYPE_DATE);
-	                } else {
-	                	dateFormats[i] = dateFormat;
-	                }
-	                if(!isDecimal(value)) {
-	                    types.add(SourceColumn.LDM_TYPE_FACT);
-	                }
-	            }
-	            row = cr.readNext();
-	        }
+            if(row != null) {
+                for(int i=0; i < row.length; i++) {
+                    HashSet<String> allTypes = new HashSet<String>();
+                    excludedColumnTypes.add(allTypes);
+                }
+                int countdown = 1000;
+                while(row != null && countdown-- >0) {
+                    for(int i=0; i< row.length; i++) {
+                        if(i >= excludedColumnTypes.size())
+                            throw new InvalidParameterException("The CSV file contains rows with different number of columns." +
+                                    " Quitting.");
+                        Set<String> types = excludedColumnTypes.get(i);
+                        String value = row[i];
+                        String dateFormat = getDateFormat(value);
+                        if(dateFormat == null) {
+                            types.add(SourceColumn.LDM_TYPE_DATE);
+                        } else {
+                            dateFormats[i] = dateFormat;
+                        }
+                        if(!isDecimal(value)) {
+                            types.add(SourceColumn.LDM_TYPE_FACT);
+                        }
+                    }
+                    row = cr.readNext();
+                }
+            }
         }
         
         final int columns = (header == null) ? excludedColumnTypes.size() : header.length;
@@ -196,16 +198,18 @@ public class DataTypeGuess {
             if (defaultLdmType != null)
             	ldmType = defaultLdmType;
         	else {
-                if(i >= excludedColumnTypes.size())
-                        throw new InvalidParameterException("The CSV file contains rows with different number of columns." +
-                                " Quitting.");
-        		final Set<String> excludedColumnType = excludedColumnTypes.get(i);
-        		if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_DATE))
-	            	ldmType = SourceColumn.LDM_TYPE_DATE;
-	            else if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_FACT))
-	            	ldmType = SourceColumn.LDM_TYPE_FACT;
-	            else
-	            	ldmType = SourceColumn.LDM_TYPE_ATTRIBUTE;
+                if(i >= excludedColumnTypes.size()) {
+                    ldmType = SourceColumn.LDM_TYPE_ATTRIBUTE;
+                }
+                else {
+                    final Set<String> excludedColumnType = excludedColumnTypes.get(i);
+                    if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_DATE))
+                        ldmType = SourceColumn.LDM_TYPE_DATE;
+                    else if(!excludedColumnType.contains(SourceColumn.LDM_TYPE_FACT))
+                        ldmType = SourceColumn.LDM_TYPE_FACT;
+                    else
+                        ldmType = SourceColumn.LDM_TYPE_ATTRIBUTE;
+                }
         	}
 
             ret[i] = new SourceColumn(null, ldmType, null);
