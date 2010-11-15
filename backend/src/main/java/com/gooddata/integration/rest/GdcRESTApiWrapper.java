@@ -78,6 +78,8 @@ public class GdcRESTApiWrapper {
     public static final String EXECUTOR = "/gdc/xtab2/executor3";
     public static final String INVITATION_URI = "/invitations";
     public static final String OBJ_URI = "/obj";
+    public static final String VARIABLES_SEARCH_URI = "/variables/search";
+    public static final String VARIABLES_CREATE_URI = "/variables/item";
 
     public static final String OBJ_TYPE_FILTER = "filtres";
     public static final String OBJ_TYPE_METRIC = "metrics";
@@ -416,6 +418,39 @@ public class GdcRESTApiWrapper {
         return list;
     }
 
+ /**
+     * Retrieves the SLI column data type
+     *
+     * @param projectId projectId
+     * @param sliColumnIdentifier SLI column identifier (name in the SLI manifest)
+     * @return the SLI column datatype
+     */
+    public String getSLIColumnDataType(String projectId, String sliColumnIdentifier)  {
+        l.debug("Retrieveing SLI column datatype projectId="+projectId+" SLI column name="+sliColumnIdentifier);
+        MetadataObject o = getMetadataObject(projectId, sliColumnIdentifier);
+        if(o!=null) {
+            JSONObject c = o.getContent();
+            if(c != null) {
+                String type = c.getString("columnType");
+                if(type != null && type.length() > 0) {
+                    return type;
+                }
+                else {
+                    l.debug("Error Retrieveing SLI column datatype projectId="+projectId+" SLI column name="+sliColumnIdentifier+" No columnType key in the content.");
+                    throw new GdcRestApiException("Error Retrieveing SLI column datatype projectId="+projectId+" SLI column name="+sliColumnIdentifier+" No columnType key in the content.");
+                }
+            }
+            else {
+                l.debug("Error Retrieveing SLI column datatype projectId="+projectId+" SLI column name="+sliColumnIdentifier+" No content structure.");
+                throw new GdcRestApiException("Error Retrieveing SLI column datatype projectId="+projectId+" SLI column name="+sliColumnIdentifier+" No content structure.");
+            }
+        }
+        else {
+            l.debug("Error Retrieveing SLI column datatype projectId="+projectId+" SLI column name="+sliColumnIdentifier+" MD object doesn't exist.");
+            throw new GdcRestApiException("Error Retrieveing SLI column datatype projectId="+projectId+" SLI column name="+sliColumnIdentifier+" MD object doesn't exist.");
+        }
+    }
+
     /**
      * Retrieves the SLI columns
      *
@@ -686,105 +721,6 @@ public class GdcRESTApiWrapper {
         }
         l.debug("Metric uri="+metricUri+ " computed. Result is "+retVal);
         return retVal;
-    }
-
-    /**
-     * Converst MD identifier to uri
-     * @param projectId project ID
-     * @param identifiers MD object identifiers
-     * @return map identifier:uri
-     */
-    public Map<String,String> identifierToUri(String projectId, String[] identifiers) {
-        l.debug("Executing identifierToUri identifier="+identifiers);
-        Map<String, String> result = new HashMap<String,String>();
-        PostMethod p = createPostMethod(getProjectMdUrl(projectId) +  IDENTIFIER_URI);
-        JSONObject is = getIdentifiersStructure(identifiers);
-        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                is.toString().getBytes()));
-        p.setRequestEntity(request);
-        try {
-            String resp = executeMethodOk(p);
-            JSONObject parsedResp = JSONObject.fromObject(resp);
-            JSONArray idents = parsedResp.getJSONArray("identifiers");
-            if(idents != null && !idents.isEmpty()) {
-                for(int i=0; i<idents.size(); i++) {
-                    JSONObject ident = idents.getJSONObject(i);
-                    result.put(ident.getString("identifier"), ident.getString("uri"));
-                }
-
-            }
-
-        } catch (HttpMethodException ex) {
-            l.debug("Failed executing identifierToUri identifier="+identifiers);
-            throw new GdcRestApiException("Failed executing identifierToUri identifier="+identifiers,ex);
-        } finally {
-            p.releaseConnection();
-        }
-        return null;
-    }
-
-
-    /**
-     * Creates a new identifiers structure
-     * @param identifiers MD object identifier
-     * @return the new identifiers structure
-     */
-    private JSONObject getIdentifiersStructure(String[] identifiers) {
-        JSONObject identifierToUri = new JSONObject();
-        JSONArray ids = new JSONArray();
-        for(int i=0; i< identifiers.length; i++) {
-            ids.add(identifiers[i]);
-        }
-        identifierToUri.put("identifierToUri",ids);
-        return identifierToUri;
-    }
-
-
-    /**
-     * Retrieves a metadata object definition by Uri
-     * @param objectUri object uri
-     * @return the object to get
-     */
-    public JSONObject getObjectByUri(String objectUri) {
-        l.debug("Executing getObjectByUri uri="+objectUri);
-        HttpMethod req = createGetMethod(getServerUrl() + objectUri);
-        try {
-            String resp = executeMethodOk(req);
-            JSONObject parsedResp = JSONObject.fromObject(resp);
-            if(parsedResp.isNullObject()) {
-                l.debug("Can't getObjectByUri object uri="+objectUri);
-                throw new GdcRestApiException("Can't getObjectByUri object uri="+objectUri);
-            }
-            return parsedResp;
-        }
-        finally {
-            req.releaseConnection();
-        }
-    }
-
-    /**
-     * Retrieves a metadata object definition by Uri
-     * @param identifier object identifier
-     * @return the object to get
-     */
-    public JSONObject getObjectByIdentifier(String identifier) {
-        l.debug("Executing getObjectByIdentifier identifier="+identifier);
-        /*
-        HttpMethod req = createGetMethod(getServerUrl() + objectUri);
-        try {
-            String resp = executeMethodOk(req);
-            JSONObject parsedResp = JSONObject.fromObject(resp);
-            if(parsedResp.isNullObject()) {
-                l.debug("Can't getObjectByIdentifier identifier="+identifier);
-                throw new GdcRestApiException("Can't getObjectByIdentifier identifier="+identifier);
-            }
-            return parsedResp;
-        }
-        finally {
-            req.releaseConnection();
-        }
-        */
-        return null;
     }
 
 
@@ -1360,16 +1296,78 @@ public class GdcRESTApiWrapper {
         return invitations;
     }
 
+    /**
+     * Converst MD identifier to uri
+     * @param projectId project ID
+     * @param identifiers MD object identifiers
+     * @return map identifier:uri
+     */
+    public Map<String,String> identifierToUri(String projectId, String[] identifiers) {
+        l.debug("Executing identifierToUri identifier="+identifiers);
+        Map<String, String> result = new HashMap<String,String>();
+        PostMethod p = createPostMethod(getProjectMdUrl(projectId) +  IDENTIFIER_URI);
+        JSONObject is = getIdentifiersStructure(identifiers);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                is.toString().getBytes()));
+        p.setRequestEntity(request);
+        try {
+            String resp = executeMethodOk(p);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            JSONArray idents = parsedResp.getJSONArray("identifiers");
+            if(idents != null && !idents.isEmpty()) {
+                for(int i=0; i<idents.size(); i++) {
+                    JSONObject ident = idents.getJSONObject(i);
+                    result.put(ident.getString("identifier"), ident.getString("uri"));
+                }
+
+            }
+
+        } catch (HttpMethodException ex) {
+            l.debug("Failed executing identifierToUri identifier="+identifiers);
+            throw new GdcRestApiException("Failed executing identifierToUri identifier="+identifiers,ex);
+        } finally {
+            p.releaseConnection();
+        }
+        return result;
+    }
+
 
     /**
-     * Retrieves a metadata object definition
-     * @param projectId project id (hash)
-     * @param objectId object id (integer)
+     * Creates a new identifiers structure
+     * @param identifiers MD object identifier
+     * @return the new identifiers structure
+     */
+    private JSONObject getIdentifiersStructure(String[] identifiers) {
+        JSONObject identifierToUri = new JSONObject();
+        JSONArray ids = new JSONArray();
+        for(int i=0; i< identifiers.length; i++) {
+            ids.add(identifiers[i]);
+        }
+        identifierToUri.put("identifierToUri",ids);
+        return identifierToUri;
+    }
+
+
+    /**
+     * Retrieves a metadata object definition by Uri
+     * @param objectUri object uri
      * @return the object to get
      */
-    public MetadataObject getMetadataObject(String projectId, int objectId) {
-        l.debug("Executing getMetadataObject id="+objectId+" on project id="+projectId);
-        return getMetadataObject(MD_URI + projectId + OBJ_URI + "/" + objectId);
+    protected JSONObject getObjectByUri(String objectUri) {
+        l.debug("Executing getObjectByUri uri="+objectUri);
+        HttpMethod req = createGetMethod(getServerUrl() + objectUri);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if(parsedResp.isNullObject()) {
+                l.debug("Can't getObjectByUri object uri="+objectUri);
+                throw new GdcRestApiException("Can't getObjectByUri object uri="+objectUri);
+            }
+            return parsedResp;
+        }
+        finally {
+            req.releaseConnection();
+        }
     }
 
     /**
@@ -1392,6 +1390,105 @@ public class GdcRESTApiWrapper {
             }
         }
         return o;
+    }
+    
+    /**
+     * Retrieves a metadata object definition
+     * @param projectId project id (hash)
+     * @param objectId object id (integer)
+     * @return the object to get
+     */
+    public MetadataObject getMetadataObject(String projectId, int objectId) {
+        l.debug("Executing getMetadataObject id="+objectId+" on project id="+projectId);
+        return getMetadataObject(MD_URI + projectId + OBJ_URI + "/" + objectId);
+    }
+
+    /**
+     * Retrieves a metadata object definition
+     * @param projectId project id (hash)
+     * @param identifier object identifier
+     * @return the object to get
+     */
+    public MetadataObject getMetadataObject(String projectId, String identifier) {
+        l.debug("Executing getObjectByIdentifier identifier="+identifier);
+        Map<String,String> uris = identifierToUri(projectId, new String[] {identifier});
+        if(uris != null && uris.size()>0) {
+            String uri = uris.get(identifier);
+            if(uri != null && uri.length()>0)
+                return getMetadataObject(uri);
+            else {
+                l.debug("Can't getObjectByIdentifier identifier="+identifier+" The identifier doesn't exists.");
+                throw new GdcRestApiException("Can't getObjectByIdentifier identifier="+identifier+" The identifier doesn't exists.");
+            }
+        }
+        else {
+            l.debug("Can't getObjectByIdentifier identifier="+identifier+" The identifier doesn't exists.");
+            throw new GdcRestApiException("Can't getObjectByIdentifier identifier="+identifier+" The identifier doesn't exists.");
+        }
+    }
+
+    /**
+     * Returns the JSON list of all project's prompt responses
+     * @param projectId project ID
+     * @return the JSON object with all variables
+     */
+    public JSONObject getProjectVariables(String projectId) {
+        l.debug("Executing getProjectVariables on project id="+projectId);
+        PostMethod p = createPostMethod(getProjectMdUrl(projectId) + VARIABLES_SEARCH_URI);
+        JSONObject is = getVariableSearchStructure();
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                is.toString().getBytes()));
+        p.setRequestEntity(request);
+
+        try {
+            String resp = executeMethodOk(p);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            return parsedResp;
+        } catch (HttpMethodException ex) {
+            l.debug("Failed executing getProjectVariables on project id="+projectId);
+            throw new GdcRestApiException("Failed executing getProjectVariables on project id="+projectId, ex);
+        } finally {
+            p.releaseConnection();
+        }
+    }
+
+
+    /**
+     * Stores the variable ina project
+     * @param projectId - project ID
+     * @param variable - variable JSON structure
+     * @return the newly created variable
+     */
+    public JSONObject createVariable(String projectId, JSONObject variable) {
+        l.debug("Executing createVariable on project id="+projectId+ "variable='"+variable.toString(2)+"'");
+        PostMethod req = createPostMethod(getProjectMdUrl(projectId) + VARIABLES_CREATE_URI);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                variable.toString().getBytes()));
+        req.setRequestEntity(request);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            return parsedResp;
+        } catch (HttpMethodException ex) {
+            l.debug("Failed executing createVariable on project id="+projectId+ "content='"+variable.toString()+"'");
+            throw new GdcRestApiException("Failed executing createVariable on project id="+projectId+ "content='"+variable.toString()+"'",ex);
+        } finally {
+            req.releaseConnection();
+        }
+
+    }
+
+    /**
+     * Returns the default variable search structure
+     * @return the default variable search structure
+     */
+    private JSONObject getVariableSearchStructure() {
+        JSONObject srch = new JSONObject();
+        JSONObject variableSearch = new JSONObject();
+        variableSearch.put("variables", new JSONArray());
+        variableSearch.put("context", new JSONArray());
+        srch.put("variablesSearch", variableSearch);
+        return srch;
     }
 
     /**
@@ -1529,6 +1626,12 @@ public class GdcRESTApiWrapper {
             name = name.replace("..",".");
             FileUtil.writeJSONToFile(o, dir+"/"+name);
         }
+        if(uris.length > 0) {
+            String pid = getProjectIdFromObjectUri(uris[0]);
+            JSONObject o = getProjectVariables(pid);
+            String name = "variables."+pid+".gvr";
+            FileUtil.writeJSONToFile(o, dir+"/"+name);
+        }
     }
 
     /**
@@ -1586,6 +1689,8 @@ public class GdcRESTApiWrapper {
                     }
                 }
             }
+            
+
         }
         return m;
     }
@@ -1659,6 +1764,32 @@ public class GdcRESTApiWrapper {
             identifiers.put(identifier, o);
             ids.put(id, o);
         }
+    }
+
+    /**
+     * Loads indexes for the metadata object copy/refresh
+     * @param dir
+     * @return List of variables
+     * @throws IOException
+     */
+    protected List<JSONObject> loadVariables(String dir) throws IOException {
+        List<JSONObject> vars = new ArrayList<JSONObject>();
+        File d = new File(dir);
+        FileFilter fileFilter = new FileFilter() {
+            public boolean accept(File file) {
+                return file.getName().endsWith(".gvr");
+            }
+        };
+        File[] mdObjects = d.listFiles(fileFilter);
+        for(File of : mdObjects) {
+            JSONObject o = JSONObject.fromObject(FileUtil.readJSONFromFile(of.getAbsolutePath()));
+            JSONArray variables = o.getJSONArray("variables");
+            Iterator i = variables.iterator();
+            while(i.hasNext()) {
+                vars.add((JSONObject)i.next());
+            }
+        }
+        return vars;
     }
 
 
@@ -1772,11 +1903,91 @@ public class GdcRESTApiWrapper {
                 return r.getUri();
             }
 
+            private String oldUriToNewUri(String oldUri) {
+                MetadataObject oldObj = sourceObjectsById.get(oldUri);
+                if(oldObj != null) {
+                    String identifier = oldObj.getIdentifier();
+                    if(identifier != null && identifier.length()>0) {
+                        MetadataObject newObj = storedObjectsByIdentifier.get(identifier);
+                        if(newObj != null) {
+                            String newUri = newObj.getUri();
+                            if(newUri != null && newUri.length() >0) {
+                                return newUri;
+                            }
+                            else {
+                                l.debug("The object with identifier="+identifier+" doesn't have any uri.");
+                                throw new GdcRestApiException("The object with identifier="+identifier+" doesn't have any uri.");
+                            }
+                        }
+                         else {
+                            l.debug("Can't find the object with identifier="+identifier+" in the project metadata.");
+                            throw new GdcRestApiException("Can't find the object with identifier="+identifier+" in the project metadata.");
+                        }
+                    }
+                    else {
+                        l.debug("The object with uri="+oldUri+" doesn't have any identifier.");
+                        throw new GdcRestApiException("The object with uri="+oldUri+" doesn't have any identifier.");
+                    }
+                }
+                else {
+                    l.debug("Can't find the object with uri="+oldUri+" in the source metadata.");
+                    throw new GdcRestApiException("Can't find the object with uri="+oldUri+" in the source metadata.");
+                }
+            }
+
+            /**
+             * Extracts the dependent objects uris from the content
+             * @return list of depenedent object uris
+             */
+            public List<String> getVariableDependentObjectUris(JSONObject variable) {
+                List<String> uris = new ArrayList<String>();
+                String uri = variable.getString("uri");
+                String content = variable.toString();
+                Pattern p = Pattern.compile("\\\"/gdc/md/[^/]*?/obj/[0-9]+?\\\"");
+                Matcher m = p.matcher(content);
+                while(m.find()) {
+                    String u = m.group();
+                    u = u.replace("\"","");
+                    if(!u.equalsIgnoreCase(uri) && !uris.contains(u))
+                        uris.add(u);
+                }
+                return uris;
+            }
+
+            public void storeVariables(List<JSONObject> vars) {
+                for(JSONObject v : vars) {
+                    List<String> ids = getVariableDependentObjectUris(v);
+                    v.discard("uri");
+                    v.discard("related");
+                    String content = v.toString();
+                    for(String id : ids) {
+                        MetadataObject src = sourceObjectsById.get(id);
+                        if(src != null) {
+                            String newUri = oldUriToNewUri(id);
+                            content = content.replace(id, newUri);
+                        }
+                        else {
+                            l.info("Can't find object uri="+id+" in the source!");
+                        }
+                    }
+                    JSONObject variableContent = JSONObject.fromObject(content);
+                    variableContent.put("related","/gdc/projects/"+pid);
+                    JSONObject variable = new JSONObject();
+                    variable.put("variable",variableContent);
+                    createVariable(pid, variable);
+                }
+            }
+
         }
 
         Store storage = new Store();
         for(MetadataObject obj : sourceObjectsByIdentifier.values()) {
             storage.storeObjectWithDependencies(obj);
+        }
+
+        List<JSONObject> variables = loadVariables(srcDir);
+        if(variables != null && variables.size()>0) {
+            storage.storeVariables(variables);
         }
     }
 
@@ -1802,7 +2013,6 @@ public class GdcRESTApiWrapper {
         } finally {
             req.releaseConnection();
         }
-
     }
 
     /**

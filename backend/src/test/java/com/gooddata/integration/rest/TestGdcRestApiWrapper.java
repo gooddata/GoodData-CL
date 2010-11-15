@@ -25,6 +25,7 @@ package com.gooddata.integration.rest;
 
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import junit.framework.TestCase;
+import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 
 /**
@@ -46,7 +47,8 @@ public class TestGdcRestApiWrapper extends TestCase {
             if(config != null) {
                 GdcRESTApiWrapper rest = new GdcRESTApiWrapper(config);
                 rest.login();
-                rest.identifierToUri("qdoc9ukiyg2ixay2qf7g16ihii0v7vkm",new String[]{"dataset.product"});
+                JSONObject j = rest.getProjectVariables("20p9kwj6xbrrlpnembpaac0vkn9pqmib");
+                System.err.println(j.toString(2));
             }
         }
         catch(Exception e) {
