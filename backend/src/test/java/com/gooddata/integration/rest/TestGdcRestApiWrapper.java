@@ -38,9 +38,9 @@ public class TestGdcRestApiWrapper extends TestCase {
 
     private static Logger l = Logger.getLogger(TestGdcRestApiWrapper.class);
 
-    //NamePasswordConfiguration config = null;
+    NamePasswordConfiguration config = null;
 
-    NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","zdenek.svoboda@gooddata.com","jindrisska");
+    //NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","zdenek.svoboda@gooddata.com","xxx");
 
     public void testComputeMetric() throws Exception {
         try {
