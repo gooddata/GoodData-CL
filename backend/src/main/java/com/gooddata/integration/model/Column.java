@@ -38,7 +38,6 @@ public class Column {
     private String mode;
     private int referenceKey;
     private String format;
-
     private String[] populates;
 
     /**
@@ -156,6 +155,5 @@ public class Column {
     public void setFormat(String format) {
         this.format = format;
     }
-    
 
 }

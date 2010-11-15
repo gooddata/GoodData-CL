@@ -71,7 +71,8 @@ public class GdcRESTApiWrapper {
     private static final String DATA_INTERFACES_URI = "/ldm/singleloadinterface";
     private static final String PROJECTS_URI = "/gdc/projects";
     private static final String PULL_URI = "/etl/pull";
-    private static final String DLI_DESCRIPTOR_URI = "/descriptor";
+    private static final String IDENTIFIER_URI = "/identifiers";
+    private static final String SLI_DESCRIPTOR_URI = "/descriptor";
     public static final String MAQL_EXEC_URI = "/ldm/manage";
     public static final String REPORT_QUERY = "/query/reports";
     public static final String EXECUTOR = "/gdc/xtab2/executor3";
@@ -378,6 +379,7 @@ public class GdcRESTApiWrapper {
         return list;
     }
 
+    
 
     /**
      * Retrieves the SLI columns
@@ -660,7 +662,7 @@ public class GdcRESTApiWrapper {
         MetadataObject resp = new MetadataObject(createMetadataObject(projectId, obj));
 
         String dataResultUri = executeReportDefinition(resp.getUri());
-        JSONObject result = getObject(dataResultUri);
+        JSONObject result = getObjectByUri(dataResultUri);
         if(result != null && !result.isEmpty() && !result.isNullObject()) {
             JSONObject xtabData = result.getJSONObject("xtab_data");
             if(xtabData != null && !xtabData.isEmpty() && !xtabData.isNullObject()) {
@@ -687,19 +689,71 @@ public class GdcRESTApiWrapper {
     }
 
     /**
-     * Retrieves a metadata object definition
+     * Converst MD identifier to uri
+     * @param projectId project ID
+     * @param identifiers MD object identifiers
+     * @return map identifier:uri
+     */
+    public Map<String,String> identifierToUri(String projectId, String[] identifiers) {
+        l.debug("Executing identifierToUri identifier="+identifiers);
+        Map<String, String> result = new HashMap<String,String>();
+        PostMethod p = createPostMethod(getProjectMdUrl(projectId) +  IDENTIFIER_URI);
+        JSONObject is = getIdentifiersStructure(identifiers);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                is.toString().getBytes()));
+        p.setRequestEntity(request);
+        try {
+            String resp = executeMethodOk(p);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            JSONArray idents = parsedResp.getJSONArray("identifiers");
+            if(idents != null && !idents.isEmpty()) {
+                for(int i=0; i<idents.size(); i++) {
+                    JSONObject ident = idents.getJSONObject(i);
+                    result.put(ident.getString("identifier"), ident.getString("uri"));
+                }
+
+            }
+
+        } catch (HttpMethodException ex) {
+            l.debug("Failed executing identifierToUri identifier="+identifiers);
+            throw new GdcRestApiException("Failed executing identifierToUri identifier="+identifiers,ex);
+        } finally {
+            p.releaseConnection();
+        }
+        return null;
+    }
+
+
+    /**
+     * Creates a new identifiers structure
+     * @param identifiers MD object identifier
+     * @return the new identifiers structure
+     */
+    private JSONObject getIdentifiersStructure(String[] identifiers) {
+        JSONObject identifierToUri = new JSONObject();
+        JSONArray ids = new JSONArray();
+        for(int i=0; i< identifiers.length; i++) {
+            ids.add(identifiers[i]);
+        }
+        identifierToUri.put("identifierToUri",ids);
+        return identifierToUri;
+    }
+
+
+    /**
+     * Retrieves a metadata object definition by Uri
      * @param objectUri object uri
      * @return the object to get
      */
-    public JSONObject getObject(String objectUri) {
-        l.debug("Executing getObject uri="+objectUri);
+    public JSONObject getObjectByUri(String objectUri) {
+        l.debug("Executing getObjectByUri uri="+objectUri);
         HttpMethod req = createGetMethod(getServerUrl() + objectUri);
         try {
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
             if(parsedResp.isNullObject()) {
-                l.debug("Can't getObject object uri="+objectUri);
-                throw new GdcRestApiException("Can't getObject object uri="+objectUri);
+                l.debug("Can't getObjectByUri object uri="+objectUri);
+                throw new GdcRestApiException("Can't getObjectByUri object uri="+objectUri);
             }
             return parsedResp;
         }
@@ -707,6 +761,32 @@ public class GdcRESTApiWrapper {
             req.releaseConnection();
         }
     }
+
+    /**
+     * Retrieves a metadata object definition by Uri
+     * @param identifier object identifier
+     * @return the object to get
+     */
+    public JSONObject getObjectByIdentifier(String identifier) {
+        l.debug("Executing getObjectByIdentifier identifier="+identifier);
+        /*
+        HttpMethod req = createGetMethod(getServerUrl() + objectUri);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if(parsedResp.isNullObject()) {
+                l.debug("Can't getObjectByIdentifier identifier="+identifier);
+                throw new GdcRestApiException("Can't getObjectByIdentifier identifier="+identifier);
+            }
+            return parsedResp;
+        }
+        finally {
+            req.releaseConnection();
+        }
+        */
+        return null;
+    }
+
 
     /**
      * Report definition to execute
@@ -1092,7 +1172,7 @@ public class GdcRESTApiWrapper {
      * @return DLI URI
      */
     public String getSLIUri(String sliId, String projectId) {
-        return getProjectMdUrl(projectId) + DATA_INTERFACES_URI + "/" + sliId + DLI_DESCRIPTOR_URI;
+        return getProjectMdUrl(projectId) + DATA_INTERFACES_URI + "/" + sliId + SLI_DESCRIPTOR_URI;
     }
 
 
@@ -1299,7 +1379,7 @@ public class GdcRESTApiWrapper {
      */
     public MetadataObject getMetadataObject(String objectUri) {
         l.debug("Executing getMetadataObject uri="+objectUri);
-        MetadataObject o = new MetadataObject(getObject(objectUri));
+        MetadataObject o = new MetadataObject(getObjectByUri(objectUri));
         String tp = o.getType();
         if(tp.equalsIgnoreCase("report")) {
             try {

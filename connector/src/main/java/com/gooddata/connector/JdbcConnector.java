@@ -114,8 +114,11 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                     int cnt = rsm.getColumnCount();
                     l.debug("GenerateJdbcConfig: The dataset column count="+cnt);
                     for(int i=1; i <= cnt; i++) {
-                        String cnm = StringUtil.toIdentifier(rsm.getColumnName(i));
-                        String cdsc = rsm.getColumnName(i);
+                        String cnm = rsm.getColumnLabel(i);
+                        if(cnm == null || cnm.length() <=0)
+                            cnm = rsm.getColumnName(i);
+                        String cdsc = cnm;
+                        cnm = StringUtil.toIdentifier(cnm);
                         String type = getColumnType(rsm.getColumnType(i));
                         l.debug("GenerateJdbcConfig: Processing column '"+cnm+"' type '"+type+"'");                        
                         SourceColumn column = new SourceColumn(cnm, type, cdsc);

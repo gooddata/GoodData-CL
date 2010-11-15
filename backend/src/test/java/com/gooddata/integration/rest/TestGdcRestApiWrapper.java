@@ -39,13 +39,14 @@ public class TestGdcRestApiWrapper extends TestCase {
 
     //NamePasswordConfiguration config = null;
 
-    NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","zd@gooddata.com","xxxxx");
+    NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","zdenek.svoboda@gooddata.com","jindrisska");
 
     public void testComputeMetric() throws Exception {
         try {
             if(config != null) {
                 GdcRESTApiWrapper rest = new GdcRESTApiWrapper(config);
                 rest.login();
+                rest.identifierToUri("qdoc9ukiyg2ixay2qf7g16ihii0v7vkm",new String[]{"dataset.product"});
             }
         }
         catch(Exception e) {
