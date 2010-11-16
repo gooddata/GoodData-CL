@@ -114,7 +114,7 @@ public class MetadataObject implements JSON, Map, Comparable {
     }
 
     /**
-     * Strips all keys that should nbot be sent to the create method
+     * Strips all keys that should not be sent to the create method
      */
     public void stripKeysForRead() {
         Iterator keys = jsonObject.keys();
