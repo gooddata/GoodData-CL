@@ -1,7 +1,0 @@
-DropProject(id="nfe6wm0cfxxand4kt6iwgaqj00broygt");
-DropProject(id="sexjv5gh2bl3ak90ja392et448bktzuv");
-DropProject(id="fwuml59cofsqefamfdrvl6hv6xzn1gel");
-DropProject(id="8ac0jq45i069uhxa4eyyp2pfisqviay4");
-DropProject(id="x0ekmsgnmk2v2jhvu88393695xthfc2q");
-DropProject(id="zd44qm91bzq9zqp2a7bzwijyurtl0b69");
-DropProject(id="d6eomuaaslonwznfekihzlgtwp643zim");

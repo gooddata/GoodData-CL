@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: Apache Maven
-Built-By: haplm
-Build-Jdk: 1.6.0_20
-SnapLogic-Components: org.snaplogic.snap.gooddata.GoodDataConnection,o
- rg.snaplogic.snap.gooddata.GoodDataPut,org.snaplogic.snap.gooddata.Go
- odDataWizard,org.snaplogic.snap.gooddata.GoodDataPutDenormalized
