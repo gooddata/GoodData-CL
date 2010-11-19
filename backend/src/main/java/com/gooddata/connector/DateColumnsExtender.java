@@ -121,7 +121,8 @@ public class DateColumnsExtender {
                         if(c.isDatetime()) {
                             int  ts = dt.getSecondOfDay();
                             rowExt.add(Integer.toString(ts));
-                            rowExt.add(Integer.toString(ts));
+                            String scs = Integer.toString(ts);
+                            rowExt.add((scs.length()>1)?(scs):("0"+scs));
                         }
                     }
                     catch (IllegalArgumentException e) {
@@ -129,7 +130,7 @@ public class DateColumnsExtender {
                         rowExt.add("");
                         if(c.isDatetime()) {
                             rowExt.add("");
-                            rowExt.add("0");
+                            rowExt.add("00");
                         }
                     }
                 }
@@ -137,7 +138,7 @@ public class DateColumnsExtender {
                     rowExt.add("");
                     if(c.isDatetime()) {
                         rowExt.add("");
-                        rowExt.add("0");
+                        rowExt.add("00");
                     }
                 }
             }
