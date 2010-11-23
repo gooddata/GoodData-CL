@@ -2042,7 +2042,10 @@ public class GdcRESTApiWrapper {
                                     MetadataObject src = sourceObjectsById.get(id);
                                     if(src != null) {
                                         String newUri = oldUriToNewUri(id);
-                                        content = content.replace(id, newUri);
+                                        //content = content.replace(id, newUri);
+                                        content = content.replace("\""+id+"\"", "\""+newUri+"\"");
+                                        content = content.replace("["+id+"]", "["+newUri+"]");
+
                                     }
                                     else {
                                         l.info("Can't find object uri="+id+" in the source!");
