@@ -1843,6 +1843,7 @@ public class GdcRESTApiWrapper {
 
         class Store {
             public String storeObjectWithDependencies(MetadataObject o) {
+                l.debug("Executing storeObjectWithDependencies "+o.toString());
                 MetadataObject r = null;
                 String identifier = o.getIdentifier();
                 String tp = o.getType();
@@ -1853,11 +1854,16 @@ public class GdcRESTApiWrapper {
                         List<String> ids = o.getDependentObjectUris();
                         String content = o.toString();
                         for(String id : ids) {
+                            l.debug("storeObjectWithDependencies resolving dependent ID id="+id);
                             MetadataObject src = sourceObjectsById.get(id);
+                            l.debug("storeObjectWithDependencies found id="+id+" in source objects src="+src.toString());
                             if(src != null) {
                                 String srcUri = id;
                                 String newUri = storeObjectWithDependencies(src);
-                                content = content.replace(srcUri, newUri);
+                                l.debug("storeObjectWithDependencies replacing srcUri="+"\""+srcUri+"\""+" with newUri="+"\""+newUri+"\"");
+                                content = content.replace("\""+srcUri+"\"", "\""+newUri+"\"");
+                                l.debug("storeObjectWithDependencies replacing srcUri="+"["+srcUri+"]"+" with newUri="+"["+newUri+"]");
+                                content = content.replace("["+srcUri+"]", "["+newUri+"]");
                             }
                             else {
                                 l.info("Can't find object uri="+id+" in the source!");
@@ -1937,6 +1943,8 @@ public class GdcRESTApiWrapper {
                 else {
                     r = storedObjectsByIdentifier.get(identifier);
                 }
+                String ruri = r.getUri();
+                l.debug("Executed storeObjectWithDependencies uri="+ruri);
                 return r.getUri();
             }
 
