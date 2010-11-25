@@ -99,9 +99,10 @@ CSV Connector Commands:
   folder - folder where to place new attributes
   separator - optional field separator, the default is ','  
 
- UseCsv(csvDataFile=<data>, configFile=<config>, [separator = <separator-char>]) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
+ UseCsv(csvDataFile=<data>, configFile=<config> [, hasHeader=<true | false>] [, separator = <separator-char>]) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
   csvDataFile    - path to CSV datafile
   configFile  - path to XML configuration file (see the GenerateCsvConfig command that generates the config file template)
+  hasHeader - true if the CSV file has a header row (default is true)
   separator - optional field separator, the default is ','. Use '\t' or type the tab char for tabulator.
 
 GoogleAnalytics Connector Commands:

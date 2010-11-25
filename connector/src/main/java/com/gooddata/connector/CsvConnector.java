@@ -62,6 +62,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
     // field separator
     private char separator = ',';
 
+    // field separator
+    private boolean hasHeader = true;
+
     /**
      * Creates GoodData CSV connector
      */
@@ -86,17 +89,26 @@ public class CsvConnector extends AbstractConnector implements Connector {
         CSVReader cr = FileUtil.createUtf8CsvReader(this.getDataFile(), this.getSeparator());
         CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(dir + System.getProperty("file.separator") + "data.csv"));
         String[] header = this.populateCsvHeaderFromSchema(schema);
-        String[] row = cr.readNext();
-        if(row.length != header.length) {
-            throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
-                    "it's configuration file!");
+        String[] row = null;
+        if(hasHeader)  {
+            row = cr.readNext();
+            if(row.length != header.length - ((identityColumn>=0)?1:0)) {
+                throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
+                        "it's configuration file. Row="+1);
+            }
         }
         // add the extra date headers
         DateColumnsExtender dateExt = new DateColumnsExtender(schema);
         header = dateExt.extendHeader(header);
         cw.writeNext(header);
         row = cr.readNext();
+        int rowCnt = 0;
         while (row != null) {
+            rowCnt++;
+            if(row.length != header.length - ((identityColumn>=0)?1:0)) {
+                throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
+                        "it's configuration file. Row="+rowCnt);
+            }
             if(identityColumn>=0) {
                 String key = "";
                 List<String> rowL = new ArrayList<String>(row.length+1);
@@ -272,6 +284,11 @@ public class CsvConnector extends AbstractConnector implements Connector {
         else {
             setSeparator(',');
         }
+        final String hasHeaderStr = c.getParam("hasHeader");
+        if(hasHeaderStr != null) {
+            setHasHeader("true".equalsIgnoreCase(hasHeaderStr));
+        }
+
         initSchema(conf.getAbsolutePath());
         setDataFile(new File(csvf.getAbsolutePath()));
         // sets the current connector
@@ -328,5 +345,12 @@ public class CsvConnector extends AbstractConnector implements Connector {
     public void setSeparator(char separator) {
         this.separator = separator;
     }
-    
+
+    public boolean isHasHeader() {
+        return hasHeader;
+    }
+
+    public void setHasHeader(boolean hasHeader) {
+        this.hasHeader = hasHeader;
+    }
 }
