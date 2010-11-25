@@ -66,6 +66,7 @@ public class SfdcSalesConnector extends SfdcConnector {
     public static final String SFDC_ID_NAME = "Id";
     public static final String SFDC_ACCOUNT_REF_NAME = "AccountId";
     public static final String SFDC_USER_REF_NAME = "OwnerId";
+    public static final String SFDC_OPP_REF_NAME = "OpportunityId";
 
     private SourceSchema accountSchema;
     private SourceSchema userSchema;
@@ -165,9 +166,9 @@ public class SfdcSalesConnector extends SfdcConnector {
                     String nm = frCols[i].getName();
                     if (nm.equalsIgnoreCase(SFDC_ID_NAME)) {
                         id = val;
-                        if(oppIds != null)
-                            val = oppIds.get(val);
                     }
+                    if (nm.equalsIgnoreCase(SFDC_OPP_REF_NAME) && oppIds != null)
+                        val = oppIds.get(val);
                     if (nm.equalsIgnoreCase(SFDC_ACCOUNT_REF_NAME) && accountIds != null)
                         val = accountIds.get(val);
                     if (nm.equalsIgnoreCase(SFDC_USER_REF_NAME) && userIds != null)
