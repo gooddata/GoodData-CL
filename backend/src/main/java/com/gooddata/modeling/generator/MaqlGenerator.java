@@ -430,6 +430,8 @@ public class MaqlGenerator {
 	            script += "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + ssn + "." + scn + "};\n";
 
                 String dataType = column.getDataType();
+                if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(dataType))
+                    dataType = SourceColumn.IDENTITY_DATATYPE;
                 if(dataType != null && dataType.length() > 0) {
                     script += "ALTER DATATYPE {" + table + "."+N.NM_PFX + scn + "} "+dataType+";\n";
                 }
@@ -470,6 +472,8 @@ public class MaqlGenerator {
 	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.FCT_PFX + scn + "};\n"
 	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {" + identifier + "};\n";
                 String dataType = column.getDataType();
+                if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(dataType))
+                    dataType = SourceColumn.IDENTITY_DATATYPE;
                 if(dataType != null && dataType.length() > 0) {
                     script += "ALTER DATATYPE {" + getFactTableName() + "."+N.FCT_PFX + scn + "} "+dataType+";\n";
                 }
@@ -502,6 +506,8 @@ public class MaqlGenerator {
 	                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + "."+N.NM_PFX + scn + "};\n";
 
                 String dataType = column.getDataType();
+                if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(dataType))
+                    dataType = SourceColumn.IDENTITY_DATATYPE;
                 if(dataType != null && dataType.length() > 0) {
                     script += "ALTER DATATYPE {" + attr.table + "."+N.NM_PFX + scn + "} "+dataType+";\n";
                 }

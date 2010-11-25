@@ -300,6 +300,10 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     public void extract(String dir) throws IOException {
         l.debug("Extracting SFDC data.");
         File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
+
+        // Is there an IDENTITY connection point?
+        final int identityColumn = schema.getIdentityColumn();        
+
         l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
         String[] header = this.populateCsvHeaderFromSchema(schema);
@@ -329,6 +333,8 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             }
             for( SObject row : result) {
                 MessageElement[] cols = row.get_any();
+                String key = "";
+                List<String> valsL = new ArrayList<String>(cols.length+1);
                 String[] vals = new String[cols.length];
                 for(int i=0; i<vals.length; i++) {
                     vals[i] = cols[i].getValue();
@@ -352,6 +358,14 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                             vals[i] = "";
                         }
                     }
+                    key += vals[i] + "|";
+                    valsL.add(vals[i]);
+                }
+
+                if(identityColumn>=0) {
+                    String hex = DigestUtils.md5Hex(key);
+                    valsL.add(identityColumn, hex);
+                    vals = valsL.toArray(new String[]{});
                 }
                 // add the extra date columns
                 vals = dateExt.extendRow(vals);

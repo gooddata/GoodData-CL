@@ -35,9 +35,11 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.util.StringUtil;
 import com.thoughtworks.xstream.XStream;
+import org.apache.log4j.Logger;
 
 /**
  * GoodData source schema. Source schema describes the structure of the source data and its mapping to the LDM types
@@ -46,6 +48,8 @@ import com.thoughtworks.xstream.XStream;
  * @version 1.0
  */
 public class SourceSchema {
+
+    private static Logger l = Logger.getLogger(SourceSchema.class);
 
     // initial XML config comment
     public static String CONFIG_INITIAL_COMMENT = "<!-- See documentation at " +
@@ -311,5 +315,28 @@ public class SourceSchema {
         for(SourceColumn c : columns)
             c.validate();
     }
+
+    /**
+     * Return the position of the IDENTITY column
+     * @return
+     */
+    public int getIdentityColumn() {
+        List<SourceColumn> cps = getConnectionPoints();
+        int identityColumn = -1;
+        for(int i=0; i<cps.size(); i++) {
+            SourceColumn cp = cps.get(i);
+            if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(cp.getDataType())) {
+                if(identityColumn >= 0) {
+                    l.debug("There are multiple CONNECTION POINTS in the schema "+getName());
+                    throw new InvalidParameterException("There are multiple CONNECTION POINTS in the schema "+getName());
+                }
+                else {
+                    identityColumn = i;
+                }
+            }
+        }
+        return identityColumn;
+    }
+    
 
 }

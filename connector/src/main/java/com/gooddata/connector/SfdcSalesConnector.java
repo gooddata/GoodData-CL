@@ -117,6 +117,10 @@ public class SfdcSalesConnector extends SfdcConnector {
     public Map<String, String> extract(SourceSchema schema, String query, String dir, Map<String, String> accountIds,
                                  Map<String, String> userIds, Map<String, String> oppIds) throws IOException {
         l.debug("Extracting SFDC data.");
+
+        // Is there an IDENTITY connection point?
+        final int identityColumn = schema.getIdentityColumn();
+
         Map<String, String> r = new HashMap<String, String>();
 
         DateTime snapshotDate = new DateTime();
@@ -192,14 +196,16 @@ public class SfdcSalesConnector extends SfdcConnector {
                     vals.add(val);
                     digestData.append(val);
                 }
-                String digest = DigestUtils.md5Hex(digestData.toString());
-                r.put(id, digest);
                 // processing final snapshots
                 if(oppIds != null && accountIds != null && userIds != null) {
                     vals.add(0, snapshotMillis);
                     vals.add(0, snapshotDateText);
                 }
-                vals.add(0, digest);
+                if(identityColumn >=0) {
+                    String digest = DigestUtils.md5Hex(digestData.toString());
+                    r.put(id, digest);
+                    vals.add(identityColumn, digest);
+                }
                 // add the extra date columns
                 String[] data = dateExt.extendRow(vals.toArray(new String[]{}));
                 cw.writeNext(data);

@@ -31,6 +31,7 @@ import java.util.*;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.naming.N;
 import com.gooddata.util.*;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
 import com.gooddata.csv.DataTypeGuess;
@@ -80,6 +81,8 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public void extract(String dir) throws IOException {
+        // Is there an IDENTITY connection point?
+        int identityColumn = schema.getIdentityColumn();
         CSVReader cr = FileUtil.createUtf8CsvReader(this.getDataFile(), this.getSeparator());
         CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(dir + System.getProperty("file.separator") + "data.csv"));
         String[] header = this.populateCsvHeaderFromSchema(schema);
@@ -94,6 +97,17 @@ public class CsvConnector extends AbstractConnector implements Connector {
         cw.writeNext(header);
         row = cr.readNext();
         while (row != null) {
+            if(identityColumn>=0) {
+                String key = "";
+                List<String> rowL = new ArrayList<String>(row.length+1);
+                for(int i=0; i< row.length; i++) {
+                    key += row[i] + "|";
+                    rowL.add(row[i]);
+                }
+                String hex = DigestUtils.md5Hex(key);
+                rowL.add(identityColumn,hex);
+                row = rowL.toArray(new String[]{});
+            }
             // add the extra date columns
             row = dateExt.extendRow(row);
             cw.writeNext(row);

@@ -149,7 +149,7 @@ public class PtConnector extends AbstractConnector implements Connector {
         }
         cw.flush();
         cw.close();
-        l.debug("Extracted PT date.");
+        l.debug("Extracted Pivotal data.");
     }
 
 

@@ -43,6 +43,10 @@ public class SourceColumn {
 	
 	public static final String LDM_TYPE_IGNORE = "IGNORE";
 
+    public static final String LDM_IDENTITY = "IDENTITY";
+
+    public static final String IDENTITY_DATATYPE = "VARCHAR(32)";
+
     /**
      * Column name
      */

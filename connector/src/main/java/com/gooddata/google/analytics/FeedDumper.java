@@ -25,6 +25,8 @@ package com.gooddata.google.analytics;
 
 import com.gooddata.connector.DateColumnsExtender;
 import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.connector.GaConnector;
 import com.google.gdata.data.analytics.DataEntry;
@@ -60,13 +62,14 @@ public class FeedDumper {
 
     /**
      * Dupmps the gdata feed to CSV
+     * @param schema input schema
      * @param cw CSVWriter
      * @param feed Google feed
      * @param gaq Google Analytics Query
      * @param dateExt date columns extender
      * @throws IOException in case of an IO problem
      */
-    public static int dump(CSVWriter cw, DataFeed feed, GaQuery gaq, DateColumnsExtender dateExt) throws IOException {
+    public static int dump(SourceSchema schema, CSVWriter cw, DataFeed feed, GaQuery gaq, DateColumnsExtender dateExt) throws IOException {
         l.debug("Dumping GA feed.");
         String profileId = gaq.getIds();
         if(profileId == null || profileId.length() <=0)
@@ -75,6 +78,9 @@ public class FeedDumper {
         List<Dimension> dimensions = null;
         List<String> dimensionNames = new ArrayList<String>();
         List<Metric> metrics = null;
+
+        // Is there an IDENTITY connection point?
+        int identityColumn = schema.getIdentityColumn();
 
         if (!entries.isEmpty()) {
             DataEntry singleEntry = entries.get(0);
@@ -100,9 +106,7 @@ public class FeedDumper {
             String key = "";
             for (String dataName : headers) {
                 final String valueIn = entry.stringValueOf(dataName);
-                if(dimensionNames.contains(dataName)) {
-                    key += valueIn + "|";
-                }
+                key += valueIn + "|";
                 String valueOut;
                 if (GaConnector.GA_DATE.equalsIgnoreCase(dataName)) {
                 	if (valueIn == null || valueIn.length() !=8 || UNKNOWN_DATE.equals(valueIn)) {
@@ -124,9 +128,11 @@ public class FeedDumper {
                 row.add(valueOut);
             }
             key += profileId;
-            String hex = DigestUtils.md5Hex(key);
             row.add(0,profileId);
-            row.add(0,hex);
+            String hex = DigestUtils.md5Hex(key);
+            if(identityColumn >= 0) {
+                row.add(identityColumn,hex);
+            }
 
             String[] r = row.toArray(new String[]{});
             // add the extra date columns

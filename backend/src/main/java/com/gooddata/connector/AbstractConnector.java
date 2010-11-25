@@ -603,4 +603,5 @@ public abstract class AbstractConnector implements Connector {
     	private List<SourceColumn> newColumns = new ArrayList<SourceColumn>();
     	private List<SourceColumn> deletedColumns = new ArrayList<SourceColumn>();
     }
+
 }

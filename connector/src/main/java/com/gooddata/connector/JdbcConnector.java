@@ -32,8 +32,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
 import com.gooddata.util.CSVWriter;
@@ -198,6 +201,10 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         Statement s = null;
         ResultSet rs = null;
         File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
+
+        // Is there an IDENTITY connection point?
+        final int identityColumn = schema.getIdentityColumn();
+        
         try {
             con = connect();
             l.debug("Extracting JDBC data to file="+dataFile.getAbsolutePath());
@@ -222,6 +229,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
                 public void handle(ResultSet rs) throws SQLException {
                     final int length = rs.getMetaData().getColumnCount();
+                    String key = "";
+                    List<String> lineL = new ArrayList<String>(length+1);
                     String[] line = new String[length];
                     for (int i = 1; i <= length; i++) {
                         final int sqlType = rs.getMetaData().getColumnType(i);
@@ -239,6 +248,13 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                                     line[i - 1] = value.toString();
                             }
                         }
+                        lineL.add(line[i-1]);
+                        key += line[i-1] + "|";
+                    }
+                    if(identityColumn>=0) {
+                        String hex = DigestUtils.md5Hex(key);
+                        lineL.add(identityColumn, hex);
+                        line = lineL.toArray(new String[]{});
                     }
                     // add the extra date columns
                     line = dateExt.extendRow(line);

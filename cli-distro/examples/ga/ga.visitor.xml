@@ -7,6 +7,7 @@
       <name>id</name>
       <title>ID (Visitor)</title>
       <ldmType>CONNECTION_POINT</ldmType>
+      <dataType>IDENTITY</dataType>  
     </column>
     <column>
       <name>profileId</name>

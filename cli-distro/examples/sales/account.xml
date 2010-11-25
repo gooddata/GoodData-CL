@@ -7,6 +7,7 @@
       <name>id</name>
       <title>AccountId</title>
       <ldmType>CONNECTION_POINT</ldmType>
+      <dataType>IDENTITY</dataType>
       <folder>Account</folder>
     </column>
     <column>
