@@ -34,6 +34,7 @@ In each `<column>` entry, following tags can be used:
     * DATE -- a column containing a date (`<format>` field required, see below). We will add a date dimension to this column, allowing you to aggregate by weeks, months, dates of week etc.
     * CONNECTION_POINT -- this identifies a primary key of the whole schema that can be used for connecting to another schema
     * REFERENCE -- a counterpart of CONNECTION_POINT in the other schema
+    * IGNORE -- this column will be skipped and not uploaded
 
 4. `<folder>` allows to specify what folder this column is organized into (on UI level). 
 5. `<dataType>` specified type of the column and size allocation. Possible values:
@@ -53,5 +54,6 @@ In each `<column>` entry, following tags can be used:
     * hh -- hour 24 format (00 - 23)
     * mm -- minutes (00 - 59)
     * ss -- seconds (00 - 59)
+    * kk/kkkk -- microseconds or fractions of seconds (00-99, 000-999, 0000-9999)
 7. `<reference>` - used with LABEL columns for pointing to the primary column; used with CONNECTION_POINT column and `<schemaReference>`
 8. `<schemaReference>` - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column. When connecting to a date dimension, use the same value as in the `name` parameter of the `LoadDateDimension` command (see also [the CLI commands documentation](http://developer.gooddata.com/gooddata-cl/cli-commands.html#time_dimension_connector_commands)).
