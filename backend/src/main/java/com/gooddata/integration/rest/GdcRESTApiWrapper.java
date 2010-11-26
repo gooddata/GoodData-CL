@@ -723,6 +723,119 @@ public class GdcRESTApiWrapper {
         return retVal;
     }
 
+    /**
+     * Computes a simple report and returns the report text
+     * @param reportUri report URI
+     * @return the report rendered in text
+     */
+    public String computeReport(String reportUri) {
+        l.debug("Computing report uri="+reportUri);
+        String retVal = "";
+        String reportDefUri = getReportDefinition(reportUri);
+        String dataResultUri = executeReportDefinition(reportDefUri);
+        JSONObject result = getObjectByUri(dataResultUri);
+        if(result != null && !result.isEmpty() && !result.isNullObject()) {
+            JSONObject xtabData = result.getJSONObject("xtab_data");
+            if(xtabData != null && !xtabData.isEmpty() && !xtabData.isNullObject()) {
+                JSONArray data = xtabData.getJSONArray("data");
+                if(data != null && !data.isEmpty()) {
+                    double[] values = new double[data.size()];
+                    for(int i=0; i<data.size(); i++) {
+                        JSONArray vals = data.getJSONArray(i);
+                        values[i] = vals.getDouble(0);
+                    }
+                    JSONObject rows = xtabData.getJSONObject("rows");
+                    if(rows != null && !rows.isEmpty() && !rows.isNullObject()) {
+                        JSONArray lookups = rows.getJSONArray("lookups");
+                        if(lookups != null && !lookups.isEmpty()) {
+                            Map<String,String> attributes = new HashMap<String,String>();
+                            JSONObject lkpData = lookups.getJSONObject(0);
+                            for(Object key : lkpData.keySet()) {
+                                Object value = lkpData.get(key);
+                                if(key != null && value != null)
+                                    attributes.put(key.toString(), value.toString());
+                            }
+                            JSONObject tree = rows.getJSONObject("tree");
+                            if(tree != null && !tree.isEmpty() && !tree.isNullObject()) {
+                                Map<String,Integer> indexes = new HashMap<String,Integer>();
+                                JSONObject index = tree.getJSONObject("index");
+                                if(index != null && !index.isEmpty()) {
+                                    for(Object key : index.keySet()) {
+                                        if(key != null) {
+                                            JSONArray valIdxs = index.getJSONArray(key.toString());
+                                            if(valIdxs != null && !valIdxs.isEmpty()) {
+                                                indexes.put(key.toString(), valIdxs.getInt(0));
+                                            }
+                                        }
+
+                                    }
+                                    JSONArray children = tree.getJSONArray("children");
+                                    if(children != null && !children.isEmpty()) {
+                                        for(int i=0; i<children.size(); i++) {
+                                            JSONObject c = children.getJSONObject(i);
+                                            String id = c.getString("id");
+                                            if(id != null && id.length()>0) {
+                                                String attribute = attributes.get(id);
+                                                int v = indexes.get(id);
+                                                double vl = values[v];
+                                                if(retVal.length()>0) {
+                                                    retVal += ", "+attribute+" : "+vl;
+                                                }
+                                                else {
+                                                    retVal += attribute+" : "+vl;
+                                                }
+                                            }
+                                            else {
+                                                l.debug("Can't compute the report. No id in children.");
+                                                throw new InvalidParameterException("Can't compute the report. No id in children.");
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        l.debug("Can't compute the report. No tree structure in result.");
+                                        throw new InvalidParameterException("Can't compute the report. No tree structure in result.");
+                                    }
+                                }
+                                else {
+                                    l.debug("Can't compute the report. No index structure in result.");
+                                    throw new InvalidParameterException("Can't compute the report. No index structure in result.");
+                                }
+                            }
+                            else {
+                                l.debug("Can't compute the report. No tree structure in result.");
+                                throw new InvalidParameterException("Can't compute the report. No tree structure in result.");
+                            }
+                        }
+                        else {
+                            l.debug("Can't compute the report. No lookups structure in result.");
+                            throw new InvalidParameterException("Can't compute the report. No lookups structure in result.");
+                        }
+                    }
+                    else {
+                        l.debug("Can't compute the report. No rows structure in result.");
+                        throw new InvalidParameterException("Can't compute the report. No rows structure in result.");
+                    }
+
+                    
+                }
+                else {
+                    l.debug("Can't compute the report. No data structure in result.");
+                    throw new InvalidParameterException("Can't compute the report. No data structure in result.");
+                }
+            }
+            else {
+                l.debug("Can't compute the report. No xtab_data structure in result.");
+                throw new InvalidParameterException("Can't compute the report. No xtab_data structure in result.");
+            }
+        }
+        else {
+            l.debug("Can't compute the report. No result from XTAB.");
+            throw new InvalidParameterException("Can't compute the metric. No result from XTAB.");
+        }
+        l.debug("Report uri="+reportUri+ " computed.");
+        return retVal;
+    }
+
 
     /**
      * Report definition to execute

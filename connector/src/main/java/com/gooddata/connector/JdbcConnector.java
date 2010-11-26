@@ -69,7 +69,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     private String jdbcPassword;
     private String sqlQuery;
 
-    protected static final int FETCH_SIZE = 256;
+    protected static int FETCH_SIZE = 256;
 
 
     /**
@@ -264,6 +264,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             }
 
             ResultSetCsvWriter rw = new ResultSetCsvWriter(cw);
+
             JdbcUtil.executeQuery(con, getSqlQuery(), rw, FETCH_SIZE);
             l.debug("Finished retrieving JDBC data. Retrieved "+rw.rowCnt+" rows.");
             cw.flush();
@@ -434,6 +435,10 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         String url = c.getParamMandatory("url");
         String q = c.getParamMandatory("query");
         loadDriver(drv);
+        // Fix for the MySQL driver OutOfMemory error
+        if(drv.equals("com.mysql.jdbc.Driver"))
+            FETCH_SIZE = Integer.MIN_VALUE;
+        
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         setJdbcUsername(usr);

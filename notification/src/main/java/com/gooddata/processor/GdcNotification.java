@@ -31,6 +31,7 @@ import java.util.*;
 import com.gooddata.config.Metric;
 import com.gooddata.config.NotificationConfig;
 import com.gooddata.config.NotificationMessage;
+import com.gooddata.config.Report;
 import com.gooddata.exception.*;
 import com.gooddata.filter.DuplicateMessageFilter;
 import com.gooddata.filter.MessageFilter;
@@ -284,6 +285,14 @@ public class GdcNotification {
                         vars.put(metrics.get(i).getAlias(), new Double(values[i]));
                     }
                 }
+                String[] texts = null;
+                List<Report> reports = m.getReports();
+                if(reports != null && reports.size() >0) {
+                    texts = new String[reports.size()];
+                    for(int i=0; i<reports.size(); i++) {
+                        texts[i] = rest.computeReport(reports.get(i).getUri());
+                    }
+                }
                 jc.setVars(vars);
                 boolean result = decide(e.evaluate(jc));
                 if(result) {
@@ -296,6 +305,11 @@ public class GdcNotification {
                                 fmt = DEFAULT_FORMAT;
                             DecimalFormat df = new DecimalFormat(fmt);
                             msg = msg.replace("%"+metrics.get(i).getAlias()+"%", df.format(values[i]));
+                        }
+                    }
+                    if(texts!= null && texts.length > 0 && reports != null && reports.size() > 0) {
+                        for(int i = 0 ; i < reports.size(); i++) {
+                            msg = msg.replace("%"+reports.get(i).getAlias()+"%", texts[i]);
                         }
                     }
                     String dupFilterExact = m.getDupFilterExact();

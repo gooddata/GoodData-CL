@@ -75,6 +75,7 @@ public class NotificationConfig {
     protected String toXml() throws IOException {
         XStream xstream = new XStream();
         xstream.alias("metric", Metric.class);
+        xstream.alias("report", Report.class);
         xstream.alias("message", NotificationMessage.class);
         xstream.alias("notification", NotificationConfig.class);
         return xstream.toXML(this);
@@ -97,6 +98,7 @@ public class NotificationConfig {
     public static NotificationConfig fromXml(InputStream is) throws IOException {
     	XStream xstream = new XStream();
         xstream.alias("metric", Metric.class);
+        xstream.alias("report", Report.class);
         xstream.alias("message", NotificationMessage.class);
         xstream.alias("notification", NotificationConfig.class);
         Reader r = new InputStreamReader(is, "utf8");

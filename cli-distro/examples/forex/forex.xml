@@ -4,6 +4,12 @@
   <name>forex</name>
   <columns>
     <column>
+      <name>id</name>
+      <title>Id</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+      <dataType>IDENTITY</dataType>
+    </column>
+    <column>
       <name>time</name>
       <title>TIME</title>
       <ldmType>DATE</ldmType>

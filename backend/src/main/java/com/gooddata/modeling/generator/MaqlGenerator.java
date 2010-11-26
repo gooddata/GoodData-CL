@@ -443,7 +443,7 @@ public class MaqlGenerator {
 	        }
 	        
 	        public String generateOriginalLabelMaqlDdl() {
-	            String script = "ALTER ATTRIBUTE {" + identifier + "} ADD LABELS " + defaultLabelDdl + "; # blah \n";
+	            String script = "ALTER ATTRIBUTE {" + identifier + "} ADD LABELS " + defaultLabelDdl + "; \n";
 	            return script;
 	        }
 	        

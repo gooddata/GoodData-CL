@@ -36,6 +36,7 @@ public class NotificationMessage {
     private String condition;
 
     private List<Metric> metrics = new ArrayList<Metric>();
+    private List<Report> reports = new ArrayList<Report>();
 
     private String message;
 
@@ -77,6 +78,14 @@ public class NotificationMessage {
 
     public void setMetrics(List<Metric> metrics) {
         this.metrics = metrics;
+    }
+
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
     }
 
     public String getMessage() {

@@ -89,10 +89,11 @@ public class CsvConnector extends AbstractConnector implements Connector {
         CSVReader cr = FileUtil.createUtf8CsvReader(this.getDataFile(), this.getSeparator());
         CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(dir + System.getProperty("file.separator") + "data.csv"));
         String[] header = this.populateCsvHeaderFromSchema(schema);
+        int colCnt = header.length - ((identityColumn>=0)?1:0);
         String[] row = null;
         if(hasHeader)  {
             row = cr.readNext();
-            if(row.length != header.length - ((identityColumn>=0)?1:0)) {
+            if(row.length != colCnt) {
                 throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
                         "it's configuration file. Row="+1);
             }
@@ -105,7 +106,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         int rowCnt = 0;
         while (row != null) {
             rowCnt++;
-            if(row.length != header.length - ((identityColumn>=0)?1:0)) {
+            if(row.length != colCnt) {
                 throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
                         "it's configuration file. Row="+rowCnt);
             }
