@@ -1234,7 +1234,7 @@ public class GdcRESTApiWrapper {
     private static <T extends HttpMethod> T configureHttpMethod(T request) {
         request.setRequestHeader("Content-Type", "application/json");
         request.setRequestHeader("Accept", "application/json");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.1.10-SNAPSHOT");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.1.11-SNAPSHOT");
     	return request;
     }
 
