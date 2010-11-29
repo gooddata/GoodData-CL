@@ -145,77 +145,85 @@ public class GdcDI implements Executor {
             finishedSucessfuly = true;
         }
         catch (InvalidArgumentException e) {
-            l.error("Invalid command line argument: "+e.getMessage());
+            l.error("Invalid command line argument: ",e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ",c);
                 c = c.getCause();
             }
             l.debug("Invalid command line argument:",e);
             l.info(commandsHelp());
+            finishedSucessfuly = false;
         }
         catch (InvalidCommandException e) {
-            l.error("Invalid command: "+e.getMessage());
+            l.error("Invalid command: ",e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ",c);
                 c = c.getCause();
             }
             l.debug("Invalid command.",e);
+            finishedSucessfuly = false;
         }
         catch (InvalidParameterException e) {
-            l.error("Invalid command parameter: "+e.getMessage());
+            l.error("Invalid command parameter: ", e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ",c);
                 c = c.getCause();
             }
             l.debug("Invalid command parameter.",e);
+            finishedSucessfuly = false;
         }
         catch (SfdcException e) {
-            l.error("Error communicating with SalesForce: "+e.getMessage());
+            l.error("Error communicating with SalesForce: ",e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ",c);
                 c = c.getCause();
             }
             l.debug("Error communicating with SalesForce.",e);
+            finishedSucessfuly = false;
         }
         catch (ProcessingException e) {
-            l.error("Error processing command: "+e.getMessage());
+            l.error("Error processing command: ", e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ",c);
                 c = c.getCause();
             }
             l.debug("Error processing command.",e);
+            finishedSucessfuly = false;
         }
         catch (ModelException e) {
-            l.error("Model issue: "+e.getMessage());
+            l.error("Model issue: ", e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ", c);
                 c = c.getCause();
             }
             l.debug("Model issue.",e);
+            finishedSucessfuly = false;
         }
         catch (GdcLoginException e) {
-            l.error("Error logging to GoodData. Please check your GoodData username and password: "+e.getMessage());
+            l.error("Error logging to GoodData. Please check your GoodData username and password: ", e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ",c);
                 c = c.getCause();
             }
             l.debug("Error logging to GoodData. Please check your GoodData username and password.",e);
+            finishedSucessfuly = false;
         }        
         catch (IOException e) {
-            l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '"+e.getMessage()+"'");
+            l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist.",e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '"+e.getMessage()+"'",e);
+            l.debug("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '",e);
+            finishedSucessfuly = false;
         }
         catch (InternalErrorException e) {
             Throwable c = e.getCause();
@@ -224,34 +232,36 @@ public class GdcDI implements Executor {
                         "separator and consistency (same number of columns in each row). Also, please make sure " +
                         "that the number of columns in your XML config file matches the number of rows in your " +
                         "data source. Make sure that your file is readable by other users (particularly the mysql user). " +
-                        "More info: '"+c.getMessage()+"'");
+                        "More info: ", c);
                 l.debug("Error extracting data. Can't process the incoming data. Please check the CSV file " +
                         "separator and consistency (same number of columns in each row). Also, please make sure " +
                         "that the number of columns in your XML config file matches the number of rows in your " +
                         "data source. Make sure that your file is readable by other users (particularly the mysql user). " +
-                        "More info: '"+c.getMessage()+"'",c);
+                        "More info: ",c);
             }
             else {
-                l.error("Internal error: "+e.getMessage());
+                l.error("Internal error: ",e);
                 c = e.getCause();
                 while(c!=null) {
-                    l.error("Caused by: "+c.getMessage());
+                    l.error("Caused by: ",c);
                     c = c.getCause();
                 }
                 l.debug("REST API invocation error: ",e);
             }
+            finishedSucessfuly = false;
         }
         catch (HttpMethodException e) {
-            l.error("Error executing GoodData REST API: "+e.getMessage());
+            l.error("Error executing GoodData REST API: ",e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ",c);
                 c = c.getCause();
             }
             l.debug("Error executing GoodData REST API.",e);
+            finishedSucessfuly = false;
         }
         catch (GdcRestApiException e) {
-            l.error("REST API invocation error: "+e.getMessage());
+            l.error("REST API invocation error: ", e);
             Throwable c = e.getCause();
             while(c!=null) {
                 if(c instanceof HttpMethodException) {
@@ -269,19 +279,21 @@ public class GdcDI implements Executor {
                         }
                     }
                 }
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ", c);
                 c = c.getCause();
             }
             l.debug("REST API invocation error: ", e);
+            finishedSucessfuly = false;
         }
         catch (GdcException e) {
-            l.error("Unrecognized error: "+e.getMessage());
+            l.error("Unrecognized error: ", e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
+                l.error("Caused by: ", c);
                 c = c.getCause();
             }
             l.debug("Unrecognized error: ",e);
+            finishedSucessfuly = false;
         }
     }
 
@@ -484,7 +496,7 @@ public class GdcDI implements Executor {
                         System.exit(1);
                     }
                 } catch (org.apache.commons.cli.ParseException e) {
-                    l.error("Error parsing command line parameters: "+e.getMessage());
+                    l.error("Error parsing command line parameters: ",e);
                     l.debug("Error parsing command line parameters",e);
                 }
             }
