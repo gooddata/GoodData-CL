@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.gooddata.exception.GdcIntegrationErrorException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
@@ -420,6 +421,8 @@ public abstract class AbstractConnector implements Connector {
                 if(!file.endsWith(".json"))
                     l.info(file+":\n"+result.get(file));
             }
+            throw new GdcIntegrationErrorException("Data successfully transferred but failed to load to the analytical project. " +
+                    "This is usually due to issues with data integrity (rows with different number of columns etc.).");
         }
 
     }
