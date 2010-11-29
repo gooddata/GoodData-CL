@@ -36,6 +36,7 @@ import org.apache.log4j.MDC;
 
 import com.gooddata.connector.backend.ConnectorBackend;
 import com.gooddata.connector.model.PdmSchema;
+import com.gooddata.exception.GdcIntegrationErrorException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.integration.model.Column;
@@ -384,6 +385,9 @@ public abstract class AbstractConnector implements Connector {
             for(String file : result.keySet()) {
                 l.info(file+":\n"+result.get(file));
             }
+            throw new GdcIntegrationErrorException("Data successfully transferred but failed to load to the analytical project. " +
+                    "This is usually due to issues with data integrity (rows with different number of columns etc.).");
+
         }
 
     }
