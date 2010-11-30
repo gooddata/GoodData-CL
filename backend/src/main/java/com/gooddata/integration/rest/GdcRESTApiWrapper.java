@@ -696,28 +696,44 @@ public class GdcRESTApiWrapper {
         obj.put("reportDefinition", reportDefinition);
         MetadataObject resp = new MetadataObject(createMetadataObject(projectId, obj));
 
-        String dataResultUri = executeReportDefinition(resp.getUri());
-        JSONObject result = getObjectByUri(dataResultUri);
-        if(result != null && !result.isEmpty() && !result.isNullObject()) {
-            JSONObject xtabData = result.getJSONObject("xtab_data");
-            if(xtabData != null && !xtabData.isEmpty() && !xtabData.isNullObject()) {
-                JSONArray data = xtabData.getJSONArray("data");
-                if(data != null && !data.isEmpty()) {
-                    retVal = data.getJSONArray(0).getDouble(0);
+        int retryCnt = 1000;
+        boolean hasFinished = false;
+        while(retryCnt-- > 0 && !hasFinished) {
+            try {
+                String dataResultUri = executeReportDefinition(resp.getUri());
+                JSONObject result = getObjectByUri(dataResultUri);
+                hasFinished = true;
+                if(result != null && !result.isEmpty() && !result.isNullObject()) {
+                    JSONObject xtabData = result.getJSONObject("xtab_data");
+                    if(xtabData != null && !xtabData.isEmpty() && !xtabData.isNullObject()) {
+                        JSONArray data = xtabData.getJSONArray("data");
+                        if(data != null && !data.isEmpty()) {
+                            retVal = data.getJSONArray(0).getDouble(0);
+                        }
+                        else {
+                            l.debug("Can't compute the metric. No data structure in result.");
+                            throw new InvalidParameterException("Can't compute the metric. No data structure in result.");
+                        }
+                    }
+                    else {
+                        l.debug("Can't compute the metric. No xtab_data structure in result.");
+                        throw new InvalidParameterException("Can't compute the metric. No xtab_data structure in result.");
+                    }
                 }
                 else {
-                    l.debug("Can't compute the metric. No data structure in result.");
-                    throw new InvalidParameterException("Can't compute the metric. No data structure in result.");
+                    l.debug("Can't compute the metric. No result from XTAB.");
+                    throw new InvalidParameterException("Can't compute the metric. No result from XTAB.");
                 }
             }
-            else {
-                l.debug("Can't compute the metric. No xtab_data structure in result.");
-                throw new InvalidParameterException("Can't compute the metric. No xtab_data structure in result.");
+            catch (HttpMethodNotFinishedYetException e) {
+                l.debug("computeMetric: Waiting for DataResult");
+                try {
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException ex) {
+                    // do nothing
+                }
             }
-        }
-        else {
-            l.debug("Can't compute the metric. No result from XTAB.");
-            throw new InvalidParameterException("Can't compute the metric. No result from XTAB.");
         }
         l.debug("Metric uri="+metricUri+ " computed. Result is "+retVal);
         return retVal;
@@ -732,63 +748,78 @@ public class GdcRESTApiWrapper {
         l.debug("Computing report uri="+reportUri);
         String retVal = "";
         String reportDefUri = getReportDefinition(reportUri);
-        String dataResultUri = executeReportDefinition(reportDefUri);
-        JSONObject result = getObjectByUri(dataResultUri);
-        if(result != null && !result.isEmpty() && !result.isNullObject()) {
-            JSONObject xtabData = result.getJSONObject("xtab_data");
-            if(xtabData != null && !xtabData.isEmpty() && !xtabData.isNullObject()) {
-                JSONArray data = xtabData.getJSONArray("data");
-                if(data != null && !data.isEmpty()) {
-                    double[] values = new double[data.size()];
-                    for(int i=0; i<data.size(); i++) {
-                        JSONArray vals = data.getJSONArray(i);
-                        values[i] = vals.getDouble(0);
-                    }
-                    JSONObject rows = xtabData.getJSONObject("rows");
-                    if(rows != null && !rows.isEmpty() && !rows.isNullObject()) {
-                        JSONArray lookups = rows.getJSONArray("lookups");
-                        if(lookups != null && !lookups.isEmpty()) {
-                            Map<String,String> attributes = new HashMap<String,String>();
-                            JSONObject lkpData = lookups.getJSONObject(0);
-                            for(Object key : lkpData.keySet()) {
-                                Object value = lkpData.get(key);
-                                if(key != null && value != null)
-                                    attributes.put(key.toString(), value.toString());
+        int retryCnt = 1000;
+        boolean hasFinished = false;
+        while(retryCnt-- > 0 && !hasFinished) {
+            try {
+                String dataResultUri = executeReportDefinition(reportDefUri);
+                JSONObject result = getObjectByUri(dataResultUri);
+                hasFinished = true;
+                if(result != null && !result.isEmpty() && !result.isNullObject()) {
+                    JSONObject xtabData = result.getJSONObject("xtab_data");
+                    if(xtabData != null && !xtabData.isEmpty() && !xtabData.isNullObject()) {
+                        JSONArray data = xtabData.getJSONArray("data");
+                        if(data != null && !data.isEmpty()) {
+                            double[] values = new double[data.size()];
+                            for(int i=0; i<data.size(); i++) {
+                                JSONArray vals = data.getJSONArray(i);
+                                values[i] = vals.getDouble(0);
                             }
-                            JSONObject tree = rows.getJSONObject("tree");
-                            if(tree != null && !tree.isEmpty() && !tree.isNullObject()) {
-                                Map<String,Integer> indexes = new HashMap<String,Integer>();
-                                JSONObject index = tree.getJSONObject("index");
-                                if(index != null && !index.isEmpty()) {
-                                    for(Object key : index.keySet()) {
-                                        if(key != null) {
-                                            JSONArray valIdxs = index.getJSONArray(key.toString());
-                                            if(valIdxs != null && !valIdxs.isEmpty()) {
-                                                indexes.put(key.toString(), valIdxs.getInt(0));
-                                            }
-                                        }
-
+                            JSONObject rows = xtabData.getJSONObject("rows");
+                            if(rows != null && !rows.isEmpty() && !rows.isNullObject()) {
+                                JSONArray lookups = rows.getJSONArray("lookups");
+                                if(lookups != null && !lookups.isEmpty()) {
+                                    Map<String,String> attributes = new HashMap<String,String>();
+                                    JSONObject lkpData = lookups.getJSONObject(0);
+                                    for(Object key : lkpData.keySet()) {
+                                        Object value = lkpData.get(key);
+                                        if(key != null && value != null)
+                                            attributes.put(key.toString(), value.toString());
                                     }
-                                    JSONArray children = tree.getJSONArray("children");
-                                    if(children != null && !children.isEmpty()) {
-                                        for(int i=0; i<children.size(); i++) {
-                                            JSONObject c = children.getJSONObject(i);
-                                            String id = c.getString("id");
-                                            if(id != null && id.length()>0) {
-                                                String attribute = attributes.get(id);
-                                                int v = indexes.get(id);
-                                                double vl = values[v];
-                                                if(retVal.length()>0) {
-                                                    retVal += ", "+attribute+" : "+vl;
+                                    JSONObject tree = rows.getJSONObject("tree");
+                                    if(tree != null && !tree.isEmpty() && !tree.isNullObject()) {
+                                        Map<String,Integer> indexes = new HashMap<String,Integer>();
+                                        JSONObject index = tree.getJSONObject("index");
+                                        if(index != null && !index.isEmpty()) {
+                                            for(Object key : index.keySet()) {
+                                                if(key != null) {
+                                                    JSONArray valIdxs = index.getJSONArray(key.toString());
+                                                    if(valIdxs != null && !valIdxs.isEmpty()) {
+                                                        indexes.put(key.toString(), valIdxs.getInt(0));
+                                                    }
                                                 }
-                                                else {
-                                                    retVal += attribute+" : "+vl;
+
+                                            }
+                                            JSONArray children = tree.getJSONArray("children");
+                                            if(children != null && !children.isEmpty()) {
+                                                for(int i=0; i<children.size(); i++) {
+                                                    JSONObject c = children.getJSONObject(i);
+                                                    String id = c.getString("id");
+                                                    if(id != null && id.length()>0) {
+                                                        String attribute = attributes.get(id);
+                                                        int v = indexes.get(id);
+                                                        double vl = values[v];
+                                                        if(retVal.length()>0) {
+                                                            retVal += ", "+attribute+" : "+vl;
+                                                        }
+                                                        else {
+                                                            retVal += attribute+" : "+vl;
+                                                        }
+                                                    }
+                                                    else {
+                                                        l.debug("Can't compute the report. No id in children.");
+                                                        throw new InvalidParameterException("Can't compute the report. No id in children.");
+                                                    }
                                                 }
                                             }
                                             else {
-                                                l.debug("Can't compute the report. No id in children.");
-                                                throw new InvalidParameterException("Can't compute the report. No id in children.");
+                                                l.debug("Can't compute the report. No tree structure in result.");
+                                                throw new InvalidParameterException("Can't compute the report. No tree structure in result.");
                                             }
+                                        }
+                                        else {
+                                            l.debug("Can't compute the report. No index structure in result.");
+                                            throw new InvalidParameterException("Can't compute the report. No index structure in result.");
                                         }
                                     }
                                     else {
@@ -797,40 +828,41 @@ public class GdcRESTApiWrapper {
                                     }
                                 }
                                 else {
-                                    l.debug("Can't compute the report. No index structure in result.");
-                                    throw new InvalidParameterException("Can't compute the report. No index structure in result.");
+                                    l.debug("Can't compute the report. No lookups structure in result.");
+                                    throw new InvalidParameterException("Can't compute the report. No lookups structure in result.");
                                 }
                             }
                             else {
-                                l.debug("Can't compute the report. No tree structure in result.");
-                                throw new InvalidParameterException("Can't compute the report. No tree structure in result.");
+                                l.debug("Can't compute the report. No rows structure in result.");
+                                throw new InvalidParameterException("Can't compute the report. No rows structure in result.");
                             }
+
+
                         }
                         else {
-                            l.debug("Can't compute the report. No lookups structure in result.");
-                            throw new InvalidParameterException("Can't compute the report. No lookups structure in result.");
+                            l.debug("Can't compute the report. No data structure in result.");
+                            throw new InvalidParameterException("Can't compute the report. No data structure in result.");
                         }
                     }
                     else {
-                        l.debug("Can't compute the report. No rows structure in result.");
-                        throw new InvalidParameterException("Can't compute the report. No rows structure in result.");
+                        l.debug("Can't compute the report. No xtab_data structure in result.");
+                        throw new InvalidParameterException("Can't compute the report. No xtab_data structure in result.");
                     }
-
-                    
                 }
                 else {
-                    l.debug("Can't compute the report. No data structure in result.");
-                    throw new InvalidParameterException("Can't compute the report. No data structure in result.");
+                    l.debug("Can't compute the report. No result from XTAB.");
+                    throw new InvalidParameterException("Can't compute the metric. No result from XTAB.");
                 }
             }
-            else {
-                l.debug("Can't compute the report. No xtab_data structure in result.");
-                throw new InvalidParameterException("Can't compute the report. No xtab_data structure in result.");
+            catch (HttpMethodNotFinishedYetException e) {
+                l.debug("computeReport: Waiting for DataResult");
+                try {
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException ex) {
+                    // do nothing
+                }
             }
-        }
-        else {
-            l.debug("Can't compute the report. No result from XTAB.");
-            throw new InvalidParameterException("Can't compute the metric. No result from XTAB.");
         }
         l.debug("Report uri="+reportUri+ " computed.");
         return retVal;
@@ -1936,6 +1968,87 @@ public class GdcRESTApiWrapper {
         return vars;
     }
 
+
+    public static void main(String[] args) throws Exception {
+       GdcRESTApiWrapper rest = new GdcRESTApiWrapper(new NamePasswordConfiguration("","","",""));
+        rest.listMissingMdObjects("/Users/zdenek/temp/gooddata-cli-1.2.6-SNAPSHOT/aurix.old",
+                "/Users/zdenek/temp/gooddata-cli-1.2.6-SNAPSHOT/aurix.new",
+                "/Users/zdenek/temp/gooddata-cli-1.2.6-SNAPSHOT/aurix.diff",
+                "/Users/zdenek/temp/gooddata-cli-1.2.6-SNAPSHOT/aurix.udiff");
+    }
+
+    /**
+     * Stores all metadata objects from a specified directory and adjusts the IDs by identifiers
+     * Always creates new objects
+     * @param srcDir source objects input directory
+     * @param dstDir destination objects input directory
+     * @throws IOException
+     */
+    public void listMissingMdObjects(String srcDir, String dstDir, String diffDir, String usedDiff) throws IOException {
+        final Map<String,MetadataObject> storedObjectsByIdentifier = new HashMap<String,MetadataObject>();
+        final Map<String,MetadataObject> storedObjectsById = new HashMap<String,MetadataObject>();
+        final Map<String,MetadataObject> sourceObjectsByIdentifier = new HashMap<String,MetadataObject>();
+        final Map<String,MetadataObject> sourceObjectsById = new HashMap<String,MetadataObject>();
+
+        final Map<String,MetadataObject> diffByIdentifier = new HashMap<String,MetadataObject>();
+        final Map<String,MetadataObject> diffById = new HashMap<String,MetadataObject>();
+
+        loadMdIndexes(srcDir, sourceObjectsByIdentifier, sourceObjectsById);
+        loadMdIndexes(dstDir, storedObjectsByIdentifier, storedObjectsById);
+        loadMdIndexes(diffDir, diffByIdentifier, diffById);
+
+        Set<String> src = sourceObjectsByIdentifier.keySet();
+        Set<String> dst = storedObjectsByIdentifier.keySet();
+
+        /*
+        src.removeAll(dst);
+
+
+        for(String ident : src) {
+            MetadataObject o = sourceObjectsByIdentifier.get(ident);
+            JSONObject meta = o.getMeta();
+            String uri = o.getUri();
+            String[] c =  uri.split("/");
+            String id = c[c.length - 1];
+            String type = meta.getString("category");
+            if(type.equalsIgnoreCase("attribute") ||
+                    type.equalsIgnoreCase("attributeDisplayForm") ||
+                    type.equalsIgnoreCase("fact") ) {
+                FileUtil.writeJSONToFile(o, diffDir+"/"+type+"."+ident+"."+id+".gmd");    
+            }
+        }
+        */
+        Set<String> used = new HashSet<String>();
+        for(String ident : src) {
+            MetadataObject o = sourceObjectsByIdentifier.get(ident);
+            String type = o.getType();
+            if(!type.equalsIgnoreCase("dataSet")) {
+                if(!diffByIdentifier.containsKey(ident)) {
+                    List<String> ids = o.getDependentObjectUris();
+                    for(String id : ids) {
+                        MetadataObject dob = sourceObjectsById.get(id);
+                        if(dob != null) {
+                            String doi = dob.getIdentifier();
+                            if(diffByIdentifier.containsKey(doi)) {
+                                used.add(doi);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for(String ident : used) {
+            MetadataObject o = sourceObjectsByIdentifier.get(ident);
+            JSONObject meta = o.getMeta();
+            String uri = o.getUri();
+            String[] c =  uri.split("/");
+            String id = c[c.length - 1];
+            String type = meta.getString("category");
+            FileUtil.writeJSONToFile(o, usedDiff+"/"+type+"."+ident+"."+id+".gmd");    
+        }
+
+    }
 
     /**
      * Stores all metadata objects from a specified directory and adjusts the IDs by identifiers
