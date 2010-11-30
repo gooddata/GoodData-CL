@@ -1971,10 +1971,10 @@ public class GdcRESTApiWrapper {
 
     public static void main(String[] args) throws Exception {
        GdcRESTApiWrapper rest = new GdcRESTApiWrapper(new NamePasswordConfiguration("","","",""));
-        rest.listMissingMdObjects("/Users/zdenek/temp/gooddata-cli-1.2.6-SNAPSHOT/aurix.old",
-                "/Users/zdenek/temp/gooddata-cli-1.2.6-SNAPSHOT/aurix.new",
-                "/Users/zdenek/temp/gooddata-cli-1.2.6-SNAPSHOT/aurix.diff",
-                "/Users/zdenek/temp/gooddata-cli-1.2.6-SNAPSHOT/aurix.udiff");
+        rest.listMissingMdObjects("/Users/zdenek/temp/aurix/gooddata-cli-1.2.6-SNAPSHOT/aurix.old",
+                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.6-SNAPSHOT/aurix.new",
+                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.6-SNAPSHOT/aurix.diff",
+                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.6-SNAPSHOT/aurix.udiff");
     }
 
     /**
@@ -2018,6 +2018,7 @@ public class GdcRESTApiWrapper {
             }
         }
         */
+        
         Set<String> used = new HashSet<String>();
         for(String ident : src) {
             MetadataObject o = sourceObjectsByIdentifier.get(ident);
@@ -2047,6 +2048,7 @@ public class GdcRESTApiWrapper {
             String type = meta.getString("category");
             FileUtil.writeJSONToFile(o, usedDiff+"/"+type+"."+ident+"."+id+".gmd");    
         }
+
 
     }
 
@@ -2086,10 +2088,7 @@ public class GdcRESTApiWrapper {
                             if(src != null) {
                                 String srcUri = id;
                                 String newUri = storeObjectWithDependencies(src);
-                                l.debug("storeObjectWithDependencies replacing srcUri="+"\""+srcUri+"\""+" with newUri="+"\""+newUri+"\"");
-                                content = content.replace("\""+srcUri+"\"", "\""+newUri+"\"");
-                                l.debug("storeObjectWithDependencies replacing srcUri="+"["+srcUri+"]"+" with newUri="+"["+newUri+"]");
-                                content = content.replace("["+srcUri+"]", "["+newUri+"]");
+                                content = content.replaceAll("([\\\"\\[])"+srcUri+"([\\\"\\]/])", "$1"+newUri+"$2");
                             }
                             else {
                                 l.info("Can't find object uri="+id+" in the source!");

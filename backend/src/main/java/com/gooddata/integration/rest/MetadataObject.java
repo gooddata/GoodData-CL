@@ -62,11 +62,11 @@ public class MetadataObject implements JSON, Map, Comparable {
         List<String> uris = new ArrayList<String>();
         String uri = getUri();
         String content = toString();
-        Pattern p = Pattern.compile("\\\"/gdc/md/[^/]*?/obj/[0-9]+?\\\"");
+        Pattern p = Pattern.compile("[\\\"\\[]/gdc/md/[^/]*?/obj/[0-9]+?[\\\"\\]/]");
         Matcher m = p.matcher(content);
         while(m.find()) {
             String u = m.group();
-            u = u.replace("\"","");
+            u = u.substring(1,u.length() - 1);
             if(!u.equalsIgnoreCase(uri) && !uris.contains(u))
                 uris.add(u);
         }
