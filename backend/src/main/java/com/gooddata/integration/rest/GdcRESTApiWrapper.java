@@ -2205,7 +2205,8 @@ public class GdcRESTApiWrapper {
                 }
             }
 
-            /**
+
+           /**
              * Extracts the dependent objects uris from the content
              * @return list of depenedent object uris
              */
@@ -2213,11 +2214,11 @@ public class GdcRESTApiWrapper {
                 List<String> uris = new ArrayList<String>();
                 String uri = variable.getString("uri");
                 String content = variable.toString();
-                Pattern p = Pattern.compile("\\\"/gdc/md/[^/]*?/obj/[0-9]+?\\\"");
+                Pattern p = Pattern.compile("[\\\"\\[]/gdc/md/[^/]*?/obj/[0-9]+?[\\\"\\]/]");
                 Matcher m = p.matcher(content);
                 while(m.find()) {
                     String u = m.group();
-                    u = u.replace("\"","");
+                    u = u.substring(1,u.length() - 1);
                     if(!u.equalsIgnoreCase(uri) && !uris.contains(u))
                         uris.add(u);
                 }
@@ -2267,9 +2268,7 @@ public class GdcRESTApiWrapper {
                                     MetadataObject src = sourceObjectsById.get(id);
                                     if(src != null) {
                                         String newUri = oldUriToNewUri(id);
-                                        //content = content.replace(id, newUri);
-                                        content = content.replace("\""+id+"\"", "\""+newUri+"\"");
-                                        content = content.replace("["+id+"]", "["+newUri+"]");
+                                        content = content.replaceAll("([\\\"\\[])"+id+"([\\\"\\]/])", "$1"+newUri+"$2");
 
                                     }
                                     else {
