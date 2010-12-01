@@ -81,18 +81,6 @@ bin/gdi.sh tests/naming/cmd.txt
 echo 'Dropping the naming test project and snapshots'
 drop "`cat tests/naming/pid`"
 
-echo 'Running empty_lines test'
-bin/gdi.sh tests/empty_lines/cmd.txt
-
-echo 'Dropping the empty_lines test project and snapshots'
-drop "`cat tests/empty_lines/pid`"
-
-echo 'Running empty_dates test'
-bin/gdi.sh tests/empty_dates/cmd.txt
-
-echo 'Dropping the empty_dates test project and snapshots'
-drop "`cat tests/empty_dates/pid`"
-
 echo 'Running separators test'
 bin/gdi.sh tests/separators/cmd.txt
 
@@ -110,3 +98,16 @@ bin/gdi.sh tests/drop_snapshots/cmd.txt
 
 echo 'Dropping the drop_snapshots test project and snapshots'
 drop "`cat tests/drop_snapshots/pid`"
+
+echo 'Running empty_lines test'
+bin/gdi.sh tests/empty_lines/cmd.txt
+
+echo 'Dropping the empty_lines test project and snapshots'
+drop "`cat tests/empty_lines/pid`"
+
+echo 'Running empty_dates test'
+bin/gdi.sh tests/empty_dates/cmd.txt
+
+echo 'Dropping the empty_dates test project and snapshots'
+drop "`cat tests/empty_dates/pid`"
+

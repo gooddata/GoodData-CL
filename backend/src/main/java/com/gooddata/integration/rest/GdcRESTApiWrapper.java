@@ -1971,10 +1971,10 @@ public class GdcRESTApiWrapper {
 
     public static void main(String[] args) throws Exception {
        GdcRESTApiWrapper rest = new GdcRESTApiWrapper(new NamePasswordConfiguration("","","",""));
-        rest.listMissingMdObjects("/Users/zdenek/temp/aurix/gooddata-cli-1.2.6-SNAPSHOT/aurix.old",
-                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.6-SNAPSHOT/aurix.new",
-                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.6-SNAPSHOT/aurix.diff",
-                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.6-SNAPSHOT/aurix.udiff");
+        rest.listMissingMdObjects("/Users/zdenek/temp/aurix/gooddata-cli-1.2.7-SNAPSHOT/aurix.old",
+                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.7-SNAPSHOT/aurix.new",
+                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.7-SNAPSHOT/aurix.diff",
+                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.7-SNAPSHOT/aurix.udiff");
     }
 
     /**
@@ -2438,7 +2438,7 @@ public class GdcRESTApiWrapper {
     private static <T extends HttpMethod> T configureHttpMethod(T request) {
         request.setRequestHeader("Content-Type", "application/json");
         request.setRequestHeader("Accept", "application/json");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.6-SNAPSHOT");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.7-SNAPSHOT");
         return request;
     }
 
