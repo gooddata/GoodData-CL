@@ -2254,63 +2254,65 @@ public class GdcRESTApiWrapper {
                 }
                 for(JSONObject v : vars) {
                     String newPromptUri = v.getString("prompt");
+                    String level = v.getString("level");
+                    if(level != null && "project".equalsIgnoreCase(level)) {
+                        if(newPromptUri != null && newPromptUri.length()>0) {
+                            MetadataObject newPrompt = sourceObjectsById.get(newPromptUri);
+                            if(newPrompt != null && !newPrompt.isEmpty() && !newPrompt.isNullObject()) {
+                                String newIdentifier = newPrompt.getIdentifier();
+                                if(newIdentifier != null && newIdentifier.length()>0) {
+                                    List<String> ids = getVariableDependentObjectUris(v);
+                                    v.discard("uri");
+                                    v.discard("related");
+                                    String content = v.toString();
+                                    for(String id : ids) {
+                                        MetadataObject src = sourceObjectsById.get(id);
+                                        if(src != null) {
+                                            String newUri = oldUriToNewUri(id);
+                                            content = content.replaceAll("([\\\"\\[])"+id+"([\\\"\\]/])", "$1"+newUri+"$2");
 
-                    if(newPromptUri != null && newPromptUri.length()>0) {
-                        MetadataObject newPrompt = sourceObjectsById.get(newPromptUri);
-                        if(newPrompt != null && !newPrompt.isEmpty() && !newPrompt.isNullObject()) {
-                            String newIdentifier = newPrompt.getIdentifier();
-                            if(newIdentifier != null && newIdentifier.length()>0) {
-                                List<String> ids = getVariableDependentObjectUris(v);
-                                v.discard("uri");
-                                v.discard("related");
-                                String content = v.toString();
-                                for(String id : ids) {
-                                    MetadataObject src = sourceObjectsById.get(id);
-                                    if(src != null) {
-                                        String newUri = oldUriToNewUri(id);
-                                        content = content.replaceAll("([\\\"\\[])"+id+"([\\\"\\]/])", "$1"+newUri+"$2");
-
-                                    }
-                                    else {
-                                        l.info("Can't find object uri="+id+" in the source!");
-                                    }
-                                }
-                                JSONObject variableContent = JSONObject.fromObject(content);
-                                variableContent.put("related","/gdc/projects/"+pid);
-                                JSONObject variable = new JSONObject();
-                                variable.put("variable",variableContent);
-
-                                if(oldVariablesByPromptIdentifier.containsKey(newIdentifier)) {
-                                    if(overwriteExisting) {
-                                        JSONObject oldVariable = oldVariablesByPromptIdentifier.get(newIdentifier);
-                                        String uri = oldVariable.getString("uri");
-                                        if(uri != null && uri.length()>0) {
-                                            modifyVariable(uri, variable);
                                         }
                                         else {
-                                            l.debug("Source project variable with no uri:"+v.toString(2));
-                                            throw new GdcRestApiException("Source project variable with no uri:"+v.toString(2));   
+                                            l.info("Can't find object uri="+id+" in the source!");
                                         }
                                     }
+                                    JSONObject variableContent = JSONObject.fromObject(content);
+                                    variableContent.put("related","/gdc/projects/"+pid);
+                                    JSONObject variable = new JSONObject();
+                                    variable.put("variable",variableContent);
+
+                                    if(oldVariablesByPromptIdentifier.containsKey(newIdentifier)) {
+                                        if(overwriteExisting) {
+                                            JSONObject oldVariable = oldVariablesByPromptIdentifier.get(newIdentifier);
+                                            String uri = oldVariable.getString("uri");
+                                            if(uri != null && uri.length()>0) {
+                                                modifyVariable(uri, variable);
+                                            }
+                                            else {
+                                                l.debug("Source project variable with no uri:"+v.toString(2));
+                                                throw new GdcRestApiException("Source project variable with no uri:"+v.toString(2));
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        createVariable(pid, variable);
+                                    }
+
                                 }
                                 else {
-                                    createVariable(pid, variable);
+                                    l.debug("Destination prompt with no identifier:"+newPrompt.toString(2));
+                                    throw new GdcRestApiException("Destination prompt with no identifier:"+newPrompt.toString(2));
                                 }
-
                             }
                             else {
-                                l.debug("Destination prompt with no identifier:"+newPrompt.toString(2));
-                                throw new GdcRestApiException("Destination prompt with no identifier:"+newPrompt.toString(2));
+                                l.debug("No destination prompt for source variable:"+v.toString(2));
+                                throw new GdcRestApiException("No destination prompt for source variable:"+v.toString(2));
                             }
                         }
                         else {
-                            l.debug("No destination prompt for source variable:"+v.toString(2));
-                            throw new GdcRestApiException("No destination prompt for source variable:"+v.toString(2));
+                            l.debug("Destination project variable with no prompt specification:"+v.toString(2));
+                            throw new GdcRestApiException("Destination project variable with no prompt specification:"+v.toString(2));
                         }
-                    }
-                    else {
-                        l.debug("Destination project variable with no prompt specification:"+v.toString(2));
-                        throw new GdcRestApiException("Destination project variable with no prompt specification:"+v.toString(2));
                     }
 
                 }
