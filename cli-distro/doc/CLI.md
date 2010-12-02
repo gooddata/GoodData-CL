@@ -2,10 +2,19 @@
 
 GoodData Cl supports following groups of commands:
 
- * **Project Management Commands**: create (`CreateProject`), drop (`DropProject`) or open (`OpenProject`) a project identified by a project id. You can also save a project id to a file (`StoreProject`) in order to retrieve (`RetrieveProject`) it in another command script.
- * **Connector Commands** that either generate the [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Load<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
- * **Logical Model Management Commands** generate (`GenerateMaql`) and execute (`ExecuteMaql`) the [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) script for a connector that has been previously loaded via the `Load<Source-Type>` command.
- * **Data Transfer Commands** that transform, and transfer the data from a previously loaded (`Load<Source-Type>`) connector. All the data that are transferred are accumulated in a local database (Derby SQL or MySQL) as so called snapshots. You can decide to transfer all snapshots (`TransferAllSnapshots`), any snapshot (`TransferSnapshots`) or the last snapshot (`TransferLastSnapshot`).
+* **[Project Management Commands](#project_management_commands)**: create/delete/use/remember a project  
+  `CreateProject`, `DropProject`, `OpenProject`, `StoreProject`. `RetrieveProject`
+
+* **[Connector Commands](#connector_commands)** that either generate the [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Load<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
+
+* **[Metadata Management Commands](#metadata_management_commands)**: work with project metadata (reports, dashboards, metrics, folders)  
+  `RetrieveMetadataObject`, `StoreMetadataObject`, `DropMetadataObject`, `RetrieveAllObjects`, `CopyObjects`
+
+* **[Logical Model Management Commands](#logical_model_management_commands)** generate & execute [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) script for a connector that has been previously loaded via the `Load<Source-Type>` command.  
+  `GenerateMaql`, `GenerateUpdateMaql`, `ExecuteMaql`
+
+* **[Data Transfer Commands](#data_transfer_commands)** that transform, and transfer the data from a previously loaded (`Load<Source-Type>`) connector.  
+  `TransferAllSnapshots`, `TransferSnapshots`, `TransferLastSnapshot`, `ListSnapshots`, `DropSnapshots`
 
 ## Project Initialization Workflow
 Usually you want to initialize your project with following commands:
@@ -57,19 +66,30 @@ The following paragraphs describe the specific GoodData CL commands.
   - msg - optional invitation message
   - role - optional initial user's role
 
+* `Lock`(path=&lt;file&gt;) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
+
+## Metadata Management Commands
+
 * `RetrieveMetadataObject`(id=&lt;object-id&gt;, file=&lt;file-to-store-the-object&gt;) - retrieves a metadata object and stores it in a file, must call CreateProject or OpenProject before
-  object-id - valid object id (integer number)
-  file - file where the object content (JSON) is going to be stored
+  - object-id - valid object id (integer number)
+  - file - file where the object content (JSON) is going to be stored
 
 * `StoreMetadataObject`(\[id=&lt;object-id&gt;,\] file=&lt;file-with-the-object-content&gt;) - stores a metadata object with a content (JSON) in file to the metadata server, must call CreateProject or OpenProject before
-  object-id - valid object id (integer number), if the id is specified, the object is going to be modified, if not, a new object is created
-  file - file where the object content (JSON) is stored
+  - object-id - valid object id (integer number), if the id is specified, the object is going to be modified, if not, a new object is created
+  - file - file where the object content (JSON) is stored
 
 * `DropMetadataObject`(id=&lt;object-id&gt;) - drops the object with specified id from the project's metadata, must call CreateProject or OpenProject before
-  object-id - valid object id (integer number)
+  - object-id - valid object id (integer number)
+  -
 
+* `RetrieveAllObjects`(dir=&lt;directory&gt;) - download all metadata objects (reports, dashboards, metrics, folders) and store them locally in the specified directory
+  - directory - an existing directory which CL tool will use to write store object files
+  -
 
-* `Lock`(path=&lt;file&gt;) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
+* `CopyObjects`(dir=&lt;directory&gt;, overwrite=&lt;true | false&gt;) - load a whole directory of objects (from `RetrieveAllObjects`) into an existing project
+  - directory - a directory with object files
+  - overwrite - overwrite existing objects (if conflicts are discovered)
+
 
 ## Logical Model Management Commands
 
@@ -100,6 +120,9 @@ The following paragraphs describe the specific GoodData CL commands.
 * `TransferLastSnapshot`(\[incremental=&lt;true | false&gt;\] \[, waitForFinish=&lt;true | false&gt;\]) - uploads the lastSnapshot 
   - incremental - incremental transfer (true | false), default is false
   - waitForFinish - waits for the server-side processing (true | false), default is true
+
+
+# Connector Commands
 
 ## CSV Connector Commands
 
