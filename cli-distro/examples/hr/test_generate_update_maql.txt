@@ -1,0 +1,3 @@
+RetrieveProject(fileName="examples/hr/pid");
+UseCsv(csvDataFile="examples/hr/employee.csv",header="true",configFile="examples/hr/employee.xml");
+GenerateUpdateMaql(maqlFile="examples/hr/gum.maql");

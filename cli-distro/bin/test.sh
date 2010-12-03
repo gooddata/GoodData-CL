@@ -29,6 +29,7 @@ drop "`cat examples/quotes/pid`"
 echo 'Running the HR demo'
 bin/gdi.sh examples/hr/1-department.txt
 bin/gdi.sh examples/hr/2-employee.txt
+bin/gdi.sh examples/hr/test_generate_update_maql.txt
 bin/gdi.sh examples/hr/3-salary.txt
 
 echo 'Updating the employee dataset'
