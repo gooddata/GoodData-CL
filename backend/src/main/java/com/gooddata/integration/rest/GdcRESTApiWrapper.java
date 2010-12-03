@@ -1968,15 +1968,6 @@ public class GdcRESTApiWrapper {
         return vars;
     }
 
-
-    public static void main(String[] args) throws Exception {
-       GdcRESTApiWrapper rest = new GdcRESTApiWrapper(new NamePasswordConfiguration("","","",""));
-        rest.listMissingMdObjects("/Users/zdenek/temp/aurix/gooddata-cli-1.2.7-SNAPSHOT/aurix.old",
-                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.7-SNAPSHOT/aurix.new",
-                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.7-SNAPSHOT/aurix.diff",
-                "/Users/zdenek/temp/aurix/gooddata-cli-1.2.7-SNAPSHOT/aurix.udiff");
-    }
-
     /**
      * Stores all metadata objects from a specified directory and adjusts the IDs by identifiers
      * Always creates new objects
