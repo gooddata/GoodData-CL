@@ -137,7 +137,7 @@ public class FeedDumper {
             cw.writeNext(row.toArray(new String[]{}));
         }
         l.debug("Dumped "+entries.size()+" rows from GA feed.");
-        return entries.size() - 1;
+        return entries.size();
     }
 
 }
