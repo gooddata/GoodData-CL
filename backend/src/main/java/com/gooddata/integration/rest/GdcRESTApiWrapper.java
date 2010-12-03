@@ -2084,8 +2084,8 @@ public class GdcRESTApiWrapper {
                         for(String id : ids) {
                             l.debug("storeObjectWithDependencies resolving dependent ID id="+id);
                             MetadataObject src = sourceObjectsById.get(id);
-                            l.debug("storeObjectWithDependencies found id="+id+" in source objects src="+src.toString());
                             if(src != null) {
+                                l.debug("storeObjectWithDependencies found id="+id+" in source objects src="+src.toString());
                                 String srcUri = id;
                                 String newUri = storeObjectWithDependencies(src);
                                 content = content.replaceAll("([\\\"\\[])"+srcUri+"([\\\"\\]/])", "$1"+newUri+"$2");
