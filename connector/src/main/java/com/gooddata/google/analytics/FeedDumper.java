@@ -23,28 +23,25 @@
 
 package com.gooddata.google.analytics;
 
-import com.gooddata.connector.DateColumnsExtender;
-import com.gooddata.exception.InvalidParameterException;
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.util.CSVWriter;
-import com.gooddata.connector.GaConnector;
-import com.google.gdata.data.analytics.DataEntry;
-import com.google.gdata.data.analytics.DataFeed;
-import com.google.gdata.data.analytics.Dimension;
-import com.google.gdata.data.analytics.Metric;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.gooddata.connector.DateColumnsExtender;
+import com.gooddata.connector.GaConnector;
+import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.modeling.model.SourceSchema;
+import com.gooddata.util.CSVWriter;
+import com.google.gdata.data.analytics.DataEntry;
+import com.google.gdata.data.analytics.DataFeed;
+import com.google.gdata.data.analytics.Dimension;
+import com.google.gdata.data.analytics.Metric;
 
 /**
  * Google feed dumper dumps the Google result data to CSV
@@ -141,7 +138,7 @@ public class FeedDumper {
             cw.writeNext(r);
         }
         l.debug("Dumped "+entries.size()+" rows from GA feed.");
-        return entries.size() - 1;
+        return entries.size();
     }
 
 }
