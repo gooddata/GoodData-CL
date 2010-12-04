@@ -571,7 +571,7 @@ public class MaqlGenerator {
 	        }
 	        
 	        public String generateMaqlDdlDrop() {
-	        	String script = super.generateMaqlDdlDrop();
+	            String script = "";
 	        	String reference = column.getSchemaReference();
                 boolean includeTime = column.isDatetime();
 	        	if(reference != null && reference.length() > 0) {

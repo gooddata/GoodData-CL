@@ -71,10 +71,11 @@ class DataSetDiffMaker {
 				name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "").replaceAll("_id$", "");
 				for (String pop : c.getPopulates()) {
 				    // HACK - where is this naming convention defined?
-					if (pop.endsWith(".date.long") || pop.endsWith(".date.mdyy")) { // date fact
+					if (pop.endsWith(".date.long") || pop.endsWith(".date.mdyy")) { // date attribute
 						schemaReference = pop.replaceAll("\\.date\\.(mdyy|long)$", "");
-					} else if (pop.startsWith("dt.")) { // date attribute
-					    schemaReference = pop.replaceAll("^dt\\..*\\.", "").replaceAll("_date$", "");
+					} else if (pop.startsWith("dt.")) { // date fact
+					    // schemaReference = pop.replaceAll("^dt\\..*\\.", "").replaceAll("_date$", "");
+					    continue; // date attribute provides more information than the date fact
 					}
 				}
 				
@@ -127,6 +128,9 @@ class DataSetDiffMaker {
 				throw new IllegalStateException(String.format(
 						"Unsupported naming convention: '%s' field in dataset '%s",
 						c.getName(), datasetId));
+			}
+			if ("DATE".equals(ldmType) && schemaReference == null) {
+			    continue; // date fact, let's skip it - all information will be provided by the DATE attribute
 			}
 			final SourceColumn column = new SourceColumn(name, ldmType, name); // title (3rd) arg is ignored in this use case
 			if (reference != null) {
