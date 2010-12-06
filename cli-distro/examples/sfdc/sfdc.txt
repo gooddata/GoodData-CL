@@ -30,10 +30,10 @@ ExecuteMaql(maqlFile="examples/sfdc/closed.maql");
 
 # GENERATE THE ACCOUNT CONFIG 
 # INTENTIONALLY COMMENTED OUT, A PRE-GENERATED CONFIG FILE IS INCLUDED ALREADY IN THE 'sfdc' FOLDER
-#GenerateSfdcConfig(name="Account", configFile="examples/sfdc/account.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name FROM Account");
+#GenerateSfdcConfig(name="Account", configFile="examples/sfdc/account.xml",host="www.salesforce.com",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name FROM Account");
 
 # LOAD THE ACCOUNT
-UseSfdc(configFile="examples/sfdc/account.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name FROM Account");
+UseSfdc(configFile="examples/sfdc/account.xml",host="www.salesforce.com",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name FROM Account");
 
 # GENERATE THE ACCOUNT MAQL
 GenerateMaql(maqlFile="examples/sfdc/account.maql");
@@ -46,10 +46,10 @@ TransferData(incremental="true");
 
 # GENERATE THE OPPORTUNITY CONFIG 
 # INTENTIONALLY COMMENTED OUT, A PRE-GENERATED CONFIG FILE IS INCLUDED ALREADY IN THE 'sfdc' FOLDER
-#GenerateSfdcConfig(name="Opportunity", configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
+#GenerateSfdcConfig(name="Opportunity", configFile="examples/sfdc/opportunity.xml",host="www.salesforce.com",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
 
 # LOAD THE OPPORTUNITY
-UseSfdc(configFile="examples/sfdc/opportunity.xml",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
+UseSfdc(configFile="examples/sfdc/opportunity.xml",host="www.salesforce.com",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
 
 # GENERATE THE OPPORTUNITY MAQL
 GenerateMaql(maqlFile="examples/sfdc/opportunity.maql");

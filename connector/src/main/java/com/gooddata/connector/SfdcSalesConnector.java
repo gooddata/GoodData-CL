@@ -138,7 +138,7 @@ public class SfdcSalesConnector extends SfdcConnector {
         header = dateExt.extendHeader(header);
 
         cw.writeNext(header);
-        SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
+        SoapBindingStub c = connect(getSfdcHostname(), getSfdcUsername(), getSfdcPassword(), getSfdcToken());
         List<SObject> result;
         try {
             result = executeQuery(c, query);
@@ -338,6 +338,7 @@ public class SfdcSalesConnector extends SfdcConnector {
         String usr = c.getParamMandatory("username");
         String psw = c.getParamMandatory("password");
         String t = c.getParam("token");
+        String h = c.getParam("host");
         String ac = c.getParamMandatory("accountConfigFile");
         File acf = FileUtil.getFile(ac);
         String uc = c.getParamMandatory("userConfigFile");
@@ -351,6 +352,9 @@ public class SfdcSalesConnector extends SfdcConnector {
         setUserQuery(c.getParamMandatory("userQuery"));
         setOppQuery(c.getParamMandatory("opportunityQuery"));
         setSnapshotQuery(c.getParamMandatory("snapshotQuery"));
+        if (h != null && !"".equals(h)) {
+            setSfdcHostname(h);
+        }
 
         setSfdcUsername(usr);
         setSfdcPassword(psw);

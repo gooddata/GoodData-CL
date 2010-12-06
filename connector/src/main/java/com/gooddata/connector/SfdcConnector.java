@@ -81,6 +81,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     private String sfdcPassword;
     private String sfdcQuery;
     private String sfdcToken;
+    private String sfdcHostname = "www.salesforce.com";
 
     /**
      * Creates a new SFDC connector
@@ -232,12 +233,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @param query SFDC query
      * @throws IOException if there is a problem with writing the config file
      */
-    public static void saveConfigTemplate(String name, String configFileName, String sfdcUsr, String sfdcPsw, String sfdcToken,
+    public static void saveConfigTemplate(String name, String configFileName, String sfdcHostname, String sfdcUsr, String sfdcPsw, String sfdcToken,
                                   String query)
             throws IOException {
         l.debug("Saving SFDC config template.");
         SourceSchema s = SourceSchema.createSchema(name);
-        SoapBindingStub c = connect(sfdcUsr, sfdcPsw, sfdcToken);
+        SoapBindingStub c = connect(sfdcHostname, sfdcUsr, sfdcPsw, sfdcToken);
         SObject result = executeQueryFirstRow(c, query);
         if(result != null) {
             Map<String,Field> fields = describeObject(c, result.getType());
@@ -313,7 +314,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         header = dateExt.extendHeader(header);
 
         cw.writeNext(header);
-        SoapBindingStub c = connect(getSfdcUsername(), getSfdcPassword(), getSfdcToken());
+        SoapBindingStub c = connect(getSfdcHostname(), getSfdcUsername(), getSfdcPassword(), getSfdcToken());
         List<SObject> result;
         try {
             result = executeQuery(c, getSfdcQuery());
@@ -391,14 +392,16 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @return SFDC stub
      * @throws SfdcException in case of connection issues
      */
-    protected static SoapBindingStub connect(String usr, String psw, String token) throws SfdcException {
+    protected static SoapBindingStub connect(String host, String usr, String psw, String token) throws SfdcException {
         SoapBindingStub binding;
         LoginResult loginResult;
         if (token != null) {
         	psw += token;
         }
         try {
-            binding = (SoapBindingStub) new SforceServiceLocator().getSoap();
+            SforceServiceLocator loc = new SforceServiceLocator();
+            loc.setSoapEndpointAddress(loc.getSoapAddress().replaceAll("www.salesforce.com", host));
+            binding = (SoapBindingStub) loc.getSoap();
             l.debug("Connecting to SFDC.");
             // Time out after a minute
             binding.setTimeout(60000);
@@ -559,6 +562,20 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 	}
 
     /**
+     * @return the sfdcHostname
+     */
+    public String getSfdcHostname() {
+        return sfdcHostname;
+    }
+
+    /**
+     * @param sfdcHostname the sfdcHostname to set
+     */
+    public void setSfdcHostname(String sfdcHostname) {
+        this.sfdcHostname = sfdcHostname;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
@@ -595,12 +612,16 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         String psw = c.getParamMandatory( "password");
         String q = c.getParamMandatory("query");
         String t = c.getParam("token");
+        String host = c.getParam("host");
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         setSfdcUsername(usr);
         setSfdcPassword(psw);
     	setSfdcToken(t);
         setSfdcQuery(q);
+        if (host != null && !"".equals(host)) {
+            setSfdcHostname(host);
+        }
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
@@ -621,8 +642,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         String psw = c.getParamMandatory( "password");
         String token = c.getParam("token");
         String query = c.getParamMandatory("query");
+        String host = c.getParam("host");
+        if (host == null || "".equals(host)) {
+            host = sfdcHostname;
+        }
         
-        SfdcConnector.saveConfigTemplate(name, configFile, usr, psw, token, query);
+        SfdcConnector.saveConfigTemplate(name, configFile, host, usr, psw, token, query);
         l.info("SFDC Connector configuration successfully generated. See config file: "+configFile);
     }
 }
