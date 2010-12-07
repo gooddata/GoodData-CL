@@ -3,7 +3,7 @@
 
 CreateProject(name="Google Analytics",templateUri="/projectTemplates/GoogleAnalytics");
 
-StoreProject(fileName="examples/ga/pid");   
+RememberProject(fileName="examples/ga/pid");
 
 # Please uncomment the following block (3 lines) if you want to load multiple GA profiles to a single GoodData project
 #UseCsv(csvDataFile="examples/ga/profile.csv",header="true",configFile="examples/ga/ga.profile.xml");

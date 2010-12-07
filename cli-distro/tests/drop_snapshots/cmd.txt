@@ -7,7 +7,7 @@
 CreateProject(name="HR");
 
 # Store the project ID to file for the subsequent two scripts
-StoreProject(fileName="tests/drop_snapshots/pid");
+RememberProject(fileName="tests/drop_snapshots/pid");
 
 # Load the department data file, using the XML file describing the data
 UseCsv(csvDataFile="tests/drop_snapshots/department.csv",header="true",configFile="tests/drop_snapshots/department.xml");

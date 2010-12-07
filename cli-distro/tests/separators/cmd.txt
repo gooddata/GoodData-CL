@@ -5,7 +5,7 @@
 CreateProject(name="Separators");
 
 # Store the project ID to file for possible other scripts
-StoreProject(fileName="tests/separators/pid");
+RememberProject(fileName="tests/separators/pid");
 
 # Loads time dimension to the project
 UseDateDimension(name="Separators Date");

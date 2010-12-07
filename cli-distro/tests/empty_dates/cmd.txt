@@ -5,7 +5,7 @@
 CreateProject(name="Empty Dates");
 
 # Store the project ID to file for possible other scripts
-StoreProject(fileName="tests/empty_dates/pid");
+RememberProject(fileName="tests/empty_dates/pid");
 
 # Loads time dimension to the project
 UseDateDimension(name="Empty Date");

@@ -1,7 +1,7 @@
 # This example shows how to load the Google Analytics data to the GoodData project
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
-RetrieveProject(fileName="examples/ga/pid");   
+UseProject(fileName="examples/ga/pid");   
 
 # Please uncomment the following block (2 lines) if you want to load multiple GA profiles to a single GoodData project
 #UseCsv(csvDataFile="examples/ga/profile.csv",header="true",configFile="examples/ga/ga.profile.xml");

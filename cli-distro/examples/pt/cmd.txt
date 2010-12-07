@@ -5,7 +5,7 @@
 CreateProject(name="PT");
 
 # Store the project ID to file for possible other scripts
-StoreProject(fileName="examples/pt/pid");
+RememberProject(fileName="examples/pt/pid");
 
 # Loads time dimension to the project
 UseDateDimension(name="Iteration Start");

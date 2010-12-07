@@ -9,7 +9,7 @@ tmp=`mktemp -t gdi-int-XXXXXX`
 function drop() {
     pid="$1"
     echo "OpenProject(id = \"$pid\");" > "$tmp"
-    echo "DropProject(id = \"$pid\");" >> "$tmp"
+    echo "DeleteProject(id = \"$pid\");" >> "$tmp"
     bin/gdi.sh "$tmp"
 }
 
@@ -17,7 +17,7 @@ echo 'Running quotes demo'
 bin/gdi.sh examples/quotes/quotes.txt
 
 echo 'Updating the data set in the quotes demo'
-echo "RetrieveProject(fileName = \"examples/quotes/pid\");" > "$tmp"
+echo "UseProject(fileName = \"examples/quotes/pid\");" > "$tmp"
 grep '^\(UseCsv\|Transfer\)' examples/quotes/quotes.txt >> "$tmp"
 bin/gdi.sh "$tmp"
 
@@ -33,7 +33,7 @@ bin/gdi.sh examples/hr/test_generate_update_maql.txt
 bin/gdi.sh examples/hr/3-salary.txt
 
 echo 'Updating the employee dataset'
-echo "RetrieveProject(fileName = \"examples/hr/pid\");" > "$tmp"
+echo "UseProject(fileName = \"examples/hr/pid\");" > "$tmp"
 grep '^\(UseCsv\|Transfer\)' examples/hr/2-employee.txt >> "$tmp"
 bin/gdi.sh "$tmp"
 

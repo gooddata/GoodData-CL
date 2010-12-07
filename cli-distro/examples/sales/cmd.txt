@@ -1,9 +1,9 @@
 # LOADS A SALESFORCE ACCOUNT DATA
 
 CreateProject(name="Sales Analytics");
-StoreProject(fileName="examples/sales/pid");
+RememberProject(fileName="examples/sales/pid");
 
-#RetrieveProject(fileName="examples/sales/pid");
+#UseProject(fileName="examples/sales/pid");
 
 UseDateDimension(name="Created");
 GenerateMaql(maqlFile="examples/sales/created.maql");

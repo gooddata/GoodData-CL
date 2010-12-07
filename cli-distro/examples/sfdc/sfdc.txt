@@ -4,7 +4,7 @@
 CreateProject(name="SFDC");
 
 # Store the project ID to file for possible other scripts
-StoreProject(fileName="examples/sfdc/pid");
+RememberProject(fileName="examples/sfdc/pid");
 
 # LOADS A NEW TIME DIMENSION TO THE PROJECT
 UseDateDimension(name="Created");

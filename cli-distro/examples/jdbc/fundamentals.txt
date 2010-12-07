@@ -5,7 +5,7 @@
 CreateProject(name="FUNDAMENTALS");
 
 # Store the project ID to file for possible other scripts
-StoreProject(fileName="examples/jdbc/pid");
+RememberProject(fileName="examples/jdbc/pid");
 
 # Generate config file. This command is commented out as we have done that already.
 # If you change the JDBC input data you need to re-generate the config file

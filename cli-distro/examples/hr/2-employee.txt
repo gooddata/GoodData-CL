@@ -4,7 +4,7 @@
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
 # Retrieve the project ID saved by the first script
-RetrieveProject(fileName="examples/hr/pid");
+UseProject(fileName="examples/hr/pid");
 
 # Load the employee data file, using the XML file describing the data
 UseCsv(csvDataFile="examples/hr/employee.csv",header="true",configFile="examples/hr/employee.xml");

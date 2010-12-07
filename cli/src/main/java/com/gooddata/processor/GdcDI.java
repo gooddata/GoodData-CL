@@ -549,7 +549,7 @@ public class GdcDI implements Executor {
             if(c.match("CreateProject")) {
                 createProject(c, cli, ctx);
             }
-            else if(c.match("DropProject")) {
+            else if(c.match("DropProject") || c.match("DeleteProject")) {
                 dropProject(c, cli, ctx);
             }
             else if(c.match("OpenProject")) {
@@ -557,10 +557,10 @@ public class GdcDI implements Executor {
                 l.debug("Opened project id="+ctx.getProjectId());
                 l.info("Opened project id="+ctx.getProjectId());
             }
-            else if(c.match("StoreProject")) {
+            else if(c.match("StoreProject") || c.match("RememberProject")) {
                 storeProject(c, cli, ctx);
             }
-            else if(c.match("RetrieveProject")) {
+            else if(c.match("RetrieveProject") || c.match("UseProject")) {
                 retrieveProject(c, cli, ctx);
             }
             else if(c.match( "Lock")) {
@@ -587,7 +587,7 @@ public class GdcDI implements Executor {
             else if(c.match("RetrieveAllObjects")) {
                 retrieveAllObjects(c, cli, ctx);
             }
-            else if(c.match("CopyObjects")) {
+            else if(c.match("CopyObjects") || c.match("StoreAllObjects")) {
                 copyObjects(c, cli, ctx);
             }
             else if(c.match("ExportJdbcToCsv")) {
@@ -764,7 +764,7 @@ public class GdcDI implements Executor {
         final boolean overwrite = (overwriteStr != null && "true".equalsIgnoreCase(overwriteStr));
         File dir = new File(fl);
         if(!dir.exists() || !dir.isDirectory()) {
-            throw new InvalidParameterException("The dir parameter in the CopyObjects command must be an existing directory.");
+            throw new InvalidParameterException("The dir parameter in the StoreAllObjects command must be an existing directory.");
         }
         l.info("Copying all objects from the dir "+dir+" to project "+pid);
         File tmpDir = FileUtil.createTempDir();

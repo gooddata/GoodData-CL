@@ -89,7 +89,7 @@ public class ProcessingContext {
         String pid = getProjectId();
         if(pid == null || pid.length()<=0)
             throw new InvalidCommandException("No active project. Please activate a project using CreateProject, " +
-                    "OpenProject, or RetrieveProject commands.");
+                    "OpenProject, or UseProject commands.");
         return pid;
     }
 

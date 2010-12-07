@@ -2,13 +2,13 @@
 
 GoodData Cl supports following groups of commands:
 
-* **[Project Management Commands](#project_management_commands)**: create/delete/use/remember a project  
-  `CreateProject`, `DropProject`, `OpenProject`, `StoreProject`. `RetrieveProject`
+* **[Project Management Commands](#project_management_commands)**: create/delete/use/remember a project
+  `CreateProject`, `DeleteProject`, `OpenProject`, `RememberProject`. `UseProject`
 
 * **[Connector Commands](#connector_commands)** that either generate the [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Load<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
 
 * **[Metadata Management Commands](#metadata_management_commands)**: work with project metadata (reports, dashboards, metrics, folders)  
-  `RetrieveMetadataObject`, `StoreMetadataObject`, `DropMetadataObject`, `RetrieveAllObjects`, `CopyObjects`
+  `RetrieveMetadataObject`, `StoreMetadataObject`, `DropMetadataObject`, `RetrieveAllObjects`, `StoreAllObjects`
 
 * **[Logical Model Management Commands](#logical_model_management_commands)** generate & execute [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) script for a connector that has been previously loaded via the `Load<Source-Type>` command.  
   `GenerateMaql`, `GenerateUpdateMaql`, `ExecuteMaql`
@@ -28,7 +28,7 @@ Usually you want to initialize your project with following commands:
 ## Project Data Loading Workflow
 The ongoing data loading scripts usually:
 
-1. `OpenProject` or `RetrieveProject` command.
+1. `OpenProject` or `UseProject` command.
 2. Initialize your data source Connector using a `Load<Source-Type>` command. The `Load<Source-Type>` command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
 3. `TransferAllSnapshots` or `TransferLastSnapshot` commands that transform, package, and transfer the data.
 
@@ -44,7 +44,7 @@ The following paragraphs describe the specific GoodData CL commands.
   - templateUri - (optional) project template to create the project from
 
 
-* `DropProject`(id=&lt;project-id&gt;) - drop the project on the &lt;hostname&gt; server
+* `DeleteProject`(id=&lt;project-id&gt;) - drop the project on the &lt;hostname&gt; server
 
   - project-id - optional project id, if not specified, the command tries to drop the current project
 
@@ -52,11 +52,11 @@ The following paragraphs describe the specific GoodData CL commands.
 
   - identifier - id of an existing project (takes the form of an com.gooddata.MD5 hash)
 
-* `StoreProject`(fileName=&lt;file&gt;) - saves the current project identifier into the specified file
+* `RememberProject`(fileName=&lt;file&gt;) - saves the current project identifier into the specified file
 
   - fileName - file to save the project identifier
 
-* `RetrieveProject`(fileName=&lt;file&gt;) - loads the current project identifier from the specified file
+* `UseProject`(fileName=&lt;file&gt;) - loads the current project identifier from the specified file
 
   - fileName - file to load the project identifier from
 

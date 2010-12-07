@@ -20,7 +20,7 @@ Project Management Commands:
   description  - (optional) project description
   templateUri - (optional) project template to create the project from
 
- DropProject(id=<project-id>) - drop the project on the <hostname> server
+ DeleteProject(id=<project-id>) - drop the project on the <hostname> server
   project-id - optional project id, if not specified, the command tries to drop the current project
 
  DropIntegrationDatabase() - drop the project's local transformation database
@@ -28,10 +28,10 @@ Project Management Commands:
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
   identifier - id of an existing project (takes the form of an com.gooddata.MD5 hash)
 
- StoreProject(fileName=<file>) - saves the current project identifier into the specified file
+ RememberProject(fileName=<file>) - saves the current project identifier into the specified file
   fileName - file to save the project identifier
   
- RetrieveProject(fileName=<file>) - loads the current project identifier from the specified file
+ UseProject(fileName=<file>) - loads the current project identifier from the specified file
   fileName - file to load the project identifier from
 
  InviteUser(email=<email>, msg=<msg>[, role=<admin|editor|dashboard only>]) - invites a new user to the project
@@ -53,7 +53,7 @@ Project Management Commands:
  DropMetadataObject(id=<object-id>) - drops the object with specified id from the project's metadata, must call CreateProject or OpenProject before
   object-id - valid object id (integer number)
 
- CopyObjects(dir=<directory-with-the-objects>, overwrite=<overwrite-flag>) - copies all metadata objects from the directory to the current project, must call CreateProject or OpenProject before
+ StoreAllObjects(dir=<directory-with-the-objects>, overwrite=<overwrite-flag>) - copies all metadata objects from the directory to the current project, must call CreateProject or OpenProject before
    dir - directory where the copied objects content (JSON) are stored
    overwrite - if true overwrite the existing objects in the project
 

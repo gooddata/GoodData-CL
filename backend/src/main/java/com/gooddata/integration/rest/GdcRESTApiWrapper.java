@@ -683,6 +683,7 @@ public class GdcRESTApiWrapper {
         JSONObject content = new JSONObject();
         content.put("grid", grid);
         content.put("filters",new JSONArray());
+        content.put("format","grid"); 
 
         reportDefinition.put("content", content);
 

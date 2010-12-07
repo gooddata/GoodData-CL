@@ -5,7 +5,7 @@
 CreateProject(name="Forex");
 
 # Store the project ID to file for possible other scripts
-StoreProject(fileName="examples/forex/pid");
+RememberProject(fileName="examples/forex/pid");
 
 # Loads time dimension to the project
 UseDateDimension(name="Forex", includeTime="true");
