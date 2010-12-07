@@ -70,12 +70,14 @@ class DataSetDiffMaker {
 				ldmType = SourceColumn.LDM_TYPE_DATE;
 				name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "").replaceAll("_id$", "");
 				for (String pop : c.getPopulates()) {
-				    // HACK - where is this naming convention defined?
-					if (pop.endsWith(".date.long") || pop.endsWith(".date.mdyy")) { // date attribute
-						schemaReference = pop.replaceAll("\\.date\\.(mdyy|long)$", "");
-					} else if (pop.startsWith("dt.")) { // date fact
-					    // schemaReference = pop.replaceAll("^dt\\..*\\.", "").replaceAll("_date$", "");
-					    continue; // date attribute provides more information than the date fact
+					// HACK - where is this naming convention defined?
+					if (pop.startsWith("dt.") && pop.endsWith(name)) { // date fact
+						continue; // date attribute provides more information than the date fact
+					} else if (pop.contains(".date.")) { // date attribute
+						schemaReference = pop.replaceAll("\\.date\\..*$", "");
+					} else {
+						l.warn(String.format("Cannot determine the ldm type for field '%s'", name));
+						continue;
 					}
 				}
 				
