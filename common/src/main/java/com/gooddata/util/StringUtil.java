@@ -70,8 +70,8 @@ public class StringUtil {
     public static String toTitle(String s) {
         if(s == null)
             return s;
-        Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
-        s = t.transliterate(s);
+        //Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
+        //s = t.transliterate(s);
         s = s.replaceAll("\"","");
         return s.trim();
     }
