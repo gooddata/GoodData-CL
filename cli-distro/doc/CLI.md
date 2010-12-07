@@ -80,11 +80,9 @@ The following paragraphs describe the specific GoodData CL commands.
 
 * `DropMetadataObject`(id=&lt;object-id&gt;) - drops the object with specified id from the project's metadata, must call CreateProject or OpenProject before
   - object-id - valid object id (integer number)
-  -
 
 * `RetrieveAllObjects`(dir=&lt;directory&gt;) - download all metadata objects (reports, dashboards, metrics, folders) and store them locally in the specified directory
   - directory - an existing directory which CL tool will use to write store object files
-  -
 
 * `CopyObjects`(dir=&lt;directory&gt;, overwrite=&lt;true | false&gt;) - load a whole directory of objects (from `RetrieveAllObjects`) into an existing project
   - directory - a directory with object files
