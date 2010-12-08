@@ -38,17 +38,17 @@ public class TestGdcRestApiWrapper extends TestCase {
 
     private static Logger l = Logger.getLogger(TestGdcRestApiWrapper.class);
 
-    NamePasswordConfiguration config = null;
+    //NamePasswordConfiguration config = null;
 
-    //NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","zdenek.svoboda@gooddata.com","xxx");
+    NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","zdenek.svoboda@gooddata.com","xxx");
 
     public void testComputeMetric() throws Exception {
         try {
             if(config != null) {
                 GdcRESTApiWrapper rest = new GdcRESTApiWrapper(config);
                 rest.login();
-                JSONObject j = rest.getProjectVariables("20p9kwj6xbrrlpnembpaac0vkn9pqmib");
-                System.err.println(j.toString(2));
+                String r = rest.getProjectEtlMode("ss4woqivsti4279a119xi72oz544q9p5");
+                System.err.println(r);
             }
         }
         catch(Exception e) {

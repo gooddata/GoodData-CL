@@ -34,7 +34,7 @@ Project Management Commands:
  UseProject(fileName=<file>) - loads the current project identifier from the specified file
   fileName - file to load the project identifier from
 
- InviteUser(email=<email>, msg=<msg>[, role=<admin|editor|dashboard only>]) - invites a new user to the project
+ InviteUser(email=<email>, msg=<msg>[, role=<admin|editor|dashboard only>]) - invites a new user to the project, must call CreateProject or OpenProject before
   email - the invited user's e-mail
   msg - optional invitation message
   role - initial user's role
@@ -58,6 +58,9 @@ Project Management Commands:
    overwrite - if true overwrite the existing objects in the project
 
  Lock(path=<file>) - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
+
+ MigrateDatasets(configFiles=<comma-separated-list-of-configs>) - migrates the project's datasets from CL 1.1.x to CL 1.2.x, , must call CreateProject or OpenProject before
+  configFiles - the comma separated list of ALL project's dataset's XML configuration files
 
 Logical Model Management Commands:
 ----------------------------------
