@@ -23,8 +23,6 @@ Project Management Commands:
  DeleteProject(id=<project-id>) - drop the project on the <hostname> server
   project-id - optional project id, if not specified, the command tries to drop the current project
 
- DropIntegrationDatabase() - drop the project's local transformation database
-
  OpenProject(id=<identifier>) - open an existing project for data modeling and data upload. Equivalent to providing the project identifier using the "-e" command line option.
   identifier - id of an existing project (takes the form of an com.gooddata.MD5 hash)
 
@@ -111,14 +109,14 @@ CSV Connector Commands:
 GoogleAnalytics Connector Commands:
 -----------------------------------
 
-GenerateGoogleAnalyticsConfig(name=<name>, configFile=<config>, dimensions=<pipe-separated-ga-dimensions>, metrics=<pipe-separated-ga-metrics>) - generate an XML config file based on the fields from your GA query.
+ GenerateGoogleAnalyticsConfig(name=<name>, configFile=<config>, dimensions=<pipe-separated-ga-dimensions>, metrics=<pipe-separated-ga-metrics>) - generate an XML config file based on the fields from your GA query.
   name - the new dataset name
   configFile  - path to configuration file (will be overwritten)
   dimensions - pipe (|) separated list of Google Analytics dimensions (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html)
   metrics - pipe (|) separated list of Google Analytics metrics (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html)
 
 
-UseGoogleAnalytics(configFile=<config>, username=<ga-username>, password=<ga-password>, profileId=<ga-profile-id>, dimensions=<pipe-separated-ga-dimensions>, metrics=<pipe-separated-ga-metrics>, startDate=<date>, endDate=<date>, filters=<ga-filter-string>)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
+ UseGoogleAnalytics(configFile=<config>, username=<ga-username>, password=<ga-password>, profileId=<ga-profile-id>, dimensions=<pipe-separated-ga-dimensions>, metrics=<pipe-separated-ga-metrics>, startDate=<date>, endDate=<date>, filters=<ga-filter-string>)  - load GA data file using config file describing the file structure, must call CreateProject or OpenProject before
   configFile  - path to configuration file (will be overwritten)
   token - Google Analytics AuthSub token (you must specify either the token or username/password)
   username - Google Analytics username (you must specify either the token or username/password)

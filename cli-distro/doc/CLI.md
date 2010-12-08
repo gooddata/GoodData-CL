@@ -14,7 +14,7 @@ GoodData Cl supports following groups of commands:
   `GenerateMaql`, `GenerateUpdateMaql`, `ExecuteMaql`
 
 * **[Data Transfer Commands](#data_transfer_commands)** that transform, and transfer the data from a previously loaded (`Load<Source-Type>`) connector.  
-  `TransferAllSnapshots`, `TransferSnapshots`, `TransferLastSnapshot`, `ListSnapshots`, `DropSnapshots`
+  `TransferAllSnapshots`, `TransferSnapshots`, `TransferLastSnapshot`, `ListSnapshots`
 
 ## Project Initialization Workflow
 Usually you want to initialize your project with following commands:
