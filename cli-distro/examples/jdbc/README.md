@@ -6,13 +6,13 @@ Run `gdi.sh` with the `fundamentals.txt` script. The script uses the `fundamenta
 
 _Windows:_
 
-        c:> bin\gdi.bat -u <username> -p <password> examples\jdbc\fundamentals.txt
-        Project id = 'yz5uq4am9ip3vxiou6m8xntd81r8qdh6' created.
+    c:> bin\gdi.bat -u <username> -p <password> examples\jdbc\fundamentals.txt
+    Project id = 'yz5uq4am9ip3vxiou6m8xntd81r8qdh6' created.
 
 _Unix like OS (Linux, Mac OS X and others):_
 
-        $ ./bin/gdi.sh -u <username> -p <password> examples/jdbc/fundamentals.txt
-        Project id = 'yz5uq4am9ip3vxiou6m8xntd81r8qdh6' created.
+    $ ./bin/gdi.sh -u <username> -p <password> examples/jdbc/fundamentals.txt
+    Project id = 'yz5uq4am9ip3vxiou6m8xntd81r8qdh6' created.
 
 
 ## What Next?
@@ -37,24 +37,24 @@ Then copy the `fundamentals.txt` script to `myjdbc.txt` (or pick up a better nam
 If unsure, please consult your database administrator or the following list of common JDBC drivers and sample JDBC URLs:
 
  - MySQL
-
    - driver: `com.mysql.jdbc.Driver`
    - sample url: jdbc:mysql://localhost/mydatabase
 
  - PostgreSQL:
-
    - driver: `org.postgresql.Driver`
    - sample url: jdbc:postgresql://localhost/mydatabase
 
 - Apache Derby
-
    - driver: `org.apache.derby.jdbc.EmbeddedDriver`
    - sample url: jdbc:derby:/path/to/my/data/folder
 
 - SQL Server
-
     - driver: `net.sourceforge.jtds.jdbc.Driver`
     - sample url: jdbc:jtds:sqlserver://localhost:1433/AdventureWorks
+
+**Tip:** If you're retrieving date fields from MySQL and some of them could be empty, use the `zeroDateTimeBehavior` parameter in the JDBC URL. (This is specific to MySQL.)
+
+    jdbc:mysql://<host>/<database>?zeroDateTimeBehavior=convertToNull
 
 ### Define your data set
 
@@ -72,11 +72,11 @@ Then you can generate your configuration file by executing your `configure.txt` 
 
 _Windows:_
 
-        c:> bin\gdi.sh -u <username> -p <password> configure.txt
+    c:> bin\gdi.sh -u <username> -p <password> configure.txt
 
 _Unix like OS (Linux, Mac OS X and others):_
 
-        $ ./bin/gdi.sh -u <username> -p <password> configure.txt
+    $ ./bin/gdi.sh -u <username> -p <password> configure.txt
 
 ### Review the configuration file
 

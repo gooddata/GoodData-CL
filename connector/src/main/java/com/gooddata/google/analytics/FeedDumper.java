@@ -55,6 +55,7 @@ public class FeedDumper {
 
     private static final String IN_FMT = "yyyyMMdd";
     private static final String OUT_FMT = "yyyy-MM-dd";
+
     private static Logger l = Logger.getLogger(FeedDumper.class);
 
     /**
