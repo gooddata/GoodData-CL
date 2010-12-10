@@ -57,3 +57,4 @@ In each `<column>` entry, following tags can be used:
     * kk/kkkk -- microseconds or fractions of seconds (00-99, 000-999, 0000-9999)
 7. `<reference>` - used with LABEL columns for pointing to the primary column; used with CONNECTION_POINT column and `<schemaReference>`
 8. `<schemaReference>` - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column. When connecting to a date dimension, use the same value as in the `name` parameter of the `LoadDateDimension` command (see also [the CLI commands documentation](http://developer.gooddata.com/gooddata-cl/cli-commands.html#time_dimension_connector_commands)).
+9. `<datetime>` - used in a DATE column to indicate that the date contains time (in the form of `<datetime>true</datetime>`)
