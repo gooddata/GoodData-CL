@@ -100,7 +100,6 @@ CSV Connector Commands:
   folder - folder where to place new attributes
   separator - optional field separator, the default is ','  
 
-<<<<<<< HEAD
  UseCsv(csvDataFile=<data>, configFile=<config> [, hasHeader=<true | false>] [, separator = <separator-char>]) - load CSV data file using config file describing the file structure, must call CreateProject or OpenProject before
   csvDataFile    - path to CSV datafile
   configFile  - path to XML configuration file (see the GenerateCsvConfig command that generates the config file template)
