@@ -179,11 +179,16 @@ public class SourceColumn {
     }
 
     /**
-     * LABEL's or REFERENCE's primary source column getter
-     * @return LABEL's or REFERENCE's primary source column
+     * LABEL's or REFERENCE's primary source column getter.
+     * 
+     * @return LABEL's or REFERENCE's primary source column, <tt>null</tt> for other LDM types regardless
+     *      of earlier invocations of {@link #setReference(String)}
      */
     public String getReference() {
-        return reference;
+        if (SourceColumn.LDM_TYPE_REFERENCE.equals(ldmType) || SourceColumn.LDM_TYPE_LABEL.equals(ldmType)){
+            return reference;
+        }
+        return null;
     }
 
     /**
@@ -195,11 +200,15 @@ public class SourceColumn {
     }
 
     /**
-     * LABEL's or REFERENCE's primary source schema getter
-     * @return LABEL's or REFERENCE's primary source schema
+     * LABEL's, DATE's or REFERENCE's primary source schema getter
+     * @return LABEL's, DATE's or REFERENCE's primary source schema. Returns <tt>null</tt> for other
+     *      LDM types regardless of previous invocations of {@link #setSchemaReference(String)}
      */
     public String getSchemaReference() {
-        return schemaReference;
+        if (SourceColumn.LDM_TYPE_REFERENCE.equals(ldmType) || SourceColumn.LDM_TYPE_DATE.equals(ldmType) || SourceColumn.LDM_TYPE_LABEL.equals(ldmType)){
+            return schemaReference;
+        }
+        return null;
     }
 
     /**
