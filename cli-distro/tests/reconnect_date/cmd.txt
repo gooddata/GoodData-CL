@@ -1,0 +1,42 @@
+# A simple example that loads a flat file with a stock quote data and connect a time dimension
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+CreateProject(name="Reconnect Date");
+
+# Store the project ID to file for possible other scripts
+RememberProject(fileName="tests/reconnect_date/pid");
+
+# Loads time dimension to the project
+UseDateDimension(name="Date1");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="tests/reconnect_date/date1.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="tests/reconnect_date/date1.maql");
+
+# Import yet another date dimension
+UseDateDimension(name="Date2");
+GenerateMaql(maqlFile="tests/reconnect_date/date2.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="tests/reconnect_date/date2.maql");
+
+# load the stock quotes data file
+# the data file config has been generated
+UseCsv(csvDataFile="tests/reconnect_date/data.csv",header="true",configFile="tests/reconnect_date/config.xml");
+
+# generate the stock quotes MAQL
+GenerateMaql(maqlFile="tests/reconnect_date/create.maql");
+
+# execute the stock quotes MAQL
+ExecuteMaql(maqlFile="tests/reconnect_date/create.maql");
+
+# Reconnect date field to the second date dimension
+UseCsv(csvDataFile="tests/reconnect_date/data.csv",header="true",configFile="tests/reconnect_date/config2.xml");
+GenerateUpdateMaql(maqlFile="tests/reconnect_date/reconnect_date.maql");
+ExecuteMaql(maqlFile="tests/reconnect_date/reconnect_date.maql");
+
+# transfer the stock quotes data
+TransferData();
