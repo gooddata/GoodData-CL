@@ -577,7 +577,7 @@ public class MaqlGenerator {
 	        	if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
 	                script += "# DISCONNECT THE DATE DIMENSION\n";
-	                script += "DROP {" + identifier + "};\n";
+	                script += "DROP {" + identifier + "} CASCADE;\n";
                     script += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} DROP KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
