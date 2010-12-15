@@ -4,7 +4,6 @@
 package com.gooddata.connector;
 
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.SLI;
