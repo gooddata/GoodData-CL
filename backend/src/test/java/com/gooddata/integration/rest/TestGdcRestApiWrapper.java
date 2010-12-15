@@ -47,8 +47,8 @@ public class TestGdcRestApiWrapper extends TestCase {
             if(config != null) {
                 GdcRESTApiWrapper rest = new GdcRESTApiWrapper(config);
                 rest.login();
-                JSONObject j = rest.getProjectVariables("20p9kwj6xbrrlpnembpaac0vkn9pqmib");
-                System.err.println(j.toString(2));
+                String r = rest.getProjectEtlMode("ss4woqivsti4279a119xi72oz544q9p5");
+                System.err.println(r);
             }
         }
         catch(Exception e) {

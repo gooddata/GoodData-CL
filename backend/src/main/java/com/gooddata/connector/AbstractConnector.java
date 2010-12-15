@@ -233,7 +233,7 @@ public abstract class AbstractConnector implements Connector {
     }
     
 
-    protected List<Column> populateColumnsFromSchema(SourceSchema schema) {
+    public static List<Column> populateColumnsFromSchema(SourceSchema schema) {
         List<Column> columns = new ArrayList<Column>();
         String ssn = StringUtil.toIdentifier(schema.getName());
         for(SourceColumn sc : schema.getColumns()) {

@@ -77,6 +77,7 @@ public class GdcRESTApiWrapper {
     public static final String REPORT_QUERY = "/query/reports";
     public static final String EXECUTOR = "/gdc/xtab2/executor3";
     public static final String INVITATION_URI = "/invitations";
+    public static final String ETL_MODE_URI = "/etl/mode";
     public static final String OBJ_URI = "/obj";
     public static final String VARIABLES_SEARCH_URI = "/variables/search";
     public static final String VARIABLES_CREATE_URI = "/variables/item";
@@ -93,6 +94,10 @@ public class GdcRESTApiWrapper {
     public static final String OBJ_TYPE_VARIABLE = "prompts";
     public static final String OBJ_TYPE_DASHBOARD = "projectdashboards";
     public static final String OBJ_TYPE_DOMAIN = "domains";
+
+    public static final String ETL_MODE_SLI = "SLI";
+    public static final String ETL_MODE_DLI = "DLI";
+    public static final String ETL_MODE_VOID = "VOID";
 
     public static final String DLI_MANIFEST_FILENAME = "upload_info.json";
 
@@ -2415,6 +2420,116 @@ public class GdcRESTApiWrapper {
         }
     }
 
+    /**
+     * Determines the projet's ETL mode (SLI/DLI/VOID)
+     * @param pid project id
+     * @return project's ETL mode
+     */
+    public String getProjectEtlMode(String pid) {
+        l.debug("Getting project etl status.");
+        GetMethod req = createGetMethod(getProjectMdUrl(pid) + ETL_MODE_URI );
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if(parsedResp != null && !parsedResp.isNullObject() && !parsedResp.isEmpty()) {
+                JSONObject etlMode = parsedResp.getJSONObject("etlMode");
+                if(etlMode != null && !etlMode.isNullObject() && !etlMode.isEmpty()) {
+                    String mode = etlMode.getString("mode");
+                    if(mode != null && mode.length() > 0) {
+                        return mode;
+                    }
+                    else {
+                        l.debug("Getting project etl status. No mode in the result: "+etlMode.toString());
+                        throw new GdcRestApiException("Getting project etl status. No mode in the result: "+etlMode.toString());
+                    }
+                }
+                else {
+                    l.debug("Getting project etl status. No etlMode in the result: "+parsedResp.toString());
+                    throw new GdcRestApiException("Getting project etl status. No etlMode in the result: "+parsedResp.toString());
+                }
+            }
+            else {
+                l.debug("Getting project etl status. Empty result.");
+                throw new GdcRestApiException("Getting project etl status. Empty result.");
+            }
+        }
+        finally {
+            req.releaseConnection();
+        }
+    }
+
+    protected JSONObject getMigrationRequest(List<String> manifests) {
+        JSONObject etlMode = new JSONObject();
+        etlMode.put("mode", "SLI");
+        JSONArray mnfsts = new JSONArray();
+        mnfsts.addAll(manifests);
+        etlMode.put("sli",mnfsts);
+        JSONObject ret = new JSONObject();
+        ret.put("etlMode", etlMode);
+        return ret;
+    }
+
+    /**
+     * Checks if the migration is finished
+     *
+     * @param link the link returned from the start loading
+     * @return the loading status
+     */
+    public String getMigrationStatus(String link) throws HttpMethodException {
+        l.debug("Getting project migration status uri="+link);
+        HttpMethod ptm = createGetMethod(getServerUrl() + link);
+        try {
+            String response = executeMethodOk(ptm);
+            JSONObject task = JSONObject.fromObject(response);
+            JSONObject state = task.getJSONObject("taskState");
+            if(state != null && !state.isNullObject() && !state.isEmpty()) {
+                String status = state.getString("status");
+                l.debug("Migration status="+status);
+                return status;
+            }
+            else {
+                l.debug("No taskState structure in the migration status!");
+                throw new GdcRestApiException("No taskState structure in the migration status!");
+            }
+        }
+        finally {
+            ptm.releaseConnection();
+        }
+    }
+
+    /**
+     * Migrates project datasets from DLI to SLI
+     * @param pid project ID
+     * @param manifests array of all dataset's manifests
+     */
+    public String migrateDataSets(String pid, List<String> manifests) {
+        l.debug("Migrating project to SLI.");
+        String currentMode = getProjectEtlMode(pid);
+        l.debug("Migrating project to SLI: current status is "+currentMode);
+        if(ETL_MODE_DLI.equalsIgnoreCase(currentMode) || ETL_MODE_VOID.equalsIgnoreCase(currentMode)) {
+            PostMethod req = createPostMethod(getProjectMdUrl(pid) + ETL_MODE_URI);
+            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(getMigrationRequest(manifests).toString().getBytes()));
+            req.setRequestEntity(request);
+            try {
+                String resp = executeMethodOk(req);
+                JSONObject responseObject = JSONObject.fromObject(resp);
+                String taskLink = responseObject.getString("uri");
+                return taskLink;
+
+            } catch (HttpMethodException ex) {
+                l.debug("Migrating project to SLI failed.",ex);
+                throw new GdcRestApiException("Migrating project to SLI failed.",ex);
+            } finally {
+                req.releaseConnection();
+            }
+
+        }
+        else {
+            l.debug("Migrating project to SLI: no migration needed. Skipping.");
+            return "";
+        }
+    }
+
     private static GetMethod createGetMethod(String path) {
         return configureHttpMethod(new GetMethod(path));
     }
@@ -2430,14 +2545,8 @@ public class GdcRESTApiWrapper {
     private static <T extends HttpMethod> T configureHttpMethod(T request) {
         request.setRequestHeader("Content-Type", "application/json");
         request.setRequestHeader("Accept", "application/json");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.11-SNAPSHOT");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.13-SNAPSHOT");
         return request;
     }
 
-
-
-
-    public static Logger getL() {
-        return l;
-    }
 }

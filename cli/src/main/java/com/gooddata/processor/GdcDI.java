@@ -30,7 +30,10 @@ import java.util.List;
 import java.util.Properties;
 
 import com.gooddata.connector.*;
+import com.gooddata.integration.model.Column;
+import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.MetadataObject;
+import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.DatabaseToCsv;
 import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.CommandLine;
@@ -342,7 +345,7 @@ public class GdcDI implements Executor {
         }
 
         if(cp.containsKey(CLI_PARAM_VERSION[0])) {
-            l.info("GoodData CL version 1.2.11-SNAPSHOT" +
+            l.info("GoodData CL version 1.2.13-SNAPSHOT" +
                     ((BUILD_NUMBER.length()>0) ? ", build "+BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -593,6 +596,9 @@ public class GdcDI implements Executor {
             else if(c.match("ExportJdbcToCsv")) {
                 exportJdbcToCsv(c, cli, ctx);
             }
+            else if(c.match("MigrateDatasets")) {
+                migrateDatasets(c, cli, ctx);
+            }
             else {
                 l.debug("No match command "+c.getCommand());
                 return false;
@@ -709,6 +715,64 @@ public class GdcDI implements Executor {
         String role = c.getParam("role");        
         ctx.getRestApi(p).inviteUser(pid, email, (msg != null)?(msg):(""), role);
         l.info("Succesfully invited user "+email+" to the project "+pid);
+    }
+
+    /**
+     * Migrate specified datasets
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void migrateDatasets(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
+        String pid = ctx.getProjectIdMandatory();
+        l.info("Migrating project "+pid);
+        String configFiles = c.getParamMandatory("configFiles");
+        if(configFiles != null && configFiles.length() >0) {
+            String[] schemas = configFiles.split(",");
+            if(schemas != null && schemas.length >0) {
+                List<String> manifests = new ArrayList<String>();
+                for(String schema : schemas) {
+                    File sf = new File(schema);
+                    if(sf.exists()) {
+                        SourceSchema srcSchema = SourceSchema.createSchema(sf);
+                        String ssn = StringUtil.toIdentifier(srcSchema.getName());
+                        List<Column> columns = AbstractConnector.populateColumnsFromSchema(srcSchema);
+                        SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
+                        String manifest = sli.getSLIManifest(columns);
+                        manifests.add(manifest);
+                    }
+                    else {
+                        l.debug("The configFile "+schema+" doesn't exists!");
+                        l.error("The configFile "+schema+" doesn't exists!");
+                        throw new InvalidParameterException("The configFile "+schema+" doesn't exists!");    
+                    }
+                }
+                String taskUri = ctx.getRestApi(p).migrateDataSets(pid, manifests);
+                if(taskUri != null && taskUri.length() > 0) {
+                    l.debug("Checking migration status.");
+                    String status = "";
+                    while(!status.equalsIgnoreCase("OK") && !status.equalsIgnoreCase("ERROR") && !status.equalsIgnoreCase("WARNING")) {
+                        status = ctx.getRestApi(p).getMigrationStatus(taskUri);
+                        l.debug("Migration status = "+status);
+                        Thread.sleep(500);
+                    }
+                    l.info("Migration finished with status "+status);
+                }
+                else {
+                    l.info("No migration needed anymore.");
+                }
+            }
+            else {
+                l.debug("The configFiles parameter must contain a comma separated list of schema configuration files!");
+                l.error("The configFiles parameter must contain a comma separated list of schema configuration files!");
+                throw new InvalidParameterException("The configFiles parameter must contain a comma separated list of schema configuration files!");
+            }
+        }
+        else {
+            l.debug("The configFiles parameter must contain a comma separated list of schema configuration files!");
+            l.error("The configFiles parameter must contain a comma separated list of schema configuration files!");                            
+            throw new InvalidParameterException("The configFiles parameter must contain a comma separated list of schema configuration files!");
+        }
     }
 
     /**

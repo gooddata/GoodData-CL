@@ -5,23 +5,23 @@ GoodData Cl supports following groups of commands:
 * **[Project Management Commands](#project_management_commands)**: create/delete/use/remember a project
   `CreateProject`, `DeleteProject`, `OpenProject`, `RememberProject`. `UseProject`
 
-* **[Connector Commands](#connector_commands)** that either generate the [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Load<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
+* **[Connector Commands](#connector_commands)** that either generate the [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Use<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
 
 * **[Metadata Management Commands](#metadata_management_commands)**: work with project metadata (reports, dashboards, metrics, folders)  
   `RetrieveMetadataObject`, `StoreMetadataObject`, `DropMetadataObject`, `RetrieveAllObjects`, `StoreAllObjects`
 
-* **[Logical Model Management Commands](#logical_model_management_commands)** generate & execute [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) script for a connector that has been previously loaded via the `Load<Source-Type>` command.  
+* **[Logical Model Management Commands](#logical_model_management_commands)** generate & execute [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) script for a connector that has been previously loaded via the `Use<Source-Type>` command.  
   `GenerateMaql`, `GenerateUpdateMaql`, `ExecuteMaql`
 
-* **[Data Transfer Commands](#data_transfer_commands)** that transform, and transfer the data from a previously loaded (`Load<Source-Type>`) connector.  
-  `TransferAllSnapshots`, `TransferSnapshots`, `TransferLastSnapshot`, `ListSnapshots`, `DropSnapshots`
+* **[Data Transfer Commands](#data_transfer_commands)** that transform, and transfer the data from a previously loaded (`Use<Source-Type>`) connector.  
+  `TransferAllSnapshots`, `TransferSnapshots`, `TransferLastSnapshot`, `ListSnapshots`
 
 ## Project Initialization Workflow
 Usually you want to initialize your project with following commands:
 
 1. `CreateProject` or `OpenProject`. 
 2. Optionally you generate [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) for your data source using a `Generate<Source-Type>Config` command that yields an XML configuration file. This file describes your data structure and a way how the GoodData Logical Data Model is going to be generated. Sometimes you might want to review the XML config file and perform some changes. You'll most probably want to comment out the `Generate<Source-Type>Config` after the first run.
-3. Initialize your data source Connector using a `Load<Source-Type>` command. The `Load<Source-Type>` command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
+3. Initialize your data source Connector using a `Use<Source-Type>` command. The `Use<Source-Type>` command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
 4. Generate and execute [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) for your data source using the `GenerateMaql` and `ExecuteMaql` commands. The [MAQL DDL](http://developer.gooddata.com/api/maql-ddl.html) generates your project's Logical Data Model (LDM) and Data Loading Interface (DLI). The DLI is later used by the following Data Transfer commands. You need to generate your LDM and DLI only once per each project. That is why the scripts that transfer data on regular basis don't use the the `GenerateMaql` and `ExecuteMaql` commands.
 5. `TransferAllSnapshots` or `TransferLastSnapshot` commands that transform, package, and transfer the data.
 
@@ -29,7 +29,7 @@ Usually you want to initialize your project with following commands:
 The ongoing data loading scripts usually:
 
 1. `OpenProject` or `UseProject` command.
-2. Initialize your data source Connector using a `Load<Source-Type>` command. The `Load<Source-Type>` command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
+2. Initialize your data source Connector using a `Use<Source-Type>` command. The `Use<Source-Type>` command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
 3. `TransferAllSnapshots` or `TransferLastSnapshot` commands that transform, package, and transfer the data.
 
 # Commands Reference
@@ -80,11 +80,9 @@ The following paragraphs describe the specific GoodData CL commands.
 
 * `DropMetadataObject`(id=&lt;object-id&gt;) - drops the object with specified id from the project's metadata, must call CreateProject or OpenProject before
   - object-id - valid object id (integer number)
-  -
 
 * `RetrieveAllObjects`(dir=&lt;directory&gt;) - download all metadata objects (reports, dashboards, metrics, folders) and store them locally in the specified directory
   - directory - an existing directory which CL tool will use to write store object files
-  -
 
 * `CopyObjects`(dir=&lt;directory&gt;, overwrite=&lt;true | false&gt;) - load a whole directory of objects (from `RetrieveAllObjects`) into an existing project
   - directory - a directory with object files
