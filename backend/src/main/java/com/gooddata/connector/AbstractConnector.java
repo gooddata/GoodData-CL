@@ -456,15 +456,14 @@ public abstract class AbstractConnector implements Connector {
 		final MaqlGenerator mg = new MaqlGenerator(schema);
 		
 		final StringBuilder maql = new StringBuilder();
-		if (!newColumns.isEmpty()) {
-			mg.setSynchronize(false);
-			maql.append(mg.generateMaqlAdd(newColumns, diffMaker.sourceColumns));
-		}
 		if (!deletedColumns.isEmpty()) {
 			mg.setSynchronize(false);
 			maql.append(mg.generateMaqlDrop(deletedColumns));
 		}
-
+        if (!newColumns.isEmpty()) {
+            mg.setSynchronize(false);
+            maql.append(mg.generateMaqlAdd(newColumns, diffMaker.sourceColumns));
+        }
         if (maql.length() > 0) {
         	maql.append(mg.generateMaqlSynchronize());
             l.debug("Finished maql generation maql:\n"+maql.toString());
