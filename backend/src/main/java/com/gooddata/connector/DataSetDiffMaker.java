@@ -59,6 +59,7 @@ class DataSetDiffMaker {
 			String reference = null,
 			       schemaReference = null;
 			final int prefixLen;
+			boolean remoteColumn = true;
 			
 			// fields populating a fact table column
 			if (c.getName().startsWith(factPrefix)) {   // FACT
@@ -74,8 +75,7 @@ class DataSetDiffMaker {
 					if (pop.endsWith(".date.long") || pop.endsWith(".date.mdyy")) { // date attribute
 						schemaReference = pop.replaceAll("\\.date\\.(mdyy|long)$", "");
 					} else if (pop.startsWith("dt.")) { // date fact
-					    // schemaReference = pop.replaceAll("^dt\\..*\\.", "").replaceAll("_date$", "");
-					    continue; // date attribute provides more information than the date fact
+					    remoteColumn = false; // date attribute provides more information than the date fact
 					}
 				}
 				
@@ -139,17 +139,18 @@ class DataSetDiffMaker {
 			if (schemaReference != null) {
 				column.setSchemaReference(schemaReference);
 			}
-			remoteColumns.add(column);
+			if (remoteColumn) {
+			    remoteColumns.add(column);
+			}
 			if (!contains(sourceColumns, column)) {
 			    if ("REFERENCE".equals(column.getLdmType())) {
 			        l.warn(String.format(
 			                "Reference from %s to %s.%s has been removed locally. Removing remoted references is not supported yet. Skipping.",
-			                datasetId, column.getSchemaReference(), column.getReference()));
-			    } else {
-			        deletedColumns.add(column);
-			    }
-		    }
-		}
+			                 datasetId, column.getSchemaReference(), column.getReference()));
+	            } else {
+	                deletedColumns.add(column);
+	            }
+	        }		}
 		if (sourceConnectionPoint != null && remoteConnectionPointName == null) {
 			throw new UnsupportedOperationException("Adding a new connection point is not supported yet.");
 		}
