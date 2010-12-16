@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.gooddata.connector.DateColumnsExtender;
 import com.gooddata.modeling.generator.MaqlGenerator.State.Attribute;
 import com.gooddata.modeling.generator.MaqlGenerator.State.Column;
 import com.gooddata.modeling.generator.MaqlGenerator.State.ConnectionPoint;
@@ -534,34 +535,33 @@ public class MaqlGenerator {
 
 	    // dates
 	    private class DateColumn extends Column {
+	        private final String folderStatement;
+	        private final boolean includeTime;
 
 	        DateColumn(SourceColumn column) {
-	            super(column, N.DT);
+	           super(column, N.DT);
+               String folder = column.getFolder();
+               if (folder != null && folder.length() > 0) {
+                   String sfn = StringUtil.toIdentifier(folder);
+                   folderStatement = ", FOLDER {ffld." + sfn + "}";
+               } else {
+                   folderStatement = "";
+               }
+               includeTime = column.isDatetime();
 	        }
 
 	        @Override
 	        public String generateMaqlDdlAdd() {
-	            String folderStatement = "";
-	            String folder = column.getFolder();
 	            String reference = column.getSchemaReference();
-                boolean includeTime = column.isDatetime();
-	            if (folder != null && folder.length() > 0) {
-	                String sfn = StringUtil.toIdentifier(folder);
-	                folderStatement = ", FOLDER {ffld." + sfn + "}";
-	            }
+
                 String stat = "";
 	            if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
-                    stat += "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
-	                    + " (Date)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn +"};\n"
-	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
+                    stat += generateFactMaqlCreate();
 	                stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
 	                stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() + 
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
-                        stat += "CREATE FACT {" + N.TM + "." + identifier + "} VISUAL(TITLE \"" + lcn
-                            + " (Time)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.TM_PFX + scn +"};\n"
-                            + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ N.TM + "." + identifier + "};\n\n";
                         stat += "# CONNECT THE TIME TO THE TIME DIMENSION\n";
 	                    stat += "ALTER ATTRIBUTE {"+N.TM_ATTR_NAME+reference+"} ADD KEYS {"+getFactTableName() + 
 	                        "."+N.TM_PFX + scn + "_"+N.ID+"};\n\n";
@@ -577,17 +577,36 @@ public class MaqlGenerator {
 	        	if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
 	                script += "# DISCONNECT THE DATE DIMENSION\n";
-	                script += "DROP {" + identifier + "} CASCADE;\n";
+	                script += generateFactMaqlDrop();
                     script += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} DROP KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
-                        script += "DROP {" + N.TM_PFX + identifier + "};\n";
                         script += "ALTER ATTRIBUTE {"+N.DT_ATTR_NAME+reference+"} DROP KEYS {"+getFactTableName() +
                                 "."+N.TM_PFX + scn + "_"+N.ID+"};\n\n";                        
                     }
 	            }
 	        	return script;
 	        }
+
+            public String generateFactMaqlDrop() {
+                String script = "DROP {" + identifier + "} CASCADE;\n";
+                if (includeTime) {
+                    script += "DROP {" + N.TM_PFX + identifier + "};\n";
+                }
+                return script;
+            }
+
+            public String generateFactMaqlCreate() {
+                String script = "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
+                    + " (Date)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn +"};\n"
+                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
+                if (includeTime) {
+                    script += "CREATE FACT {" + N.TM + "." + identifier + "} VISUAL(TITLE \"" + lcn
+                        + " (Time)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.TM_PFX + scn +"};\n"
+                        + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ N.TM + "." + identifier + "};\n\n";
+                }
+                return script;
+            }
 	    }
 
 
@@ -636,6 +655,58 @@ public class MaqlGenerator {
 			 }
 	    } 
 	    
+    }
+
+    /**
+     * If the deleted columns and new columns passed to MAQL identifier contained the
+     * same date fields with different schema references, the generated scripts contain
+     * redundant lines for dropping and re-creating the identical date fact. This method
+     * drops these lines from the generated MAQL DDL script.
+     *
+     * @param deletedColumns list of deleted {@link SourceColumn}s
+     * @param newColumns list of new {@link SourceColumn}s
+     * @param maql the MAQL DDL script generated by {@link MaqlGenerator} from both deleted
+     *      and new columns
+     * @return MAQL DDL script without the redundant DROP and CREATE lines
+     */
+    public String removeDropAndRecreateOfDateFacts(
+            final List<SourceColumn> deletedColumns,
+            final List<SourceColumn> newColumns,
+            final String maql) {
+
+        String result = maql;
+        for (final SourceColumn dc : newColumns) {
+            if (containsDateByName(deletedColumns, dc)) {
+                if (dc.getSchemaReference() == null) {
+                    throw new AssertionError(String.format("Date field '%s' without schemaReference", dc.getName()));
+                }
+                final State state = new State();
+                state.processColumn(dc);
+                if (state.dates.size() != 1) {
+                    throw new AssertionError(String.format("One date field processed by MaqlGenerator.State but the state object holds %d date fields", state.dates.size()));
+                }
+                final String factMaqlDrop   = state.dates.get(0).generateFactMaqlDrop();
+                final String factMaqlCreate = state.dates.get(0).generateFactMaqlCreate();
+                if (maql.contains(factMaqlDrop) && maql.contains(factMaqlCreate)) {
+                    result = result.replace(factMaqlDrop, "");
+                    result = result.replace(factMaqlCreate, "");
+                } else {
+                    throw new AssertionError("Date reconnection MAQL DDL does not contain expected fact drop/create statements");
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean containsDateByName(List<SourceColumn> newColumns, SourceColumn dc) {
+        if (SourceColumn.LDM_TYPE_DATE.equals(dc.getLdmType())) {
+            for (final SourceColumn sc : newColumns) {
+                if (sc.getName().equals(dc.getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
 
