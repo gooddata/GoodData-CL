@@ -54,19 +54,15 @@ public class DateColumnsExtender {
         dates = schema.getDates();
         for(int i= 0; i < dates.size(); i++)  {
             SourceColumn c = dates.get(i);
-            String sr = c.getSchemaReference();
-            // only process the dates with a schema reference
-            if(sr != null && sr.length() > 0) {
-                dateColumnIndexes.add(schema.getColumnIndex(c));
-                String fmt = c.getFormat();
-                if(fmt == null || fmt.length() <= 0) {
-                    if(c.isDatetime())
-                        fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
-                    else
-                        fmt = Constants.DEFAULT_DATE_FMT_STRING;
-                }
-                dateColumnFormats.add(DateTimeFormat.forPattern(fmt));
+            dateColumnIndexes.add(schema.getColumnIndex(c));
+            String fmt = c.getFormat();
+            if(fmt == null || fmt.length() <= 0) {
+                if(c.isDatetime())
+                    fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
+                else
+                    fmt = Constants.DEFAULT_DATE_FMT_STRING;
             }
+            dateColumnFormats.add(DateTimeFormat.forPattern(fmt));
         }
     }
 
@@ -81,13 +77,10 @@ public class DateColumnsExtender {
         List<String> rowExt = new ArrayList<String>();
         for(int i= 0; i < dates.size(); i++)  {
             SourceColumn c = dates.get(i);
-            String sr = c.getSchemaReference();
-            if(sr != null && sr.length() > 0) {
-                rowExt.add(StringUtil.toIdentifier(c.getName()) + N.DT_SLI_SFX);
-                if(c.isDatetime()) {
-                    rowExt.add(StringUtil.toIdentifier(c.getName()) + N.TM_SLI_SFX);
-                    rowExt.add(N.TM_PFX+StringUtil.toIdentifier(c.getName())+"_"+N.ID);
-                }
+            rowExt.add(StringUtil.toIdentifier(c.getName()) + N.DT_SLI_SFX);
+            if(c.isDatetime()) {
+                rowExt.add(StringUtil.toIdentifier(c.getName()) + N.TM_SLI_SFX);
+                rowExt.add(N.TM_PFX+StringUtil.toIdentifier(c.getName())+"_"+N.ID);
             }
         }
         if(rowExt.size() > 0)
@@ -109,37 +102,34 @@ public class DateColumnsExtender {
         List<String> rowExt = new ArrayList<String>();
         for(int i = 0; i < dateColumnIndexes.size(); i++) {
             SourceColumn c = dates.get(i);
-            String sr = c.getSchemaReference();
-            if(sr != null && sr.length() > 0) {
-                String dateValue = row[dateColumnIndexes.get(i)];
-                if(dateValue != null && dateValue.trim().length()>0) {
-                    try {
-                        DateTimeFormatter formatter = dateColumnFormats.get(i);
-                        DateTime dt = formatter.parseDateTime(dateValue);
-                        Days ds = Days.daysBetween(base, dt);
-                        rowExt.add(Integer.toString(ds.getDays() + 1));
-                        if(c.isDatetime()) {
-                            int  ts = dt.getSecondOfDay();
-                            rowExt.add(Integer.toString(ts));
-                            String scs = Integer.toString(ts);
-                            rowExt.add((scs.length()>1)?(scs):("0"+scs));
-                        }
-                    }
-                    catch (IllegalArgumentException e) {
-                        l.debug("Can't parse date "+dateValue);
-                        rowExt.add("");
-                        if(c.isDatetime()) {
-                            rowExt.add("");
-                            rowExt.add("00");
-                        }
+            String dateValue = row[dateColumnIndexes.get(i)];
+            if(dateValue != null && dateValue.trim().length()>0) {
+                try {
+                    DateTimeFormatter formatter = dateColumnFormats.get(i);
+                    DateTime dt = formatter.parseDateTime(dateValue);
+                    Days ds = Days.daysBetween(base, dt);
+                    rowExt.add(Integer.toString(ds.getDays() + 1));
+                    if(c.isDatetime()) {
+                        int  ts = dt.getSecondOfDay();
+                        rowExt.add(Integer.toString(ts));
+                        String scs = Integer.toString(ts);
+                        rowExt.add((scs.length()>1)?(scs):("0"+scs));
                     }
                 }
-                else {
+                catch (IllegalArgumentException e) {
+                    l.debug("Can't parse date "+dateValue);
                     rowExt.add("");
                     if(c.isDatetime()) {
                         rowExt.add("");
                         rowExt.add("00");
                     }
+                }
+            }
+            else {
+                rowExt.add("");
+                if(c.isDatetime()) {
+                    rowExt.add("");
+                    rowExt.add("00");
                 }
             }
         }

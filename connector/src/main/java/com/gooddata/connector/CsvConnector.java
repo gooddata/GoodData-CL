@@ -107,8 +107,15 @@ public class CsvConnector extends AbstractConnector implements Connector {
         while (row != null) {
             rowCnt++;
             if(row.length != colCnt) {
-                throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
+                if(!(row.length == 1 && row[0].length() == 0)) {
+                    // this is not empty line
+                    throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
                         "it's configuration file. Row="+rowCnt);
+                }
+                else {
+                    row = cr.readNext();
+                    continue;
+                }
             }
             if(identityColumn>=0) {
                 String key = "";

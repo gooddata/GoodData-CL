@@ -549,19 +549,21 @@ public class MaqlGenerator {
 	                String sfn = StringUtil.toIdentifier(folder);
 	                folderStatement = ", FOLDER {ffld." + sfn + "}";
 	            }
-                String stat = "";
+                String stat = "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
+                    + " (Date)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn +"};\n"
+                    + "ALTER DATATYPE {" + getFactTableName() + "."+N.DT_PFX + scn +"} INT;\n"
+                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
+                if(includeTime) {
+                    stat += "CREATE FACT {" + N.TM + "." + identifier + "} VISUAL(TITLE \"" + lcn
+                        + " (Time)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.TM_PFX + scn +"};\n"
+                        + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ N.TM + "." + identifier + "};\n\n";
+                }
 	            if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
-                    stat += "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
-	                    + " (Date)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn +"};\n"
-	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
 	                stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
 	                stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() + 
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
-                        stat += "CREATE FACT {" + N.TM + "." + identifier + "} VISUAL(TITLE \"" + lcn
-                            + " (Time)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.TM_PFX + scn +"};\n"
-                            + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ N.TM + "." + identifier + "};\n\n";
                         stat += "# CONNECT THE TIME TO THE TIME DIMENSION\n";
 	                    stat += "ALTER ATTRIBUTE {"+N.TM_ATTR_NAME+reference+"} ADD KEYS {"+getFactTableName() + 
 	                        "."+N.TM_PFX + scn + "_"+N.ID+"};\n\n";
@@ -571,13 +573,15 @@ public class MaqlGenerator {
 	        }
 	        
 	        public String generateMaqlDdlDrop() {
-	            String script = "";
 	        	String reference = column.getSchemaReference();
                 boolean includeTime = column.isDatetime();
+                String script = "DROP {" + identifier + "};\n";
+                if(includeTime) {
+                    script += "DROP {" + N.TM_PFX + identifier + "};\n";
+                }
 	        	if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
 	                script += "# DISCONNECT THE DATE DIMENSION\n";
-	                script += "DROP {" + identifier + "};\n";
                     script += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} DROP KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
