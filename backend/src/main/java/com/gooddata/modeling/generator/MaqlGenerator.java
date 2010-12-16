@@ -550,39 +550,37 @@ public class MaqlGenerator {
                includeTime = column.isDatetime();
 	        }
 
-	        @Override
+@Override
 	        public String generateMaqlDdlAdd() {
 	            String reference = column.getSchemaReference();
 
-                String stat = "";
+                String stat = generateFactMaqlCreate();
 	            if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
-                    stat += generateFactMaqlCreate();
 	                stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
-	                stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() + 
+	                stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
                         stat += "# CONNECT THE TIME TO THE TIME DIMENSION\n";
-	                    stat += "ALTER ATTRIBUTE {"+N.TM_ATTR_NAME+reference+"} ADD KEYS {"+getFactTableName() + 
+	                    stat += "ALTER ATTRIBUTE {"+N.TM_ATTR_NAME+reference+"} ADD KEYS {"+getFactTableName() +
 	                        "."+N.TM_PFX + scn + "_"+N.ID+"};\n\n";
                     }
 	            }
 	            return stat;
 	        }
-	        
+
 	        public String generateMaqlDdlDrop() {
-	            String script = "";
+	            String script = generateFactMaqlDrop();
 	        	String reference = column.getSchemaReference();
                 boolean includeTime = column.isDatetime();
 	        	if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
 	                script += "# DISCONNECT THE DATE DIMENSION\n";
-	                script += generateFactMaqlDrop();
                     script += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} DROP KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
                         script += "ALTER ATTRIBUTE {"+N.DT_ATTR_NAME+reference+"} DROP KEYS {"+getFactTableName() +
-                                "."+N.TM_PFX + scn + "_"+N.ID+"};\n\n";                        
+                                "."+N.TM_PFX + scn + "_"+N.ID+"};\n\n";
                     }
 	            }
 	        	return script;
