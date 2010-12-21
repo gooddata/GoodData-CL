@@ -29,7 +29,7 @@ The model is described by the _logical data model (LDM) diagram_ below:
 
 ![Department LDM Diagram](http://developer.gooddata.com/images/gdcl/examples/hr/hr_1_department_ldm.png "Department LDM Diagram")
 
-The _Department_ box represents both the `Department` connection point and its label and the `Records of Department` box refers to the entire data set. These boxes are called _attributes_ in GoodData jargon.
+The data model is simple so far, containing one _Department_ box  that represents so called _attribute_ in GoodData jargon.
 
 ## Employee Data Set
 

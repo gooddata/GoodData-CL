@@ -2,16 +2,16 @@
 
 This basic example loads a CSV data file containing stock quotes from the AMEX, NASDAQ and NYSE markets from January to August 2008.
 
-Run `gdi.sh` with the `cmd.txt` script as follows:
+Run `gdi.sh` with the `quotes.txt` script as follows:
 
 _Windows:_
 
-    c:> bin\gdi.bat -u <username> -p <password> examples\quotes\cmd.txt
+    c:> bin\gdi.bat -u <username> -p <password> examples\quotes\quotes.txt
     Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
 
 _Unix like OS (Linux, Mac OS X and others):_
 
-    $ ./bin/gdi.sh -u <username> -p <password> examples/quotes/cmd.txt
+    $ ./bin/gdi.sh -u <username> -p <password> examples/quotes/quotes.txt
     Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
 
 This creates a "Quotes" project in GoodData, sets up the data model and loads the data file into the project.
@@ -42,7 +42,7 @@ First `<column>` record describes the first column of the CSV file, second recor
 
 Other `ldmType`s include `CONNECTION_POINT` (a unique identifier of a record within a dataset), `LABEL` (an alias of an `ATTRIBUTE` or a `CONNECTION_POINT`) and `DATE`. For example, the `Id` field is marked as `CONNECTION_POINT`, `Company` is an alias of `SYMBOL` and the `Quote Date` holds a date formatted as `yyyy-MM-dd` (e.g. 2008-02-28 for February 28th 2008).
 
-Note the `schemaReference` property tells GoodData to connect this date field to the date dimension named _Quote_. This date dimension is created in the model by the following lines at the begining of the `cmd.txt` script:
+Note the `schemaReference` property tells GoodData to connect this date field to the date dimension named _Quote_. This date dimension is created in the model by the following lines at the begining of the `quotes.txt` script:
 
 {% highlight ruby %}
 
@@ -62,4 +62,4 @@ The light green boxes depict attributes including the `Id` connection point, the
 
 Now you can log into the [GoodData user interface](https://secure.gooddata.com/) and select the _Quotes_ project. When you switch to the _Data_ section and click _Model_ in the left menu bar you can see a data model visualization similar to what's outlined above. Then you can switch to the _Reports_ section and start building your first reports. 
 
-Read further comments in the [script file](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/quotes/cmd.txt) for instructions how to setup a repeatable data load or how to create another project based your own CSV data set.
+Read further comments in the [script file](http://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/quotes/quotes.txt) for instructions how to setup a repeatable data load or how to create another project based your own CSV data set.
