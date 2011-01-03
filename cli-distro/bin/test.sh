@@ -95,4 +95,9 @@ for backend in MYSQL DERBY ; do
     echo 'Dropping the drop_snapshots test project and snapshots'
     drop "`cat tests/drop_snapshots/pid`"
 
+    echo 'Running change_cp_label test'
+    bin/gdi.sh --backend "$backend" tests/changed_cp_label/cmd.txt
+
+    echo 'Dropping the change_cp_label test project and snapshots'
+    drop "`cat tests/change_cp_label/pid`"
 done

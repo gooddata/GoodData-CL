@@ -748,9 +748,15 @@ import com.gooddata.util.JdbcUtil.StatementHandler;
         String source = schema.getSourceTable().getName();
         String associatedSourceColumns = concatAssociatedSourceColumns(lookupTable);
 
-        return lookupTable.getAssociatedSourceColumn() + "_"+N.ID+" = (SELECT "+N.ID+" FROM " +
-              lookup + " d," + source + " o WHERE " + associatedSourceColumns + " = d."+N.HSH+" AND o."+N.SRC_ID+"= " +
-              fact + "."+N.ID+") ";
+        return String.format(
+                    "%s_%s = (SELECT MIN(%s) FROM %s d, %s o WHERE %s = d.%s AND o.%s = %s.%s GROUP BY o.%s)",
+                    lookupTable.getAssociatedSourceColumn(), N.ID,
+                    N.ID,
+                    lookup, source,
+                    associatedSourceColumns, N.HSH,
+                    N.SRC_ID, fact, N.ID,
+                    N.SRC_ID
+                );
     }
 
     /**

@@ -1,0 +1,54 @@
+# See full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+CreateProject(name="Changed Connection Point Label");
+
+# Store the project ID to file for possible other scripts
+StoreProject(fileName="tests/changed_cp_label/pid");
+
+# Load the CSV connector with the initial data file
+LoadCsv(csvDataFile="tests/changed_cp_label/dim1.csv",
+        header="true",
+        configFile="tests/changed_cp_label/dim.xml");
+
+# Generate the dimension MAQL
+GenerateMaql(maqlFile="tests/changed_cp_label/dim.maql");
+
+# Execute the dimension MAQL
+ExecuteMaql(maqlFile="tests/changed_cp_label/dim.maql");
+
+# Transfer the initial dimension data file
+TransferLastSnapshot();
+
+# Load the CSV connector with the initial data file
+LoadCsv(csvDataFile="tests/changed_cp_label/fact.csv",
+        header="true",
+        configFile="tests/changed_cp_label/fact.xml");
+
+# Generate the fact table MAQL
+GenerateMaql(maqlFile="tests/changed_cp_label/fact.maql");
+
+# Execute the fact table MAQL
+ExecuteMaql(maqlFile="tests/changed_cp_label/fact.maql");
+
+# Transfer the fact data file
+TransferLastSnapshot();
+
+# Load the CSV connector with the update data file
+LoadCsv(csvDataFile="tests/changed_cp_label/dim2.csv",
+        header="true",
+        configFile="tests/changed_cp_label/dim.xml");
+
+# Transfer the initial data file
+TransferLastSnapshot(incremental = "false");
+
+# Load the CSV connector with the initial data file
+LoadCsv(csvDataFile="tests/changed_cp_label/fact.csv",
+        header="true",
+        configFile="tests/changed_cp_label/fact.xml");
+
+# Clean-up the local integration database artifacts related to the 'dim' dataset
+DropSnapshots();
+
+# Transfer the fact data file
+TransferLastSnapshot(incremental = "false");
