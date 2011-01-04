@@ -496,7 +496,7 @@ public class GdcNotification {
 				try {
 					FileInputStream is = new FileInputStream(f);
 					props.load(is);
-                    l.debug("Succesfully red the gdi configuration from '" + f.getAbsolutePath() + "'.");                    
+                    l.debug("Successfully red the gdi configuration from '" + f.getAbsolutePath() + "'.");                    
 					return props;
 				} catch (IOException e) {
 					l.warn("Readable gdi configuration '" + f.getAbsolutePath() + "' found be error occurred reading it.");

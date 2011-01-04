@@ -155,7 +155,7 @@ public class GdcRESTApiWrapper {
             // read SST from cookie
             ssToken = extractCookie(loginPost, "GDCAuthSST");
             setTokenCookie();
-            l.debug("Succesfully logged into GoodData.");
+            l.debug("Successfully logged into GoodData.");
             JSONObject rsp = JSONObject.fromObject(resp);
             JSONObject userLogin =  rsp.getJSONObject("userLogin");
             String profileUri = userLogin.getString("profile");

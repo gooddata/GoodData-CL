@@ -664,7 +664,7 @@ public class GdcDI implements Executor {
             }
             DatabaseToCsv d = new DatabaseToCsv(drv, url, usr, psw);
             d.export(dir.getAbsolutePath());
-            l.info("All tables succesfully exported to "+dir.getAbsolutePath());
+            l.info("All tables successfully exported to "+dir.getAbsolutePath());
         }
         catch (SQLException e) {
             throw new IOException(e);
@@ -715,7 +715,7 @@ public class GdcDI implements Executor {
         String msg = c.getParam("msg");
         String role = c.getParam("role");        
         ctx.getRestApi(p).inviteUser(pid, email, (msg != null)?(msg):(""), role);
-        l.info("Succesfully invited user "+email+" to the project "+pid);
+        l.info("Successfully invited user "+email+" to the project "+pid);
     }
 
     /**
@@ -1018,7 +1018,7 @@ public class GdcDI implements Executor {
 				try {
 					FileInputStream is = new FileInputStream(f);
 					props.load(is);
-                    l.debug("Succesfully red the gdi configuration from '" + f.getAbsolutePath() + "'.");                    
+                    l.debug("Successfully red the gdi configuration from '" + f.getAbsolutePath() + "'.");                    
 					return props;
 				} catch (IOException e) {
 					l.warn("Readable gdi configuration '" + f.getAbsolutePath() + "' found be error occurred reading it.");
