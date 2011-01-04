@@ -142,6 +142,8 @@ public class DatabaseToCsv {
             while (rs.next()) {
                 for(int i = 1; i <= cnt; i++) {
                     row[i-1] = rs.getString(i);
+                    if(row[i-1] == null || rs.wasNull())
+                        row[i-1] = "";
                 }
                 cw.writeNext(row);
             }

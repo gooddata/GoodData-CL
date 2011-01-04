@@ -1783,7 +1783,7 @@ public class GdcRESTApiWrapper {
         }
     }
 
-    private HashSet ignoredTypes = new HashSet<String>(Arrays.asList(new String[] {"column","table","tableDataLoad","dimension","reportResult","reportResult2","dataLoadingColumn"}));
+    private HashSet ignoredTypes = new HashSet<String>(Arrays.asList(new String[] {"column","table","tableDataLoad","dimension","reportResult","reportResult2","dataLoadingColumn","comment"}));
 
     /**
      * Exports a MD object to disk with all dependencies

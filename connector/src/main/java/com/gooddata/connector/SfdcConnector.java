@@ -303,7 +303,9 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
 
         // Is there an IDENTITY connection point?
-        final int identityColumn = schema.getIdentityColumn();        
+        final int identityColumn = schema.getIdentityColumn();
+
+        final List<SourceColumn> columns = schema.getColumns();
 
         l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
@@ -359,7 +361,13 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                             vals[i] = "";
                         }
                     }
-                    key += vals[i] + "|";
+                    int adjustedConfigIndex = ((identityColumn >=0) && (i >= identityColumn)) ? (i+1) : (i);
+                    if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                       SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                       SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
+                    ) {
+                        key += vals[i] + "|";
+                    }
                     valsL.add(vals[i]);
                 }
 

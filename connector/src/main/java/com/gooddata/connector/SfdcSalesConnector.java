@@ -121,6 +121,7 @@ public class SfdcSalesConnector extends SfdcConnector {
 
         // Is there an IDENTITY connection point?
         final int identityColumn = schema.getIdentityColumn();
+        final List<SourceColumn> columns = schema.getColumns();
 
         Map<String, String> r = new HashMap<String, String>();
 
@@ -194,8 +195,16 @@ public class SfdcSalesConnector extends SfdcConnector {
                             val = "";
                         }
                     }
+
                     vals.add(val);
-                    digestData.append(val);
+                    int adjustedConfigIndex = ((identityColumn >=0) && (i >= identityColumn)) ? (i+1) : (i);
+                    if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                       SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                       SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
+                    ) {
+                        digestData.append(val + "|");
+                    }
+
                 }
                 // processing final snapshots
                 if(oppIds != null && accountIds != null && userIds != null) {

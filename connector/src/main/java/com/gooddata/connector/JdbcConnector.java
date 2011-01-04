@@ -204,6 +204,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
         // Is there an IDENTITY connection point?
         final int identityColumn = schema.getIdentityColumn();
+        final List<SourceColumn> columns = schema.getColumns();
         
         try {
             con = connect();
@@ -235,7 +236,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                     for (int i = 1; i <= length; i++) {
                         final int sqlType = rs.getMetaData().getColumnType(i);
                         final Object value = rs.getObject(i);
-                        if (value == null)
+                        if (value == null || rs.wasNull())
                             line[i - 1] = "";
                         else {
                             switch (sqlType) {
@@ -249,7 +250,13 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                             }
                         }
                         lineL.add(line[i-1]);
-                        key += line[i-1] + "|";
+                        int adjustedConfigIndex = ((identityColumn >=0) && (i - 1 >= identityColumn)) ? (i) : (i-1);
+                        if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                           SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                           SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
+                        ) {
+                            key += line[i-1] + "|";
+                        }
                     }
                     if(identityColumn>=0) {
                         String hex = DigestUtils.md5Hex(key);

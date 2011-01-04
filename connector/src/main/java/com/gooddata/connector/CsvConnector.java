@@ -120,8 +120,15 @@ public class CsvConnector extends AbstractConnector implements Connector {
             if(identityColumn>=0) {
                 String key = "";
                 List<String> rowL = new ArrayList<String>(row.length+1);
+                List<SourceColumn> columns = schema.getColumns();
                 for(int i=0; i< row.length; i++) {
-                    key += row[i] + "|";
+                    int adjustedConfigIndex = (i >= identityColumn) ? (i+1) : (i);
+                    if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                       SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                       SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
+                    ) {
+                        key += row[i] + "|";
+                    }
                     rowL.add(row[i]);
                 }
                 String hex = DigestUtils.md5Hex(key);

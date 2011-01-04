@@ -104,7 +104,8 @@ public class FeedDumper {
             String key = "";
             for (String dataName : headers) {
                 final String valueIn = entry.stringValueOf(dataName);
-                key += valueIn + "|";
+                if(dimensionNames.contains(dataName))
+                    key += valueIn + "|";
                 String valueOut;
                 if (GaConnector.GA_DATE.equalsIgnoreCase(dataName)) {
                 	if (valueIn == null || valueIn.length() !=8 || UNKNOWN_DATE.equals(valueIn)) {

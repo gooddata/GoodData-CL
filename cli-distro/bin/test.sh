@@ -40,11 +40,11 @@ bin/gdi.sh "$tmp"
 echo 'Dropping the HR project and snapshots'
 drop "`cat examples/hr/pid`"
 
-echo 'Running sfdc demo'
-bin/gdi.sh examples/sfdc/sfdc.txt
+#echo 'Running sfdc demo'
+#bin/gdi.sh examples/sfdc/sfdc.txt
 
-echo 'Dropping the sfdc project and snapshots'
-drop "`cat examples/sfdc/pid`"                                   c
+#echo 'Dropping the sfdc project and snapshots'
+#drop "`cat examples/sfdc/pid`"                                   c
 
 echo 'Running jdbc demo'
 bin/gdi.sh examples/jdbc/fundamentals.txt
@@ -70,11 +70,11 @@ bin/gdi.sh examples/forex/cmd.txt
 echo 'Dropping the forex project and snapshots'
 drop "`cat examples/forex/pid`"
 
-echo 'Running salesforce sales demo'
-bin/gdi.sh examples/sales/cmd.txt
+#echo 'Running salesforce sales demo'
+#bin/gdi.sh examples/sales/cmd.txt
 
-echo 'Dropping the salesforce sales project and snapshots'
-drop "`cat examples/sales/pid`"
+#echo 'Dropping the salesforce sales project and snapshots'
+#drop "`cat examples/sales/pid`"
 
 echo 'Running naming test'
 bin/gdi.sh tests/naming/cmd.txt
