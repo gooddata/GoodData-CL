@@ -44,7 +44,7 @@ In each `<column>` entry, following tags can be used:
     * INT -- min(-2147483648) max(2147483647)
     * BIGINT -- min(-1e+15) max(1e+15)
     * DATE -- 'YYYY-MM-DD'
-    * IDENTITY -- **only for** `ldmType` CONNECTION_POINT, this column is automatically populated by CL tool with MD5 hash of the whole row
+    * IDENTITY -- **only for** `ldmType` CONNECTION_POINT, this column is automatically populated by CL tool with MD5 hash of all non-fact fields (attributes, labels etc.) in the current row
 
 6. `<format>` only allowed (and required) for columns with ldmType DATE, this field specifies what the date format looks like (`yyyy-MM-dd` by default). We currently support following formatting characters:
     * yyyy -- year (e.g. 2010)
