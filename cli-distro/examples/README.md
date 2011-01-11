@@ -15,20 +15,20 @@ Each of the examples performs some or all of the steps as follows:
 
 1. CSV connector examples:
 
-    - [Quotes](quotes/#readme) - loads a simple CSV file of daily stock quotes from AMEX, NYSE and NASDAQ in 2008
-    - [Human Resources](hr/#readme) - loads three separate CSV data sets of Deparments, Employees and Paid Salaries and connect them to enable reports such as _'Total paid amount by department'_ etc.
+    - [Quotes](./quotes/#readme) - loads a simple CSV file of daily stock quotes from AMEX, NYSE and NASDAQ in 2008
+    - [Human Resources](./hr/#readme) - loads three separate CSV data sets of Deparments, Employees and Paid Salaries and connect them to enable reports such as _'Total paid amount by department'_ etc.
 
 2. JDBC connector example: 
 
-    - [Fundamentals](jdbc/#readme) - shows how to connect an existing database accessible via JDBC and create GoodData data sets from the results of `SELECT` SQL statements
+    - [Fundamentals](./jdbc/#readme) - shows how to connect an existing database accessible via JDBC and create GoodData data sets from the results of `SELECT` SQL statements
 
 3. External data connectors:
 
-    - [Google Analytics](ga/#readme) - loads your Google Analytics data to GoodData. You need a valid Google Analytics account. Note: Google Analytics does not work with Google Apps accounts
-    - [Salesforce.com](sfdc/#readme) - loads some fields from Opportunity and Account within your Salesforce.com into GoodData
+    - [Google Analytics](./ga/#readme) - loads your Google Analytics data to GoodData. You need a valid Google Analytics account. Note: Google Analytics does not work with Google Apps accounts
+    - [Salesforce.com](./sfdc/#readme) - loads some fields from Opportunity and Account within your Salesforce.com into GoodData
 
 4. Other features:
 
-    - [Forex](forex/#readme) - shows built-in support for working with date and time data
+    - [Forex](./forex/#readme) - shows built-in support for working with date and time data
 
 Feel free to start building your own integration scenarios on the top of these examples. How about fetching more metrics from GoogleAnalytics or more Salesforce modules? How about mashing up your Salesforce or GoogleAnalytics data with your internal systems? Please share your experience at the [GoodData Developer Forum](http://support.gooddata.com/forums/176660-developer-forum).
