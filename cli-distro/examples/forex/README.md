@@ -24,10 +24,10 @@ Here are the lines from `forex.txt` that take care of setting up the date & time
 
 {% highlight ruby %}
 Create/Use/OpenProject(...);
-UseDateDimension(name="Forex", includeTime="true"); // with includeTime=false sets up just the date dimension
+UseDateDimension(name="Forex", includeTime="true"); # with includeTime=false sets up just the date dimension
 GenerateMaql(maqlFile="date.maql");
 ExecuteMaql(maqlFile="date.maql");
-TransferData();                                     // this line is necessary only when includeTime=true
+TransferData();                                     # this line is necessary only when includeTime=true
 {% endhighlight %}
 
 Now that we have the date & time dimensions present in our project, we can define a mapping between the DATETIME column in `forex.csv` file and these dimensions. In the definition of your data model XML schema, the column entry for the `DATETIME` column has 4 important entries:
