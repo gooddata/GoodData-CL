@@ -123,3 +123,9 @@ bin/gdi.sh tests/gum_cp_label/cmd.txt
 
 echo 'Dropping the gum_cp_label test'
 drop "`cat tests/gum_cp_label/pid`"
+
+echo 'Running gum_label_nocp test'
+bin/gdi.sh tests/gum_label_nocp/cmd.txt
+
+echo 'Dropping the gum_label_nocp test'
+drop "`cat tests/gum_label_nocp/pid`"

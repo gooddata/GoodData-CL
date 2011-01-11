@@ -225,7 +225,7 @@ public class MaqlGenerator {
         for (final Column c : state.labels) {
             script += c.generateMaqlDdlAdd();
             Label l = (Label)c;
-            if (!cpDefLabelSet && l.attr.identifier.equals(connectionPoint.identifier)) {
+            if (!cpDefLabelSet && (connectionPoint != null) && l.attr.identifier.equals(connectionPoint.identifier)) {
                 script += l.generateMaqlDdlDefaultLabel();
                 cpDefLabelSet = true;
             }
