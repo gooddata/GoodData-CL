@@ -117,3 +117,9 @@ bin/gdi.sh tests/empty_lines/cmd.txt
 
 echo 'Dropping the empty_lines test project and snapshots'
 drop "`cat tests/empty_lines/pid`"
+
+echo 'Running gum_cp_label test'
+bin/gdi.sh tests/gum_cp_label/cmd.txt
+
+echo 'Dropping the gum_cp_label test'
+drop "`cat tests/gum_cp_label/pid`"

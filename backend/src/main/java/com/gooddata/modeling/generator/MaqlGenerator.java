@@ -38,6 +38,8 @@ import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
 
+import static com.gooddata.modeling.model.SourceColumn.*;
+
 /**
  * GoodData MAQL Generator generates the MAQL from the LDM schema object
  *
@@ -209,6 +211,14 @@ public class MaqlGenerator {
         }
         
     	state.addKnownColumns(knownColumns);
+    	if (connectionPoint == null) {
+    	    for (final Attribute attr : state.attributes.values()) {
+    	        if (LDM_TYPE_CONNECTION_POINT.equals(attr.column.getLdmType())) {
+    	            connectionPoint = (ConnectionPoint)attr;
+    	            break;
+    	        }
+    	    }
+    	}
 
         // labels last
     	boolean cpDefLabelSet = false;
@@ -346,8 +356,10 @@ public class MaqlGenerator {
 		
 		private void addKnownColumns(Iterable<SourceColumn> knownColumns) { // attributes only
 			for (SourceColumn column : knownColumns) {
-	    		if (SourceColumn.LDM_TYPE_ATTRIBUTE.equals(column.getLdmType())) {
+	    		if (LDM_TYPE_ATTRIBUTE.equals(column.getLdmType())) {
 	    			attributes.put(column.getName(), new Attribute(column));
+	    		} else if (LDM_TYPE_CONNECTION_POINT.equals(column.getLdmType())) {
+	    		    processConnectionPoint(column);
 	    		}
 	    	}
 		}
