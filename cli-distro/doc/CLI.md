@@ -48,28 +48,28 @@ The following paragraphs describe the specific GoodData CL commands.
 Project Management Commands:
 ----------------------------
 
-`CreateProject(name="...", desc="...", templateUri="...")` - create a new project on the server
+`CreateProject(name="...", desc="...", templateUri="...");` - create a new project on the server
 - name        - name of the new project
 - desc        - *(optional)* project description
 - templateUri - *(optional)* project template to create the project from
 
-`DeleteProject(id="...")` - drop the project on the server
+`DeleteProject(id="...");` - drop the project on the server
 - id - *(optional)* project id, if not specified, the command tries to drop the current project
 -
 
-`OpenProject(id="...")` - open an existing project for data modeling and data upload.
+`OpenProject(id="...");` - open an existing project for data modeling and data upload.
 - id - identifier of an existing project (takes the form of an MD5 hash)
 -
 
-`RememberProject(fileName="...")` - saves the current project identifier into the specified file
+`RememberProject(fileName="...");` - saves the current project identifier into the specified file
 - fileName - file to save the project identifier
 -
 
-`UseProject(fileName="...")` - loads the current project identifier from the specified file
+`UseProject(fileName="...");` - loads the current project identifier from the specified file
 - fileName - file to load the project identifier from
 -
 
-`InviteUser(email="...", msg="...", role="...")` - invites a new user to the project (must call `CreateProject` or `OpenProject` before)
+`InviteUser(email="...", msg="...", role="...");` - invites a new user to the project (must call `CreateProject` or `OpenProject` before)
 - email - the invited user's e-mail
 - msg   - *(optional)* invitation message
 - role  - *(optional)* initial user's role: `admin`|`editor`|`dashboard only`
@@ -83,31 +83,31 @@ Metadata Management Commands:
 > `CreateProject`, `OpenProject` or `RetrieveProject`
 > in your script at some place before these commands.
 
-`RetrieveAllObjects(dir="...")` - retrieves all metadata objects (reports, dashboards, metrics) from the current project and stores it in a directory
+`RetrieveAllObjects(dir="...");` - retrieves all metadata objects (reports, dashboards, metrics) from the current project and stores it in a directory
 - dir - directory where the objects content (JSON) are going to be stored
 -
 
-`StoreAllObjects(dir="...", overwrite="...")` - copies all metadata (reports, dashboards, metrics) objects from the directory to the current project
+`StoreAllObjects(dir="...", overwrite="...");` - copies all metadata (reports, dashboards, metrics) objects from the directory to the current project
 - dir       - directory where the copied objects content (JSON) are stored
 - overwrite - if true overwrite the existing objects in the project (true | false)
 
-`RetrieveMetadataObject(id="...", file="...")` - retrieves a metadata object and stores it in a file
+`RetrieveMetadataObject(id="...", file="...");` - retrieves a metadata object and stores it in a file
 - id   - valid object id (integer number)
 - file - file where the object content (JSON) is going to be stored
 
-`StoreMetadataObject(file="...", id="...")` - stores a metadata object with a content (JSON) in file to the metadata server
+`StoreMetadataObject(file="...", id="...");` - stores a metadata object with a content (JSON) in file to the metadata server
 - file - file where the object content (JSON) is stored
 - id   - *(optional)* valid object id (integer number), if the id is specified, the object is going to be modified, if not, a new object is created
 
-`DropMetadataObject(id="...")` - drops the object with specified id from the project's metadata
+`DropMetadataObject(id="...");` - drops the object with specified id from the project's metadata
 - id - valid object id (integer number)
 -
 
-`Lock(path="...")` - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
+`Lock(path="...");` - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 - path - path to a lock file
 -
 
-`MigrateDatasets(configFiles="...")` - migrates the project's datasets from CL 1.1.x to CL 1.2.x
+`MigrateDatasets(configFiles="...");` - migrates the project's datasets from CL 1.1.x to CL 1.2.x
 - configFiles - the comma separated list of ALL project's dataset's XML configuration files
 -
 
@@ -121,15 +121,15 @@ Logical Model Management Commands:
 > or `RetrieveProject`) commands and a `Use<Connector>`
 > command in your script at some place before these commands.
 
-`GenerateMaql(maqlFile="...")` - generate MAQL DDL script describing data model from the local config file
+`GenerateMaql(maqlFile="...");` - generate MAQL DDL script describing data model from the local config file
 - maqlFile - path to MAQL file (will be overwritten)
 -
 
-`GenerateUpdateMaql(maqlFile="...")` - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project
+`GenerateUpdateMaql(maqlFile="...");` - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project
 - maqlFile - path to MAQL file (will be overwritten)
 -
 
-`ExecuteMaql(maqlFile="...", ifExists="...")` - run MAQL DDL script on server to generate data model
+`ExecuteMaql(maqlFile="...", ifExists="...");` - run MAQL DDL script on server to generate data model
 - maqlFile - path to the MAQL file (relative to PWD)
 - ifExists - *(optional)* if set to true the command quits silently if the maqlFile does not exist (true | false, default is false)
 
@@ -143,7 +143,7 @@ Data Transfer Commands:
 > or `RetrieveProject`) commands and a `Use<Connector>`
 > command in your script at some place before these commands.
 
-`TransferData(incremental="...", waitForFinish="...")` - upload data to the GoodData server
+`TransferData(incremental="...", waitForFinish="...");` - upload data to the GoodData server
 - incremental   - *(optional)* when true, will try to append (or merge/replace via matching CONNECTION_POINT) the data. (true | false, default is false)
 - waitForFinish - *(optional)* the process waits for the server-side processing (true | false, default is true)
 
@@ -151,14 +151,14 @@ Data Transfer Commands:
 CSV Connector Commands:
 -----------------------
 
-`GenerateCsvConfig(csvHeaderFile="...", configFile="...", defaultLdmType="...", folder="...", separator="...")` - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
+`GenerateCsvConfig(csvHeaderFile="...", configFile="...", defaultLdmType="...", folder="...", separator="...");` - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
 - csvHeaderFile  - path to CSV file (only the first header row will be used)
 - configFile     - path to configuration file (will be **overwritten**)
 - defaultLdmType - *(optional)* LDM mode to be associated with new columns (only ATTRIBUTE mode is supported by the ProcessNewColumns task at this time)
 - folder         - *(optional)* folder where to place new attributes
 - separator      - *(optional)* field separator, the default is ','  
 
-`UseCsv(csvDataFile="...", configFile="...", hasHeader="...", separator = "...")` - load CSV data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
+`UseCsv(csvDataFile="...", configFile="...", hasHeader="...", separator = "...");` - load CSV data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
 - csvDataFile - path to CSV datafile
 - configFile  - path to XML configuration file (see the GenerateCsvConfig command that generates the config file template)
 - hasHeader   - *(optional)* true if the CSV file has a header row (true | false, default is true)
@@ -168,14 +168,14 @@ CSV Connector Commands:
 GoogleAnalytics Connector Commands:
 -----------------------------------
 
-`GenerateGoogleAnalyticsConfig(name="...", configFile="...", dimensions="...", metrics="...")` - generate an XML config file based on the fields from your GA query.
+`GenerateGoogleAnalyticsConfig(name="...", configFile="...", dimensions="...", metrics="...");` - generate an XML config file based on the fields from your GA query.
 - name - the new dataset name
 - configFile  - path to configuration file (will be overwritten)
 - dimensions  - pipe (|) separated list of Google Analytics dimensions (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html)
 - metrics     - pipe (|) separated list of Google Analytics metrics (see http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html)
 
 
-`UseGoogleAnalytics(configFile="...", username="...", password="...", profileId="...", dimensions="...", metrics="...", startDate="...", endDate="...", filters="...")` - load GA data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
+`UseGoogleAnalytics(configFile="...", username="...", password="...", profileId="...", dimensions="...", metrics="...", startDate="...", endDate="...", filters="...");` - load GA data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
 - configFile  - path to configuration file (will be overwritten)
 - token       - Google Analytics AuthSub token (you must specify either the token or username/password)
 - username    - Google Analytics username (you must specify either the token or username/password)
@@ -191,7 +191,7 @@ GoogleAnalytics Connector Commands:
 JDBC Connector Commands:
 ------------------------
 
-`GenerateJdbcConfig(name="...", configFile="...", driver="...", url="...", query="...", username="...", password="...")`  - generate an XML config file based on the fields from your JDBC query.
+`GenerateJdbcConfig(name="...", configFile="...", driver="...", url="...", query="...", username="...", password="...");`  - generate an XML config file based on the fields from your JDBC query.
 - name       - the new dataset name
 - configFile - path to configuration file (will be overwritten)
 - driver     - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
@@ -200,7 +200,7 @@ JDBC Connector Commands:
 - username   - *(optional)* JDBC username
 - password   - *(optional)* JDBC password
   
-`UseJdbc(configFile="...", driver="...", url="...", query="...", username="...", password="...")` - load JDBC data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
+`UseJdbc(configFile="...", driver="...", url="...", query="...", username="...", password="...");` - load JDBC data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
 - configFile - path to configuration file (will be overwritten)
 - driver     - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
 - url        - JDBC url (e.g. "jdbc:derby:mydb")
@@ -208,7 +208,7 @@ JDBC Connector Commands:
 - username   - *(optional)* JDBC username
 - password   - *(optional)* JDBC password
 
-`ExportJdbcToCsv(dir="...", driver="...", url="...", username="...", password="...")` - exports all tables from the database to CSV file
+`ExportJdbcToCsv(dir="...", driver="...", url="...", username="...", password="...");` - exports all tables from the database to CSV file
 - dir      - target directory
 - driver   - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
 - url      - JDBC url (e.g. "jdbc:derby:mydb")
@@ -219,7 +219,7 @@ JDBC Connector Commands:
 SalesForce Connector Commands:
 ------------------------------
 
-`GenerateSfdcConfig(name="...", configFile="...", query="...", username="...", password="...", token="...")` - generate an XML config file based on the fields from your SFDC query.
+`GenerateSfdcConfig(name="...", configFile="...", query="...", username="...", password="...", token="...");` - generate an XML config file based on the fields from your SFDC query.
 - name       - the new dataset name
 - configFile - path to configuration file
 - query      - SOQL query (e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
@@ -227,7 +227,7 @@ SalesForce Connector Commands:
 - password   - SFDC password
 - token      - SFDC security token (you may append the security token to the password instead using this parameter)
   
-`UseSfdc(configFile="...", query="...", username="...", password="...", token="...")` - load SalesForce data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
+`UseSfdc(configFile="...", query="...", username="...", password="...", token="...");` - load SalesForce data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
 - configFile - path to configuration file (will be overwritten)
 - query      - SOQL query (e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
 - username   - SFDC username
@@ -237,7 +237,7 @@ SalesForce Connector Commands:
 SalesForce Sales Connector Commands:
 ------------------------------------
 
-`UseSfdcSales(username="...", password="...", token="...", accountQuery="...", userQuery="...", opportunityQuery="...", snapshotQuery="...", accountConfigFile="...", userConfigFile="...", opportunityConfigFile="...", snapshotConfigFile="...")`  - load SalesForce sales data, must call `CreateProject` or `OpenProject` before
+`UseSfdcSales(username="...", password="...", token="...", accountQuery="...", userQuery="...", opportunityQuery="...", snapshotQuery="...", accountConfigFile="...", userConfigFile="...", opportunityConfigFile="...", snapshotConfigFile="...");`  - load SalesForce sales data, must call `CreateProject` or `OpenProject` before
 - username              - SFDC username
 - password              - SFDC password
 - token                 - SFDC security token (you may append the security token to the password instead using this parameter)
@@ -254,7 +254,7 @@ SalesForce Sales Connector Commands:
 Pivotal Tracker Connector Commands:
 ------------------------------
 
-`UsePivotalTracker(username="...", password="...", pivotalProjectId="...", storyConfigFile="...", labelConfigFile="...", labelToStoryConfigFile="...", snapshotConfigFile="...")` - downloads and transforms the PT data.
+`UsePivotalTracker(username="...", password="...", pivotalProjectId="...", storyConfigFile="...", labelConfigFile="...", labelToStoryConfigFile="...", snapshotConfigFile="...");` - downloads and transforms the PT data.
 - username               - PT username
 - password               - PT password
 - pivotalProjectId       - PT project ID (integer)
@@ -266,6 +266,6 @@ Pivotal Tracker Connector Commands:
 Time Dimension Connector Commands:
 ----------------------------------
 
-`UseDateDimension(name="...", includeTime = "...")`  - load new time dimension into the project, must call `CreateProject` or `OpenProject` before
+`UseDateDimension(name="...", includeTime = "...");`  - load new time dimension into the project, must call `CreateProject` or `OpenProject` before
 - name        - the time dimension name differentiates the time dimension form others. This is typically something like "closed", "created" etc.
 - includeTime - generate the time dimension (true | false)
