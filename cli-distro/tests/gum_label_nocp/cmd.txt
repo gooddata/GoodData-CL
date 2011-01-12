@@ -1,0 +1,12 @@
+CreateProject(name="GUM: NOCP and Labels");
+RememberProject(fileName="tests/gum_label_nocp/pid");
+
+UseCsv(csvDataFile="tests/gum_label_nocp/data.csv",header="true",configFile="tests/gum_label_nocp/config.xml");
+GenerateMaql(maqlFile="tests/gum_label_nocp/test.maql");
+ExecuteMaql(maqlFile="tests/gum_label_nocp/test.maql");
+TransferData(incremental="false");
+
+UseCsv(csvDataFile="tests/gum_label_nocp/data.new.csv",header="true",configFile="tests/gum_label_nocp/config.new.xml");
+GenerateUpdateMaql(maqlFile="tests/gum_label_nocp/test.new.maql");
+ExecuteMaql(maqlFile="tests/gum_label_nocp/test.new.maql");
+TransferData(incremental="false");

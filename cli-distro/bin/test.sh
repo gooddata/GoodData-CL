@@ -13,19 +13,19 @@ function drop() {
     bin/gdi.sh "$tmp"
 }
 
-echo 'Running quotes demo'
-bin/gdi.sh examples/quotes/quotes.txt
+echo 'Running quotes_alter demo'
+bin/gdi.sh examples/quotes_alter/quotes.txt
 
-echo 'Updating the data set in the quotes demo'
-echo "UseProject(fileName = \"examples/quotes/pid\");" > "$tmp"
-grep '^\(UseCsv\|Transfer\)' examples/quotes/quotes.txt >> "$tmp"
+echo 'Updating the data set in the quotes_alter demo'
+echo "UseProject(fileName = \"examples/quotes_alter/pid\");" > "$tmp"
+grep '^\(UseCsv\|Transfer\)' examples/quotes_alter/quotes.txt >> "$tmp"
 bin/gdi.sh "$tmp"
 
 echo 'Altering the server-side model (-2 attributes -1 fact +1 fact)'
-bin/gdi.sh examples/quotes/alter.txt
+bin/gdi.sh examples/quotes_alter/alter.txt
 
-echo 'Dropping the quotes project and snapshots'
-drop "`cat examples/quotes/pid`"
+echo 'Dropping the quotes_alter project and snapshots'
+drop "`cat examples/quotes_alter/pid`"
 echo 'Running the HR demo'
 bin/gdi.sh examples/hr/1-department.txt
 bin/gdi.sh examples/hr/2-employee.txt
@@ -117,3 +117,15 @@ bin/gdi.sh tests/empty_lines/cmd.txt
 
 echo 'Dropping the empty_lines test project and snapshots'
 drop "`cat tests/empty_lines/pid`"
+
+echo 'Running gum_cp_label test'
+bin/gdi.sh tests/gum_cp_label/cmd.txt
+
+echo 'Dropping the gum_cp_label test'
+drop "`cat tests/gum_cp_label/pid`"
+
+echo 'Running gum_label_nocp test'
+bin/gdi.sh tests/gum_label_nocp/cmd.txt
+
+echo 'Dropping the gum_label_nocp test'
+drop "`cat tests/gum_label_nocp/pid`"

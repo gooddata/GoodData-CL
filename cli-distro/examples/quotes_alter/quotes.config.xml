@@ -1,0 +1,87 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+<schema>
+  <name>Quotes</name>
+  <columns>
+    <column>
+      <name>ID</name>
+      <title>Id</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>COMPANY</name>
+      <title>Company</title>
+      <ldmType>LABEL</ldmType>
+      <reference>SYMBOL</reference>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>SYMBOL</name>
+      <title>Symbol</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>SECTOR</name>
+      <title>Sector</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>INDUSTRY</name>
+      <title>Industry</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>MARKET</name>
+      <title>Market</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>QUOTE_DATE</name>
+      <title>Quote Date</title>
+      <ldmType>DATE</ldmType>
+      <folder>Quotes</folder>
+      <format>yyyy-MM-dd</format>
+      <schemaReference>quote</schemaReference>
+    </column>
+    <column>
+      <name>OPEN_PRICE</name>
+      <title>Open Price</title>
+      <ldmType>FACT</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>HIGH_PRICE</name>
+      <title>High Price</title>
+      <ldmType>FACT</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>LOW_PRICE</name>
+      <title>Low Price</title>
+      <ldmType>FACT</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>CLOSE_PRICE</name>
+      <title>Close Price</title>
+      <ldmType>FACT</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>VOLUME</name>
+      <title>Volume</title>
+      <ldmType>FACT</ldmType>
+      <folder>Quotes</folder>
+    </column>
+    <column>
+      <name>ADJUSTED_CLOSE_PRICE</name>
+      <title>Adjusted Close Price</title>
+      <ldmType>FACT</ldmType>
+      <folder>Quotes</folder>
+    </column>
+  </columns>
+</schema>

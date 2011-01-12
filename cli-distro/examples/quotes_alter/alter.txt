@@ -2,17 +2,17 @@
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
 # Retrieve the project ID stored by the quotes.txt
-UseProject(fileName="examples/quotes/pid");
+UseProject(fileName="examples/quotes_alter/pid");
 
 # load the stock quotes data file
 # the data file config has been generated
-UseCsv(csvDataFile="examples/quotes/quotes_altered.csv",header="true",configFile="examples/quotes/quotes_altered.config.xml");
+UseCsv(csvDataFile="examples/quotes_alter/quotes_altered.csv",header="true",configFile="examples/quotes_alter/quotes_altered.config.xml");
 
 # generate the MAQL DDL snippet to modify the server-side data model
-GenerateUpdateMaql(maqlFile="examples/quotes/quotes.alter.maql");
+GenerateUpdateMaql(maqlFile="examples/quotes_alter/quotes.alter.maql");
 
 # execute the stock quotes MAQL
-ExecuteMaql(maqlFile="examples/quotes/quotes.alter.maql");
+ExecuteMaql(maqlFile="examples/quotes_alter/quotes.alter.maql");
 
 # transfer the stock quotes data
 TransferData();

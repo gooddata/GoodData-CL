@@ -1,0 +1,30 @@
+# A simple example that loads a flat file with a stock quote data and connect a time dimension
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+CreateProject(name="Quotes");
+
+# Store the project ID to file for possible other scripts
+RememberProject(fileName="examples/quotes_alter/pid");
+
+# Loads time dimension to the project
+UseDateDimension(name="Quote");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/quotes_alter/quote_date.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/quotes_alter/quote_date.maql");
+
+# load the stock quotes_alter data file
+# the data file config has been generated
+UseCsv(csvDataFile="examples/quotes_alter/quotes.csv",header="true",configFile="examples/quotes_alter/quotes.config.xml", hasHeader="false");
+
+# generate the stock quotes_alter MAQL
+GenerateMaql(maqlFile="examples/quotes_alter/quotes.maql");
+
+# execute the stock quotes_alter MAQL
+ExecuteMaql(maqlFile="examples/quotes_alter/quotes.maql");
+
+# transfer the stock quotes_alter data
+TransferData();
