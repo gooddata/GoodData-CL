@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.gooddata.connector.*;
+import com.gooddata.facebook.FacebookConnector;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.MetadataObject;
@@ -999,7 +1000,8 @@ public class GdcDI implements Executor {
             JdbcConnector.createConnector(),
             PtConnector.createConnector(),    
             DateDimensionConnector.createConnector(),
-            SfdcSalesConnector.createConnector2()
+            SfdcSalesConnector.createConnector2(),
+            FacebookConnector.createConnector()
         };
     }
     

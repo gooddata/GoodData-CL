@@ -1,0 +1,21 @@
+# A simple example that loads a flat file with a facebook data
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+CreateProject(name="Facebook");
+
+# Store the project ID to file for possible other scripts
+RememberProject(fileName="examples/facebook/pid");
+
+# load the Facebook data
+# the data file config has been generated
+UseFacebook(query="SELECT uid, name FROM user WHERE uid = me() OR uid IN (SELECT uid2 FROM friend WHERE uid1 = me())",configFile="examples/facebook/facebook.xml",authToken="tkn");
+
+# generate the Facebook MAQL
+GenerateMaql(maqlFile="examples/facebook/facebook.maql");
+
+# execute the Facebook MAQL
+ExecuteMaql(maqlFile="examples/facebook/facebook.maql");
+
+# transfer the Facebook data
+TransferData();
