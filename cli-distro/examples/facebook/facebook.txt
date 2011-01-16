@@ -23,7 +23,7 @@ TransferData();
 
 # load the Facebook data
 # the data file config has been generated
-UseFacebook(query="SELECT gid, name, update_time FROM group WHERE gid IN (SELECT gid FROM group_member WHERE uid IN (SELECT uid2 FROM friend WHERE uid1=me()))",configFile="examples/facebook/facebook.xml",authToken="2227470867|2.A6vFSKldtWZe7Ub0HXsclQ__.3600.1295150400-729995986|oJWLY5BtbUd4hD0dZqyWiPXbwpw");
+UseFacebook(query="SELECT gid, name, update_time FROM group WHERE gid IN (SELECT gid FROM group_member WHERE uid IN (SELECT uid2 FROM friend WHERE uid1=me()))",configFile="examples/facebook/facebook.xml",authToken="2227475867|2.dAQw8UeRgZry3IDfMns0ow__.3610.1295154000-729935986|xysH3Wnt4ZLlG4aixm0N6MAHSnQ");
 
 # generate the Facebook MAQL
 GenerateMaql(maqlFile="examples/facebook/facebook.maql");
