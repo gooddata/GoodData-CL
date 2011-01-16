@@ -7,9 +7,23 @@ CreateProject(name="Facebook");
 # Store the project ID to file for possible other scripts
 RememberProject(fileName="examples/facebook/pid");
 
+#UseProject(fileName="examples/facebook/pid");
+
+# Loads time dimension to the project
+UseDateDimension(name="Last Updated", includeTime="true");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/facebook/last_date.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/facebook/last_date.maql");
+
+# transfer the time dimension data
+TransferData();
+
 # load the Facebook data
 # the data file config has been generated
-UseFacebook(query="SELECT uid, name FROM user WHERE uid = me() OR uid IN (SELECT uid2 FROM friend WHERE uid1 = me())",configFile="examples/facebook/facebook.xml",authToken="tkn");
+UseFacebook(query="SELECT gid, name, update_time FROM group WHERE gid IN (SELECT gid FROM group_member WHERE uid IN (SELECT uid2 FROM friend WHERE uid1=me()))",configFile="examples/facebook/facebook.xml",authToken="2227470867|2.A6vFSKldtWZe7Ub0HXsclQ__.3600.1295150400-729995986|oJWLY5BtbUd4hD0dZqyWiPXbwpw");
 
 # generate the Facebook MAQL
 GenerateMaql(maqlFile="examples/facebook/facebook.maql");

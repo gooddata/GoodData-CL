@@ -23,6 +23,7 @@
 
 package com.gooddata.integration.model;
 
+import com.gooddata.connector.Constants;
 import com.gooddata.util.StringUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -109,6 +110,9 @@ public class SLI {
             String fmt = column.getFormat();
             if(fmt != null && fmt.length()>0) {
                 JSONObject constraints = new JSONObject();
+                if(Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
+                    fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
+                }
                 constraints.put("date",fmt);
                 oPart.put("constraints",constraints);
             }

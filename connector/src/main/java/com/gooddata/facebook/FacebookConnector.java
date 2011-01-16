@@ -61,6 +61,8 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.File;
 import java.io.IOException;
@@ -178,7 +180,21 @@ public class FacebookConnector extends AbstractConnector implements Connector {
         }
     }
 
+    private final DateTimeFormatter baseFmt = DateTimeFormat.forPattern(Constants.DEFAULT_DATETIME_FMT_STRING);
+    private final DateTime base = baseFmt.parseDateTime("1900-01-01 00:00:00");
 
+
+    private String convertUnixTimeToString(String value) {
+        DateTime dt;
+        try {
+            long l = Long.parseLong(value);
+            dt = new DateTime(l*1000);
+        }
+        catch (NumberFormatException e) {
+            dt = base;
+        }
+        return baseFmt.print(dt);
+    }
 
     /**
      * {@inheritDoc}
@@ -222,6 +238,16 @@ public class FacebookConnector extends AbstractConnector implements Connector {
                            SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
                         ) {
                             key += value + "|";
+                        }
+                        if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) &&
+                        Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(columns.get(adjustedConfigIndex).getFormat())) {
+                            value = convertUnixTimeToString(value);
+                        }
+                    }
+                    else {
+                        if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(i).getLdmType()) &&
+                        Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(columns.get(i).getFormat())) {
+                            value = convertUnixTimeToString(value);
                         }
                     }
                     rowL.add(value);
