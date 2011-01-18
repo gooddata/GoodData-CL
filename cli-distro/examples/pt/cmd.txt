@@ -44,7 +44,7 @@ GenerateMaql(maqlFile="examples/pt/snapshot_date.maql");
 ExecuteMaql(maqlFile="examples/pt/snapshot_date.maql");
 
 # Pivotal Tracker Connector
-UsePivotalTracker(username="pt-username", password="pt-password", pivotalProjectId="pt-pid", storyConfigFile="examples/pt/stories.xml", labelConfigFile="examples/pt/labels.xml", labelToStoryConfigFile="examples/pt/labelsToStories.xml", snapshotConfigFile="examples/pt/snapshots.xml");
+UsePivotalTracker(username="pt-username", password="pt-password", pivotalProjectId="pt-pid", storyConfigFile="examples/pt/stories.xml", labelConfigFile="examples/pt/labels.xml", labelToStoryConfigFile="examples/pt/labelsToStories.xml");
 GenerateMaql(maqlFile="examples/pt/pt.maql");
 ExecuteMaql(maqlFile="examples/pt/pt.maql");
 TransferData(incremental="true");

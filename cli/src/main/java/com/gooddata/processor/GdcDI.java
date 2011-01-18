@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.gooddata.connector.*;
-import com.gooddata.facebook.FacebookConnector;
+import com.gooddata.connector.FacebookConnector;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.MetadataObject;

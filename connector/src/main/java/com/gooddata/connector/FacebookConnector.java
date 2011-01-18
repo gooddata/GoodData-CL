@@ -21,13 +21,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.gooddata.facebook;
+package com.gooddata.connector;
 
-import com.gooddata.connector.AbstractConnector;
-import com.gooddata.connector.Connector;
-import com.gooddata.connector.Constants;
-import com.gooddata.connector.DateColumnsExtender;
-import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.exception.SfdcException;
@@ -38,27 +33,16 @@ import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
-import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
-import com.restfb.types.Page;
-import com.restfb.types.User;
-import com.sforce.soap.partner.Field;
-import com.sforce.soap.partner.SoapBindingStub;
-import com.sforce.soap.partner.sobject.SObject;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 
 import javassist.bytecode.annotation.Annotation;
-import org.apache.axis.message.MessageElement;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.httpclient.HttpMethod;
 
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -66,7 +50,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

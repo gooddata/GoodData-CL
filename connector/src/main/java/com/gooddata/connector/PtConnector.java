@@ -60,7 +60,6 @@ public class PtConnector extends AbstractConnector implements Connector {
 
     private SourceSchema labelSchema;
     private SourceSchema labelToStorySchema;
-    private SourceSchema snapshotSchema;
     private SourceSchema storySchema;
 
     private String username;
@@ -88,14 +87,12 @@ public class PtConnector extends AbstractConnector implements Connector {
      * Initializes schemas
      * @param labelConfig label config file
      * @param labelToStoryConfig  labelToStory config file
-     * @param snapshotConfig  snapshot config file
      * @param storyConfig  story config file
      */
-    public void initSchema(String labelConfig, String labelToStoryConfig, String snapshotConfig, String storyConfig)
+    public void initSchema(String labelConfig, String labelToStoryConfig, String storyConfig)
         throws IOException {
         labelSchema = SourceSchema.createSchema(new File(labelConfig));
         labelToStorySchema = SourceSchema.createSchema(new File(labelToStoryConfig));
-        snapshotSchema = SourceSchema.createSchema(new File(snapshotConfig));
         storySchema = SourceSchema.createSchema(new File(storyConfig));
     }
 
@@ -210,13 +207,11 @@ public class PtConnector extends AbstractConnector implements Connector {
         String sp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "stories.csv";
         String lp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "labels.csv";
         String ltsp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "labelsToStories.csv";
-        String snp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "snapshots.csv";
-        papi.parse(ptf.getAbsolutePath(), sp, lp, ltsp, snp, new DateTime());
+        papi.parse(ptf.getAbsolutePath(), sp, lp, ltsp, new DateTime());
 
         transfer(getStorySchema(), sp, c, pid, waitForFinish, p, ctx);
         transfer(getLabelSchema(), lp, c, pid, waitForFinish, p, ctx);
         transfer(getLabelToStorySchema(), ltsp, c, pid, waitForFinish, p, ctx);
-        transfer(getSnapshotSchema(), snp, c, pid, waitForFinish, p, ctx);
         
         //cleanup
         l.debug("Cleaning the temporary files.");
@@ -253,8 +248,6 @@ public class PtConnector extends AbstractConnector implements Connector {
         sb.append(mg.generateMaqlCreate());
         mg = new MaqlGenerator(labelToStorySchema);
         sb.append(mg.generateMaqlCreate());
-        mg = new MaqlGenerator(snapshotSchema);
-        sb.append(mg.generateMaqlCreate());
         return sb.toString();
     }
 
@@ -272,15 +265,13 @@ public class PtConnector extends AbstractConnector implements Connector {
         setPivotalProjectId(c.getParamMandatory("pivotalProjectId"));
         String lc = c.getParamMandatory("labelConfigFile");
         String lsc = c.getParamMandatory("labelToStoryConfigFile");
-        String lsnc = c.getParamMandatory("snapshotConfigFile");
         String sc = c.getParamMandatory("storyConfigFile");
 
         File lcf = new File(lc);
         File lscf = new File(lsc);
-        File lsncf = new File(lsnc);
         File scf = new File(sc);
 
-        initSchema(lcf.getAbsolutePath(),lscf.getAbsolutePath(),lsncf.getAbsolutePath(), scf.getAbsolutePath());
+        initSchema(lcf.getAbsolutePath(),lscf.getAbsolutePath(), scf.getAbsolutePath());
 
         // sets the current connector
         ctx.setConnector(this);
@@ -303,14 +294,6 @@ public class PtConnector extends AbstractConnector implements Connector {
 
     public void setLabelToStorySchema(SourceSchema labelToStorySchema) {
         this.labelToStorySchema = labelToStorySchema;
-    }
-
-    public SourceSchema getSnapshotSchema() {
-        return snapshotSchema;
-    }
-
-    public void setSnapshotSchema(SourceSchema snapshotSchema) {
-        this.snapshotSchema = snapshotSchema;
     }
 
     public SourceSchema getStorySchema() {

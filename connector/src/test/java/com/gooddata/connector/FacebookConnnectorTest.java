@@ -23,19 +23,12 @@
 
 package com.gooddata.connector;
 
-import com.gooddata.facebook.FacebookConnector;
-import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.FileUtil;
 import junit.framework.TestCase;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.text.Normalizer;
 
 
 public class FacebookConnnectorTest extends TestCase {

@@ -10,15 +10,10 @@
         <folder>Label</folder>
       </column>
     <column>
-      <name>id</name>
-      <title>Label Id</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Label</folder>
-    </column>
-    <column>
       <name>label</name>
       <title>Label</title>
-      <ldmType>ATTRIBUTE</ldmType>
+      <ldmType>LABEL</ldmType>
+      <reference>cpId</reference>
       <folder>Label</folder>
     </column>
   </columns>

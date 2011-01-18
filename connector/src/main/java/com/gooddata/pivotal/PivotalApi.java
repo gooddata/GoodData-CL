@@ -83,6 +83,12 @@ public class PivotalApi {
      * List of column headers that will be included in the STORY dataset
      */
     private Set RECORD_STORIES = new HashSet();
+
+    /**
+     * List of column headers that will be duplicated (both ATTRIBUTE and VALUE) in the STORY dataset
+     */
+    private Set DUPLICATE_IN_STORIES = new HashSet();
+
     /**
      * List of DATE column headers (we need to convert dates to the ISO format)
      */
@@ -118,6 +124,7 @@ public class PivotalApi {
         RECORD_STORIES.addAll(Arrays.asList(new String[] {"Id", "Labels", "Story", "Iteration", "Iteration Start",
                 "Iteration End", "Story Type", "Estimate", "Current State", "Created At", "Accepted At", "Deadline",
                 "Requested By", "Owned By", "URL"}));
+        DUPLICATE_IN_STORIES.add("Iteration");
 
         DATE_COLUMNS.addAll(Arrays.asList(new String[] {"Iteration Start", "Iteration End", "Created At", "Accepted At",
                 "Deadline"}));
@@ -233,7 +240,7 @@ public class PivotalApi {
         cw.writeNext(rec.toArray(new String[] {}));
     }
 
-    private DateTimeFormatter reader = DateTimeFormat.forPattern("MMM dd,yyyy");
+    private DateTimeFormatter reader = DateTimeFormat.forPattern("MMM dd, yyyy");
     private DateTimeFormatter writer = DateTimeFormat.forPattern("yyyy-MM-dd");
 
     /**
@@ -267,10 +274,9 @@ public class PivotalApi {
      * @param storiesCsv the output STORY CSV file
      * @param labelsCsv the output LABEL CSV file
      * @param labelsToStoriesCsv  the output LABEL_TO_STORY CSV file
-     * @param snapshotCsv  the output SNAPSHOTs CSV file
      * @throws Exception in case of an IO issue
      */
-    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, String snapshotCsv, DateTime t) throws IOException {
+    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, DateTime t) throws IOException {
         String today = writer.print(t);
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
         String[] row = cr.readNext();
@@ -279,12 +285,10 @@ public class PivotalApi {
             List<String> storiesRecord = new ArrayList<String>();
             List<String> labelsRecord = new ArrayList<String>();
             List<String> labelsToStoriesRecord = new ArrayList<String>();
-            List<String> snapshotsRecord = new ArrayList<String>();
 
             CSVWriter storiesWriter = new CSVWriter(new FileWriter(storiesCsv));
             CSVWriter labelsWriter = new CSVWriter(new FileWriter(labelsCsv));
             CSVWriter labelsToStoriesWriter = new CSVWriter(new FileWriter(labelsToStoriesCsv));
-            CSVWriter snapshotsWriter = new CSVWriter(new FileWriter(snapshotCsv));
 
             labelsRecord.add("cpId");
             labelsRecord.add("Label Id");
@@ -292,28 +296,27 @@ public class PivotalApi {
             labelsToStoriesRecord.add("cpId");
             labelsToStoriesRecord.add("Story Id");
             labelsToStoriesRecord.add("Label Id");
-            snapshotsRecord.add("cpId");
-            snapshotsRecord.add("Story Id");
-            snapshotsRecord.add("Snapshot Date");
+
 
             for(String header : headers) {
-                if(RECORD_STORIES.contains(header))
+                if(RECORD_STORIES.contains(header)) {
                     storiesRecord.add(header);
+                    if(DUPLICATE_IN_STORIES.contains(header))
+                        storiesRecord.add(header);
+                }
             }
+            storiesRecord.add(0, "SnapshotDate");
             storiesRecord.add(0, "cpId");
             writeRecord(storiesWriter, storiesRecord);
             writeRecord(labelsWriter, labelsRecord);
             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
-            writeRecord(snapshotsWriter , snapshotsRecord);
 
             Map<String,String> labels = new HashMap<String, String>();
-            int labelId = 0;
             row = cr.readNext();
             while(row != null && row.length > 1) {
                 storiesRecord.clear();
                 labelsRecord.clear();
                 labelsToStoriesRecord.clear();
-                snapshotsRecord.clear();
                 String storyId = "";
                 String label = "";
                 String key = "";
@@ -322,16 +325,17 @@ public class PivotalApi {
                     if(RECORD_STORIES.contains(header)) {
                         key += row[i] + "|";
                         storiesRecord.add(convertDate(header, row[i]));
+                        if(DUPLICATE_IN_STORIES.contains(header))
+                            storiesRecord.add(convertDate(header, row[i]));
+
                     }
                     if(HEADER_LABEL.equals(header)) {
                         label = row[i];
                     }
                 }
                 storyId = DigestUtils.md5Hex(key);
+                storiesRecord.add(0, today);
                 storiesRecord.add(0, storyId);
-                snapshotsRecord.add(storyId);
-                snapshotsRecord.add(today);
-                snapshotsRecord.add(0, DigestUtils.md5Hex(storyId+"|"+today));
                 String[] lbls = label.split(",");
                 for(String lbl : lbls) {
                     lbl = lbl.trim();
@@ -344,11 +348,8 @@ public class PivotalApi {
                             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
                         }
                         else {
-                            labelId++;
-                            String lblId = Integer.toString(labelId);
-                            String id = DigestUtils.md5Hex(lblId + "|" + lbl);
+                            String id = DigestUtils.md5Hex(lbl);
                             labels.put(lbl, id);
-                            labelsRecord.add(lblId);
                             labelsRecord.add(lbl);
                             labelsRecord.add(0, id);
                             labelsToStoriesRecord.add(storyId);
@@ -362,13 +363,10 @@ public class PivotalApi {
                     labelsToStoriesRecord.clear();                   
                 }
                 writeRecord(storiesWriter, storiesRecord);
-                writeRecord(snapshotsWriter, snapshotsRecord);
                 row = cr.readNext();
             }
             storiesWriter.flush();
             storiesWriter.close();
-            snapshotsWriter.flush();
-            snapshotsWriter.close();
             labelsWriter.flush();
             labelsWriter.close();
             labelsToStoriesWriter.flush();
