@@ -122,11 +122,11 @@ public class PivotalApi {
         client.getHostConfiguration().setHost(PIVOTAL_URL);
         // populate the STORY dataset columns
         RECORD_STORIES.addAll(Arrays.asList(new String[] {"Id", "Labels", "Story", "Iteration", "Iteration Start",
-                "Iteration End", "Story Type", "Estimate", "Current State", "Created At", "Accepted At", "Deadline",
+                "Iteration End", "Story Type", "Estimate", "Current State", "Created at", "Accepted at", "Deadline",
                 "Requested By", "Owned By", "URL"}));
         DUPLICATE_IN_STORIES.add("Iteration");
 
-        DATE_COLUMNS.addAll(Arrays.asList(new String[] {"Iteration Start", "Iteration End", "Created At", "Accepted At",
+        DATE_COLUMNS.addAll(Arrays.asList(new String[] {"Iteration Start", "Iteration End", "Created at", "Accepted at",
                 "Deadline"}));
     }
 

@@ -81,6 +81,26 @@
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Story</folder>
     </column>
+
+      <column>
+        <name>createdat</name>
+        <title>Story Created At</title>
+        <ldmType>DATE</ldmType>
+        <folder>Story</folder>
+        <format>yyyy-MM-dd</format>
+        <schemaReference>Created At</schemaReference>
+      </column>
+
+      <column>
+        <name>acceptedat</name>
+        <title>Story Accepted At</title>
+        <ldmType>DATE</ldmType>
+        <folder>Story</folder>
+        <format>yyyy-MM-dd</format>
+        <schemaReference>Accepted At</schemaReference>
+      </column>
+
+
     <column>
       <name>deadline</name>
       <title>Deadline</title>

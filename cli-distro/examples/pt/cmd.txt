@@ -35,6 +35,24 @@ GenerateMaql(maqlFile="examples/pt/deadline_date.maql");
 ExecuteMaql(maqlFile="examples/pt/deadline_date.maql");
 
 # Loads time dimension to the project
+UseDateDimension(name="Created At");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/pt/created_at.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/pt/created_at.maql");
+
+# Loads time dimension to the project
+UseDateDimension(name="Accepted At");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/pt/accepted_at.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/pt/accepted_at.maql");
+
+# Loads time dimension to the project
 UseDateDimension(name="Snapshot");
 
 # Generate the MAQL script describing the data model for the date dimension
