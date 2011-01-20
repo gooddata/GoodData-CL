@@ -23,6 +23,12 @@
       <ldmType>ATTRIBUTE</ldmType>
       <folder>Story</folder>
     </column>
+      <column>
+        <name>release</name>
+        <title>Release</title>
+        <ldmType>ATTRIBUTE</ldmType>
+        <folder>Story</folder>
+      </column>
     <column>
       <name>story</name>
       <title>Story</title>
