@@ -130,13 +130,15 @@ public class PtConnector extends AbstractConnector implements Connector {
         while(row != null) {
             List<String> vals = new ArrayList<String>();
             for (int i = 0; i < row.length; i++) {
-                String val = row[i];
 
+                String val = row[i];
                 if (columns.get(i).getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
-                    if (val != null && val.length() > 0)
+                    if (val != null && val.length() > 0) {
                         val = val.substring(0, 10);
-                    else
+                    }
+                    else {
                         val = "";
+                    }
                 }
                 vals.add(val);
             }
@@ -207,7 +209,7 @@ public class PtConnector extends AbstractConnector implements Connector {
         String sp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "stories.csv";
         String lp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "labels.csv";
         String ltsp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "labelsToStories.csv";
-        papi.parse(ptf.getAbsolutePath(), sp, lp, ltsp, new DateTime());
+        papi.parse(ptf.getAbsolutePath(), sp, lp, ltsp, new DateTime(),3);
 
         transfer(getStorySchema(), sp, c, pid, waitForFinish, p, ctx);
         transfer(getLabelSchema(), lp, c, pid, waitForFinish, p, ctx);

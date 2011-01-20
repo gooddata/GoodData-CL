@@ -23,6 +23,7 @@
 
 package com.gooddata.pivotal;
 
+import com.gooddata.connector.Constants;
 import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.exception.HttpMethodException;
@@ -84,10 +85,6 @@ public class PivotalApi {
      */
     private Set RECORD_STORIES = new HashSet();
 
-    /**
-     * List of column headers that will be duplicated (both ATTRIBUTE and VALUE) in the STORY dataset
-     */
-    private Set DUPLICATE_IN_STORIES = new HashSet();
 
     /**
      * List of DATE column headers (we need to convert dates to the ISO format)
@@ -124,8 +121,6 @@ public class PivotalApi {
         RECORD_STORIES.addAll(Arrays.asList(new String[] {"Id", "Labels", "Story", "Iteration", "Iteration Start",
                 "Iteration End", "Story Type", "Estimate", "Current State", "Created at", "Accepted at", "Deadline",
                 "Requested By", "Owned By", "URL"}));
-        DUPLICATE_IN_STORIES.add("Iteration");
-
         DATE_COLUMNS.addAll(Arrays.asList(new String[] {"Iteration Start", "Iteration End", "Created at", "Accepted at",
                 "Deadline"}));
     }
@@ -268,16 +263,99 @@ public class PivotalApi {
             return value;
     }
 
+
+    private final DateTimeFormatter baseFmt = DateTimeFormat.forPattern(Constants.DEFAULT_DATE_FMT_STRING);
+    private final DateTime base = baseFmt.parseDateTime("1900-01-03");
+
+
+    /**
+     * Computes the iteration velocity
+     * @param csvFile the incoming PT CSV file
+     * @param velocityIterationCount the number of iterations that the velocity is computed from
+     * @return Map<Integer,Double> iterations velocities
+     * @throws Exception in case of an IO issue
+     */
+    public Map<Integer,Double> computeIterationVelocity(String csvFile, int velocityIterationCount) throws IOException {
+        Map<Integer,Double> velocities = new HashMap<Integer,Double>();
+        Map<Integer,Integer> estimates = new HashMap<Integer,Integer>();
+        CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
+        String[] header = cr.readNext();
+        if(header != null && header.length>0) {
+            List<String> headerList = Arrays.asList(header);
+
+            int iterIdx = headerList.indexOf("Iteration");
+            int estIdx = headerList.indexOf("Estimate");
+            if(iterIdx >=0 && estIdx>=0) {
+                String[] row = cr.readNext();
+                while(row != null && row.length > 0) {
+                    try {
+                        String iterTxt = row[iterIdx];
+                        String estTxt = row[estIdx];
+                        if(iterTxt != null && iterTxt.length()>0) {
+                            Integer iter = Integer.parseInt(iterTxt);
+                            Integer est = new Integer(0);
+                            if(estTxt!=null && estTxt.length()>0)
+                                est = Integer.parseInt(estTxt);
+                            if(estimates.containsKey(iter))  {
+                                Integer estimate = estimates.get(iter);
+                                estimate = new Integer(estimate.intValue() + est.intValue());
+                                estimates.put(iter,estimate);
+                            }
+                            else {
+                                estimates.put(iter,new Integer(est));
+                            }
+                        }
+                    }
+                    catch (ArrayIndexOutOfBoundsException e) {
+                        cr.close();
+                        throw new IOException("Iteration velocity computation failed: data row doesn't contain Iteration and Estimate fields.");
+                    }
+                    row = cr.readNext();
+                }
+                cr.close();
+                for (Integer iteration : estimates.keySet()) {
+                    int cnt = 0;
+                    int estimate = 0;
+                    for(int i = 1; i <= velocityIterationCount; i++) {
+                        if(estimates.containsKey(new Integer(iteration.intValue() - i))) {
+                            cnt++;
+                            estimate += estimates.get(new Integer(iteration.intValue() - i));
+                        }
+                    }
+                    double velocity = 0;
+                    if(cnt>0)
+                        velocity = (double)estimate / (double)cnt;
+                    velocities.put(iteration, new Double(velocity));
+
+                }
+                return velocities;
+
+            }
+            else {
+                cr.close();
+                throw new IOException("Iteration velocity computation failed: no Iteration and Estimate fields in header.");
+            }
+        }
+        else {
+            cr.close();
+            throw new IOException("Iteration velocity computation failed: empty PT input.");
+        }
+
+    }
+
+
     /**
      * Parses the PT CSV file into the STORY, LABEL, and LABEL_TO_STORY CSV files
      * @param csvFile the incoming PT CSV file
      * @param storiesCsv the output STORY CSV file
      * @param labelsCsv the output LABEL CSV file
      * @param labelsToStoriesCsv  the output LABEL_TO_STORY CSV file
+     * @param velocityIterationCount the number of iterations that the velocity is computed from
      * @throws Exception in case of an IO issue
      */
-    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, DateTime t) throws IOException {
+    public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, DateTime t, int velocityIterationCount) throws IOException {
         String today = writer.print(t);
+        Map<Integer,Double> velocities = computeIterationVelocity(csvFile, velocityIterationCount);
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
         String[] row = cr.readNext();
         if(row != null && row.length > 0) {
@@ -301,8 +379,10 @@ public class PivotalApi {
             for(String header : headers) {
                 if(RECORD_STORIES.contains(header)) {
                     storiesRecord.add(header);
-                    if(DUPLICATE_IN_STORIES.contains(header))
-                        storiesRecord.add(header);
+                    if(header.equalsIgnoreCase("Iteration")) {
+                        storiesRecord.add("IterationFact");
+                        storiesRecord.add("IterationVelocity");
+                    }
                 }
             }
             storiesRecord.add(0, "SnapshotDate");
@@ -325,9 +405,16 @@ public class PivotalApi {
                     if(RECORD_STORIES.contains(header)) {
                         key += row[i] + "|";
                         storiesRecord.add(convertDate(header, row[i]));
-                        if(DUPLICATE_IN_STORIES.contains(header))
+                        if(header.equalsIgnoreCase("Iteration")) {
                             storiesRecord.add(convertDate(header, row[i]));
-
+                            if(row[i] != null && row[i].length()>0) {
+                                Integer iteration = Integer.parseInt(row[i]);
+                                storiesRecord.add(convertDate(header, velocities.get(iteration).toString()));
+                            }
+                            else {
+                                storiesRecord.add(convertDate(header, "0"));
+                            }
+                        }
                     }
                     if(HEADER_LABEL.equals(header)) {
                         label = row[i];

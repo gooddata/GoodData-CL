@@ -47,6 +47,12 @@
         <ldmType>FACT</ldmType>
         <folder>Story</folder>
       </column>
+      <column>
+        <name>iteration_velocity</name>
+        <title>Iteration Velocity</title>
+        <ldmType>FACT</ldmType>
+        <folder>Story</folder>
+      </column>
     <column>
       <name>iterationstart</name>
       <title>Iteration Start</title>
