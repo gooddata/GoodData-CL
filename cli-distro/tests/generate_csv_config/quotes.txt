@@ -1,0 +1,18 @@
+# A simple example that loads a flat file with a stock quote data and connect a time dimension
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+#CreateProject(name="Quotes");
+
+# Store the project ID to file for possible other scripts
+#StoreProject(fileName="examples/quotes/pid");
+
+# Loads time dimension to the project
+
+GenerateCsvConfig(
+    csvHeaderFile="tests/generate_csv_config/quotes.csv",
+    configFile="tests/generate_csv_config/quotes.config.xml",
+    defaultLdmType="ATTRIBUTE",
+    facts="HIGH_PRICE LOW_PRICE,CLOSE_PRICE,VOLUME,ADJUSTED_CLOSE_PRICE",
+    folder="Quotes",
+    separator=",");
