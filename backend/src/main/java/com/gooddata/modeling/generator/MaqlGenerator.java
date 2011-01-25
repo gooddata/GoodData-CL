@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
+import com.gooddata.connector.AbstractConnector;
 import com.gooddata.connector.DateColumnsExtender;
 import com.gooddata.modeling.generator.MaqlGenerator.State.Attribute;
 import com.gooddata.modeling.generator.MaqlGenerator.State.Column;
@@ -47,6 +50,8 @@ import static com.gooddata.modeling.model.SourceColumn.*;
  * @version 1.0
  */
 public class MaqlGenerator {
+
+    private static Logger l = Logger.getLogger(MaqlGenerator.class);
 
     private final SourceSchema schema;
     private final String ssn, lsn;
@@ -701,7 +706,7 @@ public class MaqlGenerator {
                     result = result.replace(factMaqlDrop, "");
                     result = result.replace(factMaqlCreate, "");
                 } else {
-                    throw new AssertionError("Date reconnection MAQL DDL does not contain expected fact drop/create statements");
+                    l.warn("Date reconnection MAQL DDL does not contain expected fact drop/create statements for " + dc);
                 }
             }
         }
