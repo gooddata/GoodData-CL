@@ -1,0 +1,27 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<schema>
+  <name>Account Type</name>
+  <columns>
+    <column>
+      <title>Type</title>
+      <name>id</name>
+      <ldmType>CONNECTION_POINT</ldmType>
+      <folder>Account Type</folder>
+    </column>
+    <column>
+      <title>Type Order</title>
+      <name>account_type_order</name>
+      <ldmType>LABEL</ldmType>
+      <reference>id</reference>
+      <folder>Account Type</folder>
+    </column>
+    <column>
+      <title>Type Name</title>
+      <name>account_type_name</name>
+      <ldmType>LABEL</ldmType>
+      <reference>id</reference>
+      <folder>Account Type</folder>
+    </column>
+  </columns>
+</schema>

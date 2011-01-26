@@ -1,0 +1,9 @@
+ALTER ATTRIBUTE  {attr.account.id} DEFAULT LABEL {label.account.id.name};
+ALTER ATTRIBUTE  {attr.accountindustry.id} DEFAULT LABEL {label.accountindustry.id.industry_name};
+ALTER ATTRIBUTE  {attr.organization.id} DEFAULT LABEL {label.organization.id.name};
+ALTER ATTRIBUTE  {attr.opportunitystage.id} DEFAULT LABEL {label.opportunitystage.id.stage_name};
+ALTER ATTRIBUTE  {attr.opportunitystate.id} DEFAULT LABEL {label.opportunitystate.id.state_name};
+ALTER ATTRIBUTE  {attr.accounttype.id} DEFAULT LABEL {label.accounttype.id.account_type_name};
+ALTER ATTRIBUTE  {attr.businessunit.id} DEFAULT LABEL {label.businessunit.id.name};
+ALTER ATTRIBUTE  {attr.user.id} DEFAULT LABEL {label.user.id.login};
+ALTER ATTRIBUTE {attr.opportunitystage.id} ORDER BY {label.opportunitystage.id.stage_order} ASC;

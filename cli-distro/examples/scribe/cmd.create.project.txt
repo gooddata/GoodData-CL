@@ -1,0 +1,56 @@
+# This example shows how to load the Scribe data to the GoodData project
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+CreateProject(name="Scribe");
+
+# Store the project ID to file for possible other scripts
+RememberProject(fileName="examples/scribe/pid");
+
+UseDateDimension(name="Created");
+GenerateMaql(maqlFile="examples/scribe/created_date.maql");
+ExecuteMaql(maqlFile="examples/scribe/created_date.maql");
+
+UseDateDimension(name="Actual Close");
+GenerateMaql(maqlFile="examples/scribe/actual_close_date.maql");
+ExecuteMaql(maqlFile="examples/scribe/actual_close_date.maql");
+
+UseDateDimension(name="Estimated Close");
+GenerateMaql(maqlFile="examples/scribe/estimated_close_date.maql");
+ExecuteMaql(maqlFile="examples/scribe/estimated_close_date.maql");
+
+UseJdbc(configFile="examples/scribe/stage.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT attributevalue AS id, displayorder AS stage_order, value AS stage_name FROM stringmap WHERE attributename='salesstagecode' AND objecttypecode=3");
+GenerateMaql(maqlFile="examples/scribe/stage.maql");
+ExecuteMaql(maqlFile="examples/scribe/stage.maql");
+
+UseJdbc(configFile="examples/scribe/state.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT attributevalue AS id, displayorder AS state_order, value AS state_name FROM stringmap WHERE attributename='statecode' AND objecttypecode=3");
+GenerateMaql(maqlFile="examples/scribe/state.maql");
+ExecuteMaql(maqlFile="examples/scribe/state.maql");
+
+UseJdbc(configFile="examples/scribe/industry.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT attributevalue AS id, displayorder AS industry_order, value AS industry_name FROM stringmap WHERE attributename='industrycode' AND objecttypecode=1");
+GenerateMaql(maqlFile="examples/scribe/industry.maql");
+ExecuteMaql(maqlFile="examples/scribe/industry.maql");
+
+UseJdbc(configFile="examples/scribe/type.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT attributevalue AS id, displayorder AS account_type_order, value AS account_type_name FROM stringmap WHERE attributename='customertypecode' AND objecttypecode=1");
+GenerateMaql(maqlFile="examples/scribe/type.maql");
+ExecuteMaql(maqlFile="examples/scribe/type.maql");
+
+UseJdbc(configFile="examples/scribe/unit.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT businessunitid AS id, name FROM businessunit");
+GenerateMaql(maqlFile="examples/scribe/unit.maql");
+ExecuteMaql(maqlFile="examples/scribe/unit.maql");
+
+UseJdbc(configFile="examples/scribe/organization.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT organizationid AS id, name FROM organization");
+GenerateMaql(maqlFile="examples/scribe/organization.maql");
+ExecuteMaql(maqlFile="examples/scribe/organization.maql");
+
+UseJdbc(configFile="examples/scribe/account.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT accountid AS id, industrycode AS industry_id, customertypecode AS type_id, name FROM account");
+GenerateMaql(maqlFile="examples/scribe/account.maql");
+ExecuteMaql(maqlFile="examples/scribe/account.maql");
+
+UseJdbc(configFile="examples/scribe/user.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT systemuserid AS id, fullname AS login, firstname, lastname, internalemailaddress AS email, organizationid AS organization_id, businessunitid AS bussiness_unit_id FROM systemuser");
+GenerateMaql(maqlFile="examples/scribe/user.maql");
+ExecuteMaql(maqlFile="examples/scribe/user.maql");
+
+UseJdbc(configFile="examples/scribe/opportunity.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT opportunityid AS id, customerid AS account_id, salesstagecode AS stage_id, statecode AS state_id, CONVERT(VARCHAR(10),actualclosedate, 111) AS actual_close_date, actualvalue AS actual_amount, CONVERT(VARCHAR(10),createdon, 111) AS created_date, closeprobability AS probability, closeprobability AS probability_fact, ownerid AS user_id, CONVERT(VARCHAR(10),estimatedclosedate, 111) AS estimated_close_date, estimatedvalue AS estimated_amount FROM opportunity");
+GenerateMaql(maqlFile="examples/scribe/opportunity.maql");
+ExecuteMaql(maqlFile="examples/scribe/opportunity.maql");

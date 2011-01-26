@@ -1,0 +1,55 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<schema>
+  <name>User</name>
+  <columns>
+    <column>
+      <title>User</title>
+      <name>id</name>
+      <ldmType>CONNECTION_POINT</ldmType>
+      <folder>User</folder>
+    </column>
+    <column>
+      <title>User Login</title>
+      <name>login</name>
+      <ldmType>LABEL</ldmType>
+      <reference>id</reference>
+      <folder>User</folder>
+    </column>
+    <column>
+      <title>First Name</title>
+      <name>firstname</name>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>User</folder>
+    </column>
+    <column>
+      <title>Last Name</title>
+      <name>lastname</name>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>User</folder>
+    </column>
+    <column>
+      <title>E-Mail</title>
+      <name>email</name>
+      <ldmType>LABEL</ldmType>
+      <folder>User</folder>
+      <reference>id</reference>
+    </column>
+    <column>
+      <title>Organization ID</title>
+      <name>organization_id</name>
+      <ldmType>REFERENCE</ldmType>
+      <folder>User</folder>
+      <schemaReference>Organization</schemaReference>
+      <reference>id</reference>
+    </column>
+    <column>
+      <title>Bussiness Unit ID</title>
+      <name>bussiness_unit_id</name>
+      <ldmType>REFERENCE</ldmType>
+      <folder>User</folder>
+      <schemaReference>Business Unit</schemaReference>
+      <reference>id</reference>
+    </column>
+  </columns>
+</schema>
