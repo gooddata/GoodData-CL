@@ -136,7 +136,8 @@
     <column>
       <name>url</name>
       <title>URL</title>
-      <ldmType>ATTRIBUTE</ldmType>
+      <ldmType>LABEL</ldmType>
+      <reference>id</reference>
       <folder>Story</folder>
     </column>
   </columns>
