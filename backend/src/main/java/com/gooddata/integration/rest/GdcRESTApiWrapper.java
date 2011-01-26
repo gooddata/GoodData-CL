@@ -151,9 +151,9 @@ public class GdcRESTApiWrapper {
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(loginStructure.toString().getBytes()));
         loginPost.setRequestEntity(request);
         try {
-            String resp = executeMethodOk(loginPost, false); // do not re-login on SC_UNAUTHORIZED
+            String resp = executeMethodOk(loginPost); // do not re-login on SC_UNAUTHORIZED
             // read SST from cookie
-            ssToken = extractCookie(loginPost, "GDCAuthSST");
+            //ssToken = extractCookie(loginPost, "GDCAuthSST");
             setTokenCookie();
             l.debug("Successfully logged into GoodData.");
             JSONObject rsp = JSONObject.fromObject(resp);
@@ -229,12 +229,12 @@ public class GdcRESTApiWrapper {
 
 
         // set SSToken from config
-        Cookie sstCookie = new Cookie(config.getGdcHost(), "GDCAuthSST", ssToken, TOKEN_URI, -1, false);
-        sstCookie.setPathAttributeSpecified(true);
-        client.getState().addCookie(sstCookie);
+        //Cookie sstCookie = new Cookie(config.getGdcHost(), "GDCAuthSST", ssToken, TOKEN_URI, -1, false);
+        //sstCookie.setPathAttributeSpecified(true);
+        //client.getState().addCookie(sstCookie);
 
         try {
-            executeMethodOk(secutityTokenGet, false);
+            executeMethodOk(secutityTokenGet);
         } catch (HttpMethodException ex) {
             l.debug("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
             throw new GdcLoginException("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
@@ -1180,37 +1180,23 @@ public class GdcRESTApiWrapper {
         return maqlStructure;
     }
 
-    /**
-     * Executes HttpMethod and test if the response if 200(OK)
-     *
-     * @param method the HTTP method
-     * @return response body as String
-     * @throws HttpMethodException
-     */
-    protected String executeMethodOk(HttpMethod method) throws HttpMethodException {
-        return executeMethodOk(method, true);
-    }
 
     /**
      * Executes HttpMethod and test if the response if 200(OK)
      *
      * @param method the HTTP method
-     * @param reLoginOn401 flag saying whether we should call login() and retry on
      * @return response body as String
      * @throws HttpMethodException
      */
-    private String executeMethodOk(HttpMethod method, boolean reLoginOn401) throws HttpMethodException {
-        if (reLoginOn401) {
-            setTokenCookie();
-        }
+    private String executeMethodOk(HttpMethod method) throws HttpMethodException {
         try {
             client.executeMethod(method);
             if (method.getStatusCode() == HttpStatus.SC_OK) {
                 return method.getResponseBodyAsString();
-            } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reLoginOn401) {
+            } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                 // refresh the temporary token
                 setTokenCookie();
-                return executeMethodOk(method, false);
+                return executeMethodOk(method);
             } else if (method.getStatusCode() == HttpStatus.SC_CREATED) {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
