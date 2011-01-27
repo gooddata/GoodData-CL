@@ -13,6 +13,6 @@ GenerateCsvConfig(
     csvHeaderFile="tests/generate_csv_config/quotes.csv",
     configFile="tests/generate_csv_config/quotes.config.xml",
     defaultLdmType="ATTRIBUTE",
-    facts="HIGH_PRICE LOW_PRICE,CLOSE_PRICE,VOLUME,ADJUSTED_CLOSE_PRICE",
+    facts="HIGH_PRICE,LOW_PRICE,CLOSE_PRICE,VOLUME,ADJUSTED_CLOSE_PRICE With a far far longer name that one could seriously expect",
     folder="Quotes",
     separator=",");

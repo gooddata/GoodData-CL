@@ -152,7 +152,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         int i = 0;
         final Set<String> factIdentifiersSet = new HashSet<String>();
         for (final String fn : factsNames) {
-            factIdentifiersSet.add(StringUtil.toIdentifier(fn));
+            factIdentifiersSet.add(fn);
         }
         final SourceSchema srcSchm;
         if (configStream != null) {
@@ -189,7 +189,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
                 final SourceColumn sc;
                 final String identifier = idGen.transform(header);
                 final String title = titleGen.transform(header);
-                if (factIdentifiersSet.contains(identifier)) {
+                if (factIdentifiersSet.contains(header)) {
                     sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_FACT, title, folder);
                 } else if (defaultLdmType != null) {
                     sc = new SourceColumn(identifier, defaultLdmType, title, folder);
