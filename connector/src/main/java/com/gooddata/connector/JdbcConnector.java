@@ -32,9 +32,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
@@ -53,6 +51,8 @@ import com.gooddata.util.JdbcUtil;
 import com.gooddata.util.StringUtil;
 import com.gooddata.util.JdbcUtil.ResultSetHandler;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * GoodData JDBC Connector
@@ -230,10 +230,12 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
                 public void handle(ResultSet rs) throws SQLException {
                     final int length = rs.getMetaData().getColumnCount();
+                    final Map<String,DateTimeFormatter> dateFormatsCache = new HashMap<String,DateTimeFormatter>();
                     String key = "";
                     List<String> lineL = new ArrayList<String>(length+1);
                     String[] line = new String[length];
                     for (int i = 1; i <= length; i++) {
+                        int adjustedConfigIndex = ((identityColumn >=0) && (i - 1 >= identityColumn)) ? (i) : (i-1);
                         final int sqlType = rs.getMetaData().getColumnType(i);
                         final Object value = rs.getObject(i);
                         if (value == null || rs.wasNull())
@@ -243,14 +245,33 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                                 case Types.DATE:
                                 case Types.TIMESTAMP:
                                     DateTime date = new DateTime((Date)value);
-                                    line[i - 1] = Constants.DEFAULT_DATE_FMT.print(date);
+                                    SourceColumn c = columns.get(adjustedConfigIndex);
+                                    String fmt = c.getFormat();
+                                    if(fmt == null || fmt.length() <= 0) {
+                                        if(c.isDatetime())
+                                            fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
+                                        else
+                                            fmt = Constants.DEFAULT_DATE_FMT_STRING;
+                                    }
+                                    // in case of UNIX TIME we don't format but create the date from the UNIX time number
+                                    if(Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
+                                        fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
+                                    }
+                                    DateTimeFormatter dtf = null;
+                                    if(dateFormatsCache.containsKey(fmt)) {
+                                        dtf = dateFormatsCache.get(fmt);
+                                    }
+                                    else {
+                                        dtf = DateTimeFormat.forPattern(fmt);
+                                        dateFormatsCache.put(fmt,dtf);
+                                    }
+                                    line[i - 1] = dtf.print(date);
                                     break;
                                 default:
                                     line[i - 1] = value.toString();
                             }
                         }
                         lineL.add(line[i-1]);
-                        int adjustedConfigIndex = ((identityColumn >=0) && (i - 1 >= identityColumn)) ? (i) : (i-1);
                         if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
                            SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
                            SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())

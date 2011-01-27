@@ -47,10 +47,12 @@ public class DateColumnsExtender {
     private List<Integer> dateColumnIndexes;
     private List<DateTimeFormatter> dateColumnFormats;
     private List<SourceColumn> dates;
+    private int identityColumn = -1;
 
     public DateColumnsExtender(SourceSchema schema) {
         dateColumnIndexes = new ArrayList<Integer>();
         dateColumnFormats = new ArrayList<DateTimeFormatter>();
+        identityColumn = schema.getIdentityColumn();
         dates = schema.getDates();
         for(int i= 0; i < dates.size(); i++)  {
             SourceColumn c = dates.get(i);
@@ -106,7 +108,9 @@ public class DateColumnsExtender {
         List<String> rowExt = new ArrayList<String>();
         for(int i = 0; i < dateColumnIndexes.size(); i++) {
             SourceColumn c = dates.get(i);
-            String dateValue = row[dateColumnIndexes.get(i)];
+            int idx = dateColumnIndexes.get(i);
+            int adjustedDataIndex = ((identityColumn >=0) && (idx >= identityColumn)) ? (idx-1) : (idx);
+            String dateValue = row[idx];
             if(dateValue != null && dateValue.trim().length()>0) {
                 try {
                     DateTimeFormatter formatter = dateColumnFormats.get(i);
