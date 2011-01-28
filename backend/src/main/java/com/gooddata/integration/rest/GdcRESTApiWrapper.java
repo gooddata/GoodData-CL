@@ -108,9 +108,6 @@ public class GdcRESTApiWrapper {
 
     private static HashMap<String,Integer> ROLES = new HashMap<String,Integer>();
 
-    private static final CookieSpec COOKIE_SPEC = new RFC2109Spec();
-
-
     /* TODO This is fragile and may not work for all projects and/or future versions.
      * Use /gdc/projects/{projectId}/roles to retrieve roles for a particular project.
      */
@@ -151,9 +148,8 @@ public class GdcRESTApiWrapper {
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(loginStructure.toString().getBytes()));
         loginPost.setRequestEntity(request);
         try {
-            String resp = executeMethodOk(loginPost); // do not re-login on SC_UNAUTHORIZED
-            // read SST from cookie
-            //ssToken = extractCookie(loginPost, "GDCAuthSST");
+            String resp = executeMethodOk(loginPost, false); // do not re-login on SC_UNAUTHORIZED
+
             setTokenCookie();
             l.debug("Successfully logged into GoodData.");
             JSONObject rsp = JSONObject.fromObject(resp);
@@ -194,31 +190,6 @@ public class GdcRESTApiWrapper {
         return loginStructure;
     }
 
-    private String extractCookie(HttpMethod method, String cookieName) {
-
-        for (final Header cookieHeader : method.getResponseHeaders("Set-Cookie")) {
-            try {
-                final Cookie[] cookies = COOKIE_SPEC.parse(
-                        config.getGdcHost(),
-                        "https".equals(config.getProtocol()) ? 443 : 80,
-                        "/",  // force all cookie paths to be accepted
-                        "https".equals(config.getProtocol()),
-                        cookieHeader);
-
-                for (final Cookie cookie : cookies) {
-                    if (cookieName.equals(cookie.getName())) {
-                        return cookie.getValue();
-                    }
-                }
-            } catch (MalformedCookieException e) {
-                l.warn("Ignoring malformed cookie: " + e.getMessage());
-                l.debug("Ignoring malformed cookie", e);
-            }
-        }
-        throw new GdcRestApiException(cookieName + " cookie not found in the response to "
-                + method.getName() + " to " + method.getPath());
-    }
-
     /**
      * Sets the SS token
      *
@@ -226,12 +197,6 @@ public class GdcRESTApiWrapper {
      */
     private void setTokenCookie() throws GdcLoginException {
         HttpMethod secutityTokenGet = createGetMethod(getServerUrl() + TOKEN_URI);
-
-
-        // set SSToken from config
-        //Cookie sstCookie = new Cookie(config.getGdcHost(), "GDCAuthSST", ssToken, TOKEN_URI, -1, false);
-        //sstCookie.setPathAttributeSpecified(true);
-        //client.getState().addCookie(sstCookie);
 
         try {
             executeMethodOk(secutityTokenGet);
@@ -1180,6 +1145,9 @@ public class GdcRESTApiWrapper {
         return maqlStructure;
     }
 
+    private String executeMethodOk(HttpMethod method) throws HttpMethodException {
+        return executeMethodOk(method, true);
+    }
 
     /**
      * Executes HttpMethod and test if the response if 200(OK)
@@ -1188,15 +1156,15 @@ public class GdcRESTApiWrapper {
      * @return response body as String
      * @throws HttpMethodException
      */
-    private String executeMethodOk(HttpMethod method) throws HttpMethodException {
+    private String executeMethodOk(HttpMethod method, boolean reloginOn401) throws HttpMethodException {
         try {
             client.executeMethod(method);
             if (method.getStatusCode() == HttpStatus.SC_OK) {
                 return method.getResponseBodyAsString();
-            } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+            } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reloginOn401) {
                 // refresh the temporary token
                 setTokenCookie();
-                return executeMethodOk(method);
+                return executeMethodOk(method, false);
             } else if (method.getStatusCode() == HttpStatus.SC_CREATED) {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
