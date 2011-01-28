@@ -458,7 +458,7 @@ public abstract class AbstractConnector implements Connector {
 		final StringBuilder maql = new StringBuilder();
 		if (!deletedColumns.isEmpty()) {
 			mg.setSynchronize(false);
-			maql.append(mg.generateMaqlDrop(deletedColumns));
+			maql.append(mg.generateMaqlDrop(deletedColumns, diffMaker.sourceColumns));
 		}
         if (!newColumns.isEmpty()) {
             mg.setSynchronize(false);

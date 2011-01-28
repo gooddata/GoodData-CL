@@ -115,36 +115,45 @@ public class MaqlGenerator {
      * @param columns list of columns
      * @return MAQL as String
      */
-    public String generateMaqlDrop(List<SourceColumn> columns) {
+    public String generateMaqlDrop(List<SourceColumn> columns, Iterable<SourceColumn> knownColumns) {
         // generate attributes and facts
     	State state = new State();
         for (SourceColumn column : columns) {
         	state.processColumn(column);
         }
         
-        StringBuffer script = new StringBuffer("# DROP ATTRIBUTES.\n");
+        StringBuffer nonLabelsScript = new StringBuffer("# DROP ATTRIBUTES.\n");
         
         for (final Column c : state.attributes.values()) {
-            script.append(c.generateMaqlDdlDrop());
+            nonLabelsScript.append(c.generateMaqlDdlDrop());
         }
-        script.append("# DROP FACTS\n");
+        nonLabelsScript.append("# DROP FACTS\n");
         for (final Column c : state.facts) {
-        	script.append(c.generateMaqlDdlDrop());
+            nonLabelsScript.append(c.generateMaqlDdlDrop());
         }
-        script.append("# DROP DATEs\n# DATES ARE REPRESENTED AS FACTS\n");
-        script.append("# DATES ARE ALSO CONNECTED TO THE DATE DIMENSIONS\n");
+        nonLabelsScript.append("# DROP DATEs\n# DATES ARE REPRESENTED AS FACTS\n");
+        nonLabelsScript.append("# DATES ARE ALSO CONNECTED TO THE DATE DIMENSIONS\n");
         for (final Column c : state.dates) {
+            nonLabelsScript.append(c.generateMaqlDdlDrop());
+        }
+        nonLabelsScript.append("# DROP REFERENCES\n# REFERENCES CONNECT THE DATASET TO OTHER DATASETS\n");
+        for (final Column c : state.references) {
+            nonLabelsScript.append(c.generateMaqlDdlDrop());
+        }
+
+        state.addKnownColumns(knownColumns);
+        
+        StringBuilder script = new StringBuilder();
+        script.append("# DROP LABELS\n");
+        for (final Column c: state.labels) {
             script.append(c.generateMaqlDdlDrop());
         }
-        script.append("# CREATE REFERENCES\n# REFERENCES CONNECT THE DATASET TO OTHER DATASETS\n");
-        for (final Column c : state.references) {
-        	script.append(c.generateMaqlDdlDrop());
-        }
-        
+        script.append(nonLabelsScript);
+
         // finally 
         if (synchronize) {
-	        script.append("# SYNCHRONIZE THE STORAGE AND DATA LOADING INTERFACES WITH THE NEW LOGICAL MODEL\n");
-	        script.append("SYNCHRONIZE {" + schema.getDatasetName() + "};\n\n");
+            script.append("# SYNCHRONIZE THE STORAGE AND DATA LOADING INTERFACES WITH THE NEW LOGICAL MODEL\n");
+            script.append("SYNCHRONIZE {" + schema.getDatasetName() + "};\n\n");
         }
         
         return script.toString();
@@ -181,7 +190,7 @@ public class MaqlGenerator {
         String script = "# CREATE ATTRIBUTES.\n# ATTRIBUTES ARE CATEGORIES THAT ARE USED FOR SLICING AND DICING THE " +
                     "NUMBERS (FACTS)\n";
         
-        ConnectionPoint connectionPoint = null; // holt the CP's default label to be created at the end
+        ConnectionPoint connectionPoint = null; // hold the CP's default label to be created at the end
         for (final Column c : state.attributes.values()) {
             script += c.generateMaqlDdlAdd();
             if (c instanceof ConnectionPoint) {
@@ -216,14 +225,6 @@ public class MaqlGenerator {
         }
         
     	state.addKnownColumns(knownColumns);
-    	if (connectionPoint == null) {
-    	    for (final Attribute attr : state.attributes.values()) {
-    	        if (LDM_TYPE_CONNECTION_POINT.equals(attr.column.getLdmType())) {
-    	            connectionPoint = (ConnectionPoint)attr;
-    	            break;
-    	        }
-    	    }
-    	}
 
         // labels last
     	boolean cpDefLabelSet = false;
@@ -536,7 +537,14 @@ public class MaqlGenerator {
 	        }
 	        
 	        public String generateMaqlDdlDrop() {
-	        	throw new UnsupportedOperationException("Generate MAQL Drop is not supported for LABELS yet");
+                attr = attributes.get(scnPk);
+                if (attr == null) {
+                    throw new IllegalArgumentException("Label " + scn + " points to non-existing attribute " + scnPk);
+                }
+                String script = "# DROP LABELS FROM ATTRIBUTES\n";
+                final String labelId = "label." + ssn + "." + scnPk + "." + scn;
+                script += "ALTER ATTRIBUTE  {" + attr.identifier + "} DROP LABELS {" + labelId + "};\n";
+                return script;
 	        }
 	        
 	        public String generateMaqlDdlDefaultLabel() {
