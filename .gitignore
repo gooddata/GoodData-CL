@@ -47,3 +47,9 @@ notification-distro/target
 
 sfdc/gooddata-sfdc-lib.iml
 sfdc/target
+
+web/target
+web/gooddata-cl-web.iml
+
+web-distro/target
+web-distro/gooddata-cl-web-distro.iml

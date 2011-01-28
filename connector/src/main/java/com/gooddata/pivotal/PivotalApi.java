@@ -434,7 +434,7 @@ public class PivotalApi {
                 labelsToStoriesRecord.clear();
                 String storyId = "";
                 String label = "";
-                String key = "";
+                String key = today+"|";
                 for(int i=0; i < headers.size(); i++) {
                     String header = headers.get(i);
                     if(RECORD_STORIES.contains(header)) {
