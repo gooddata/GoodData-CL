@@ -1,7 +1,7 @@
 # This example shows how to load the Google Analytics data to the GoodData project
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
-CreateProject(name="Google Analytics",templateUri="/projectTemplates/GoogleAnalytics");
+CreateProject(name="Google Analytics",templateUri="/projectTemplates/GoogleAnalytics/2");
 
 RememberProject(fileName="examples/ga/pid");
 
