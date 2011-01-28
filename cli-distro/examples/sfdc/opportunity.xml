@@ -56,12 +56,6 @@
       <schemaReference>created</schemaReference>
     </column>
     <column>
-      <name>expectedrevenue</name>
-      <title>Expected Revenue</title>
-      <ldmType>FACT</ldmType>
-      <folder>Opportunity</folder>
-    </column>
-    <column>
       <name>amount</name>
       <title>Amount</title>
       <ldmType>FACT</ldmType>

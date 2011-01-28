@@ -317,78 +317,116 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
         cw.writeNext(header);
         SoapBindingStub c = connect(getSfdcHostname(), getSfdcUsername(), getSfdcPassword(), getSfdcToken());
-        List<SObject> result;
+        l.debug("Executing SFDC query "+sfdcQuery);
+        QueryOptions qo = new QueryOptions();
+        qo.setBatchSize(500);
+        c.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),
+             "QueryOptions", qo);
+        String[] colTypes = null;
+        boolean firstBatch = true;
+        int rowCnt = 0;
         try {
-            result = executeQuery(c, getSfdcQuery());
-        } catch (SfdcException e) {
-            l.debug("SFDC query execution failed.",e);
-            throw new InternalErrorException("SFDC query execution failed: ",e);
-        }
-        if(result != null && result.size() > 0) {
-            l.debug("Started retrieving SFDC data.");
-            SObject firstRow = result.get(0);
-            Map<String,Field> fields = describeObject(c, firstRow.getType());
-            MessageElement[] frCols = firstRow.get_any();
-            String[] colTypes = new String[frCols.length];
-            for(int i=0; i< frCols. length; i++) {
-                String nm = frCols[i].getName();
-                colTypes[i] = getColumnType(fields, nm);
-            }
-            for( SObject row : result) {
-                MessageElement[] cols = row.get_any();
-                String key = "";
-                List<String> valsL = new ArrayList<String>(cols.length+1);
-                String[] vals = new String[cols.length];
-                for(int i=0; i<vals.length; i++) {
-                    vals[i] = cols[i].getValue();
-                    if(colTypes[i].equals(SourceColumn.LDM_TYPE_DATE)) {
-                        if(vals[i] != null && vals[i].length()>0)
-                            vals[i] = vals[i].substring(0,10);
-                        else
-                            vals[i] = "";
-                    }
-                    else if(colTypes[i].equals(SourceColumn.LDM_TYPE_FACT)) {
-                        if(vals[i] != null && vals[i].length()>0) {
-                            try {
-                                double d = Double.parseDouble(vals[i]);
-                                vals[i] = nf.format(d);
+            QueryResult qr = c.query(sfdcQuery);
+            do {
+                SObject[] sObjects = qr.getRecords();
+                if(sObjects != null && sObjects.length >0) {
+                    l.debug("Started retrieving SFDC data.");
+                    boolean firstRow = true;
+                    for( SObject row : sObjects) {
+                        if(firstBatch && firstRow) {
+                            SObject hdr = sObjects[0];
+                            Map<String,Field> fields = describeObject(c, hdr.getType());
+                            MessageElement[] frCols = hdr.get_any();
+                            colTypes = new String[frCols.length];
+                            for(int i=0; i< frCols. length; i++) {
+                                String nm = frCols[i].getName();
+                                colTypes[i] = getColumnType(fields, nm);
                             }
-                            catch (NumberFormatException e) {
-                                vals[i] = "";
-                            }
+                            firstRow = false;
                         }
                         else {
-                            vals[i] = "";
+                            MessageElement[] cols = row.get_any();
+                            String key = "";
+                            List<String> valsL = new ArrayList<String>(cols.length+1);
+                            String[] vals = new String[cols.length];
+                            for(int i=0; i<vals.length; i++) {
+                                int adjustedConfigIndex = ((identityColumn >=0) && (i >= identityColumn)) ? (i+1) : (i);
+                                vals[i] = cols[i].getValue();
+                                if(colTypes[i].equals(SourceColumn.LDM_TYPE_DATE)) {
+                                    if(vals[i] != null && vals[i].length()>0)
+                                        vals[i] = vals[i].substring(0,10);
+                                    else
+                                        vals[i] = "";
+                                }
+                                else if(colTypes[i].equals(SourceColumn.LDM_TYPE_FACT)) {
+                                    if(vals[i] != null && vals[i].length()>0) {
+                                        try {
+                                            double d = Double.parseDouble(vals[i]);
+                                            vals[i] = nf.format(d);
+                                        }
+                                        catch (NumberFormatException e) {
+                                            vals[i] = "";
+                                        }
+                                    }
+                                    else {
+                                        vals[i] = "";
+                                    }
+                                }
+                                if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                                   SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
+                                   SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
+                                ) {
+                                    key += vals[i] + "|";
+                                }
+                                valsL.add(vals[i]);
+                            }
+
+                            if(identityColumn>=0) {
+                                String hex = DigestUtils.md5Hex(key);
+                                valsL.add(identityColumn, hex);
+                                vals = valsL.toArray(new String[]{});
+                            }
+                            // add the extra date columns
+                            vals = dateExt.extendRow(vals);
+                            cw.writeNext(vals);
+                            rowCnt++;
                         }
                     }
-                    int adjustedConfigIndex = ((identityColumn >=0) && (i >= identityColumn)) ? (i+1) : (i);
-                    if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                       SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                       SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
-                    ) {
-                        key += vals[i] + "|";
+                    if(!qr.isDone()) {
+                        qr = c.queryMore(qr.getQueryLocator());
+                        firstBatch = false;
                     }
-                    valsL.add(vals[i]);
                 }
-
-                if(identityColumn>=0) {
-                    String hex = DigestUtils.md5Hex(key);
-                    valsL.add(identityColumn, hex);
-                    vals = valsL.toArray(new String[]{});
-                }
-                // add the extra date columns
-                vals = dateExt.extendRow(vals);
-                cw.writeNext(vals);
-            }
-            l.debug("Retrieved " + result.size() + " rows of SFDC data.");
+            } while(!qr.isDone());
+            l.debug("Retrieved " + rowCnt + " rows of SFDC data.");
             cw.flush();
             cw.close();
             l.debug("Extracted SFDC data.");
+
         }
-        else {
-            l.debug("The SFDC query hasn't returned any row.");
-            throw new SfdcException("The SFDC query hasn't returned any row.");
+        catch (ApiQueryFault ex) {
+            l.debug("Executing SFDC query failed",ex);
+            throw new SfdcException("Failed to execute SFDC query.",ex);
         }
+        catch (UnexpectedErrorFault e) {
+            l.debug("Executing SFDC query failed",e);
+    	    throw new SfdcException("Failed to execute SFDC query.",e);
+	    }
+        catch (InvalidIdFault e) {
+            l.debug("Executing SFDC query failed",e);
+	        throw new SfdcException("Failed to execute SFDC query.",e);
+	    }
+        catch (InvalidQueryLocatorFault e) {
+            l.debug("Executing SFDC query failed",e);
+		    throw new SfdcException("Failed to execute SFDC query.",e);
+	    }
+        catch (RemoteException e) {
+            l.debug("Executing SFDC query failed",e);
+		    throw new SfdcException("Failed to execute SFDC query.",e);
+	    }
+        l.debug("Finihed SFDC query execution.");
+
+
     }
 
 

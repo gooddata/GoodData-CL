@@ -49,7 +49,7 @@ TransferData(incremental="true");
 #GenerateSfdcConfig(name="Opportunity", configFile="examples/sfdc/opportunity.xml",host="www.salesforce.com",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
 
 # LOAD THE OPPORTUNITY
-UseSfdc(configFile="examples/sfdc/opportunity.xml",host="www.salesforce.com",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, ExpectedRevenue, Amount FROM Opportunity");
+UseSfdc(configFile="examples/sfdc/opportunity.xml",host="www.salesforce.com",username="mh@gooddata.blank",password="8uEx6ddzkr",token="TClAQjzY2DbsucCCiNPXNvRx",query="SELECT Id, Name, AccountId, IsWon, IsClosed, CloseDate, StageName, CreatedDate, Amount FROM Opportunity");
 
 # GENERATE THE OPPORTUNITY MAQL
 GenerateMaql(maqlFile="examples/sfdc/opportunity.maql");
