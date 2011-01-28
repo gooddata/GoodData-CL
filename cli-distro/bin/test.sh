@@ -65,7 +65,7 @@ echo 'Dropping the pt project and snapshots'
 drop "`cat examples/pt/pid`"
 
 echo 'Running forex demo'
-bin/gdi.sh examples/forex/cmd.txt
+bin/gdi.sh examples/forex/forex.txt
 
 echo 'Dropping the forex project and snapshots'
 drop "`cat examples/forex/pid`"
