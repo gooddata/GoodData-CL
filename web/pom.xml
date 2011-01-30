@@ -35,6 +35,7 @@
     <artifactId>gooddata-cl-web</artifactId>
     <description>GoodData CL WWW interface module. Implements the WWW wrapper.</description>
     <name>gooddata-cl-web</name>
+    <packaging>war</packaging>
 
     <licenses>
         <license>
@@ -63,6 +64,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 	</dependencies>
 	<build>

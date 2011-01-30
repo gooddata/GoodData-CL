@@ -6,6 +6,6 @@
 
   <servlet-mapping>
     <servlet-name>gdc</servlet-name>
-    <url-pattern>/gdc</url-pattern>
+    <url-pattern>/</url-pattern>
   </servlet-mapping>
 </web-app>
