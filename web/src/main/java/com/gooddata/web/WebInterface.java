@@ -49,19 +49,26 @@ public class WebInterface extends HttpServlet {
         out.println("<title>Request Information Example</title>");
         out.println("</head>");
         out.println("<body>");
-        out.println("<h3>Request Information Example</h3>");
-        out.println("Method: " + request.getMethod());
-        out.println("Request URI: " + request.getRequestURI());
-        out.println("Protocol: " + request.getProtocol());
-        out.println("PathInfo: " + request.getPathInfo());
-        out.println("Remote Address: " + request.getRemoteAddr());
+        out.println("<br/><h1>Request Information</h1>");
+        out.println("<br/>Method: " + request.getMethod());
+        out.println("<br/>Request URI: " + request.getRequestURI());
+        out.println("<br/>Protocol: " + request.getProtocol());
+        out.println("<br/>PathInfo: " + request.getPathInfo());
+        out.println("<br/>Remote Address: " + request.getRemoteAddr());
 
-
+        out.println("<br/><h1>Headers</h1>");
         Enumeration e = request.getHeaderNames();
         while (e.hasMoreElements()) {
             String name = (String)e.nextElement();
             String value = request.getHeader(name);
-            out.println(name + " = " + value);
+            out.println("<br/>"+name + " = " + value);
+        }
+        out.println("<br/><h1>Parameters</h1>");
+        Enumeration p = request.getParameterNames();
+        while (p.hasMoreElements()) {
+            String name = (String)p.nextElement();
+            String value = request.getParameter(name);
+            out.println("<br/>"+name + " = " + value);
         }
 
         out.println("</body>");
