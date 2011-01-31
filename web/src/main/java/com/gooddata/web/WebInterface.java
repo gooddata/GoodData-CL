@@ -93,8 +93,10 @@ public class WebInterface extends HttpServlet {
         }
 
         String base64 = request.getParameter("signed_request");
+        logger.write("SIGNED REQUEST Base64: " + base64+"\n");
         if(base64 != null) {
-            String json = new String(Base64.decodeBase64(base64.getBytes()));
+            String content = base64.split(".")[1];
+            String json = new String(Base64.decodeBase64(content.getBytes()));
             logger.write("JSON: " + json+"\n");
         }
 
@@ -105,11 +107,6 @@ public class WebInterface extends HttpServlet {
         logger.flush();
     }
 
-    /**
-     * We are going to perform the same operations for POST requests
-     * as for GET methods, so this method just sends the request to
-     * the doGet method.
-     */
 
     public void doPost(HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException
