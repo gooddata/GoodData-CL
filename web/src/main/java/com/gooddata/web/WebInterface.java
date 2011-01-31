@@ -24,6 +24,7 @@
 package com.gooddata.web;
 
 import com.gooddata.util.FileUtil;
+import org.apache.commons.codec.binary.Base64;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -67,7 +68,7 @@ public class WebInterface extends HttpServlet {
         out.println("<br/>Protocol: " + request.getProtocol());
         out.println("<br/>PathInfo: " + request.getPathInfo());
         out.println("<br/>Remote Address: " + request.getRemoteAddr());
-        logger.write("Method: " + request.getMethod()+"\n");
+        logger.write("Method: " + request.getMethod() + "\n");
         logger.write("Request URI: " + request.getRequestURI()+"\n");
         logger.write("Protocol: " + request.getProtocol()+"\n");
         logger.write("PathInfo: " + request.getPathInfo()+"\n");
@@ -90,6 +91,12 @@ public class WebInterface extends HttpServlet {
             out.println("<br/>"+name + " = " + value);
             logger.write(name + " = " + value+"\n");
         }
+
+        String base64 = request.getParameter("signed_request");
+        String json = new String(Base64.decodeBase64(base64.getBytes()));
+        logger.write("JSON: " + json+"\n");
+
+
         logger.write("END REQUEST\n\n");
         out.println("</body>");
         out.println("</html>");
