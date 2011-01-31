@@ -5,7 +5,7 @@
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>gdc</servlet-name>
-    <url-pattern>/</url-pattern>
+    <servlet-name>gdc-facebook-login</servlet-name>
+    <url-pattern>/gdc/facebook/login</url-pattern>
   </servlet-mapping>
 </web-app>
