@@ -23,6 +23,8 @@
 
 package com.gooddata.web;
 
+import com.gooddata.util.FileUtil;
+
 import java.io.*;
 import java.util.Enumeration;
 import javax.servlet.http.*;
@@ -38,30 +40,47 @@ import javax.servlet.*;
 public class WebInterface extends HttpServlet {
 
 
+    static private String path = "/tmp/fblog.log";
+    static private FileWriter logger;
+
+
       public void doGet(HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException
     {
+        if(logger == null) {
+            logger = new FileWriter(path);
+        }
+        logger.write("START REQUEST\n\n");
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         out.println("<html>");
         out.println("<body>");
         out.println("<head>");
         out.println("<title>Request Information Example</title>");
+        logger.write("Request Information Example\n\n");
         out.println("</head>");
         out.println("<body>");
         out.println("<br/><h1>Request Information</h1>");
+        logger.write("Request Information\n");
         out.println("<br/>Method: " + request.getMethod());
         out.println("<br/>Request URI: " + request.getRequestURI());
         out.println("<br/>Protocol: " + request.getProtocol());
         out.println("<br/>PathInfo: " + request.getPathInfo());
         out.println("<br/>Remote Address: " + request.getRemoteAddr());
+        logger.write("Method: " + request.getMethod()+"\n");
+        logger.write("Request URI: " + request.getRequestURI()+"\n");
+        logger.write("Protocol: " + request.getProtocol()+"\n");
+        logger.write("PathInfo: " + request.getPathInfo()+"\n");
+        logger.write("Remote Address: " + request.getRemoteAddr()+"\n\n");
 
         out.println("<br/><h1>Headers</h1>");
+        logger.write("Headers+\n");
         Enumeration e = request.getHeaderNames();
         while (e.hasMoreElements()) {
             String name = (String)e.nextElement();
             String value = request.getHeader(name);
             out.println("<br/>"+name + " = " + value);
+            logger.write(name + " = " + value+"\n");
         }
         out.println("<br/><h1>Parameters</h1>");
         Enumeration p = request.getParameterNames();
@@ -69,10 +88,12 @@ public class WebInterface extends HttpServlet {
             String name = (String)p.nextElement();
             String value = request.getParameter(name);
             out.println("<br/>"+name + " = " + value);
+            logger.write(name + " = " + value+"\n");
         }
-
+        logger.write("END REQUEST\n\n");
         out.println("</body>");
         out.println("</html>");
+        logger.flush();
     }
 
     /**
