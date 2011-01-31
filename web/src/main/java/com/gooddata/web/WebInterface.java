@@ -93,8 +93,10 @@ public class WebInterface extends HttpServlet {
         }
 
         String base64 = request.getParameter("signed_request");
-        String json = new String(Base64.decodeBase64(base64.getBytes()));
-        logger.write("JSON: " + json+"\n");
+        if(base64 != null) {
+            String json = new String(Base64.decodeBase64(base64.getBytes()));
+            logger.write("JSON: " + json+"\n");
+        }
 
 
         logger.write("END REQUEST\n\n");
