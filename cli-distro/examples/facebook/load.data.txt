@@ -1,0 +1,12 @@
+# A simple example that loads a flat file with a facebook data
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Store the project ID to file for possible other scripts
+OpenProject(id="%PID%");
+
+# load the Facebook data
+# the data file config has been generated
+UseFacebook(query="SELECT gid, name, update_time FROM group WHERE gid IN (SELECT gid FROM group_member WHERE uid IN (SELECT uid2 FROM friend WHERE uid1=me()))",configFile="examples/facebook/facebook.xml",authToken="%FACEBOOK_TOKEN%");
+
+# transfer the Facebook data
+TransferData();
