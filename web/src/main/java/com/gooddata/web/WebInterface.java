@@ -52,7 +52,9 @@ public class WebInterface extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         PrintWriter out = response.getWriter();
+        response.setContentType("text/html");
         out.print(form);
+        out.close();
     }
 
 
@@ -70,6 +72,7 @@ public class WebInterface extends HttpServlet {
                     String token = json.getString("oauth_token");
                     String txt = result.replace("%TOKEN%",token);
                     out.print(txt);
+                    out.close();
                 } catch (Base64DecoderException e) {
                     throw new IOException(e.getMessage());
                 }
