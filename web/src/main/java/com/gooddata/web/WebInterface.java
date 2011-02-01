@@ -24,6 +24,7 @@
 package com.gooddata.web;
 
 import com.gooddata.util.FileUtil;
+import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.*;
@@ -43,75 +44,25 @@ public class WebInterface extends HttpServlet {
 
     static private String path = "/tmp/fblog.log";
     static private FileWriter logger;
+    static final String form = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization</title></head><body><form method='POST' action=''><table border='0'><tr><td><b>GoodData Username:</b></td><td><input type='text' name='gdc-username' value='john.doe@acme.com'/></td></tr><tr><td><b>Insight Graph API URL:</b></td><td><input type='text' size='80' name='base-url' value='https://graph.facebook.com/175593709144814/insights/page_views/day'/></td></tr><tr><td><b>Create GoodData Project:</b></td><td><input type='checkbox' name='gdc-create-project-flag' checked='1'/></td></tr><tr><td colspan='2'><input type='submit' name='submit-ok' value='OK'/></td></tr></table></form></body></html>";
+    static final String result = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization Result</title></head><body>Synchronization task submitted. The authentication token is %TOKEN% .</body></html>";
 
 
-      public void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException
-    {
-        if(logger == null) {
-            logger = new FileWriter(path);
-        }
-        logger.write("START REQUEST\n\n");
-        response.setContentType("text/html");
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         PrintWriter out = response.getWriter();
-        out.println("<html>");
-        out.println("<body>");
-        out.println("<head>");
-        out.println("<title>Request Information Example</title>");
-        logger.write("Request Information Example\n\n");
-        out.println("</head>");
-        out.println("<body>");
-        out.println("<br/><h1>Request Information</h1>");
-        logger.write("Request Information\n");
-        out.println("<br/>Method: " + request.getMethod());
-        out.println("<br/>Request URI: " + request.getRequestURI());
-        out.println("<br/>Protocol: " + request.getProtocol());
-        out.println("<br/>PathInfo: " + request.getPathInfo());
-        out.println("<br/>Remote Address: " + request.getRemoteAddr());
-        logger.write("Method: " + request.getMethod() + "\n");
-        logger.write("Request URI: " + request.getRequestURI()+"\n");
-        logger.write("Protocol: " + request.getProtocol()+"\n");
-        logger.write("PathInfo: " + request.getPathInfo()+"\n");
-        logger.write("Remote Address: " + request.getRemoteAddr()+"\n\n");
-
-        out.println("<br/><h1>Headers</h1>");
-        logger.write("Headers+\n");
-        Enumeration e = request.getHeaderNames();
-        while (e.hasMoreElements()) {
-            String name = (String)e.nextElement();
-            String value = request.getHeader(name);
-            out.println("<br/>"+name + " = " + value);
-            logger.write(name + " = " + value+"\n");
-        }
-        out.println("<br/><h1>Parameters</h1>");
-        Enumeration p = request.getParameterNames();
-        while (p.hasMoreElements()) {
-            String name = (String)p.nextElement();
-            String value = request.getParameter(name);
-            out.println("<br/>"+name + " = " + value);
-            logger.write(name + " = " + value+"\n");
-        }
-
-        String base64 = request.getParameter("signed_request");
-        logger.write("SIGNED REQUEST Base64: " + base64+"\n");
-        if(base64 != null) {
-            String content = base64.split(".")[1];
-            String json = new String(Base64.decodeBase64(content.getBytes()));
-            logger.write("JSON: " + json+"\n");
-        }
-
-
-        logger.write("END REQUEST\n\n");
-        out.println("</body>");
-        out.println("</html>");
-        logger.flush();
+        out.print(form);
     }
 
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException
-    {
-        doGet(request, response);
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String base64 = request.getParameter("signed_request");
+        if(base64 != null) {
+            String content = base64.split(".")[1];
+            JSONObject json = JSONObject.fromObject(new String(Base64.decodeBase64(content.getBytes())));
+            String token = json.getString("oauth_token");
+            PrintWriter out = response.getWriter();
+            out.print(result.replace("%TOKEN",token));
+        }
     }
 
 }
