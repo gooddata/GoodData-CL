@@ -90,11 +90,12 @@ public class WebInterface extends HttpServlet {
     }
 
     private void process(Map parameters) throws IOException {
+        debug("CREATE_PROJECT_FLAG Class " + parameters.get("CREATE_PROJECT_FLAG").getClass().toString());
         String createProjectFlag = (String)parameters.get("CREATE_PROJECT_FLAG");
         String templateContent = "";
         String fileName = "";
-        if(createProjectFlag.equalsIgnoreCase("on") || createProjectFlag.equalsIgnoreCase("true") ||
-            createProjectFlag.equalsIgnoreCase("1")) {
+        if(createProjectFlag != null && (createProjectFlag.equalsIgnoreCase("on") || createProjectFlag.equalsIgnoreCase("true") ||
+            createProjectFlag.equalsIgnoreCase("1"))) {
             debug("CREATE template selected.");
             templateContent = FileUtil.readStringFromFile(CREATE_TEMPLATE);
             fileName = "create.project.%ID%.txt";
