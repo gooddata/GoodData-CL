@@ -1,0 +1,32 @@
+# A simple example that loads a flat file with a facebook data
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+CreateProject(name="Facebook Insights");
+
+# Store the project ID to file for possible other scripts
+RememberProject(fileName="examples/facebook-insights/pid");
+
+#UseProject(fileName="examples/facebook-insights/pid");
+
+# Loads time dimension to the project
+UseDateDimension(name="Facebook");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/facebook-insights/date.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/facebook-insights/date.maql");
+
+# load the Facebook Insights data
+# the data file config has been generated
+UseFacebookInsights(startDate="2011-01-01",endDate="2011-01-30", baseUrl="https://graph.facebook.com/175593709144814/insights/page_views/day", configFile="examples/facebook-insights/facebook.xml",authToken="%FACEBOOK_TOKEN%");
+
+# generate the Facebook MAQL
+GenerateMaql(maqlFile="examples/facebook-insights/facebook.maql");
+
+# execute the Facebook MAQL
+ExecuteMaql(maqlFile="examples/facebook-insights/facebook.maql");
+
+# transfer the Facebook data
+TransferData();

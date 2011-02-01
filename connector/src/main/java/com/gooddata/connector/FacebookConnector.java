@@ -249,7 +249,7 @@ public class FacebookConnector extends AbstractConnector implements Connector {
             l.debug("The Facebook query hasn't returned any row.");
             throw new SfdcException("The Facebook query hasn't returned any row.");
         }
-        l.debug("Retrieved " + result.size() + " rows of SFDC data.");
+        l.debug("Retrieved " + result.size() + " rows of Facebook data.");
         cw.flush();
         cw.close();
         l.debug("Extracted Facebook data.");

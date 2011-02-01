@@ -1000,7 +1000,8 @@ public class GdcDI implements Executor {
             JdbcConnector.createConnector(),
             PtConnector.createConnector(),    
             DateDimensionConnector.createConnector(),
-            FacebookConnector.createConnector()
+            FacebookConnector.createConnector(),
+            FacebookInsightsConnector.createConnector()
         };
     }
     

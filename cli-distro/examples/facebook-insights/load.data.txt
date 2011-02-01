@@ -1,0 +1,11 @@
+# A simple example that loads a flat file with a facebook data
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+UseProject(fileName="examples/facebook-insights/pid");
+
+# load the Facebook Insights data
+# the data file config has been generated
+UseFacebookInsights(startDate="2011-01-01",endDate="2011-01-30", baseUrl="https://graph.facebook.com/175593709144814/insights/page_views/day", configFile="examples/facebook-insights/facebook.xml",authToken="%FACEBOOK_TOKEN%");
+
+# transfer the Facebook data
+TransferData();
