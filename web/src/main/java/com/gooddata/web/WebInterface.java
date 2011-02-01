@@ -89,9 +89,16 @@ public class WebInterface extends HttpServlet {
         out.close();
     }
 
+    private String get(Map p, String n) {
+        String[] a = (String[])p.get(n);
+        if(a != null && a.length > 0) {
+            return a[0];
+        }
+        return null;
+    }
+
     private void process(Map parameters) throws IOException {
-        debug("CREATE_PROJECT_FLAG Class " + parameters.get("CREATE_PROJECT_FLAG").getClass().toString());
-        String createProjectFlag = (String)parameters.get("CREATE_PROJECT_FLAG");
+        String createProjectFlag = get(parameters,"CREATE_PROJECT_FLAG");
         String templateContent = "";
         String fileName = "";
         if(createProjectFlag != null && (createProjectFlag.equalsIgnoreCase("on") || createProjectFlag.equalsIgnoreCase("true") ||
@@ -106,7 +113,7 @@ public class WebInterface extends HttpServlet {
             fileName = "load.data.%ID%.txt";
         }
         for(String key: acceptedParams) {
-            String value = (String)parameters.get(key);
+            String value = get(parameters,key);
             if(value != null && value.length()>0) {
                 templateContent = templateContent.replace("%"+key+"%",value);
             }
@@ -115,7 +122,7 @@ public class WebInterface extends HttpServlet {
                 throw new IOException("Parameter "+key+" not supplied.");
             }
         }
-        String value = (String)parameters.get("EMAIL");
+        String value = get(parameters,"EMAIL");
         if(value != null && value.length()>0) {
             String id = DigestUtils.md5Hex(value);
             templateContent = templateContent.replace("%ID%",id);
