@@ -24,8 +24,9 @@
 package com.gooddata.web;
 
 import com.gooddata.util.FileUtil;
+import com.google.gdata.util.common.util.Base64DecoderException;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.binary.Base64;
+import com.google.gdata.util.common.util.Base64;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -60,11 +61,15 @@ public class WebInterface extends HttpServlet {
             String content = base64.split("\\.")[1];
             //JSONObject json = JSONObject.fromObject(new String(Base64.decodeBase64(content.getBytes())));
             //String token = json.getString("oauth_token");
-	    String token = new String(Base64.decodeBase64(content.getBytes()));
-            PrintWriter out = response.getWriter();
-            String txt = result.replace("%TOKEN%",token);
-            txt = txt.replace("%CONTENT%",content);
-            out.print(txt);
+            try {
+                String token = new String(Base64.decodeWebSafe(content));
+                PrintWriter out = response.getWriter();
+                String txt = result.replace("%TOKEN%",token);
+                txt = txt.replace("%CONTENT%",content);
+                out.print(txt);
+            } catch (Base64DecoderException e) {
+                throw new IOException(e.getMessage());
+            }
         }
     }
 
