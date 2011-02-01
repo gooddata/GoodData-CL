@@ -45,14 +45,14 @@ public class WebInterface extends HttpServlet {
 
     static private String logPath = "/tmp/fblog.log";
     static private FileWriter logger;
-    static final String form = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization</title></head><body><form method='POST' action=''><table border='0'><tr><td><b>GoodData Username:</b></td><td><input type='text' name='gdc-username' value='john.doe@acme.com'/></td></tr><tr><td><b>Insight Graph API URL:</b></td><td><input type='text' size='80' name='base-url' value='https://graph.facebook.com/175593709144814/insights/page_views/day'/></td></tr><tr><td><b>Create GoodData Project:</b></td><td><input type='checkbox' name='gdc-create-project-flag' checked='1'/></td></tr><tr><td colspan='2'><input type='submit' name='submit-ok' value='OK'/></td></tr></table></form></body></html>";
-    static final String result = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization Result</title></head><body>Synchronization task submitted. The authentication token is %TOKEN% .</body></html>";
+    static final String form = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization</title></head><body><form method='POST' action=''><table border='0'><tr><td><b>GoodData Username:</b></td><td><input type='text' name='gdc-username' value='john.doe@acme.com'/></td></tr><tr><td><b>Insight Graph API URL:</b></td><td><input type='text' size='80' name='base-url' value='https://graph.facebook.com/175593709144814/insights/page_views/day'/></td></tr><tr><td><b>Create GoodData Project:</b></td><td><input type='checkbox' name='gdc-create-project-flag' checked='1'/></td></tr><tr><td colspan='2'><input type='hidden' name='token' value='%TOKEN%'/><input type='submit' name='submit-ok' value='OK'/></td></tr></table></form></body></html>";
+    static final String result = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization Result</title></head><body>Synchronization task submitted.</body></html>";
 
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         setupLogger();
         dumpRequest(request);
-        extractToken(request);
+        String token = extractToken(request);
         PrintWriter out = response.getWriter();
         response.setContentType("text/html");
         out.print(form);
@@ -63,16 +63,13 @@ public class WebInterface extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         setupLogger();
         dumpRequest(request);
-        extractToken(request);
         Map parameters = request.getParameterMap();
         if(parameters.containsKey("base-url")) {
-            HttpSession session = request.getSession();
-            debug("POST: get session="+session);
-            String token = (String)session.getAttribute("token");
+            String token = extractToken(request);
             debug("POST: retrieving token="+token);
             PrintWriter out = response.getWriter();
             response.setContentType("text/html");
-            out.print(result.replace("%TOKEN%", token));
+            out.print(result);
             out.close();
         }
         else {
@@ -114,22 +111,22 @@ public class WebInterface extends HttpServlet {
         }
     }
 
-    private void extractToken(HttpServletRequest request) throws IOException {
+    private String extractToken(HttpServletRequest request) throws IOException {
+        String token = null;
+        token = request.getParameter("token");
         String base64 = request.getParameter("signed_request");
         if(base64 != null) {
             String content = base64.split("\\.")[1];
             try {
                 String decodedContent = new String(Base64.decodeWebSafe(content));
                 JSONObject json = JSONObject.fromObject(decodedContent);
-                String token = json.getString("oauth_token");
-                HttpSession session = request.getSession();
-                debug("Extracting token: get session="+session);
-                session.setAttribute("token", token);
+                token = json.getString("oauth_token");
                 debug("Extracting token: storing token="+token);
             } catch (Base64DecoderException e) {
                 throw new IOException(e.getMessage());
             }
         }
+        return token;
     }
 
 }
