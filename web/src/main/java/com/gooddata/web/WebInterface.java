@@ -23,13 +23,14 @@
 
 package com.gooddata.web;
 
+import com.gooddata.util.FileUtil;
 import com.google.gdata.util.common.util.Base64DecoderException;
 import net.sf.json.JSONObject;
 import com.google.gdata.util.common.util.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.*;
 import javax.servlet.*;
 
@@ -42,12 +43,35 @@ import javax.servlet.*;
  */
 public class WebInterface extends HttpServlet {
 
+    static private final String CREATE_TEMPLATE = "/mnt/projects/facebook/cmd/create.data.model.txt";
+    static private final String LOAD_TEMPLATE = "/mnt/projects/facebook/cmd/load.data.txt";
+
+    static private final String IN_QUEUE = "/mnt/projects/facebook/in_queue";
+
 
     static private String logPath = "/tmp/fblog.log";
     static private FileWriter logger;
-    static final String form = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization</title></head><body><form method='POST' action=''><table border='0'><tr><td><b>GoodData Username:</b></td><td><input type='text' name='gdc-username' value='john.doe@acme.com'/></td></tr><tr><td><b>Insight Graph API URL:</b></td><td><input type='text' size='80' name='base-url' value='https://graph.facebook.com/175593709144814/insights/page_views/day'/></td></tr><tr><td><b>Create GoodData Project:</b></td><td><input type='checkbox' name='gdc-create-project-flag' checked='1'/></td></tr><tr><td colspan='2'><input type='hidden' name='token' value='%TOKEN%'/><input type='submit' name='submit-ok' value='OK'/></td></tr></table></form></body></html>";
-    static final String result = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization Result</title></head><body>%MSG%</body></html>";
+    static final String form = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization</title></head>" +
+            "<body><form method='POST' action=''><table border='0'>" +
+            "<tr><td><b>GoodData Username:</b></td><td><input type='text' name='EMAIL' value='john.doe@acme.com'/></td></tr>" +
+            "<tr><td><b>Insight Graph API URL:</b></td><td><input type='text' size='80' name='BASE_URL' value='https://graph.facebook.com/175593709144814/insights/page_views/day'/></td></tr>" +
+            "<tr><td><b>Start Date (YYYY-MM-DD):</b></td><td><input type='text' name='START_DATE' value='2011-01-01'/></td></tr>" +
+            "<tr><td><b>End Date (YYYY-MM-DD):</b></td><td><input type='text' name='END_DATE' value='2011-01-31'/></td></tr>" +
+            "<tr><td><b>Create GoodData Project:</b></td><td><input type='checkbox' name='CREATE_PROJECT_FLAG' checked='1'/></td></tr>" +
+            "<tr><td colspan='2'>" +
+            "<input type='hidden' name='TOKEN' value='%TOKEN%'/>" +
+            "<input type='submit' name='SUBMIT_OK' value='OK'/></td></tr>" +
+            "</table></form></body></html>";
+    static final String result = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization Result</title></head>" +
+            "<body>%MSG%</body></html>";
 
+    private static Set<String> acceptedParams = new HashSet<String>();
+
+
+    static {
+        String[] p = {"TOKEN", "BASE_URL", "START_DATE", "END_DATE", "EMAIL"};
+        acceptedParams.addAll(Arrays.asList(p));
+    }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         setupLogger();
@@ -56,7 +80,8 @@ public class WebInterface extends HttpServlet {
         PrintWriter out = response.getWriter();
         response.setContentType("text/html");
         if(token != null) {
-            out.print(form.replace("%TOKEN%",token));
+            String t = form.replace("%TOKEN%",token);
+            out.print(t);
         }
         else {
             out.print(form.replace("%TOKEN%",""));
@@ -64,14 +89,55 @@ public class WebInterface extends HttpServlet {
         out.close();
     }
 
+    private void process(Map parameters) throws IOException {
+        String createProjectFlag = (String)parameters.get("CREATE_PROJECT_FLAG");
+        String templateContent = "";
+        String fileName = "";
+        if(createProjectFlag.equalsIgnoreCase("on") || createProjectFlag.equalsIgnoreCase("true") ||
+            createProjectFlag.equalsIgnoreCase("1")) {
+            debug("CREATE template selected.");
+            templateContent = FileUtil.readStringFromFile(CREATE_TEMPLATE);
+            fileName = "create.project.%ID%.txt";
+        }
+        else {
+            debug("LOAD template selected.");
+            templateContent = FileUtil.readStringFromFile(LOAD_TEMPLATE);
+            fileName = "load.data.%ID%.txt";
+        }
+        for(String key: acceptedParams) {
+            String value = (String)parameters.get(key);
+            if(value != null && value.length()>0) {
+                templateContent = templateContent.replace("%"+key+"%",value);
+            }
+            else {
+                debug("Parameter "+key+" not supplied.");
+                throw new IOException("Parameter "+key+" not supplied.");
+            }
+        }
+        String value = (String)parameters.get("EMAIL");
+        if(value != null && value.length()>0) {
+            String id = DigestUtils.md5Hex(value);
+            templateContent = templateContent.replace("%ID%",id);
+            fileName = fileName.replace("%ID%",id);
+            FileUtil.writeStringToFile(templateContent, IN_QUEUE+System.getProperty("file.separator")+fileName);
+        }
+        else {
+            debug("Parameter EMAIL not supplied.");
+            throw new IOException("Parameter EMAIL not supplied.");
+        }
+
+    }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         setupLogger();
         dumpRequest(request);
         Map parameters = request.getParameterMap();
-        if(parameters.containsKey("base-url")) {
+        if(parameters.containsKey("SUBMIT_OK")) {
             String token = extractToken(request);
             debug("POST: retrieving token="+token);
+
+            process(parameters);
+
             PrintWriter out = response.getWriter();
             response.setContentType("text/html");
             if(token != null && token.length()>0) {
@@ -123,7 +189,7 @@ public class WebInterface extends HttpServlet {
 
     private String extractToken(HttpServletRequest request) throws IOException {
         String token = null;
-        token = request.getParameter("token");
+        token = request.getParameter("TOKEN");
         String base64 = request.getParameter("signed_request");
         if(base64 != null) {
             String content = base64.split("\\.")[1];
