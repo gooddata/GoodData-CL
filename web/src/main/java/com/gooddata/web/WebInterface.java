@@ -46,7 +46,7 @@ public class WebInterface extends HttpServlet {
     static private String logPath = "/tmp/fblog.log";
     static private FileWriter logger;
     static final String form = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization</title></head><body><form method='POST' action=''><table border='0'><tr><td><b>GoodData Username:</b></td><td><input type='text' name='gdc-username' value='john.doe@acme.com'/></td></tr><tr><td><b>Insight Graph API URL:</b></td><td><input type='text' size='80' name='base-url' value='https://graph.facebook.com/175593709144814/insights/page_views/day'/></td></tr><tr><td><b>Create GoodData Project:</b></td><td><input type='checkbox' name='gdc-create-project-flag' checked='1'/></td></tr><tr><td colspan='2'><input type='hidden' name='token' value='%TOKEN%'/><input type='submit' name='submit-ok' value='OK'/></td></tr></table></form></body></html>";
-    static final String result = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization Result</title></head><body>Synchronization task submitted.</body></html>";
+    static final String result = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization Result</title></head><body>%MSG%</body></html>";
 
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -74,7 +74,12 @@ public class WebInterface extends HttpServlet {
             debug("POST: retrieving token="+token);
             PrintWriter out = response.getWriter();
             response.setContentType("text/html");
-            out.print(result);
+            if(token != null && token.length()>0) {
+                out.print(result.replace("%MSG%","Synchronization task submitted."));
+            }
+            else {
+                out.print(result.replace("%MSG%","Authorization required."));
+            }
             out.close();
         }
         else {
@@ -125,8 +130,9 @@ public class WebInterface extends HttpServlet {
             try {
                 String decodedContent = new String(Base64.decodeWebSafe(content));
                 JSONObject json = JSONObject.fromObject(decodedContent);
-                token = json.getString("oauth_token");
-                debug("Extracting token: storing token="+token);
+                if(json.containsKey("oauth_token"))
+                    token = json.getString("oauth_token");
+                debug("Extracting token: token="+token);
             } catch (Base64DecoderException e) {
                 throw new IOException(e.getMessage());
             }
