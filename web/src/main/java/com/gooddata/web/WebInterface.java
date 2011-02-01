@@ -66,8 +66,10 @@ public class WebInterface extends HttpServlet {
         extractToken(request);
         Map parameters = request.getParameterMap();
         if(parameters.containsKey("base-url")) {
-            HttpSession session = request.getSession(true);
+            HttpSession session = request.getSession();
+            debug("POST: get session="+session);
             String token = (String)session.getAttribute("token");
+            debug("POST: retrieving token="+token);
             PrintWriter out = response.getWriter();
             response.setContentType("text/html");
             out.print(result.replace("%TOKEN%", token));
@@ -93,6 +95,8 @@ public class WebInterface extends HttpServlet {
     }
 
     private void dumpRequest(HttpServletRequest request) throws IOException {
+        String method = request.getMethod();
+        debug("Method: "+method);
         Enumeration headerNames = request.getHeaderNames();
         debug("Headers");
         while(headerNames.hasMoreElements()) {
@@ -118,8 +122,10 @@ public class WebInterface extends HttpServlet {
                 String decodedContent = new String(Base64.decodeWebSafe(content));
                 JSONObject json = JSONObject.fromObject(decodedContent);
                 String token = json.getString("oauth_token");
-                HttpSession session = request.getSession(true);
+                HttpSession session = request.getSession();
+                debug("Extracting token: get session="+session);
                 session.setAttribute("token", token);
+                debug("Extracting token: storing token="+token);
             } catch (Base64DecoderException e) {
                 throw new IOException(e.getMessage());
             }
