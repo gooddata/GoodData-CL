@@ -59,27 +59,34 @@ public class WebInterface extends HttpServlet {
 
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        extractToken(request);
         Map parameters = request.getParameterMap();
         if(parameters.containsKey("base-url")) {
-            String base64 = request.getParameter("signed_request");
-            if(base64 != null) {
-                String content = base64.split("\\.")[1];
-                try {
-                    String decodedContent = new String(Base64.decodeWebSafe(content));
-                    response.setContentType("text/html");
-                    PrintWriter out = response.getWriter();
-                    JSONObject json = JSONObject.fromObject(decodedContent);
-                    String token = json.getString("oauth_token");
-                    String txt = result.replace("%TOKEN%",token);
-                    out.print(txt);
-                    out.close();
-                } catch (Base64DecoderException e) {
-                    throw new IOException(e.getMessage());
-                }
-            }
+            HttpSession session = request.getSession(true);
+            String token = (String)session.getAttribute("token");
+            PrintWriter out = response.getWriter();
+            response.setContentType("text/html");
+            out.print(result.replace("%TOKEN%", token));
+            out.close();
         }
         else {
             doGet(request, response);
+        }
+    }
+
+    private void extractToken(HttpServletRequest request) throws IOException {
+        String base64 = request.getParameter("signed_request");
+        if(base64 != null) {
+            String content = base64.split("\\.")[1];
+            try {
+                String decodedContent = new String(Base64.decodeWebSafe(content));
+                JSONObject json = JSONObject.fromObject(decodedContent);
+                String token = json.getString("oauth_token");
+                HttpSession session = request.getSession(true);
+                session.setAttribute("token", token);
+            } catch (Base64DecoderException e) {
+                throw new IOException(e.getMessage());
+            }
         }
     }
 
