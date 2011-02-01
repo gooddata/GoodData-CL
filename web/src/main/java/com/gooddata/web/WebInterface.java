@@ -55,7 +55,12 @@ public class WebInterface extends HttpServlet {
         String token = extractToken(request);
         PrintWriter out = response.getWriter();
         response.setContentType("text/html");
-        out.print(form);
+        if(token != null) {
+            out.print(form.replace("%TOKEN%",token));
+        }
+        else {
+            out.print(form.replace("%TOKEN%",""));
+        }
         out.close();
     }
 
