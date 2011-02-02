@@ -68,7 +68,7 @@ public class WebInterface extends HttpServlet {
             "<br/><br/>" +
             "<b>Facebook Graph API Token:</b> %TOKEN%" +
             "<br/><br/>" +
-            "you can preview the Facebook Insights data on this URL: https://graph.facebook.com/175593709144814/insights/page_views/day?since=%START_DATE_INITIAL_VALUE_UNIX%&until=%END_DATE_INITIAL_VALUE_UNIX%&access_token=%TOKEN%" +
+            "<b>Preview URL</b>: https://graph.facebook.com/23528966907/insights/page_views/day?since=%START_DATE_INITIAL_VALUE_UNIX%&until=%END_DATE_INITIAL_VALUE_UNIX%&access_token=%TOKEN%" +
             "<br/><br/>" +
             "<ul>" +
             "<li><b>GoodData Username</b> is your GoodData username (your e-mail). Go to the <a href='https://secure.gooddata.com'>GoodData platform main page</a> to create your account.</li>" +
