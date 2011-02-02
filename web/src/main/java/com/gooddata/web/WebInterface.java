@@ -56,7 +56,7 @@ public class WebInterface extends HttpServlet {
     static final String form = "<!DOCTYPE HTML SYSTEM><html><head><title>GoodData Data Synchronization</title></head>" +
             "<body><form method='POST' action=''><table border='0'>" +
             "<tr><td><b>GoodData Username:</b></td><td><input type='text' name='EMAIL' value='john.doe@acme.com'/></td></tr>" +
-            "<tr><td><b>Insight Graph API URL:</b></td><td><input type='text' size='80' name='BASE_URL' value='https://graph.facebook.com/175593709144814/insights/page_views/day'/></td></tr>" +
+            "<tr><td><b>Insight Graph API URL:</b></td><td><input type='text' size='80' name='BASE_URL' value='https://graph.facebook.com/23528966907/insights/page_views/day'/></td></tr>" +
             "<tr><td><b>Start Date (YYYY-MM-DD):</b></td><td><input type='text' name='START_DATE' value='%START_DATE_INITIAL_VALUE%'/></td></tr>" +
             "<tr><td><b>End Date (YYYY-MM-DD):</b></td><td><input type='text' name='END_DATE' value='%END_DATE_INITIAL_VALUE%'/></td></tr>" +
             "<tr><td><b>GoodData Project ID:</b></td><td><input type='text' name='GDC_PROJECT_HASH' value=''/></td></tr>" +
