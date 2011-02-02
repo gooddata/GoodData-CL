@@ -66,7 +66,9 @@ public class WebInterface extends HttpServlet {
             "<input type='submit' name='SUBMIT_OK' value='OK'/></td></tr>" +
             "</table></form>" +
             "<br/><br/>" +
-            "Facebook Graph API Token: %TOKEN%" +
+            "<b>Facebook Graph API Token:</b> %TOKEN%" +
+            "<br/><br/>" +
+            "you can preview the Facebook Insights data on this URL: https://graph.facebook.com/175593709144814/insights/page_views/day?since=%START_DATE_INITIAL_VALUE_UNIX%&until=%END_DATE_INITIAL_VALUE_UNIX%&access_token=%TOKEN%" +
             "<br/><br/>" +
             "<ul>" +
             "<li><b>GoodData Username</b> is your GoodData username (your e-mail). Go to the <a href='https://secure.gooddata.com'>GoodData platform main page</a> to create your account.</li>" +
@@ -102,6 +104,8 @@ public class WebInterface extends HttpServlet {
         DateTime start = today.minusDays(30);
         t = t.replace("%START_DATE_INITIAL_VALUE%", baseFmt.print(start));
         t = t.replace("%END_DATE_INITIAL_VALUE%",baseFmt.print(today));
+        t = t.replace("%START_DATE_INITIAL_VALUE_UNIX%", Long.toString(start.getMillis()/1000));
+        t = t.replace("%END_DATE_INITIAL_VALUE_UNIX%",Long.toString(today.getMillis()/1000));
         if(token != null) {
             t = t.replaceAll("%TOKEN%",token);
             out.print(t);
