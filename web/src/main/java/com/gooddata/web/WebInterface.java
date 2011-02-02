@@ -67,7 +67,7 @@ public class WebInterface extends HttpServlet {
             "</table></form>" +
             "<br/><br/>" +
             "Facebook Graph API Token: %TOKEN%" +
-            "<br/><br/>"
+            "<br/><br/>" +
             "<ul>" +
             "<li><b>GoodData Username</b> is your GoodData username (your e-mail). Go to the <a href='https://secure.gooddata.com'>GoodData platform main page</a> to create your account.</li>" +
             "<li><b>Insights Graph API URL</b> is the Facebook Graph API URL, that contains the data for a specific object in format 'object_id/metric/period'. " +
