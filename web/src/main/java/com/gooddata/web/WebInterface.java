@@ -34,6 +34,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.*;
 import javax.servlet.http.*;
 import javax.servlet.*;
@@ -65,7 +66,8 @@ public class WebInterface extends HttpServlet {
             "<input type='submit' name='SUBMIT_OK' value='OK'/></td></tr>" +
             "</table></form>" +
             "<br/><br/>" +
-            "<b>Help</b><br/>" +
+            "Facebook Graph API Token: %TOKEN%" +
+            "<br/><br/>"
             "<ul>" +
             "<li><b>GoodData Username</b> is your GoodData username (your e-mail). Go to the <a href='https://secure.gooddata.com'>GoodData platform main page</a> to create your account.</li>" +
             "<li><b>Insights Graph API URL</b> is the Facebook Graph API URL, that contains the data for a specific object in format 'object_id/metric/period'. " +
@@ -101,11 +103,11 @@ public class WebInterface extends HttpServlet {
         t = t.replace("%START_DATE_INITIAL_VALUE%", baseFmt.print(start));
         t = t.replace("%END_DATE_INITIAL_VALUE%",baseFmt.print(today));
         if(token != null) {
-            t = t.replace("%TOKEN%",token);
+            t = t.replaceAll("%TOKEN%",token);
             out.print(t);
         }
         else {
-            t = t.replace("%TOKEN%","");
+            t = t.replaceAll("%TOKEN%","");
             out.print(t);
         }
         out.close();
