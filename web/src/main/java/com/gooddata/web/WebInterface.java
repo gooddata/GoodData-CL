@@ -140,8 +140,14 @@ public class WebInterface extends HttpServlet {
                 templateContent = templateContent.replace("%"+key+"%",value);
             }
             else {
-                debug("Parameter "+key+" not supplied.");
-                throw new IOException("Parameter "+key+" not supplied.");
+                if(createProjectFlag != null && (createProjectFlag.equalsIgnoreCase("on") || createProjectFlag.equalsIgnoreCase("true") ||
+            createProjectFlag.equalsIgnoreCase("1")) && "GDC_PROJECT_HASH".equalsIgnoreCase(key)) {
+                    // ok
+                }
+                else {
+                    debug("Parameter "+key+" not supplied.");
+                    throw new IOException("Parameter "+key+" not supplied.");
+                }
             }
         }
         String value = get(parameters,"EMAIL");
