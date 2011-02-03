@@ -66,7 +66,7 @@ public class WebInterface extends HttpServlet {
             "<input type='submit' name='SUBMIT_OK' value='OK'/></td></tr>" +
             "</table></form>" +
             "<br/><br/>" +
-            "You need to grant this app the Facebook read_insights permission first. <a href='https://www.facebook.com/dialog/oauth?client_id=175593709144814&redirect_uri=https://zd.users.getgooddata.com/gdc/facebook/login/&scope=read_insights'>Click here to grant the permission</a>." +
+            "You need to grant this app the Facebook read_insights permission first. <a target='_blank' href='https://www.facebook.com/dialog/oauth?client_id=175593709144814&redirect_uri=https://zd.users.getgooddata.com/gdc/facebook/login/&scope=read_insights'>Click here to grant the permission</a>." +
             "<br/><br/>" +
             "<b>Facebook Graph API Token:</b> %TOKEN%" +
             "<br/><br/>" +
