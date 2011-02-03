@@ -186,10 +186,9 @@ public class WebInterface extends HttpServlet {
             String token = extractToken(request);
             debug("POST: retrieving token="+token);
             PrintWriter out = response.getWriter();
+            response.setContentType("text/html");
             try {
                 process(parameters);
-
-                response.setContentType("text/html");
                 if(token != null && token.length()>0) {
                     out.print(result.replace("%MSG%","Synchronization task submitted."));
                 }
