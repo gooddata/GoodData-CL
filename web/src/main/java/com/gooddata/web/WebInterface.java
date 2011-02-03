@@ -66,6 +66,8 @@ public class WebInterface extends HttpServlet {
             "<input type='submit' name='SUBMIT_OK' value='OK'/></td></tr>" +
             "</table></form>" +
             "<br/><br/>" +
+            "You need to grant this app the Facebook read_insights permission first. <a href='https://www.facebook.com/dialog/oauth?client_id=175593709144814&redirect_uri=https://zd.users.getgooddata.com/gdc/facebook/login/&scope=read_insights'>Click here to grant the permission</a>." +
+            "<br/><br/>" +
             "<b>Facebook Graph API Token:</b> %TOKEN%" +
             "<br/><br/>" +
             "<b>Preview URL</b>: https://graph.facebook.com/23528966907/insights/page_views/day?since=%START_DATE_INITIAL_VALUE_UNIX%&until=%END_DATE_INITIAL_VALUE_UNIX%&access_token=%TOKEN%" +
@@ -151,8 +153,14 @@ public class WebInterface extends HttpServlet {
                     // ok
                 }
                 else {
-                    debug("Parameter "+key+" not supplied.");
-                    throw new IOException("Parameter "+key+" not supplied.");
+                    if("TOKEN".equalsIgnoreCase(key)) {
+                        debug("OAuth token not generated. Please make sure you have granted this app the read_insights Facebook permission.");
+                        throw new IOException("OAuth token not generated. Please make sure you have granted this app the read_insights Facebook permission.");
+                    }
+                    else {
+                        debug("Parameter "+key+" not supplied.");
+                        throw new IOException("Parameter "+key+" not supplied.");
+                    }
                 }
             }
         }
@@ -177,18 +185,24 @@ public class WebInterface extends HttpServlet {
         if(parameters.containsKey("SUBMIT_OK")) {
             String token = extractToken(request);
             debug("POST: retrieving token="+token);
-
-            process(parameters);
-
             PrintWriter out = response.getWriter();
-            response.setContentType("text/html");
-            if(token != null && token.length()>0) {
-                out.print(result.replace("%MSG%","Synchronization task submitted."));
+            try {
+                process(parameters);
+
+                response.setContentType("text/html");
+                if(token != null && token.length()>0) {
+                    out.print(result.replace("%MSG%","Synchronization task submitted."));
+                }
+                else {
+                    out.print(result.replace("%MSG%","Authorization required."));
+                }
             }
-            else {
-                out.print(result.replace("%MSG%","Authorization required."));
+            catch (IOException e) {
+                out.print(result.replace("%MSG%","Error encountered. Error message: " + e.getMessage()));
             }
-            out.close();
+            finally {
+                out.close();
+            }
         }
         else {
             doGet(request, response);
