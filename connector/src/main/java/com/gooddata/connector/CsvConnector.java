@@ -150,9 +150,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
         String name = URLDecoder.decode(FileUtil.getFileName(dataUrl).split("\\.")[0], "utf-8").trim();
         String[] headers = FileUtil.getCsvHeader(dataUrl, separator);
         int i = 0;
-        final Set<String> factIdentifiersSet = new HashSet<String>();
+        final Set<String> factsSet = new HashSet<String>();
         for (final String fn : factsNames) {
-            factIdentifiersSet.add(fn);
+            factsSet.add(fn);
         }
         final SourceSchema srcSchm;
         if (configStream != null) {
@@ -179,6 +179,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         });
         if (knownColumns < headers.length) {
             DataTypeGuess guesser = new DataTypeGuess(true);
+            // TODO: don't guess if defaultLdmType
             guesser.setDefaultLdmType(defaultLdmType);
             SourceColumn[] guessed = guesser.guessCsvSchema(dataUrl, separator);
             if (guessed.length != headers.length) {
@@ -189,7 +190,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
                 final SourceColumn sc;
                 final String identifier = idGen.transform(header);
                 final String title = titleGen.transform(header);
-                if (factIdentifiersSet.contains(header)) {
+                if (factsSet.contains(header)) {
                     sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_FACT, title, folder);
                 } else if (defaultLdmType != null) {
                     sc = new SourceColumn(identifier, defaultLdmType, title, folder);
