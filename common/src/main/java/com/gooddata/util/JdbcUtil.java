@@ -134,21 +134,20 @@ public class JdbcUtil {
      * @throws SQLException in case of a db issue 
      */
     public static void executeQuery(Connection c, String sql, ResultSetHandler handler, int limit, int fetchSize) throws SQLException {
-    	Statement st = null;
-    	ResultSet rs = null;
+    	Statement st = c.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+                                         java.sql.ResultSet.CONCUR_READ_ONLY);
     	try {
-    		st = c.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
-    	              			   java.sql.ResultSet.CONCUR_READ_ONLY);
             l.debug("Executing SQL: statement='" + st.toString() + "'");
-    		rs = executeQuery(st, sql, fetchSize);
-    		while (rs.next() && limit-- > 0) {
-    			handler.handle(rs);
-    		}
+    	    ResultSet rs = executeQuery(st, sql, fetchSize); 
+    	    try {
+        		while (rs.next() && limit-- > 0) {
+        			handler.handle(rs);
+        		}
+    	    } finally {
+    	        rs.close();
+    	    }
     	} finally {
-    		if (rs != null)
-    			rs.close();
-    		if (st != null)
-    			st.close();
+			st.close();
     	}
     }
 
