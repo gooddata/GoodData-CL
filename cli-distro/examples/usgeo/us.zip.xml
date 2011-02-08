@@ -1,0 +1,42 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+<schema>
+  <name>US Geo</name>
+  <columns>
+    <column>
+      <name>zip</name>
+      <title>ZIP</title>
+      <ldmType>CONNECTION_POINT</ldmType>
+      <folder>US Geo</folder>
+    </column>
+    <column>
+      <name>city</name>
+      <title>City</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>US Geo</folder>
+    </column>
+    <column>
+      <name>state</name>
+      <title>State</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>US Geo</folder>
+    </column>
+    <column>
+      <name>timezone</name>
+      <title>Timezone</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>US Geo</folder>
+    </column>
+    <column>
+      <name>timezone_fact</name>
+      <title>Timezone</title>
+      <ldmType>FACT</ldmType>
+      <folder>US Geo</folder>
+    </column>
+    <column>
+      <name>dst</name>
+      <title>DST</title>
+      <ldmType>ATTRIBUTE</ldmType>
+      <folder>US Geo</folder>
+    </column>
+  </columns>
+</schema>

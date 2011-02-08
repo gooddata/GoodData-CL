@@ -1,0 +1,21 @@
+# A simple example that loads a flat file with a US ZIP code data and connect a time dimension
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+CreateProject(name="US Geo");
+
+# Store the project ID to file for possible other scripts
+RememberProject(fileName="examples/usgeo/pid");
+
+# load the US ZIPCODE data file
+# the data file config has been generated
+UseCsv(csvDataFile="examples/usgeo/us.zip.csv",header="true",configFile="examples/usgeo/us.zip.xml");
+
+# generate the stock quotes MAQL
+GenerateMaql(maqlFile="examples/usgeo/us.zip.maql");
+
+# execute the stock quotes MAQL
+ExecuteMaql(maqlFile="examples/usgeo/us.zip.maql");
+
+# transfer the stock quotes data
+TransferData();
