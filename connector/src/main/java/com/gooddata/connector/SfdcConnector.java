@@ -107,11 +107,6 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         qo.setBatchSize(1);
         binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),
              "QueryOptions", qo);
-        if(clientID != null && clientID.length()>0) {
-            CallOptions co = new CallOptions();
-            co.setClient(clientID);
-            binding.setHeader("SforceService", "CallOptions", co);
-        }
         try {
             QueryResult qr = binding.query(sfdcQuery);
             if(qr.getSize()>0) {
@@ -186,7 +181,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             throws IOException {
         l.debug("Saving SFDC config template.");
         SourceSchema s = SourceSchema.createSchema(name);
-        SoapBindingStub c = connect(sfdcHostname, sfdcUsr, sfdcPsw, sfdcToken);
+        SoapBindingStub c = connect(sfdcHostname, sfdcUsr, sfdcPsw, sfdcToken, partnerId);
         SObject result = executeQueryFirstRow(c, query, partnerId);
         if(result != null) {
             Map<String,Field> fields = describeObject(c, result.getType());
@@ -283,17 +278,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             header = dateExt.extendHeader(header);
 
         cw.writeNext(header);
-        SoapBindingStub c = connect(getSfdcHostname(), getSfdcUsername(), getSfdcPassword(), getSfdcToken());
+        SoapBindingStub c = connect(getSfdcHostname(), getSfdcUsername(), getSfdcPassword(), getSfdcToken(), getClientID());
         l.debug("Executing SFDC query "+sfdcQuery);
         QueryOptions qo = new QueryOptions();
         qo.setBatchSize(500);
         c.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),
              "QueryOptions", qo);
-        if(clientID != null && clientID.length()>0) {
-            CallOptions co = new CallOptions();
-            co.setClient(clientID);
-            c.setHeader("SforceService", "CallOptions", co);
-        }
         String[] colTypes = null;
         boolean firstBatch = true;
         int rowCnt = 0;
@@ -412,7 +402,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * @return SFDC stub
      * @throws SfdcException in case of connection issues
      */
-    protected static SoapBindingStub connect(String host, String usr, String psw, String token) throws SfdcException {
+    protected static SoapBindingStub connect(String host, String usr, String psw, String token, String clientID) throws SfdcException {
         SoapBindingStub binding;
         LoginResult loginResult;
         if (token != null) {
@@ -426,6 +416,11 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             // Time out after a minute
             binding.setTimeout(60000);
             // Test operation
+            if(clientID != null && clientID.length()>0) {
+                CallOptions co = new CallOptions();
+                co.setClient(clientID);
+                binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(), "CallOptions", co);
+            }
             loginResult = binding.login(usr, psw);
         }
         catch (LoginFault ex) {
