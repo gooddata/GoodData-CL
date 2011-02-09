@@ -84,10 +84,28 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public void extract(String dir) throws IOException {
+        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
+        extract(dataFile.getAbsolutePath(), true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void dump(String file) throws IOException {
+        extract(file, false);
+    }
+
+    /**
+     * Extract rows
+     * @param file name of the target file
+     * @param extendDates add date/time facts
+     * @throws IOException
+     */
+    public void extract(String file, final boolean extendDates) throws IOException {
         // Is there an IDENTITY connection point?
         int identityColumn = schema.getIdentityColumn();
         CSVReader cr = FileUtil.createUtf8CsvReader(this.getDataFile(), this.getSeparator());
-        CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(dir + System.getProperty("file.separator") + "data.csv"));
+        CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(file));
         String[] header = this.populateCsvHeaderFromSchema(schema);
         int colCnt = header.length - ((identityColumn>=0)?1:0);
         String[] row = null;
@@ -100,7 +118,8 @@ public class CsvConnector extends AbstractConnector implements Connector {
         }
         // add the extra date headers
         DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-        header = dateExt.extendHeader(header);
+        if(extendDates)
+            header = dateExt.extendHeader(header);
         cw.writeNext(header);
         row = cr.readNext();
         int rowCnt = 0;
@@ -136,7 +155,8 @@ public class CsvConnector extends AbstractConnector implements Connector {
                 row = rowL.toArray(new String[]{});
             }
             // add the extra date columns
-            row = dateExt.extendRow(row);
+            if(extendDates)
+                row = dateExt.extendRow(row);
             cw.writeNext(row);
             row = cr.readNext();
         }

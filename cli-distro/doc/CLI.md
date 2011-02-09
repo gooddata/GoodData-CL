@@ -147,6 +147,9 @@ Data Transfer Commands:
 - incremental   - *(optional)* when true, will try to append (or merge/replace via matching CONNECTION_POINT) the data. (true | false, default is false)
 - waitForFinish - *(optional)* the process waits for the server-side processing (true | false, default is true)
 
+`Dump(csvFile="...");` - dumps the connector data to a local CSV file
+- csvFile   - path to the CSV file
+
 
 CSV Connector Commands:
 -----------------------

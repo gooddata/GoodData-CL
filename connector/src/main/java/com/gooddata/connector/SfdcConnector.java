@@ -299,8 +299,26 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public void extract(String dir) throws IOException {
-        l.debug("Extracting SFDC data.");
         File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
+        extract(dataFile.getAbsolutePath(), true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void dump(String file) throws IOException {
+        extract(file, false);
+    }
+
+    /**
+     * Extract rows
+     * @param file name of the target file
+     * @param extendDates add date/time facts
+     * @throws IOException
+     */
+    public void extract(String file, boolean extendDates) throws IOException {
+        l.debug("Extracting SFDC data.");
+        File dataFile = new File(file);
 
         // Is there an IDENTITY connection point?
         final int identityColumn = schema.getIdentityColumn();
@@ -313,7 +331,8 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
         // add the extra date headers
         DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-        header = dateExt.extendHeader(header);
+        if(extendDates)
+            header = dateExt.extendHeader(header);
 
         cw.writeNext(header);
         SoapBindingStub c = connect(getSfdcHostname(), getSfdcUsername(), getSfdcPassword(), getSfdcToken());
@@ -387,7 +406,8 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                                 vals = valsL.toArray(new String[]{});
                             }
                             // add the extra date columns
-                            vals = dateExt.extendRow(vals);
+                            if(extendDates)
+                                vals = dateExt.extendRow(vals);
                             cw.writeNext(vals);
                             rowCnt++;
                         }
@@ -428,6 +448,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
 
     }
+
 
 
     /**

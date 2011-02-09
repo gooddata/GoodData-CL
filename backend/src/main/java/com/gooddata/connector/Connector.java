@@ -64,6 +64,14 @@ public interface Connector extends Executor {
     public void extract(String dir) throws IOException;
 
     /**
+     * Dumps the source data CSV to a file
+     * @param file target file
+
+     * @throws IOException in case of IO issues
+     */
+    public void dump(String file) throws IOException;
+
+    /**
      * Extract data from the internal database and transfer them to a GoodData project
      * @param c command
      * @param pid project id
