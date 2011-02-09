@@ -1,16 +1,33 @@
-Usage: gdi.sh -u username -p password [ -h hostname ] [ -i project_id ] [-e commands] [<file1>, ...]
- -h,--host <arg>       GoodData host (secure.gooddata.com by default)
- -f, --ftphost <arg>   GoodData FTP host (secure-di.gooddata.com by default)
- -t, --proto <arg>     Protocol to access GoodData (HTTP or HTTPS, HTTPS by default)
- -s, --insecure        Disable encryption for HTTP and FTP (prefer this to -t)
- -p,--password <arg>   GoodData password
- -u,--username <arg>   GoodData username
- -i,--project <arg>    GoodData project identifier (takes the form of an com.gooddata.MD5 hash)
- -e,--execute <arg>    Commands to execute
- -V, --version         Prints out the tool version
- file                  path to script file with commands to execute
- 
-Either -e or file(s) must be specified.
+GoodData CL Commands
+
+GoodData Cl supports following groups of commands:
+
+Project Management Commands: create/delete/use/remember a project
+CreateProject, DeleteProject, OpenProject, RememberProject. UseProject
+Connector Commands that either generate the XML configuration (Generate<Source-Type>Config) for a specific data source and load the  source data (Use<Source-Type>). Connector commands require a project to be activated via a project management command before they are invoked.
+Metadata Management Commands: work with project metadata (reports, dashboards, metrics, folders)RetrieveMetadataObject, StoreMetadataObject, DropMetadataObject, RetrieveAllObjects, StoreAllObjects
+Logical Model Management Commands generate & execute MAQL DDL script for a connector that has been previously loaded via the Use<Source-Type> command.
+GenerateMaql, GenerateUpdateMaql, ExecuteMaql
+Data Transfer Commands that transform, and transfer the data from a previously loaded (Use<Source-Type>) connector.TransferData
+Project Initialization Workflow
+
+Usually you want to initialize your project with following commands:
+
+CreateProject or OpenProject.
+Optionally you generate XML configuration for your data source using a Generate<Source-Type>Config command that yields an XML configuration file. This file describes your data structure and a way how the GoodData Logical Data Model is going to be generated. Sometimes you might want to review the XML config file and perform some changes. You'll most probably want to comment out the Generate<Source-Type>Config after the first run.
+Initialize your data source Connector using a Use<Source-Type> command. The Use<Source-Type> command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
+Generate and execute MAQL DDL for your data source using the GenerateMaql and ExecuteMaql commands. The MAQL DDL generates your project's Logical Data Model (LDM) and Data Loading Interface (DLI). The DLI is later used by the following TransferData command. You need to generate your LDM and DLI only once per each project. That is why the scripts that transfer data on regular basis don't use the the GenerateMaql and ExecuteMaql commands.
+TransferData command that transforms, packages, and transfers the data.
+Project Data Loading Workflow
+
+The ongoing data loading scripts usually:
+
+OpenProject or UseProject command.
+Initialize your data source Connector using a Use<Source-Type> command. The Use<Source-Type> command requires the XML config file and a specific parameters that define the data source data or query (e.g. a SQL query).
+TransferData command that transforms, packages, and transfers the data.
+Commands Reference
+
+The following paragraphs describe the specific GoodData CL commands.
 
 Project Management Commands:
 
@@ -107,6 +124,9 @@ TransferData(incremental="...", waitForFinish="..."); - upload data to the GoodD
 - incremental   - (optional) when true, will try to append (or merge/replace via matching CONNECTION_POINT) the data. (true | false, default is false)
 - waitForFinish - (optional) the process waits for the server-side processing (true | false, default is true)
 
+Dump(csvFile="..."); - dumps the connector data to a local CSV file
+- csvFile   - path to the CSV file
+
 CSV Connector Commands:
 
 GenerateCsvConfig(csvHeaderFile="...", configFile="...", defaultLdmType="...", folder="...", separator="..."); - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
@@ -177,6 +197,7 @@ GenerateSfdcConfig(name="...", configFile="...", query="...", username="...", pa
 - username   - SFDC username
 - password   - SFDC password
 - token      - SFDC security token (you may append the security token to the password instead using this parameter)
+- partnerId  - SFDC client ID (partner token) that allows extended access to the SalesForce API
 
 UseSfdc(configFile="...", query="...", username="...", password="...", token="..."); - load SalesForce data file using config file describing the file structure, must call CreateProject or OpenProject before
 - configFile - path to configuration file (will be overwritten)
@@ -184,6 +205,7 @@ UseSfdc(configFile="...", query="...", username="...", password="...", token="..
 - username   - SFDC username
 - password   - SFDC password
 - token      - SFDC security token (you may append the security token to the password instead using this parameter)
+- partnerId  - SFDC client ID (partner token) that allows extended access to the SalesForce API
 
 SalesForce Sales Connector Commands:
 

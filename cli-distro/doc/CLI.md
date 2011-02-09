@@ -229,6 +229,7 @@ SalesForce Connector Commands:
 - username   - SFDC username
 - password   - SFDC password
 - token      - SFDC security token (you may append the security token to the password instead using this parameter)
+- partnerId  - SFDC client ID (partner token) that allows extended access to the SalesForce API
   
 `UseSfdc(configFile="...", query="...", username="...", password="...", token="...");` - load SalesForce data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
 - configFile - path to configuration file (will be overwritten)
@@ -236,6 +237,7 @@ SalesForce Connector Commands:
 - username   - SFDC username
 - password   - SFDC password
 - token      - SFDC security token (you may append the security token to the password instead using this parameter)
+- partnerId  - SFDC client ID (partner token) that allows extended access to the SalesForce API
 
 SalesForce Sales Connector Commands:
 ------------------------------------
