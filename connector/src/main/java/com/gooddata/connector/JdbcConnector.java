@@ -192,15 +192,32 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         return type;
     }
 
-
     /**
      * {@inheritDoc}
      */
     public void extract(String dir) throws IOException {
+        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
+        extract(dataFile.getAbsolutePath(), true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void dump(String file) throws IOException {
+        extract(file, false);
+    }
+
+    /**
+     * Extract rows
+     * @param file name of the target file
+     * @param extendDates add date/time facts
+     * @throws IOException
+     */
+    public void extract(String file, final boolean extendDates) throws IOException {
         Connection con = null;
         Statement s = null;
         ResultSet rs = null;
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
+        File dataFile = new File(file);
 
         // Is there an IDENTITY connection point?
         final int identityColumn = schema.getIdentityColumn();
@@ -214,7 +231,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
             // add the extra date headers
             final DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-            header = dateExt.extendHeader(header);
+            if(extendDates)
+                header = dateExt.extendHeader(header);
             
             cw.writeNext(header);
             s = con.createStatement();
@@ -285,7 +303,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                         line = lineL.toArray(new String[]{});
                     }
                     // add the extra date columns
-                    line = dateExt.extendRow(line);
+                    if(extendDates)
+                        line = dateExt.extendRow(line);
                     cw.writeNext(line);
                     rowCnt++;
                 }

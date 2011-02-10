@@ -12,23 +12,23 @@ log4j.additivity.org.apache.commons.httpclient=false
 
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n
+log4j.appender.stdout.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n
 log4j.appender.stdout.threshold=INFO
 
 log4j.appender.S=org.apache.log4j.RollingFileAppender
 log4j.appender.S.File=sql.log
 log4j.appender.S.MaxFileSize=10000KB
 log4j.appender.S.layout=org.apache.log4j.PatternLayout
-log4j.appender.S.layout.ConversionPattern=%p %t %c - %m%n
+log4j.appender.S.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n
 
 log4j.appender.H=org.apache.log4j.RollingFileAppender
 log4j.appender.H.File=http.log
 log4j.appender.H.MaxFileSize=10000KB
 log4j.appender.H.layout=org.apache.log4j.PatternLayout
-log4j.appender.H.layout.ConversionPattern=%%p %t %c - %m%n
+log4j.appender.H.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n
 
 log4j.appender.D=org.apache.log4j.RollingFileAppender
 log4j.appender.D.File=debug.log
 log4j.appender.D.MaxFileSize=10000KB
 log4j.appender.D.layout=org.apache.log4j.PatternLayout
-log4j.appender.D.layout.ConversionPattern=%p %t %c - %m%n
+log4j.appender.D.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n

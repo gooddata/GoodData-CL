@@ -65,9 +65,10 @@ public class FeedDumper {
      * @param feed Google feed
      * @param gaq Google Analytics Query
      * @param dateExt date columns extender
+     * @param extendDates add the date facts?
      * @throws IOException in case of an IO problem
      */
-    public static int dump(SourceSchema schema, CSVWriter cw, DataFeed feed, GaQuery gaq, DateColumnsExtender dateExt) throws IOException {
+    public static int dump(SourceSchema schema, CSVWriter cw, DataFeed feed, GaQuery gaq, DateColumnsExtender dateExt, boolean extendDates) throws IOException {
         l.debug("Dumping GA feed.");
         String profileId = gaq.getIds();
         if(profileId == null || profileId.length() <=0)
@@ -135,7 +136,8 @@ public class FeedDumper {
 
             String[] r = row.toArray(new String[]{});
             // add the extra date columns
-            r = dateExt.extendRow(r);
+            if(extendDates)
+                r = dateExt.extendRow(r);
 
             cw.writeNext(r);
         }
