@@ -316,6 +316,24 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
      */
     public void extract(String dir) throws IOException {
         File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
+        extract(dataFile.getAbsolutePath(), true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void dump(String file) throws IOException {
+        extract(file, false);
+    }
+
+    /**
+     * Extract rows
+     * @param file name of the target file
+     * @param extendDates add date/time facts
+     * @throws IOException
+     */
+    public void extract(String file, final boolean extendDates) throws IOException {
+        File dataFile = new File(file);
 
         // Is there an IDENTITY connection point?
         final int identityColumn = schema.getIdentityColumn();
@@ -327,7 +345,8 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
 
         // add the extra date headers
         final DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-        header = dateExt.extendHeader(header);
+        if(extendDates)
+            header = dateExt.extendHeader(header);
 
         cw.writeNext(header);
 
@@ -373,7 +392,8 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
                 }
                 row = rowL.toArray(new String[]{});
                 // add the extra date columns
-                row = dateExt.extendRow(row);
+                if(extendDates)
+                    row = dateExt.extendRow(row);
                 cw.writeNext(row);
             }
             result.clear();

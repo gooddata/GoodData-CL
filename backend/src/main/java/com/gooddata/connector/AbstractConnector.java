@@ -95,7 +95,13 @@ public abstract class AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public abstract void extract(String dir) throws IOException;
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    public void dump(String file) throws IOException {
+        throw new IOException("The dump to CSV is not implemented for the connector "+this.getClass().toString());
+    }
 
     /**
      * {@inheritDoc}
@@ -139,6 +145,9 @@ public abstract class AbstractConnector implements Connector {
             else if(c.match("TransferData") || c.match("TransferAllSnapshots") || c.match("TransferLastSnapshot") ||
                     c.match("TransferSnapshots")) {
                 transferData(c, cli, ctx);
+            }
+            else if(c.match("Dump")) {
+                dumpData(c, cli, ctx);
             }
             else if (c.match( "GenerateUpdateMaql")) {
                 generateUpdateMaql(c, cli, ctx);
@@ -222,6 +231,24 @@ public abstract class AbstractConnector implements Connector {
         l.debug("Data transfer finished.");
         l.info("Data transfer finished.");
     }
+
+    /**
+     * Dumps the data to CSV
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     * @throws InterruptedException internal problem with making file writable
+     */
+    protected void dumpData(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
+        l.debug("Dumping data.");
+        Connector cc = ctx.getConnectorMandatory();
+        String csvFile = c.getParamMandatory("csvFile");
+        cc.dump(csvFile);
+        l.debug("Data dump finished. Data dumped into the file '"+csvFile+"'");
+        l.info("Data dump finished. Data dumped into the file '"+csvFile+"'");
+    }
+
 
     protected String[] populateCsvHeaderFromSchema(SourceSchema schema) {
         List<SourceColumn> columns = schema.getColumns();
