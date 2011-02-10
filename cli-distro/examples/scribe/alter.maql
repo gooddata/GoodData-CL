@@ -7,3 +7,8 @@ ALTER ATTRIBUTE  {attr.accounttype.id} DEFAULT LABEL {label.accounttype.id.accou
 ALTER ATTRIBUTE  {attr.businessunit.id} DEFAULT LABEL {label.businessunit.id.name};
 ALTER ATTRIBUTE  {attr.user.id} DEFAULT LABEL {label.user.id.login};
 ALTER ATTRIBUTE {attr.opportunitystage.id} ORDER BY {label.opportunitystage.id.stage_order} ASC;
+
+ALTER ATTRIBUTE {attr.account.id} ADD LABELS {label.account.id} VISUAL(TITLE "Account ID") AS {f_account.nm_id}; 
+ALTER ATTRIBUTE {attr.user.id} ADD LABELS {label.user.id} VISUAL(TITLE "User ID") AS {f_user.nm_id}; 
+ALTER ATTRIBUTE {attr.opportunity.id} ADD LABELS {label.opportunity.id} VISUAL(TITLE "Opportunity ID") AS {f_opportunity.nm_id}; 
+ALTER ATTRIBUTE {attr.opportunitysnapshot.id} ADD LABELS {label.opportunitysnapshot.id} VISUAL(TITLE "Opportunity Snapshot ID") AS {f_opportunitysnapshot.nm_id}; 

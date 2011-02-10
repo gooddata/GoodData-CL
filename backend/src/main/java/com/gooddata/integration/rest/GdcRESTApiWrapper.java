@@ -2271,7 +2271,9 @@ public class GdcRESTApiWrapper {
 
         }
 
+
         Store storage = new Store();
+
         for(MetadataObject obj : sourceObjectsByIdentifier.values()) {
             storage.storeObjectWithDependencies(obj);
         }
@@ -2281,6 +2283,7 @@ public class GdcRESTApiWrapper {
         if(newVariables != null && newVariables.size()>0) {
             storage.storeVariables(newVariables, oldVariables);
         }
+
     }
 
     /**
