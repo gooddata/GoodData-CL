@@ -4,14 +4,14 @@
 # Create a new project
 OpenProject(id="Project4");
 
-UseJdbc(configFile="examples/scribe/account.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT sys.fn_varbintohexstr(id), sfdcid, name, url, industry, type FROM gdc_account");
+UseJdbc(configFile="examples/scribe/account.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT CAST(sys.fn_varbintohexstr(id) AS VARCHAR(40)), sfdcid, name, url, industry, type FROM gdc_account");
 TransferData();
 
-UseJdbc(configFile="examples/scribe/user.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT sys.fn_varbintohexstr(id), sfdcid, name, url, email, department, division FROM gdc_user");
+UseJdbc(configFile="examples/scribe/user.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT CAST(sys.fn_varbintohexstr(id) AS VARCHAR(40)), sfdcid, name, url, email, department, division FROM gdc_user");
 TransferData();
 
-UseJdbc(configFile="examples/scribe/opportunity.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT sys.fn_varbintohexstr(id), sfdcid, name, url, type, status, isclosed, iswon, leadsource FROM gdc_opportunity");
+UseJdbc(configFile="examples/scribe/opportunity.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT CAST(sys.fn_varbintohexstr(id) AS VARCHAR(40)), sfdcid, name, url, type, status, isclosed, iswon, leadsource FROM gdc_opportunity");
 TransferData();
 
-UseJdbc(configFile="examples/scribe/snapshot.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT sys.fn_varbintohexstr(id), snapshotdate, closeddate, createddate, stagename, stageorder, snapshot_id, sys.fn_varbintohexstr(opportunity_id), sys.fn_varbintohexstr(account_id), sys.fn_varbintohexstr(user_id), amount, expectedrevenue, probability, dayssincelastactivity, daystoclose FROM gdc_opportunity_snapshot");
+UseJdbc(configFile="examples/scribe/snapshot.config.xml",driver="net.sourceforge.jtds.jdbc.Driver",url="jdbc:jtds:sqlserver://127.0.0.1:1433/crm4",username="sa",password="heslo1",query="SELECT CAST(sys.fn_varbintohexstr(id) AS VARCHAR(40)), snapshotdate, closeddate, createddate, stagename, stageorder, snapshot_id, CAST(sys.fn_varbintohexstr(opportunity_id) AS VARCHAR(40)), CAST(sys.fn_varbintohexstr(account_id) AS VARCHAR(40)), CAST(sys.fn_varbintohexstr(user_id) AS VARCHAR(40)), amount, expectedrevenue, probability, dayssincelastactivity, daystoclose FROM gdc_opportunity_snapshot");
 TransferData();

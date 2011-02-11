@@ -14,7 +14,7 @@
             <title>SnapshotDate</title>
             <ldmType>DATE</ldmType>
             <folder>OpportunitySnapshot</folder>
-            <format>yyyy-MM-dd</format>
+            <format>yyyy/MM/dd</format>
             <schemaReference>Snapshot</schemaReference>
         </column>
         <column>
@@ -22,7 +22,7 @@
             <title>Close Date</title>
             <ldmType>DATE</ldmType>
             <folder>OpportunitySnapshot</folder>
-            <format>yyyy-MM-dd</format>
+            <format>yyyy/MM/dd</format>
             <schemaReference>Closed</schemaReference>
         </column>
 
@@ -31,7 +31,7 @@
             <title>Create Date</title>
             <ldmType>DATE</ldmType>
             <folder>OpportunitySnapshot</folder>
-            <format>yyyy-MM-dd</format>
+            <format>yyyy/MM/dd</format>
             <schemaReference>Created</schemaReference>
         </column>
 
