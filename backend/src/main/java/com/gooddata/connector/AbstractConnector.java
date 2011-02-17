@@ -296,7 +296,7 @@ public abstract class AbstractConnector implements Connector {
                     String sr = sc.getSchemaReference();
                     if(sr != null && sr.length() > 0) {
                         sr = StringUtil.toIdentifier(sr);
-                        c.setPopulates(new String[] {sr + "." + Constants.DEFAULT_DATE_LABEL});
+                        c.setPopulates(new String[] {sr + "." + Constants.getDateLabel()});
                         // add a new column for the date fact
                         Column dfc = new Column(sc.getName() + N.DT_SLI_SFX);
                         dfc.setMode(Column.LM_FULL);
