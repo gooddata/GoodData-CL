@@ -104,7 +104,7 @@ public class PivotalApi {
     /**
      * Shared HTTP client
      */
-    private HttpClient client = new HttpClient();
+    private HttpClient client;
 
     /**
      * The Pivotal API wrapper constructor
@@ -116,6 +116,18 @@ public class PivotalApi {
         this.setUserName(usr);
         this.setPassword(psw);
         this.setProjectId(prjId);
+
+        client = new HttpClient();
+
+        final String proxyHost = System.getProperty("http.proxyHost");
+        final int proxyPort = System.getProperty("http.proxyPort") == null
+            ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
+
+        if (proxyHost != null) {
+            client.getHostConfiguration().setProxy(proxyHost,proxyPort);
+        }
+
+
         client.getHostConfiguration().setHost(PIVOTAL_URL);
         // populate the STORY dataset columns
         RECORD_STORIES.addAll(Arrays.asList(new String[]{"Id", "Labels", "Story", "Iteration", "Iteration Start",

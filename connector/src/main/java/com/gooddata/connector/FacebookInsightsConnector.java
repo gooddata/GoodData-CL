@@ -65,11 +65,24 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
     private DateTime startDate;
     private DateTime endDate;
     private String baseUrl;
-    private HttpClient client = new HttpClient();
+    private HttpClient client;
 
     private final DateTimeFormatter baseFmt = DateTimeFormat.forPattern(Constants.DEFAULT_DATETIME_FMT_STRING);
     private final DateTime base = baseFmt.parseDateTime("1900-01-01 00:00:00");
 
+
+    protected FacebookInsightsConnector() {
+        client = new HttpClient();
+
+        final String proxyHost = System.getProperty("http.proxyHost");
+        final int proxyPort = System.getProperty("http.proxyPort") == null
+            ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
+
+        if (proxyHost != null) {
+            client.getHostConfiguration().setProxy(proxyHost,proxyPort);
+        }
+
+    }
 
     /**
      * Creates a new Facebook connector

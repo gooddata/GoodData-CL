@@ -74,6 +74,15 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
     public GdcWebDavApiWrapper(NamePasswordConfiguration config) {
         this.config = config;
         client = new HttpClient();
+
+        final String proxyHost = System.getProperty("http.proxyHost");
+        final int proxyPort = System.getProperty("http.proxyPort") == null
+            ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
+
+        if (proxyHost != null) {
+            client.getHostConfiguration().setProxy(proxyHost,proxyPort);
+        }
+
         Credentials creds = new UsernamePasswordCredentials(this.config.getUsername(), this.config.getPassword());
         client.getState().setCredentials(AuthScope.ANY, creds);
     }
