@@ -28,6 +28,8 @@ import junit.framework.TestCase;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 /**
  * GoodData
  *
@@ -40,15 +42,51 @@ public class TestGdcRestApiWrapper extends TestCase {
 
     NamePasswordConfiguration config = null;
 
-    //NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","zdenek.svoboda@gooddata.com","xxx");
+    //NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","zd@gooddata.com","xxx");
+
+    String[] checkUrls = {
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4170",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/12238",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/5479",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13344",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/7261",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/12218",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/1788",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13928",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4148",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/8067",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/16843",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/3392",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4192",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4499",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13772",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/18799",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/10730",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/6833",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/12467",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/7456",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13785",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4228",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13876",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/3329",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/6826",
+            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/5138"
+    };
 
     public void testComputeMetric() throws Exception {
         try {
             if(config != null) {
                 GdcRESTApiWrapper rest = new GdcRESTApiWrapper(config);
                 rest.login();
-                String r = rest.getProjectEtlMode("ss4woqivsti4279a119xi72oz544q9p5");
-                System.err.println(r);
+                for(String url : checkUrls) {
+                    List<JSONObject> deps =  rest.usedBy(url);
+                    for(JSONObject d : deps) {
+                        if("report".equalsIgnoreCase(d.getString("category"))) {
+                            System.out.println(d.getString("link") + " : "+d.getString("title"));
+                        }
+                    }
+
+                }
             }
         }
         catch(Exception e) {

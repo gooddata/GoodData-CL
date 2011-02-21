@@ -272,6 +272,20 @@ public class FileUtil {
         br.close();
         return sbr.toString();
     }
+
+
+    /**
+     * Reads the entire {@link InputStream} and returns its content as a single {@link String}
+     *
+     * @param path the loacation of the file on the CLASSPATH (e.g. /com/gooddata/processor/COMMANDS.txt)
+     * @return the file content as String
+     * @throws IOException
+     */
+    public static String readStringFromClasspath(String path) throws IOException {
+        final InputStream is = FileUtil.class.getResourceAsStream(path);
+    	return readStringFromBufferedReader(createBufferedUtf8Reader(is));
+    }
+
     
     /**
      * Retrieves CSV headers from an URL
