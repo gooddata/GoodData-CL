@@ -185,7 +185,8 @@ public class SourceColumn {
      *      of earlier invocations of {@link #setReference(String)}
      */
     public String getReference() {
-        if (SourceColumn.LDM_TYPE_REFERENCE.equals(ldmType) || SourceColumn.LDM_TYPE_LABEL.equals(ldmType)){
+        if (SourceColumn.LDM_TYPE_REFERENCE.equals(ldmType) || SourceColumn.LDM_TYPE_LABEL.equals(ldmType) ||
+                SourceColumn.LDM_TYPE_DATE.equals(ldmType) ){
             return reference;
         }
         return null;

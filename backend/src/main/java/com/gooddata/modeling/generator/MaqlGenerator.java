@@ -582,8 +582,12 @@ public class MaqlGenerator {
                 String stat = generateFactMaqlCreate();
 	            if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
+                    String r = column.getReference();
+                    if(r == null || r.length() <= 0) {
+                        r = N.DT_ATTR_NAME;
+                    }
 	                stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
-	                stat += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} ADD KEYS {"+getFactTableName() +
+	                stat += "ALTER ATTRIBUTE {"+reference+"."+r+"} ADD KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
                         stat += "# CONNECT THE TIME TO THE TIME DIMENSION\n";
@@ -600,11 +604,15 @@ public class MaqlGenerator {
                 boolean includeTime = column.isDatetime();
 	        	if(reference != null && reference.length() > 0) {
 	                reference = StringUtil.toIdentifier(reference);
+                    String r = column.getReference();
+                    if(r == null || r.length() <= 0) {
+                        r = N.DT_ATTR_NAME;
+                    }
 	                script += "# DISCONNECT THE DATE DIMENSION\n";
-                    script += "ALTER ATTRIBUTE {"+reference+"."+N.DT_ATTR_NAME+"} DROP KEYS {"+getFactTableName() +
+                    script += "ALTER ATTRIBUTE {"+reference+"."+r+"} DROP KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
-                        script += "ALTER ATTRIBUTE {"+N.DT_ATTR_NAME+reference+"} DROP KEYS {"+getFactTableName() +
+                        script += "ALTER ATTRIBUTE {"+N.TM_ATTR_NAME+reference+"} DROP KEYS {"+getFactTableName() +
                                 "."+N.TM_PFX + scn + "_"+N.ID+"};\n\n";
                     }
 	            }

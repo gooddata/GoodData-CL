@@ -56,6 +56,8 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
     // Include time dimension
     private boolean includeTime = false;
 
+    private String type = "URN:GOODDATA:DATE";
+
     /**
      * Creates a new Time Dimension Connector
      */
@@ -163,7 +165,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         if(name != null && name.trim().length()>0) {
             String idp = StringUtil.toIdentifier(name);
             String ts = StringUtil.toTitle(name);
-            String script = "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\" MODIFY (IDENTIFIER \""+idp+"\", TITLE \""+ts+"\");\n\n";
+            String script = "INCLUDE TEMPLATE \""+getType()+"\" MODIFY (IDENTIFIER \""+idp+"\", TITLE \""+ts+"\");\n\n";
             if(includeTime) {
                 try {
                     BufferedReader is = new BufferedReader(new InputStreamReader(
@@ -183,7 +185,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         }
         else {
             l.debug("Generated time dimension MAQL with no context ");
-            return "INCLUDE TEMPLATE \"URN:GOODDATA:DATE\"";            
+            return "INCLUDE TEMPLATE \""+getType()+"\"";
         }
 
     }
@@ -225,6 +227,10 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
             String ic = c.getParam( "includeTime");
             includeTime = (ic != null && "true".equalsIgnoreCase(ic));
         }
+        if(c.checkParam("type")) {
+            type = c.getParam( "type");
+        }
+
         // sets the current connector
         ctx.setConnector(this);
         l.info("Time Dimension Connector successfully loaded (name: " + ct + ").");
@@ -243,4 +249,14 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
 	public void setName(String name) {
 		this.name = name;
 	}
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+
 }

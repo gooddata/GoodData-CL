@@ -271,6 +271,7 @@ Pivotal Tracker Connector Commands:
 Time Dimension Connector Commands:
 ----------------------------------
 
-`UseDateDimension(name="...", includeTime = "...");`  - load new time dimension into the project, must call `CreateProject` or `OpenProject` before
+`UseDateDimension(name="...", includeTime = "...", type = "...");`  - load new time dimension into the project, must call `CreateProject` or `OpenProject` before
 - name        - the time dimension name differentiates the time dimension form others. This is typically something like "closed", "created" etc.
 - includeTime - generate the time dimension (true | false)
+- type - specifies the name of a particular fiscal date dimension

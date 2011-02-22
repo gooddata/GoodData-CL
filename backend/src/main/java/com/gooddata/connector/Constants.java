@@ -43,21 +43,7 @@ public class Constants {
     public final static DateTimeFormatter DEFAULT_DATETIME_FMT = DateTimeFormat.forPattern(DEFAULT_DATETIME_FMT_STRING);
 
     // default date label suffix
-    private final static String DEFAULT_DATE_LABEL = "date.mdyy";
-    /*
-     * system property key that overrides the default date label suffix
-     * (<tt>gdc.sli.date_label</tt>)
-     */
-    public final static String DATE_LABEL_PROPERTY = "gdc.sli.date_label";
+    public final static String DEFAULT_DATE_LABEL = "date";
+    public final static String DEFAULT_DATE_LABEL_SUFFIX = ".mdyy";
 
-    /**
-     * SLI date label suffix
-     * @return
-     */
-    public static String getDateLabel() {
-        if (System.getProperty(DATE_LABEL_PROPERTY) != null) {
-            return System.getProperty(DATE_LABEL_PROPERTY);
-        }
-        return DEFAULT_DATE_LABEL;
-    }
 }
