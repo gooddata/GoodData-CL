@@ -6,7 +6,7 @@ GoodData Cl supports following groups of commands:
 * **[Project Management Commands](#project_management_commands)**: create/delete/use/remember a project
   `CreateProject`, `DeleteProject`, `OpenProject`, `RememberProject`. `UseProject`
 
-* **[Connector Commands](#connector_commands)** that either generate the [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Use<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
+* **[Connector Commands](#csv_connector_commands)** that either generate the [XML configuration](http://developer.gooddata.com/gooddata-cl/xml-config.html) (`Generate<Source-Type>Config`) for a specific data source and load the  source data (`Use<Source-Type>`). Connector commands require a project to be activated via a project management command before they are invoked.
 
 * **[Metadata Management Commands](#metadata_management_commands)**: work with project metadata (reports, dashboards, metrics, folders)  
   `RetrieveMetadataObject`, `StoreMetadataObject`, `DropMetadataObject`, `RetrieveAllObjects`, `StoreAllObjects`
