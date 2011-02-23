@@ -7,11 +7,10 @@
       <name>id</name>
       <title>ID (Profile)</title>
       <ldmType>CONNECTION_POINT</ldmType>
-      <dataType>IDENTITY</dataType>  
     </column>
     <column>
       <name>name</name>
-      <title>Profile Name</title>
+      <title>Profile Name</title>                   .
       <ldmType>LABEL</ldmType>
       <reference>id</reference>
     </column>
