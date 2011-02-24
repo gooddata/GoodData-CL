@@ -127,6 +127,10 @@ TransferData(incremental="...", waitForFinish="..."); - upload data to the GoodD
 Dump(csvFile="..."); - dumps the connector data to a local CSV file
 - csvFile   - path to the CSV file
 
+Data Connectors:
+
+The following commands provide data connectors for consuming data from flat files (CSV Connector), databases (JDBC Connector) and even SaaS apps (Salesforce, Google Analytics, PivotalTracker Connectors). All connectors provide commands like Generate<Type>Config, Use<Type>, Export<Type>ToCsv. Data input should be encoded in UTF-8.
+
 CSV Connector Commands:
 
 GenerateCsvConfig(csvHeaderFile="...", configFile="...", defaultLdmType="...", folder="...", separator="..."); - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
@@ -235,6 +239,7 @@ UsePivotalTracker(username="...", password="...", pivotalProjectId="...", storyC
 
 Time Dimension Connector Commands:
 
-UseDateDimension(name="...", includeTime = "...");  - load new time dimension into the project, must call CreateProject or OpenProject before
+UseDateDimension(name="...", includeTime = "...", type = "...");  - load new time dimension into the project, must call CreateProject or OpenProject before
 - name        - the time dimension name differentiates the time dimension form others. This is typically something like "closed", "created" etc.
 - includeTime - generate the time dimension (true | false)
+- type - specifies the name of a particular fiscal date dimension
