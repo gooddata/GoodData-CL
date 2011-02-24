@@ -21,7 +21,7 @@ TransferData();
 
 # load the Forex data file
 # the data file config has been generated
-UseCsv(csvDataFile="examples/forex/forex.csv",header="true",configFile="examples/forex/forex.xml");
+UseCsv(csvDataFile="examples/forex/forex.csv",hasHeader="true",configFile="examples/forex/forex.xml");
 
 # generate the Forex MAQL
 GenerateMaql(maqlFile="examples/forex/forex.maql");

@@ -16,7 +16,7 @@ GenerateMaql(maqlFile="examples/hr/payment_date.maql");
 ExecuteMaql(maqlFile="examples/hr/payment_date.maql");
 
 # Load the salary data file, using the XML file describing the data
-UseCsv(csvDataFile="examples/hr/salary.csv",header="true",configFile="examples/hr/salary.xml");
+UseCsv(csvDataFile="examples/hr/salary.csv",hasHeader="true",configFile="examples/hr/salary.xml");
 
 # Generate the MAQL script describing data model for salary data
 GenerateMaql(maqlFile="examples/hr/salary.maql");

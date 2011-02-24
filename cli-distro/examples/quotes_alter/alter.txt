@@ -6,7 +6,7 @@ UseProject(fileName="examples/quotes_alter/pid");
 
 # load the stock quotes data file
 # the data file config has been generated
-UseCsv(csvDataFile="examples/quotes_alter/quotes_altered.csv",header="true",configFile="examples/quotes_alter/quotes_altered.config.xml");
+UseCsv(csvDataFile="examples/quotes_alter/quotes_altered.csv",hasHeader="true",configFile="examples/quotes_alter/quotes_altered.config.xml");
 
 # generate the MAQL DDL snippet to modify the server-side data model
 GenerateUpdateMaql(maqlFile="examples/quotes_alter/quotes.alter.maql");

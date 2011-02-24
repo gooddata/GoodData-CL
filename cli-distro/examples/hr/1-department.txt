@@ -10,7 +10,7 @@ CreateProject(name="HR");
 RememberProject(fileName="examples/hr/pid");
 
 # Load the department data file, using the XML file describing the data
-UseCsv(csvDataFile="examples/hr/department.csv",header="true",configFile="examples/hr/department.xml");
+UseCsv(csvDataFile="examples/hr/department.csv",hasHeader="true",configFile="examples/hr/department.xml");
 
 # Generate the MAQL script describing data model for department data
 GenerateMaql(maqlFile="examples/hr/department.maql");

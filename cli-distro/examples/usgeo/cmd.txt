@@ -9,7 +9,7 @@ RememberProject(fileName="examples/usgeo/pid");
 
 # load the US ZIPCODE data file
 # the data file config has been generated
-UseCsv(csvDataFile="examples/usgeo/us.zip.csv",header="true",configFile="examples/usgeo/us.zip.xml");
+UseCsv(csvDataFile="examples/usgeo/us.zip.csv",hasHeader="true",configFile="examples/usgeo/us.zip.xml");
 
 # generate the stock quotes MAQL
 GenerateMaql(maqlFile="examples/usgeo/us.zip.maql");
