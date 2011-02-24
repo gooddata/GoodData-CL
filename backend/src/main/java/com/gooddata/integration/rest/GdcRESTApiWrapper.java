@@ -2319,7 +2319,7 @@ public class GdcRESTApiWrapper {
      */
     public JSONObject modifyMetadataObject(String projectId, int objectId, JSON content) {
         l.debug("Executing modifyMetadataObject on project id="+projectId+" objectId="+objectId+" content='"+content.toString()+"'");
-        return modifyMetadataObject(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId, content);
+        return modifyMetadataObject(MD_URI + projectId + OBJ_URI + "/" + objectId, content);
     }
 
     /**
