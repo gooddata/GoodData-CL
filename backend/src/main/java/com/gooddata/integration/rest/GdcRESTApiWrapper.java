@@ -2354,7 +2354,7 @@ public class GdcRESTApiWrapper {
      */
     public void deleteMetadataObject(String projectId, int objectId) {
         l.debug("Executing deleteMetadataObject on project id="+projectId+" objectId="+objectId);
-        deleteMetadataObject(getProjectMdUrl(projectId) + OBJ_URI + "/" + objectId);
+        deleteMetadataObject(MD_URI + projectId + OBJ_URI + "/" + objectId);
     }
 
 
