@@ -4,8 +4,8 @@
 UseProject(fileName="examples/ga/pid");   
 
 # Please uncomment the following block (2 lines) if you want to load multiple GA profiles to a single GoodData project
-#UseCsv(csvDataFile="examples/ga/profile.csv",hasHeader="true",configFile="examples/ga/ga.profile.xml");
-#TransferData(incremental="true");
+UseCsv(csvDataFile="examples/ga/profile.csv",hasHeader="true",configFile="examples/ga/ga.profile.xml");
+TransferData(incremental="true");
 
 UseGoogleAnalytics(username="your-ga-username@gmail.com",password="your-ga-password",profileId="ga:7468896",configFile="examples/ga/ga.browser.xml",dimensions="ga:date|ga:browser|ga:browserVersion|ga:isMobile|ga:flashVersion|ga:javaEnabled",metrics="ga:bounces|ga:newVisits|ga:pageViews|ga:visits|ga:timeOnSite|ga:uniquePageviews|ga:timeOnPage|ga:exits|ga:entrances",startDate="2010-10-05",endDate="2010-10-14");
 TransferData(incremental="true");
