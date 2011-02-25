@@ -244,22 +244,6 @@ SalesForce Connector Commands:
 - token      - SFDC security token (you may append the security token to the password instead using this parameter)
 - partnerId  - SFDC client ID (partner token) that allows extended access to the SalesForce API
 
-SalesForce Sales Connector Commands:
-------------------------------------
-
-`UseSfdcSales(username="...", password="...", token="...", accountQuery="...", userQuery="...", opportunityQuery="...", snapshotQuery="...", accountConfigFile="...", userConfigFile="...", opportunityConfigFile="...", snapshotConfigFile="...");`  - load SalesForce sales data, must call `CreateProject` or `OpenProject` before
-- username              - SFDC username
-- password              - SFDC password
-- token                 - SFDC security token (you may append the security token to the password instead using this parameter)
-- accountQuery          - Account SOQL query (must contain Id, e.g. "SELECT Id, Name FROM Account"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
-- userQuery             - Account SOQL query (must contain Id, e.g. "SELECT Id, Name FROM User"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
-- opportunityQuery      - Opportunity SOQL query (must contain Id, e.g. "SELECT Id, Name FROM Opportunity"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
-- snapshotQuery         - Opportunity snapshot SOQL query (must contain Id, AccountId, and OwnerId, e.g. "SELECT Id, AccountId, OwnerId, Name FROM Opportunity"), see http://www.salesforce.com/us/developer/docs/api/Content/data_model.htm
-- accountConfigFile     - Account XML schema config file
-- userConfigFile        - User XML schema config file
-- opportunityConfigFile - Opportunity XML schema config file
-- snapshotConfigFile    - Opportunity snapshot XML schema config file
-
 
 Pivotal Tracker Connector Commands:
 ------------------------------
