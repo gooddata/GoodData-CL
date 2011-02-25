@@ -41,7 +41,7 @@ public class CsvConnnectorTest extends TestCase {
 		final InputStream expectedConfig = getClass().getResourceAsStream("/com/gooddata/connector/guess_expectedConfig.xml");
 		final URL csvUrl = getClass().getResource("/com/gooddata/connector/guess_quotes.csv");
 		
-		SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, null,',');
+		SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, new String[] { "INDUSTRY" }, null,',');
 		SourceSchema expected = SourceSchema.createSchema(expectedConfig);
 		
 		assertEquals(expected.getColumns().size(), guessed.getColumns().size());
@@ -70,7 +70,6 @@ public class CsvConnnectorTest extends TestCase {
 		for (int i = 0; i < expected.getColumns().size(); i++) {
 			SourceColumn expCol = expected.getColumns().get(i);
 			SourceColumn gueCol = guessed.getColumns().get(i);
-			System.out.println(i);
 			assertEquals(expCol.getLdmType(), gueCol.getLdmType());
 			assertEquals(expCol.getName(), gueCol.getName());
 			// date format guessing not supported yet

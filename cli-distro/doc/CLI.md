@@ -159,10 +159,11 @@ The following commands provide data connectors for consuming data from flat file
 CSV Connector Commands:
 -----------------------
 
-`GenerateCsvConfig(csvHeaderFile="...", configFile="...", defaultLdmType="...", folder="...", separator="...");` - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
+`GenerateCsvConfig(csvHeaderFile="...", configFile="...", defaultLdmType="...", facts="...", folder="...", separator="...");` - generate a sample XML config file based on the fields from your CSV file. If the config file exists already, only new columns are added. The config file must be edited as the LDM types (attribute | fact | label etc.) are assigned randomly.
 - csvHeaderFile  - path to CSV file (only the first header row will be used)
 - configFile     - path to configuration file (will be **overwritten**)
 - defaultLdmType - *(optional)* LDM mode to be associated with new columns (only ATTRIBUTE mode is supported by the ProcessNewColumns task at this time)
+- facts          - *(optional)* comma separated list of fields known to be facts
 - folder         - *(optional)* folder where to place new attributes
 - separator      - *(optional)* field separator, the default is ','  
 

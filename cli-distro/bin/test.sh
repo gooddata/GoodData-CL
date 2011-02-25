@@ -16,6 +16,14 @@ function drop() {
 echo 'Running quotes_alter demo'
 bin/gdi.sh examples/quotes_alter/quotes.txt
 
+echo 'Running generate_csv_config test'
+bin/gdi.sh tests/generate_csv_config/quotes.txt
+facts=`grep FACT tests/generate_csv_config/quotes.config.xml | wc -l | sed 's,^ *,,'`
+if [ "x$facts" != "x5" ] ; then
+    echo "generate_csv_config test produced '$facts' FACT fields, 5 expected"
+    exit 1
+fi
+
 echo 'Updating the data set in the quotes_alter demo'
 echo "UseProject(fileName = \"examples/quotes_alter/pid\");" > "$tmp"
 grep '^\(UseCsv\|Transfer\)' examples/quotes_alter/quotes.txt >> "$tmp"
