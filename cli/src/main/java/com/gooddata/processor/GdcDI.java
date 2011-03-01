@@ -42,6 +42,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -74,6 +75,8 @@ public class GdcDI implements Executor {
     private static Logger l = Logger.getLogger(GdcDI.class);
 
     //Options data
+    public static String[] CLI_PARAM_HELP = {"help","H"};
+
     public static String[] CLI_PARAM_USERNAME = {"username","u"};
     public static String[] CLI_PARAM_PASSWORD = {"password","p"};
 
@@ -90,7 +93,9 @@ public class GdcDI implements Executor {
     private static String DEFAULT_PROPERTIES = "gdi.properties";
 
     // Command line options
+    private static Options ops = new Options();
     public static Option[] Options = {
+        new Option(CLI_PARAM_HELP[1], CLI_PARAM_HELP[0], false, "Print command reference"),
         new Option(CLI_PARAM_USERNAME[1], CLI_PARAM_USERNAME[0], true, "GoodData username"),
         new Option(CLI_PARAM_PASSWORD[1], CLI_PARAM_PASSWORD[0], true, "GoodData password"),
         new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host"),
@@ -143,6 +148,8 @@ public class GdcDI implements Executor {
                     execute(new File(script));
                 }
             }
+            if(cliParams.containsKey(CLI_PARAM_HELP[0]))
+                l.info(commandsHelp());
             finishedSucessfuly = true;
         }
         catch (InvalidArgumentException e) {
@@ -367,7 +374,7 @@ public class GdcDI implements Executor {
 
         l.debug("Using " + (cp.containsKey(CLI_PARAM_INSECURE[0]) ? "in" : "") + "secure protocols");
 
-        if (ln.getArgs().length == 0 && !ln.hasOption("execute")) {
+        if (ln.getArgs().length == 0 && !ln.hasOption(CLI_PARAM_EXECUTE[0]) && !ln.hasOption(CLI_PARAM_HELP[0])) {
             throw new InvalidArgumentException("No command has been given, quitting.");
         }
 
