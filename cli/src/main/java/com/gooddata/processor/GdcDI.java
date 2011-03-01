@@ -347,7 +347,7 @@ public class GdcDI implements Executor {
                 cp.put(CLI_PARAM_FTP_HOST[0],ftpHost);
             }
             else {
-                throw new IllegalArgumentException("Invalid format of the GoodData REST API host: " +
+                throw new InvalidArgumentException("Invalid format of the GoodData REST API host: " +
                         cp.get(CLI_PARAM_HOST[0]));
             }
 
