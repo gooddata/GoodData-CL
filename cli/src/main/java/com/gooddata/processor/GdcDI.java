@@ -146,84 +146,85 @@ public class GdcDI implements Executor {
             finishedSucessfuly = true;
         }
         catch (InvalidArgumentException e) {
-            l.error("Invalid command line argument: ",e);
+            l.error("Invalid or missing argument: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Invalid command line argument:",e);
-            l.info(commandsHelp());
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("gooddata-cli [<options> ...] -H|--help|<script>|-e <command>", ops);
             finishedSucessfuly = false;
         }
         catch (InvalidCommandException e) {
-            l.error("Invalid command: ",e);
+            l.error("Invalid command: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Invalid command.",e);
             finishedSucessfuly = false;
         }
         catch (InvalidParameterException e) {
-            l.error("Invalid command parameter: ", e);
+            l.error("Invalid command parameter: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Invalid command parameter.",e);
             finishedSucessfuly = false;
         }
         catch (SfdcException e) {
-            l.error("Error communicating with SalesForce: ",e);
+            l.error("Error communicating with SalesForce: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Error communicating with SalesForce.",e);
             finishedSucessfuly = false;
         }
         catch (ProcessingException e) {
-            l.error("Error processing command: ", e);
+            l.error("Error processing command: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Error processing command.",e);
             finishedSucessfuly = false;
         }
         catch (ModelException e) {
-            l.error("Model issue: ", e);
+            l.error("Model issue: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ", c);
+                l.debug("Caused by: ", c);
                 c = c.getCause();
             }
-            l.debug("Model issue.",e);
             finishedSucessfuly = false;
         }
         catch (GdcLoginException e) {
-            l.error("Error logging to GoodData. Please check your GoodData username and password: ", e);
+            l.error("Error logging to GoodData. Please check your GoodData username and password: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Error logging to GoodData. Please check your GoodData username and password.",e);
             finishedSucessfuly = false;
         }        
         catch (IOException e) {
-            l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist.",e);
+            l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist." + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '",e);
             finishedSucessfuly = false;
         }
         catch (InternalErrorException e) {
@@ -234,35 +235,31 @@ public class GdcDI implements Executor {
                         "that the number of columns in your XML config file matches the number of rows in your " +
                         "data source. Make sure that your file is readable by other users (particularly the mysql user). " +
                         "More info: ", c);
-                l.debug("Error extracting data. Can't process the incoming data. Please check the CSV file " +
-                        "separator and consistency (same number of columns in each row). Also, please make sure " +
-                        "that the number of columns in your XML config file matches the number of rows in your " +
-                        "data source. Make sure that your file is readable by other users (particularly the mysql user). " +
-                        "More info: ",c);
             }
             else {
-                l.error("Internal error: ",e);
+                l.error("Internal error: " + e.getMessage());
+                l.debug(e);
                 c = e.getCause();
                 while(c!=null) {
-                    l.error("Caused by: ",c);
+                    l.debug("Caused by: ",c);
                     c = c.getCause();
                 }
-                l.debug("REST API invocation error: ",e);
             }
             finishedSucessfuly = false;
         }
         catch (HttpMethodException e) {
-            l.error("Error executing GoodData REST API: ",e);
+            l.error("Error executing GoodData REST API: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Error executing GoodData REST API.",e);
             finishedSucessfuly = false;
         }
         catch (GdcRestApiException e) {
-            l.error("REST API invocation error: ", e);
+            l.error("REST API invocation error: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
                 if(c instanceof HttpMethodException) {
@@ -280,20 +277,19 @@ public class GdcDI implements Executor {
                         }
                     }
                 }
-                l.error("Caused by: ", c);
+                l.debug("Caused by: ", c);
                 c = c.getCause();
             }
-            l.debug("REST API invocation error: ", e);
             finishedSucessfuly = false;
         }
         catch (GdcException e) {
-            l.error("Unrecognized error: ", e);
+            l.error("Unrecognized error: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ", c);
+                l.debug("Caused by: ", c);
                 c = c.getCause();
             }
-            l.debug("Unrecognized error: ",e);
             finishedSucessfuly = false;
         }
     }
@@ -464,10 +460,11 @@ public class GdcDI implements Executor {
             if(lc.exists()) {
                 PropertyConfigurator.configure(logConfig);
                 Properties defaults = loadDefaults();
+
+                for(Option o : Options)
+                    ops.addOption(o);
+
                 try {
-		    Options ops = new Options();
-		    for(Option o : Options)
-			ops.addOption(o);
                     CommandLineParser parser = new GnuParser();
                     CommandLine cmdline = parser.parse(ops, args);
                     GdcDI gdi = new GdcDI(cmdline, defaults);
