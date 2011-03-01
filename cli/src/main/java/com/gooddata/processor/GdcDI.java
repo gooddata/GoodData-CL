@@ -89,11 +89,8 @@ public class GdcDI implements Executor {
     
     private static String DEFAULT_PROPERTIES = "gdi.properties";
 
-    // mandatory options
-    public static Option[] mandatoryOptions = { };
-
-    // optional options
-    public static Option[] optionalOptions = {
+    // Command line options
+    public static Option[] Options = {
         new Option(CLI_PARAM_USERNAME[1], CLI_PARAM_USERNAME[0], true, "GoodData username"),
         new Option(CLI_PARAM_PASSWORD[1], CLI_PARAM_PASSWORD[0], true, "GoodData password"),
         new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host"),
@@ -302,19 +299,6 @@ public class GdcDI implements Executor {
     }
 
     /**
-     * Returns all cli options
-     * @return all cli options
-     */
-    public static Options getOptions() {
-        Options ops = new Options();
-        for( Option o : mandatoryOptions)
-            ops.addOption(o);
-        for( Option o : optionalOptions)
-            ops.addOption(o);
-        return ops;
-    }
-
-    /**
      * Parse and validate the cli arguments
      * @param ln parsed command line
      * @return parsed cli parameters wrapped in the CliParams
@@ -324,19 +308,7 @@ public class GdcDI implements Executor {
         l.debug("Parsing cli "+ln);
         CliParams cp = new CliParams();
 
-        for( Option o : mandatoryOptions) {
-            String name = o.getLongOpt();
-            if (ln.hasOption(name))
-                cp.put(name,ln.getOptionValue(name));
-            else if (defaults.getProperty(name) != null) {
-            	cp.put(name, defaults.getProperty(name));
-            } else {
-                throw new InvalidArgumentException("Missing the '"+name+"' commandline parameter.");
-            }
-
-        }
-
-        for( Option o : optionalOptions) {
+        for( Option o : Options) {
             String name = o.getLongOpt();
             if (ln.hasOption(name)) {
                 cp.put(name,ln.getOptionValue(name));
@@ -493,9 +465,11 @@ public class GdcDI implements Executor {
                 PropertyConfigurator.configure(logConfig);
                 Properties defaults = loadDefaults();
                 try {
-                    Options o = getOptions();
+		    Options ops = new Options();
+		    for(Option o : Options)
+			ops.addOption(o);
                     CommandLineParser parser = new GnuParser();
-                    CommandLine cmdline = parser.parse(o, args);
+                    CommandLine cmdline = parser.parse(ops, args);
                     GdcDI gdi = new GdcDI(cmdline, defaults);
                     if (!gdi.finishedSucessfuly) {
                         System.exit(1);
