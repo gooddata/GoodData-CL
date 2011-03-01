@@ -33,6 +33,11 @@ if [ -z "$JAVA_HOME" ] ; then
   fi
 fi
 
+if [ -z "$JAVA_HOME" ] ; then
+  if [ -d /usr/lib/jvm/jre ] ; then
+    JAVA_HOME=/usr/lib/jvm/jre
+  fi
+fi
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
 if $cygwin ; then
