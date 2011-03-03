@@ -1,19 +1,20 @@
 <!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
 <schema>
-    <name>Account</name>
+    <name>User</name>
     <columns>
         <column>
             <name>id</name>
-            <title>Account</title>
+            <title>User</title>
             <ldmType>CONNECTION_POINT</ldmType>
-            <folder>Account</folder>
+            <folder>User</folder>
         </column>
         <column>
             <name>name</name>
-            <title>Account Name</title>
+            <title>SalesRep Name</title>
             <ldmType>LABEL</ldmType>
             <reference>id</reference>
-            <folder>Account</folder>
+            <folder>User</folder>
         </column>
     </columns>
 </schema>

@@ -1,0 +1,83 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<schema>
+  <name>Opportunity</name>
+  <columns>
+      <column>
+        <name>id</name>
+        <title>Opportunity</title>
+        <ldmType>CONNECTION_POINT</ldmType>
+        <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>name</name>
+        <title>Opportunity Name</title>
+          <ldmType>LABEL</ldmType>
+          <reference>id</reference>
+          <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>customerid</name>
+        <title>Account ID</title>
+          <ldmType>REFERENCE</ldmType>
+          <schemaReference>Account</schemaReference>
+          <reference>id</reference>
+          <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>userid</name>
+        <title>User ID</title>
+          <ldmType>REFERENCE</ldmType>
+          <schemaReference>User</schemaReference>
+          <reference>id</reference>
+          <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>stateid</name>
+        <title>Opportunity Status</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>campaignid</name>
+        <title>Campaign</title>
+          <ldmType>REFERENCE</ldmType>
+          <schemaReference>Campaign</schemaReference>
+          <reference>id</reference>
+          <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>createddate</name>
+        <title>Created</title>
+          <ldmType>DATE</ldmType>
+          <schemaReference>Created</schemaReference>
+          <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>closedate</name>
+        <title>Closed</title>
+          <ldmType>DATE</ldmType>
+          <schemaReference>Closed</schemaReference>
+          <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>estimatedclosedate</name>
+        <title>Estimated</title>
+          <ldmType>DATE</ldmType>
+          <schemaReference>Estimated</schemaReference>
+          <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>amount</name>
+        <title>Amount</title>
+          <ldmType>FACT</ldmType>
+          <folder>Opportunity</folder>
+      </column>
+      <column>
+        <name>Estimated Amount</name>
+        <title>Estimated Amount</title>
+          <ldmType>FACT</ldmType>
+          <folder>Opportunity</folder>
+      </column>
+  </columns>
+</schema>

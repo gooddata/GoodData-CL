@@ -1,0 +1,29 @@
+# A simple example that loads a MS CRM 2011 data
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Store the project ID to file for possible other scripts
+UseProject(fileName="examples/mscrm2011/pid");
+
+# LOAD THE ACCOUNT DATA
+UseMsCrm(configFile="examples/mscrm2011/account.xml",host="na40.crm.dynamics.com", org="crmNAorgfcbe3",
+         username="zsvoboda@gmail.com", password="password", entity="account",
+         fields="accountid, name");
+TransferData();
+
+# LOAD THE SALES REP DATA
+UseMsCrm(configFile="examples/mscrm2011/user.xml",host="na40.crm.dynamics.com", org="crmNAorgfcbe3",
+         username="zsvoboda@gmail.com", password="password", entity="systemuser",
+         fields="systemuserid, fullname");
+TransferData();
+
+# LOAD THE CAMPAIGN DATA
+UseMsCrm(configFile="examples/mscrm2011/campaign.xml",host="na40.crm.dynamics.com", org="crmNAorgfcbe3",
+         username="zsvoboda@gmail.com", password="password", entity="campaign",
+         fields="campaignid, name");
+TransferData();
+
+# LOAD THE OPPORTUNITY DATA
+UseMsCrm(configFile="examples/mscrm2011/opportunity.xml",host="na40.crm.dynamics.com", org="crmNAorgfcbe3",
+         username="zsvoboda@gmail.com", password="password", entity="opportunity",
+         fields="opportunityid, name, customerid, owninguser, statecode, campaignid, createdon, actualclosedate, estimatedclosedate, actualvalue, estimatedvalue");
+TransferData();

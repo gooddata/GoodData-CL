@@ -1,0 +1,52 @@
+# A simple example that loads a MS CRM 2011 data
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# CREATE A NEW PROJECT
+CreateProject(name="MS CRM 2011");
+
+# Store the project ID to file for possible other scripts
+RememberProject(fileName="examples/mscrm2011/pid");
+
+UseDateDimension(name="Created");
+GenerateMaql(maqlFile="examples/mscrm2011/created_date.maql");
+ExecuteMaql(maqlFile="examples/mscrm2011/created_date.maql");
+
+UseDateDimension(name="Closed");
+GenerateMaql(maqlFile="examples/mscrm2011/closed_date.maql");
+ExecuteMaql(maqlFile="examples/mscrm2011/closed_date.maql");
+
+UseDateDimension(name="Estimated");
+GenerateMaql(maqlFile="examples/mscrm2011/estimated_date.maql");
+ExecuteMaql(maqlFile="examples/mscrm2011/estimated_date.maql");
+
+# CREATE THE ACCOUNT
+UseMsCrm(configFile="examples/mscrm2011/account.xml",host="na40.crm.dynamics.com", org="crmNAorgfcbe3",
+         username="zsvoboda@gmail.com", password="password", entity="account",
+         fields="accountid, name");
+GenerateMaql(maqlFile="examples/mscrm2011/account.maql");
+ExecuteMaql(maqlFile="examples/mscrm2011/account.maql");
+
+# CREATE THE SALES REP
+UseMsCrm(configFile="examples/mscrm2011/user.xml",host="na40.crm.dynamics.com", org="crmNAorgfcbe3",
+         username="zsvoboda@gmail.com", password="password", entity="systemuser",
+         fields="systemuserid, fullname");
+
+GenerateMaql(maqlFile="examples/mscrm2011/user.maql");
+ExecuteMaql(maqlFile="examples/mscrm2011/user.maql");
+
+# CREATE THE CAMPAIGN
+UseMsCrm(configFile="examples/mscrm2011/campaign.xml",host="na40.crm.dynamics.com", org="crmNAorgfcbe3",
+         username="zsvoboda@gmail.com", password="password", entity="campaign",
+         fields="campaignid, name");
+
+GenerateMaql(maqlFile="examples/mscrm2011/campaign.maql");
+ExecuteMaql(maqlFile="examples/mscrm2011/campaign.maql");
+
+# CREATE THE OPPORTUNITY
+UseMsCrm(configFile="examples/mscrm2011/opportunity.xml",host="na40.crm.dynamics.com", org="crmNAorgfcbe3",
+         username="zsvoboda@gmail.com", password="password", entity="opportunity",
+         fields="opportunityid, name, customerid, owninguser, statecode, campaignid, createdon, actualclosedate, estimatedclosedate, actualvalue, estimatedvalue");
+
+GenerateMaql(maqlFile="examples/mscrm2011/opportunity.maql");
+ExecuteMaql(maqlFile="examples/mscrm2011/opportunity.maql");
+
