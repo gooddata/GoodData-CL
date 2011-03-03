@@ -42,6 +42,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -74,6 +75,8 @@ public class GdcDI implements Executor {
     private static Logger l = Logger.getLogger(GdcDI.class);
 
     //Options data
+    public static String[] CLI_PARAM_HELP = {"help","H"};
+
     public static String[] CLI_PARAM_USERNAME = {"username","u"};
     public static String[] CLI_PARAM_PASSWORD = {"password","p"};
 
@@ -89,11 +92,10 @@ public class GdcDI implements Executor {
     
     private static String DEFAULT_PROPERTIES = "gdi.properties";
 
-    // mandatory options
-    public static Option[] mandatoryOptions = { };
-
-    // optional options
-    public static Option[] optionalOptions = {
+    // Command line options
+    private static Options ops = new Options();
+    public static Option[] Options = {
+        new Option(CLI_PARAM_HELP[1], CLI_PARAM_HELP[0], false, "Print command reference"),
         new Option(CLI_PARAM_USERNAME[1], CLI_PARAM_USERNAME[0], true, "GoodData username"),
         new Option(CLI_PARAM_PASSWORD[1], CLI_PARAM_PASSWORD[0], true, "GoodData password"),
         new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host"),
@@ -146,87 +148,90 @@ public class GdcDI implements Executor {
                     execute(new File(script));
                 }
             }
+            if(cliParams.containsKey(CLI_PARAM_HELP[0]))
+                l.info(commandsHelp());
             finishedSucessfuly = true;
         }
         catch (InvalidArgumentException e) {
-            l.error("Invalid command line argument: ",e);
+            l.error("Invalid or missing argument: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Invalid command line argument:",e);
-            l.info(commandsHelp());
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("gooddata-cli [<options> ...] -H|--help|<script>|-e <command>", ops);
             finishedSucessfuly = false;
         }
         catch (InvalidCommandException e) {
-            l.error("Invalid command: ",e);
+            l.error("Invalid command: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Invalid command.",e);
             finishedSucessfuly = false;
         }
         catch (InvalidParameterException e) {
-            l.error("Invalid command parameter: ", e);
+            l.error("Invalid command parameter: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Invalid command parameter.",e);
             finishedSucessfuly = false;
         }
         catch (SfdcException e) {
-            l.error("Error communicating with SalesForce: ",e);
+            l.error("Error communicating with SalesForce: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Error communicating with SalesForce.",e);
             finishedSucessfuly = false;
         }
         catch (ProcessingException e) {
-            l.error("Error processing command: ", e);
+            l.error("Error processing command: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Error processing command.",e);
             finishedSucessfuly = false;
         }
         catch (ModelException e) {
-            l.error("Model issue: ", e);
+            l.error("Model issue: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ", c);
+                l.debug("Caused by: ", c);
                 c = c.getCause();
             }
-            l.debug("Model issue.",e);
             finishedSucessfuly = false;
         }
         catch (GdcLoginException e) {
-            l.error("Error logging to GoodData. Please check your GoodData username and password: ", e);
+            l.error("Error logging to GoodData. Please check your GoodData username and password: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Error logging to GoodData. Please check your GoodData username and password.",e);
             finishedSucessfuly = false;
         }        
         catch (IOException e) {
-            l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist.",e);
+            l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist." + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '",e);
             finishedSucessfuly = false;
         }
         catch (InternalErrorException e) {
@@ -237,35 +242,31 @@ public class GdcDI implements Executor {
                         "that the number of columns in your XML config file matches the number of rows in your " +
                         "data source. Make sure that your file is readable by other users (particularly the mysql user). " +
                         "More info: ", c);
-                l.debug("Error extracting data. Can't process the incoming data. Please check the CSV file " +
-                        "separator and consistency (same number of columns in each row). Also, please make sure " +
-                        "that the number of columns in your XML config file matches the number of rows in your " +
-                        "data source. Make sure that your file is readable by other users (particularly the mysql user). " +
-                        "More info: ",c);
             }
             else {
-                l.error("Internal error: ",e);
+                l.error("Internal error: " + e.getMessage());
+                l.debug(e);
                 c = e.getCause();
                 while(c!=null) {
-                    l.error("Caused by: ",c);
+                    l.debug("Caused by: ",c);
                     c = c.getCause();
                 }
-                l.debug("REST API invocation error: ",e);
             }
             finishedSucessfuly = false;
         }
         catch (HttpMethodException e) {
-            l.error("Error executing GoodData REST API: ",e);
+            l.error("Error executing GoodData REST API: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ",c);
+                l.debug("Caused by: ",c);
                 c = c.getCause();
             }
-            l.debug("Error executing GoodData REST API.",e);
             finishedSucessfuly = false;
         }
         catch (GdcRestApiException e) {
-            l.error("REST API invocation error: ", e);
+            l.error("REST API invocation error: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
                 if(c instanceof HttpMethodException) {
@@ -283,35 +284,21 @@ public class GdcDI implements Executor {
                         }
                     }
                 }
-                l.error("Caused by: ", c);
+                l.debug("Caused by: ", c);
                 c = c.getCause();
             }
-            l.debug("REST API invocation error: ", e);
             finishedSucessfuly = false;
         }
         catch (GdcException e) {
-            l.error("Unrecognized error: ", e);
+            l.error("Unrecognized error: " + e.getMessage());
+            l.debug(e);
             Throwable c = e.getCause();
             while(c!=null) {
-                l.error("Caused by: ", c);
+                l.debug("Caused by: ", c);
                 c = c.getCause();
             }
-            l.debug("Unrecognized error: ",e);
             finishedSucessfuly = false;
         }
-    }
-
-    /**
-     * Returns all cli options
-     * @return all cli options
-     */
-    public static Options getOptions() {
-        Options ops = new Options();
-        for( Option o : mandatoryOptions)
-            ops.addOption(o);
-        for( Option o : optionalOptions)
-            ops.addOption(o);
-        return ops;
     }
 
     /**
@@ -324,19 +311,7 @@ public class GdcDI implements Executor {
         l.debug("Parsing cli "+ln);
         CliParams cp = new CliParams();
 
-        for( Option o : mandatoryOptions) {
-            String name = o.getLongOpt();
-            if (ln.hasOption(name))
-                cp.put(name,ln.getOptionValue(name));
-            else if (defaults.getProperty(name) != null) {
-            	cp.put(name, defaults.getProperty(name));
-            } else {
-                throw new InvalidArgumentException("Missing the '"+name+"' commandline parameter.");
-            }
-
-        }
-
-        for( Option o : optionalOptions) {
+        for( Option o : Options) {
             String name = o.getLongOpt();
             if (ln.hasOption(name)) {
                 cp.put(name,ln.getOptionValue(name));
@@ -375,7 +350,7 @@ public class GdcDI implements Executor {
                 cp.put(CLI_PARAM_FTP_HOST[0],ftpHost);
             }
             else {
-                throw new IllegalArgumentException("Invalid format of the GoodData REST API host: " +
+                throw new InvalidArgumentException("Invalid format of the GoodData REST API host: " +
                         cp.get(CLI_PARAM_HOST[0]));
             }
 
@@ -399,7 +374,7 @@ public class GdcDI implements Executor {
 
         l.debug("Using " + (cp.containsKey(CLI_PARAM_INSECURE[0]) ? "in" : "") + "secure protocols");
 
-        if (ln.getArgs().length == 0 && !ln.hasOption("execute")) {
+        if (ln.getArgs().length == 0 && !ln.hasOption(CLI_PARAM_EXECUTE[0]) && !ln.hasOption(CLI_PARAM_HELP[0])) {
             throw new InvalidArgumentException("No command has been given, quitting.");
         }
 
@@ -492,10 +467,13 @@ public class GdcDI implements Executor {
             if(lc.exists()) {
                 PropertyConfigurator.configure(logConfig);
                 Properties defaults = loadDefaults();
+
+                for(Option o : Options)
+                    ops.addOption(o);
+
                 try {
-                    Options o = getOptions();
                     CommandLineParser parser = new GnuParser();
-                    CommandLine cmdline = parser.parse(o, args);
+                    CommandLine cmdline = parser.parse(ops, args);
                     GdcDI gdi = new GdcDI(cmdline, defaults);
                     if (!gdi.finishedSucessfuly) {
                         System.exit(1);
