@@ -27,7 +27,6 @@ import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-import org.dom4j.Attribute;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 import org.w3c.dom.Document;
