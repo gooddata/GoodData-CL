@@ -246,6 +246,19 @@ SalesForce Connector Commands:
 - partnerId  - SFDC client ID (partner token) that allows extended access to the SalesForce API
 
 
+MS CRM 2011 Online Connector Commands:
+--------------------------------------
+
+`UseMsCrm(configFile="...", username="...", password="...", host="...", org="...", entity="...", fields="...");` - load MS CRM 2011 data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
+- configFile - path to configuration file (will be overwritten)
+- username   - MS CRM username
+- password   - MS CRM password
+- host       - MS CRM server hostname
+- org        - MS CRM organization name
+- entity     - MS CRM entity name (e.g. account, opportunity etc.)
+- fields     - MS CRM entity fields (e.g. accountid, name etc.)
+
+
 Pivotal Tracker Connector Commands:
 ------------------------------
 

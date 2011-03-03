@@ -1001,7 +1001,8 @@ public class GdcDI implements Executor {
             PtConnector.createConnector(),    
             DateDimensionConnector.createConnector(),
             FacebookConnector.createConnector(),
-            FacebookInsightsConnector.createConnector()
+            FacebookInsightsConnector.createConnector(),
+            MsDynamicsConnector.createConnector()
         };
     }
     

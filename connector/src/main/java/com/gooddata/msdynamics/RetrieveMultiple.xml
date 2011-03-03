@@ -1,7 +1,9 @@
 <soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope">
     <soapenv:Header>
-        <ns8:CrmAuthenticationToken xmlns:ns8="http://schemas.microsoft.com/crm/2007/WebServices" soapenv:mustUnderstand="false">
-            <ns7:AuthenticationType xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes">1</ns7:AuthenticationType>
+        <ns8:CrmAuthenticationToken xmlns:ns8="http://schemas.microsoft.com/crm/2007/WebServices"
+                                    soapenv:mustUnderstand="false">
+            <ns7:AuthenticationType xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes">1
+            </ns7:AuthenticationType>
             <ns7:CrmTicket xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes"><![CDATA[%CRMTICKET%]]></ns7:CrmTicket>
             <ns7:OrganizationName xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes"><![CDATA[%ORGANIZATION%]]></ns7:OrganizationName>
             <ns7:CallerId xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes">00000000-0000-0000-0000-000000000000</ns7:CallerId>
@@ -9,13 +11,18 @@
     </soapenv:Header>
     <soapenv:Body>
         <ns8:RetrieveMultiple xmlns:ns8="http://schemas.microsoft.com/crm/2007/WebServices">
-            <ns8:query xmlns:ns4="http://schemas.microsoft.com/crm/2006/Query" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:QueryExpression">
+            <ns8:query xmlns:ns4="http://schemas.microsoft.com/crm/2006/Query"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:QueryExpression">
                 <ns4:EntityName><![CDATA[%ENTITY%]]></ns4:EntityName>
                 <ns4:ColumnSet xsi:type="ns4:ColumnSet">
                     <ns4:Attributes>%ATTRIBUTES%</ns4:Attributes>
                 </ns4:ColumnSet>
                 <ns4:Distinct>false</ns4:Distinct>
-                <s1:NoLock xmlns:s1="http://schemas.microsoft.com/crm/2009/Query">false</s1:NoLock>
+                <ns4:PageInfo>
+                    <ns4:PageNumber>%PAGENUMBER%</ns4:PageNumber>
+                    %PAGECOOKIE%
+                    <ns4:Count>%PAGECOUNT%</ns4:Count>
+                </ns4:PageInfo>
             </ns8:query>
         </ns8:RetrieveMultiple>
     </soapenv:Body>
