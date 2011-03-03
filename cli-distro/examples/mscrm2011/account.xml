@@ -1,0 +1,44 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+<schema>
+    <name>Account</name>
+    <columns>
+        <column>
+            <name>id</name>
+            <title>ID</title>
+            <ldmType>CONNECTION_POINT</ldmType>
+            <folder>Account</folder>
+        </column>
+        <column>
+            <name>sfdcid</name>
+            <title>CRM ID</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Account</folder>
+        </column>
+        <column>
+            <name>name</name>
+            <title>Account Name</title>
+            <ldmType>LABEL</ldmType>
+            <reference>sfdcid</reference>
+            <folder>Account</folder>
+        </column>
+        <column>
+            <name>type</name>
+            <title>Account Type</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Account</folder>
+        </column>
+        <column>
+            <name>industry</name>
+            <title>Account Industry</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Account</folder>
+        </column>
+        <column>
+            <name>url</name>
+            <title>Account URL</title>
+            <ldmType>LABEL</ldmType>
+            <reference>sfdcid</reference>
+            <folder>Account</folder>
+        </column>
+    </columns>
+</schema>
