@@ -54,11 +54,17 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
 
     private static Logger l = Logger.getLogger(MsDynamicsConnector.class);
 
+    // MS Live ID username
     private String username;
+    // MS Live ID password
     private String password;
+    // RetrieveMultiple fields
     private String fields;
+    // RetrieveMultiple entity
     private String entity;
+    // MS CRM 2011 Online instance hostname
     private String hostname;
+    // MS CRM 2011 organization
     private String organization;
 
 

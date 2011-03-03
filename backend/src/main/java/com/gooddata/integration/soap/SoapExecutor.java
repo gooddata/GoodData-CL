@@ -27,10 +27,7 @@ import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
 import org.jaxen.dom.DOMXPath;
-import org.w3c.dom.*;
-
 import javax.xml.soap.*;
-import java.awt.image.ImagingOpException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Iterator;
@@ -81,41 +78,46 @@ public class SoapExecutor {
         }
     }
 
+    /**
+     * Constructs XPath query over the SOAP message
+     * @param query XPath query
+     * @param response SOAP message
+     * @return XPath query
+     * @throws SOAPException in case of SOAP issue
+     * @throws JaxenException XPath problem
+     */
     public XPath createXPath(String query, SOAPMessage response) throws SOAPException, JaxenException {
         //Uses DOM to XPath mapping
         XPath xpath = new DOMXPath(query);
-
         //Define a namespaces used in response
         SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
-
         SOAPPart sp = response.getSOAPPart();
         SOAPEnvelope env = sp.getEnvelope();
         SOAPBody bdy = env.getBody();
-
         //Add namespaces from SOAP envelope
         addNamespaces(nsContext, env);
-
         //Add namespaces of top body element
         Iterator bodyElements = bdy.getChildElements();
         while (bodyElements.hasNext()) {
             SOAPElement element = (SOAPElement) bodyElements.next();
             addNamespaces(nsContext, element);
         }
-
         xpath.setNamespaceContext(nsContext);
         return xpath;
     }
 
-    void addNamespaces(SimpleNamespaceContext context,
+    /**
+     * Namespace context resolver
+     * @param context namespace context
+     * @param element SOAP message element
+     */
+    protected void addNamespaces(SimpleNamespaceContext context,
                        SOAPElement element) {
         Iterator namespaces = element.getNamespacePrefixes();
-
         while (namespaces.hasNext()) {
             String prefix = (String) namespaces.next();
             String uri = element.getNamespaceURI(prefix);
-
             context.addNamespace(prefix, uri);
-            //System.out.println( "prefix " + prefix + " " + uri );
         }
     }
 

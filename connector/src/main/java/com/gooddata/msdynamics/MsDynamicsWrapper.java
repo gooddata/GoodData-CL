@@ -25,11 +25,8 @@ package com.gooddata.msdynamics;
 import com.gooddata.integration.soap.SoapExecutor;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
-import org.w3c.dom.Document;
 
 import javax.xml.soap.*;
 import java.io.File;
@@ -37,7 +34,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Interacts with the MS Dynamics Online
+ * Java wrapper of selected MS CRM 2011 Online web services
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
@@ -73,15 +70,30 @@ public class MsDynamicsWrapper {
 
     private final static int PAGE_COUNT = 1000;
 
+    // SAAJ SOAP executor
     private SoapExecutor soap;
+    // CRM 2011 Online host
     private String host;
+    // MS Live ID username
     private String username;
+    // MS Live ID password
     private String password;
+    // CRM 2011 Online organization
     private String organization;
+    // CRM 2011 Online policy string
     private String policy;
+    // MS Live ID ticket
     private String liveId;
+    // CRM 2011 Online CRM ticket
     private String crmTicket;
 
+    /**
+     * Constructor
+     * @param hostName CRM 2011 Online host
+     * @param organization CRM 2011 Online organization
+     * @param user CRM 2011 Online username
+     * @param password CRM 2011 Online password
+     */
     public MsDynamicsWrapper(String hostName, String organization, String user, String password) {
         soap = new SoapExecutor();
         setHost(hostName);
@@ -90,6 +102,12 @@ public class MsDynamicsWrapper {
         setPassword(password);
     }
 
+    /**
+     * Connects the CRM 2011 Online
+     * @throws JaxenException issue with the response format
+     * @throws IOException generic IO issue
+     * @throws SOAPException issue with SOAP invocation
+     */
     public void connect() throws JaxenException, IOException, SOAPException {
         String policy = retrievePolicy();
         setPolicy(policy);
@@ -99,6 +117,13 @@ public class MsDynamicsWrapper {
         setCrmTicket(crmTicket);
     }
 
+    /**
+     * Retrieves the MS CRM 2011 policy
+     * @return the policy string
+     * @throws JaxenException issue with the response format
+     * @throws IOException generic IO issue
+     * @throws SOAPException issue with SOAP invocation
+     */
     public String retrievePolicy() throws IOException, SOAPException, JaxenException {
         String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrievePolicy.xml");
         SOAPMessage response = soap.execute(HTTPS + host + CRM_DISCOVERY_ENDPOINT, msg);
@@ -108,6 +133,13 @@ public class MsDynamicsWrapper {
         return result.getValue();
     }
 
+    /**
+     * Retrieves the CRM ticket
+     * @return CRM ticket
+     * @throws JaxenException issue with the response format
+     * @throws IOException generic IO issue
+     * @throws SOAPException issue with SOAP invocation
+     */
     public String retrieveCrmTicket() throws IOException, SOAPException, JaxenException {
         String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrieveCrmTicket.xml");
         msg = msg.replace(CRM_ORGANIZATION_PLACEHOLDER, getOrganization());
@@ -119,6 +151,16 @@ public class MsDynamicsWrapper {
         return result.getNodeValue();
     }
 
+    /**
+     * Retrieves data from the CRM 2011 Online
+     * @param entity CRM 2011 entity (e.g. account or opportunity)
+     * @param columns Entity fields (e.g. accountid, name etc.)
+     * @param csvFile name of the CSV file where the results will be stored
+     * @return number of rows retrieved
+     * @throws JaxenException issue with the response format
+     * @throws IOException generic IO issue
+     * @throws SOAPException issue with SOAP invocation
+     */
     public int retrieveMultiple(String entity, String[] columns, String csvFile)
             throws IOException, SOAPException, JaxenException {
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(csvFile));
@@ -147,6 +189,9 @@ public class MsDynamicsWrapper {
         return cnt;
     }
 
+    /**
+     * Paging information holder
+     */
     private class RetrievePageInfo {
 
         private String pageCookie;
@@ -174,7 +219,19 @@ public class MsDynamicsWrapper {
         }
     }
 
-    public RetrievePageInfo retrievePage(String entity, String[] columns, int pageNumber, String cookie, List<Map<String,String>> ret)
+    /**
+     * Retrieves a single page of RetrieveMultiple result
+     * @param entity CRM 2011 entity (e.g. account or opportunity)
+     * @param columns Entity fields (e.g. accountid, name etc.)
+     * @param pageNumber the result page number (1..N)
+     * @param cookie API paging cookie
+     * @param ret the List of Maps that will be populated with the data
+     * @return the RetrievePageInfo structure that describes the status of the retrieval
+     * @throws JaxenException issue with the response format
+     * @throws IOException generic IO issue
+     * @throws SOAPException issue with SOAP invocation
+     */
+    protected RetrievePageInfo retrievePage(String entity, String[] columns, int pageNumber, String cookie, List<Map<String,String>> ret)
             throws IOException, SOAPException, JaxenException {
         String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrieveMultiple.xml");
         msg = msg.replace(CRM_ORGANIZATION_PLACEHOLDER, getOrganization());
@@ -194,7 +251,6 @@ public class MsDynamicsWrapper {
         }
         msg = msg.replace(CRM_ATTRIBUTES_PLACEHOLDER, columnsElement);
         SOAPMessage response = soap.execute(HTTPS + host + CRM_ENDPOINT, msg);
-        //dumpXML(response.getSOAPBody().getOwnerDocument());
         XPath xp = soap.createXPath("//crm:RetrieveMultipleResult", response);
         xp.addNamespace("crm", RESULT_XMLNS);
         List result = xp.selectNodes(response.getSOAPBody());
@@ -231,6 +287,13 @@ public class MsDynamicsWrapper {
         }
     }
 
+    /**
+     * Logs into the MS CRM 2011 Online
+     * @return the Live ID token
+     * @throws JaxenException issue with the response format
+     * @throws IOException generic IO issue
+     * @throws SOAPException issue with SOAP invocation
+     */
     public String login() throws IOException, SOAPException, JaxenException {
         String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/LiveIdLogin.xml");
         msg = msg.replaceAll(LIVE_ID_SERVER_PLACEHOLDER, getHost());
@@ -243,6 +306,8 @@ public class MsDynamicsWrapper {
         Node result = (Node)xp.selectSingleNode(response.getSOAPBody());
         return result.getValue();
     }
+
+// Getters and Setters
 
     public String getHost() {
         return host;
@@ -266,15 +331,6 @@ public class MsDynamicsWrapper {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    private void dumpXML(Document doc) throws IOException {
-        OutputFormat format = new OutputFormat(doc);
-        format.setLineWidth(65);
-        format.setIndenting(true);
-        format.setIndent(2);
-        XMLSerializer serializer = new XMLSerializer(System.out, format);
-        serializer.serialize(doc);
     }
 
     public String getOrganization() {
