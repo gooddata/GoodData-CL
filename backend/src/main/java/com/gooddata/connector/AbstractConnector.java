@@ -480,36 +480,46 @@ public abstract class AbstractConnector implements Connector {
         final Connector cc = ctx.getConnectorMandatory();
         final SourceSchema schema = cc.getSchema();
 
-    	final String pid = ctx.getProjectIdMandatory();
-    	final String maqlFile = c.getParamMandatory( "maqlFile");
-    	final String dataset = schema.getDatasetName();
+        if(schema != null) {
 
-    	final GdcRESTApiWrapper gd = ctx.getRestApi(p); 
-    	final SLI sli = gd.getSLIById(dataset, pid);
+            final String pid = ctx.getProjectIdMandatory();
+            final String maqlFile = c.getParamMandatory( "maqlFile");
+            final String dataset = schema.getDatasetName();
 
-    	final DataSetDiffMaker diffMaker = new DataSetDiffMaker(gd, sli, schema);
-		final List<SourceColumn> newColumns = diffMaker.findNewColumns();
-		final List<SourceColumn> deletedColumns = diffMaker.findDeletedColumns();
-		final MaqlGenerator mg = new MaqlGenerator(schema);
-		
-		final StringBuilder maql = new StringBuilder();
-		if (!deletedColumns.isEmpty()) {
-			mg.setSynchronize(false);
-			maql.append(mg.generateMaqlDrop(deletedColumns, diffMaker.sourceColumns));
-		}
-        if (!newColumns.isEmpty()) {
-            mg.setSynchronize(false);
-            maql.append(mg.generateMaqlAdd(newColumns, diffMaker.sourceColumns));
+            final GdcRESTApiWrapper gd = ctx.getRestApi(p);
+            final SLI sli = gd.getSLIById(dataset, pid);
+
+            final DataSetDiffMaker diffMaker = new DataSetDiffMaker(gd, sli, schema);
+            final List<SourceColumn> newColumns = diffMaker.findNewColumns();
+            final List<SourceColumn> deletedColumns = diffMaker.findDeletedColumns();
+            final MaqlGenerator mg = new MaqlGenerator(schema);
+
+            final StringBuilder maql = new StringBuilder();
+            if (!deletedColumns.isEmpty()) {
+                mg.setSynchronize(false);
+                maql.append(mg.generateMaqlDrop(deletedColumns, diffMaker.sourceColumns));
+            }
+            if (!newColumns.isEmpty()) {
+                mg.setSynchronize(false);
+                maql.append(mg.generateMaqlAdd(newColumns, diffMaker.sourceColumns));
+            }
+            if (maql.length() > 0) {
+                maql.append(mg.generateMaqlSynchronize());
+                final String mqqlStr = mg.removeDropAndRecreateOfDateFacts(deletedColumns, newColumns, maql.toString());
+                l.debug("Finished maql generation maql:\n" + mqqlStr);
+                FileUtil.writeStringToFile(mqqlStr, maqlFile);
+                l.debug("MAQL update finished.");
+                l.info("MAQL update successfully finished.");
+            } else {
+                l.debug("MAQL update successfully finished - no changes detected.");
+                l.info("MAQL update successfully finished - no changes detected.");
+            }
         }
-        if (maql.length() > 0) {
-        	maql.append(mg.generateMaqlSynchronize());
-            final String mqqlStr = mg.removeDropAndRecreateOfDateFacts(deletedColumns, newColumns, maql.toString());
-            l.debug("Finished maql generation maql:\n" + mqqlStr);
-            FileUtil.writeStringToFile(mqqlStr, maqlFile);
-            l.debug("MAQL update finished.");
-            l.info("MAQL update successfully finished.");
-        } else {
-        	l.info("MAQL update successfully finished - no changes detected.");
+        else {
+            l.debug("MAQL update ran on a connector with no schema file (e.g. the default GDC Date dimension). This has no effect.");
+            l.debug("MAQL update successfully finished - no changes detected.");
+            l.info("MAQL update ran on a connector with no schema file (e.g. the default GDC Date dimension). This has no effect.");
+            l.info("MAQL update successfully finished - no changes detected.");
         }
 
     }
