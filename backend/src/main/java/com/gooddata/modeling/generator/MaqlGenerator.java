@@ -630,10 +630,12 @@ public class MaqlGenerator {
             public String generateFactMaqlCreate() {
                 String script = "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
                     + " (Date)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.DT_PFX + scn +"};\n"
+                    + "ALTER DATATYPE {" + getFactTableName() + "."+N.DT_PFX + scn +"} INT;\n"
                     + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ identifier + "};\n\n";
                 if (includeTime) {
                     script += "CREATE FACT {" + N.TM + "." + identifier + "} VISUAL(TITLE \"" + lcn
                         + " (Time)\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.TM_PFX + scn +"};\n"
+                        + "ALTER DATATYPE {" + getFactTableName() + "."+N.TM_PFX + scn +"} INT;\n"
                         + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {"+ N.TM + "." + identifier + "};\n\n";
                 }
                 return script;
