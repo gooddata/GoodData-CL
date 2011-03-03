@@ -125,7 +125,7 @@ public class MsDynamicsWrapper {
      * @throws SOAPException issue with SOAP invocation
      */
     public String retrievePolicy() throws IOException, SOAPException, JaxenException {
-        String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrievePolicy.xml");
+        String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrievePolicy.xml", MsDynamicsWrapper.class);
         SOAPMessage response = soap.execute(HTTPS + host + CRM_DISCOVERY_ENDPOINT, msg);
         XPath xp = soap.createXPath("//crm:Policy/text()", response);
         xp.addNamespace("crm", CRM_DISCOVERY_XMLNS);
@@ -141,7 +141,7 @@ public class MsDynamicsWrapper {
      * @throws SOAPException issue with SOAP invocation
      */
     public String retrieveCrmTicket() throws IOException, SOAPException, JaxenException {
-        String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrieveCrmTicket.xml");
+        String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrieveCrmTicket.xml", MsDynamicsWrapper.class);
         msg = msg.replace(CRM_ORGANIZATION_PLACEHOLDER, getOrganization());
         msg = msg.replace(LIVE_ID_TICKET_PLACEHOLDER, getLiveId());
         SOAPMessage response = soap.execute(HTTPS + host + CRM_DISCOVERY_ENDPOINT, msg);
@@ -233,7 +233,7 @@ public class MsDynamicsWrapper {
      */
     protected RetrievePageInfo retrievePage(String entity, String[] columns, int pageNumber, String cookie, List<Map<String,String>> ret)
             throws IOException, SOAPException, JaxenException {
-        String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrieveMultiple.xml");
+        String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrieveMultiple.xml", MsDynamicsWrapper.class);
         msg = msg.replace(CRM_ORGANIZATION_PLACEHOLDER, getOrganization());
         msg = msg.replace(CRM_TICKET_PLACEHOLDER, getCrmTicket());
         msg = msg.replace(CRM_ENTITY_PLACEHOLDER, entity);
@@ -295,7 +295,7 @@ public class MsDynamicsWrapper {
      * @throws SOAPException issue with SOAP invocation
      */
     public String login() throws IOException, SOAPException, JaxenException {
-        String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/LiveIdLogin.xml");
+        String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/LiveIdLogin.xml", MsDynamicsWrapper.class);
         msg = msg.replaceAll(LIVE_ID_SERVER_PLACEHOLDER, getHost());
         msg = msg.replaceAll(LIVE_ID_USERNAME_PLACEHOLDER, getUsername());
         msg = msg.replaceAll(LIVE_ID_PASSWORD_PLACEHOLDER, getPassword());

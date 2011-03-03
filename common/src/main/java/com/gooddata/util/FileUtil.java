@@ -278,11 +278,12 @@ public class FileUtil {
      * Reads the entire {@link InputStream} and returns its content as a single {@link String}
      *
      * @param path the loacation of the file on the CLASSPATH (e.g. /com/gooddata/processor/COMMANDS.txt)
+     * @param c Class for determining the Java classloader
      * @return the file content as String
      * @throws IOException
      */
-    public static String readStringFromClasspath(String path) throws IOException {
-        final InputStream is = FileUtil.class.getResourceAsStream(path);
+    public static String readStringFromClasspath(String path, Class c) throws IOException {
+        final InputStream is = c.getResourceAsStream(path);
     	return readStringFromBufferedReader(createBufferedUtf8Reader(is));
     }
 
