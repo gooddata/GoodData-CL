@@ -47,7 +47,7 @@ In each `<column>` entry, following tags can be used:
     * IDENTITY -- **only for** `ldmType` CONNECTION_POINT, this column is automatically populated by CL tool with MD5 hash of all non-fact fields (attributes, labels etc.) in the current row
 
 6. `<format>` only allowed (and required) for columns with ldmType DATE, this field specifies what the date format looks like (`yyyy-MM-dd` by default). We currently support following formatting characters:
-    * yyyy -- year (e.g. 2010)
+    * yyyy -- year (e.g. 2010), _currently no support for the short format (yy)_
     * MM -- month (01 - 12)
     * dd -- day (01 - 31)
     * hh -- hour (01 - 12)
