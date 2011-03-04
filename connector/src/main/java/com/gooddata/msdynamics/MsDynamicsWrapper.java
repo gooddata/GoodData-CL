@@ -164,7 +164,6 @@ public class MsDynamicsWrapper {
     public int retrieveMultiple(String entity, String[] columns, String csvFile)
             throws IOException, SOAPException, JaxenException {
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(csvFile));
-        //cw.writeNext(columns);
         int pageNumber = 1;
         int cnt = 0;
         String cookie = "";

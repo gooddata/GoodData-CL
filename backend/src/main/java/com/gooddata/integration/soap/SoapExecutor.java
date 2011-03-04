@@ -23,13 +23,19 @@
 
 package com.gooddata.integration.soap;
 
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
 import org.jaxen.dom.DOMXPath;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import javax.xml.soap.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Iterator;
 
 /**
@@ -119,6 +125,25 @@ public class SoapExecutor {
             String uri = element.getNamespaceURI(prefix);
             context.addNamespace(prefix, uri);
         }
+    }
+
+    /**
+     * Dumps the SOAPMessage to String
+     * @param msg the SOAP message
+     * @return the String representation of the message
+     * @throws IOException  IO issue
+     * @throws SOAPException SOAP issue
+     */
+    public String dumpSoapMessage(SOAPMessage msg) throws IOException, SOAPException {
+        Document doc = msg.getSOAPBody().getOwnerDocument();
+        OutputFormat format = new OutputFormat(doc);
+        format.setLineWidth(65);
+        format.setIndenting(true);
+        format.setIndent(2);
+        StringWriter s = new StringWriter();
+        XMLSerializer serializer = new XMLSerializer(s, format);
+        serializer.serialize(doc);
+        return s.toString();
     }
 
 }

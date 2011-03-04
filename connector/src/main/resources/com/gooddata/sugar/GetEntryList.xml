@@ -1,0 +1,18 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <ns1:get_entry_list soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+                            xmlns:ns1="http://www.sugarcrm.com/sugarcrm">
+            <session xsi:type="xsd:string"><![CDATA[%SESSION%]]></session>
+            <module_name xsi:type="xsd:string"><![CDATA[%MODULE%]]></module_name>
+            <query xsi:type="xsd:string"></query>
+            <order_by xsi:type="xsd:string"></order_by>
+            <offset>%OFFSET%</offset>
+            <select_fields soapenc:arrayType="xsd:string[0]"
+                           xsi:type="soapenc:Array"
+                           xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">%FIELDS%</select_fields>
+            <max_results>%MAX_ROWS%</max_results>
+        </ns1:get_entry_list>
+    </soapenv:Body>
+</soapenv:Envelope>
