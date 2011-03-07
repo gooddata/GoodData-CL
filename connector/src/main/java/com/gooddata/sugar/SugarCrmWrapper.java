@@ -60,6 +60,7 @@ public class SugarCrmWrapper {
 
     private final static String MODULE_PLACEHOLDER = "%MODULE%";
     private final static String FIELDS_PLACEHOLDER = "%FIELDS%";
+    private final static String QUERY_PLACEHOLDER = "%QUERY%";
     private final static String FIELDS_COUNT_PLACEHOLDER = "%FIELDS_COUNT%";
     private final static String MAX_ROWS_PLACEHOLDER = "%MAX_ROWS%";
     private final static String OFFSET_PLACEHOLDER = "%OFFSET%";
@@ -79,17 +80,21 @@ public class SugarCrmWrapper {
     public static void main(String[] arg) throws Exception {
         SugarCrmWrapper s = new SugarCrmWrapper("trial.sugarondemand.com/mgfeum1640", "jim", "jim");
         s.connect();
-        s.getAllEntries("Opportunities", new String[] {"id", "name", "account_name"}, "/Users/zdenek/temp/sugar_opps.csv");
+        s.getAllEntries("Opportunities",
+                new String[] {"id","account_name","assigned_user_name","name","date_entered",
+                        "team_name","opportunity_type","lead_source","amount",
+                        "amount_usdollar","date_closed","next_step","sales_stage","probability"},
+                "/Users/zdenek/temp/sugar_opps.csv", "");
     }
 
-    public int getAllEntries(String module, String[] fields, String csvFile)
+    public int getAllEntries(String module, String[] fields, String csvFile, String query)
             throws IOException, SOAPException, JaxenException {
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(csvFile));
         int cnt = 0;
         int nextIndex = 0;
         while (nextIndex >=0) {
             List<Map<String,String>> ret = new ArrayList<Map<String,String>>();
-            nextIndex = getEntries(module, fields, nextIndex, ret);
+            nextIndex = getEntries(module, fields, query, nextIndex, ret);
             for(Map<String,String>  m : ret) {
                 String[] row = new String[fields.length];
                 for(int i=0; i<fields.length; i++) {
@@ -148,13 +153,14 @@ public class SugarCrmWrapper {
         return result.getNodeValue();
     }
 
-    public int getEntries(String module, String[] fields, int offset, List<Map<String,String>> ret)
+    public int getEntries(String module, String[] fields, String query, int offset, List<Map<String,String>> ret)
             throws IOException, SOAPException, JaxenException {
         if(module != null && module.length() > 0) {
             String msg = FileUtil.readStringFromClasspath("/com/gooddata/sugar/GetEntryList.xml", SugarCrmWrapper.class);
             msg = msg.replaceAll(SESSION_PLACEHOLDER, getSessionToken());
             msg = msg.replaceAll(MODULE_PLACEHOLDER, module);
             msg = msg.replaceAll(FIELDS_COUNT_PLACEHOLDER, Integer.toString(fields.length));
+            msg = msg.replaceAll(QUERY_PLACEHOLDER, query);
             msg = msg.replaceAll(MAX_ROWS_PLACEHOLDER, Integer.toString(MAX_ROWS));
             msg = msg.replaceAll(OFFSET_PLACEHOLDER, Integer.toString(offset));
             String fieldsXml = "";
@@ -190,11 +196,16 @@ public class SugarCrmWrapper {
                                     if(names != null && names.getLength()>0 && values != null && values.getLength()>0) {
                                         Node name = names.item(0).getFirstChild();
                                         Node value = values.item(0).getFirstChild();
-                                        if(name != null && value != null) {
-                                            record.put(name.getNodeValue(), value.getNodeValue());
+                                        if(name != null) {
+                                            if(value != null) {
+                                                record.put(name.getNodeValue(), value.getNodeValue());
+                                            }
+                                            else {
+                                                record.put(name.getNodeValue(), "");
+                                            }
                                         }
                                         else {
-                                            throw new SOAPException("getEntries: No name/value texts in the result row.");
+                                            throw new SOAPException("getEntries: No name texts in the result row.");
                                         }
                                     }
                                     else {

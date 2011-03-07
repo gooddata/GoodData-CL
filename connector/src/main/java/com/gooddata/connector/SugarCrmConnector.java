@@ -26,10 +26,10 @@ package com.gooddata.connector;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.msdynamics.MsDynamicsWrapper;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.sugar.SugarCrmWrapper;
 import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
@@ -42,45 +42,44 @@ import javax.xml.soap.SOAPException;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * GoodData MsDynamics Connector
+ * GoodData SugarCrm Connector
  *
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class MsDynamicsConnector extends AbstractConnector implements Connector {
+public class SugarCrmConnector extends AbstractConnector implements Connector {
 
-    private static Logger l = Logger.getLogger(MsDynamicsConnector.class);
+    private static Logger l = Logger.getLogger(SugarCrmConnector.class);
 
-    // MS Live ID username
+    // Sugar CRM username
     private String username;
-    // MS Live ID password
+    // Sugar CRM password
     private String password;
-    // RetrieveMultiple fields
+    //  fields
     private String fields;
-    // RetrieveMultiple entity
+    // entity
     private String entity;
-    // MS CRM 2011 Online instance hostname
+    // Sugar CRM hostname
     private String hostname;
-    // MS CRM 2011 organization
-    private String organization;
 
 
     /**
-     * Creates a new MsDynamics connector
+     * Creates a new SugarCrm connector
      */
-    protected MsDynamicsConnector() {
+    protected SugarCrmConnector() {
         super();
     }
 
    /**
-     * Creates a new MsDynamics connector
-     * @return a new instance of the MsDynamics connector
+     * Creates a new SugarCrm connector
+     * @return a new instance of the SugarCrm connector
      */
-    public static MsDynamicsConnector createConnector() {
-        return new MsDynamicsConnector();
+    public static SugarCrmConnector createConnector() {
+        return new SugarCrmConnector();
     }
 
     protected DecimalFormat nf = new DecimalFormat("###.00");
@@ -107,17 +106,17 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
      * @throws java.io.IOException
      */
     public void extract(String file, boolean extendDates) throws IOException {
-        l.debug("Extracting MS CRM data.");
+        l.debug("Extracting SugarCrm data.");
         try {
-            MsDynamicsWrapper m = new MsDynamicsWrapper(getHostname(), getOrganization(), getUsername(), getPassword());
+            SugarCrmWrapper m = new SugarCrmWrapper(getHostname(), getUsername(), getPassword());
             m.connect();
-            l.debug("Executing MS CRM query entity: "+getEntity()+" fields: "+getFields());
+            l.debug("Executing SugarCrm query entity: "+getEntity()+" fields: "+getFields());
             if(fields != null && fields.length() > 0) {
                 String[] fs = fields.split(",");
                 for(int i=0; i<fs.length; i++)
                     fs[i] = fs[i].trim();
                 File dt = FileUtil.getTempFile();
-                int cnt = m.retrieveMultiple(getEntity(), fs, dt.getAbsolutePath());
+                int cnt = m.getAllEntries(getEntity(), fs, dt.getAbsolutePath(),"");
 
                 int identityColumn = schema.getIdentityColumn();
                 CSVReader cr = FileUtil.createUtf8CsvReader(dt);
@@ -191,11 +190,11 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
                 cw.flush();
                 cw.close();
                 cr.close();
-                l.debug("Finished MS CRM query execution. Retrieved "+cnt+" rows of data.");
-                l.info("Finished MS CRM query execution. Retrieved "+cnt+" rows of data.");
+                l.debug("Finished SugarCrm query execution. Retrieved "+cnt+" rows of data.");
+                l.info("Finished SugarCrm query execution. Retrieved "+cnt+" rows of data.");
             }
             else {
-                throw new InvalidParameterException("The MS CRM fields parameter must contain the comma separated list " +
+                throw new InvalidParameterException("The SugarCrm fields parameter must contain the comma separated list " +
                         "of the entity fields.");
             }
         }
@@ -210,32 +209,32 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
 
 
    /**
-     * MsDynamics username getter
-     * @return MsDynamics username
+     * SugarCrm username getter
+     * @return SugarCrm username
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     * MsDynamics username setter
-     * @param username MsDynamics username
+     * SugarCrm username setter
+     * @param username SugarCrm username
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     * MsDynamics password getter
-     * @return MsDynamics password
+     * SugarCrm password getter
+     * @return SugarCrm password
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * MsDynamics password setter
-     * @param password MsDynamics password
+     * SugarCrm password setter
+     * @param password SugarCrm password
      */
     public void setPassword(String password) {
         this.password = password;
@@ -262,8 +261,8 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         l.debug("Processing command "+c.getCommand());
         try {
-            if(c.match("LoadMsCrm") || c.match("UseMsCrm")) {
-                loadMsDynamics(c, cli, ctx);
+            if(c.match("LoadSugarCrm") || c.match("UseSugarCrm")) {
+                loadSugarCrm(c, cli, ctx);
             }
             else {
                 l.debug("No match passing the command "+c.getCommand()+" further.");
@@ -278,31 +277,29 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
     }
 
     /**
-     * Loads MS CRM data command processor
+     * Loads SugarCrm data command processor
      * @param c command
      * @param p command line arguments
      * @param ctx current processing context
      * @throws java.io.IOException in case of IO issues
      */
-    private void loadMsDynamics(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+    private void loadSugarCrm(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
         String usr = c.getParamMandatory( "username");
         String psw = c.getParamMandatory( "password");
         String e = c.getParamMandatory("entity");
         String f = c.getParamMandatory("fields");
         String host = c.getParamMandatory("host");
-        String o = c.getParamMandatory("org");
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         setUsername(usr);
         setPassword(psw);
         setEntity(e);
         setFields(f);
-        setOrganization(o);
         setHostname(host);
         ctx.setConnector(this);
         setProjectId(ctx);
-        l.info("MS CRM Connector successfully loaded (entity: " + e + "fields: "+StringUtil.previewString(f, 256)+").");
+        l.info("Sugar CRM Connector successfully loaded (entity: " + e + "fields: "+StringUtil.previewString(f, 256)+").");
     }
 
     public String getFields() {
@@ -319,13 +316,5 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
 
     public void setEntity(String entity) {
         this.entity = entity;
-    }
-
-    public String getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(String organization) {
-        this.organization = organization;
     }
 }

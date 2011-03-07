@@ -980,7 +980,8 @@ public class GdcDI implements Executor {
             DateDimensionConnector.createConnector(),
             FacebookConnector.createConnector(),
             FacebookInsightsConnector.createConnector(),
-            MsDynamicsConnector.createConnector()
+            MsDynamicsConnector.createConnector(),
+            SugarCrmConnector.createConnector()
         };
     }
     
