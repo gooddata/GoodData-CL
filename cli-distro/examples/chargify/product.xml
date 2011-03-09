@@ -1,0 +1,92 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<schema>
+  <name>Product</name>
+  <columns>
+      <column>
+        <name>id</name>
+        <title>Product</title>
+        <ldmType>CONNECTION_POINT</ldmType>
+        <folder>Product</folder>
+      </column>
+      <column>
+        <name>name</name>
+        <title>Product Name</title>
+          <ldmType>LABEL</ldmType>
+          <reference>id</reference>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>product_family_name</name>
+        <title>Product Family Name</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>price_in_cents</name>
+        <title>Product Price (cents)</title>
+          <ldmType>FACT</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>initial_charge_in_cents</name>
+        <title>Product Initial Charge (cents)</title>
+          <ldmType>FACT</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>trial_price_in_cents</name>
+        <title>Product Trial Price (cents)</title>
+          <ldmType>FACT</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>require_credit_card</name>
+        <title>Require Credit Card</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>request_credit_card</name>
+        <title>Request Credit Card</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>interval</name>
+        <title>Interval</title>
+          <ldmType>FACT</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>interval_unit</name>
+        <title>Interval Unit</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>trial_interval</name>
+        <title>Trial Interval</title>
+          <ldmType>FACT</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>trial_interval_unit</name>
+        <title>Trial Interval Unit</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>expiration_interval</name>
+        <title>Expiration Interval</title>
+          <ldmType>FACT</ldmType>
+          <folder>Product</folder>
+      </column>
+      <column>
+        <name>expiration_interval_unit</name>
+        <title>Expiration Interval Unit</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Product</folder>
+      </column>
+  </columns>
+</schema>

@@ -981,7 +981,9 @@ public class GdcDI implements Executor {
             FacebookConnector.createConnector(),
             FacebookInsightsConnector.createConnector(),
             MsDynamicsConnector.createConnector(),
-            SugarCrmConnector.createConnector()
+            SugarCrmConnector.createConnector(),
+            ChargifyConnector.createConnector()
+
         };
     }
     

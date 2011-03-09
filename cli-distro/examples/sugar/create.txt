@@ -1,4 +1,4 @@
-# A simple example that loads a MS CRM 2011 data
+# A simple example that creates a Sugar CRM data model
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
 # CREATE A NEW PROJECT

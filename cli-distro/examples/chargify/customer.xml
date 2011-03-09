@@ -1,0 +1,44 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<schema>
+  <name>Customer</name>
+  <columns>
+      <column>
+        <name>id</name>
+        <title>Customer</title>
+        <ldmType>CONNECTION_POINT</ldmType>
+        <folder>Customer</folder>
+      </column>
+      <column>
+        <name>first_name</name>
+        <title>Customer First Name</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Customer</folder>
+      </column>
+      <column>
+        <name>last_name</name>
+        <title>Customer Last Name</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Customer</folder>
+      </column>
+      <column>
+        <name>email</name>
+        <title>Customer E-Mail</title>
+          <ldmType>LABEL</ldmType>
+          <reference>id</reference>
+          <folder>Customer</folder>
+      </column>
+      <column>
+        <name>organization</name>
+        <title>Customer Organization</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Customer</folder>
+      </column>
+      <column>
+        <name>reference</name>
+        <title>Customer Reference</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Customer</folder>
+      </column>
+  </columns>
+</schema>

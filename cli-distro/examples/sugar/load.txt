@@ -1,4 +1,4 @@
-# A simple example that loads a MS CRM 2011 data
+# A simple example that loads a Sugar CRM data
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
 # Store the project ID to file for possible other scripts

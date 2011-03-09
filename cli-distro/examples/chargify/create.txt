@@ -1,0 +1,48 @@
+# A simple example that creates a Chargify data model
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# CREATE A NEW PROJECT
+CreateProject(name="Chargify");
+
+# Store the project ID to file for possible other scripts
+RememberProject(fileName="examples/chargify/pid");
+
+UseDateDimension(name="Subscription Activated");
+GenerateMaql(maqlFile="examples/chargify/activated.maql");
+ExecuteMaql(maqlFile="examples/chargify/activated.maql");
+
+UseDateDimension(name="Subscription Expires");
+GenerateMaql(maqlFile="examples/chargify/expires.maql");
+ExecuteMaql(maqlFile="examples/chargify/expires.maql");
+
+UseDateDimension(name="Transaction Created");
+GenerateMaql(maqlFile="examples/chargify/created.maql");
+ExecuteMaql(maqlFile="examples/chargify/created.maql");
+
+# CREATE THE PRODUCT
+UseChargify(configFile="examples/chargify/product.xml",domain="arvay", apiKey="chargify-api-key", entity="products",
+  fields="id, name, product_family_name, price_in_cents, initial_charge_in_cents, trial_price_in_cents, require_credit_card, request_credit_card, interval, interval_unit, trial_interval, trial_interval_unit, expiration_interval, expiration_interval_unit");
+
+GenerateMaql(maqlFile="examples/chargify/product.maql");
+ExecuteMaql(maqlFile="examples/chargify/product.maql");
+
+# CREATE THE CUSTOMER
+UseChargify(configFile="examples/chargify/customer.xml",domain="arvay", apiKey="chargify-api-key", entity="customers",
+  fields="id, first_name, last_name, email, organization, reference");
+
+GenerateMaql(maqlFile="examples/chargify/customer.maql");
+ExecuteMaql(maqlFile="examples/chargify/customer.maql");
+
+# CREATE THE SUBSCRIPTION
+UseChargify(configFile="examples/chargify/subscription.xml",domain="arvay", apiKey="chargify-api-key", entity="subscriptions",
+  fields="id, state, balance_in_cents, activated_at, expires_at, customer_id, product_id, credit_card_card_type, signup_revenue, cancel_at_end_of_period");
+
+GenerateMaql(maqlFile="examples/chargify/subscription.maql");
+ExecuteMaql(maqlFile="examples/chargify/subscription.maql");
+
+# CREATE THE TRANSACTION
+UseChargify(configFile="examples/chargify/transaction.xml",domain="arvay", apiKey="chargify-api-key", entity="transactions",
+  fields="id, transaction_type, amount_in_cents, created_at, ending_balance_in_cents, subscription_id, success");
+
+GenerateMaql(maqlFile="examples/chargify/transaction.maql");
+ExecuteMaql(maqlFile="examples/chargify/transaction.maql");

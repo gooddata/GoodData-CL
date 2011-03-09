@@ -253,11 +253,31 @@ MS CRM 2011 Online Connector Commands:
 - configFile - path to configuration file (will be overwritten)
 - username   - MS CRM username
 - password   - MS CRM password
-- host       - MS CRM server hostname
+- host     - MS CRM server hostname
 - org        - MS CRM organization name
 - entity     - MS CRM entity name (e.g. account, opportunity etc.)
 - fields     - MS CRM entity fields (e.g. accountid, name etc.)
 
+Sugar CRM Connector Commands:
+-----------------------------
+
+`UseSugarCrm(configFile="...", username="...", password="...", host="...", entity="...", fields="...");` - load Sugar CRM data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
+- configFile - path to configuration file (will be overwritten)
+- username   - Sugar CRM username
+- password   - Sugar CRM password
+- host       - Sugar CRM server hostname
+- entity     - Sugar CRM entity name (e.g. account, opportunity etc.)
+- fields     - Sugar CRM entity fields (e.g. id, name etc.)
+
+Chargify Commands:
+------------------
+
+`UseChargify(configFile="...", apiKey="...", domain="...", entity="...", fields="...");` - load Chargify data file using config file describing the file structure, must call `CreateProject` or `OpenProject` before
+- configFile - path to configuration file (will be overwritten)
+- apiKey     - Chargify API key
+- domain     - Chargify domain
+- entity     - Chargify entity name (e.g. products, subscriptions etc.)
+- fields     - Chargify entity fields (e.g. id, name etc.)
 
 Pivotal Tracker Connector Commands:
 ------------------------------

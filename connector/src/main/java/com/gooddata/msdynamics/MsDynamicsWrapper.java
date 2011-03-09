@@ -163,28 +163,32 @@ public class MsDynamicsWrapper {
      */
     public int retrieveMultiple(String entity, String[] columns, String csvFile)
             throws IOException, SOAPException, JaxenException {
-        CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(csvFile));
-        int pageNumber = 1;
         int cnt = 0;
-        String cookie = "";
-        boolean hasNext = true;
-        while (hasNext) {
-            List<Map<String,String>> ret = new ArrayList<Map<String,String>>();
-            RetrievePageInfo info = retrievePage(entity, columns, pageNumber++, cookie, ret);
-            for(Map<String,String>  m : ret) {
-                String[] row = new String[columns.length];
-                for(int i=0; i<columns.length; i++) {
-                    row[i] = m.get(columns[i]);
+        CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(csvFile));
+        try {
+            int pageNumber = 1;
+            String cookie = "";
+            boolean hasNext = true;
+            while (hasNext) {
+                List<Map<String,String>> ret = new ArrayList<Map<String,String>>();
+                RetrievePageInfo info = retrievePage(entity, columns, pageNumber++, cookie, ret);
+                for(Map<String,String>  m : ret) {
+                    String[] row = new String[columns.length];
+                    for(int i=0; i<columns.length; i++) {
+                        row[i] = m.get(columns[i]);
+                    }
+                    cw.writeNext(row);
                 }
-                cw.writeNext(row);
+                cnt += ret.size();
+                cw.flush();
+                cookie = info.getPageCookie();
+                if("0".equalsIgnoreCase(info.getMoreRecords()))
+                    hasNext = false;
             }
-            cnt += ret.size();
-            cw.flush();
-            cookie = info.getPageCookie();
-            if("0".equalsIgnoreCase(info.getMoreRecords()))
-                hasNext = false;
         }
-        cw.close();
+        finally {
+            cw.close();
+        }
         return cnt;
     }
 

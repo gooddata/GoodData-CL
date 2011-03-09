@@ -1,0 +1,73 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<schema>
+  <name>Subscription</name>
+  <columns>
+      <column>
+        <name>id</name>
+        <title>Subscription</title>
+        <ldmType>CONNECTION_POINT</ldmType>
+        <folder>Subscription</folder>
+      </column>
+      <column>
+        <name>state</name>
+        <title>Subscription State</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Subscription</folder>
+      </column>
+      <column>
+        <name>balance_in_cents</name>
+        <title>Subscription Balance (cents)</title>
+          <ldmType>FACT</ldmType>
+          <folder>Subscription</folder>
+      </column>
+      <column>
+        <name>activated_at</name>
+        <title>Subscription Activated</title>
+          <ldmType>DATE</ldmType>
+          <schemaReference>Subscription Activated</schemaReference>
+          <folder>Subscription</folder>
+      </column>
+      <column>
+        <name>expires_at</name>
+        <title>Subscription Expires</title>
+          <ldmType>DATE</ldmType>
+          <schemaReference>Subscription Expires</schemaReference>
+          <folder>Subscription</folder>
+      </column>
+      <column>
+        <name>customer_id</name>
+        <title>Customer</title>
+          <ldmType>REFERENCE</ldmType>
+          <schemaReference>Customer</schemaReference>
+          <reference>id</reference>
+          <folder>Subscription</folder>
+      </column>
+      <column>
+        <name>product_id</name>
+        <title>Product</title>
+          <ldmType>REFERENCE</ldmType>
+          <schemaReference>Product</schemaReference>
+          <reference>id</reference>
+          <folder>Subscription</folder>
+      </column>
+      <column>
+        <name>credit_card_card_type</name>
+        <title>Credit Card Type</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Subscription</folder>
+      </column>
+      <column>
+        <name>signup_revenue</name>
+        <title>Subscription Signup Revenue</title>
+          <ldmType>FACT</ldmType>
+          <folder>Subscription</folder>
+      </column>
+      <column>
+        <name>cancel_at_end_of_period</name>
+        <title>Subscription Cancel at End</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Subscription</folder>
+      </column>
+  </columns>
+</schema>

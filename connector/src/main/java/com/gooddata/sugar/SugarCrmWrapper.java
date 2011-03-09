@@ -67,11 +67,11 @@ public class SugarCrmWrapper {
 
     // SAAJ SOAP executor
     private SoapExecutor soap;
-    // Sugar CRM Online host
+    // Sugar CRM host
     private String host;
-    // MS Live ID username
+    // Sugar CRM username
     private String username;
-    // MS Live ID password
+    // Sugar CRM password
     private String password;
     // Sugar CRM session token
     private String sessionToken;
@@ -89,23 +89,27 @@ public class SugarCrmWrapper {
 
     public int getAllEntries(String module, String[] fields, String csvFile, String query)
             throws IOException, SOAPException, JaxenException {
-        CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(csvFile));
         int cnt = 0;
-        int nextIndex = 0;
-        while (nextIndex >=0) {
-            List<Map<String,String>> ret = new ArrayList<Map<String,String>>();
-            nextIndex = getEntries(module, fields, query, nextIndex, ret);
-            for(Map<String,String>  m : ret) {
-                String[] row = new String[fields.length];
-                for(int i=0; i<fields.length; i++) {
-                    row[i] = m.get(fields[i]);
+        CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(csvFile));
+        try {
+            int nextIndex = 0;
+            while (nextIndex >=0) {
+                List<Map<String,String>> ret = new ArrayList<Map<String,String>>();
+                nextIndex = getEntries(module, fields, query, nextIndex, ret);
+                for(Map<String,String>  m : ret) {
+                    String[] row = new String[fields.length];
+                    for(int i=0; i<fields.length; i++) {
+                        row[i] = m.get(fields[i]);
+                    }
+                    cw.writeNext(row);
                 }
-                cw.writeNext(row);
+                cnt += ret.size();
+                cw.flush();
             }
-            cnt += ret.size();
-            cw.flush();
         }
-        cw.close();
+        finally {
+            cw.close();
+        }
         return cnt;
 
     }

@@ -1,0 +1,28 @@
+# A simple example that loads a Chargify data
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+UseProject(fileName="examples/chargify/pid");
+
+# LOAD THE PRODUCT
+UseChargify(configFile="examples/chargify/product.xml",domain="arvay", apiKey="chargify-api-key", entity="products",
+  fields="id, name, product_family_name, price_in_cents, initial_charge_in_cents, trial_price_in_cents, require_credit_card, request_credit_card, interval, interval_unit, trial_interval, trial_interval_unit, expiration_interval, expiration_interval_unit");
+
+TransferData();
+
+# LOAD THE CUSTOMER
+UseChargify(configFile="examples/chargify/customer.xml",domain="arvay", apiKey="chargify-api-key", entity="customers",
+  fields="id, first_name, last_name, email, organization, reference");
+
+TransferData();
+
+# LOAD THE SUBSCRIPTION
+UseChargify(configFile="examples/chargify/subscription.xml",domain="arvay", apiKey="chargify-api-key", entity="subscriptions",
+  fields="id, state, balance_in_cents, activated_at, expires_at, customer_id, product_id, credit_card_card_type, signup_revenue, cancel_at_end_of_period");
+
+TransferData();
+
+# LOAD THE TRANSACTION
+UseChargify(configFile="examples/chargify/transaction.xml",domain="arvay", apiKey="chargify-api-key", entity="transactions",
+  fields="id, transaction_type, amount_in_cents, created_at, ending_balance_in_cents, subscription_id, success");
+
+TransferData();
