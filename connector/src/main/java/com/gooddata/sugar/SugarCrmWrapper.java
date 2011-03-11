@@ -51,7 +51,7 @@ public class SugarCrmWrapper {
     private final static String HTTP = "http://";
     private final static String SUGAR_ENDPOINT = "/service/v2/soap.php";
 
-    private final static int MAX_ROWS = 3;
+    private final static int MAX_ROWS = 1000;
 
     private final static String USERNAME_PLACEHOLDER = "%USERNAME%";
     private final static String PASSWORD_PLACEHOLDER = "%PASSWORD%";
@@ -60,6 +60,7 @@ public class SugarCrmWrapper {
 
     private final static String MODULE_PLACEHOLDER = "%MODULE%";
     private final static String FIELDS_PLACEHOLDER = "%FIELDS%";
+    private final static String LINKED_FIELDS_PLACEHOLDER = "%LINKED_FIELDS%";
     private final static String QUERY_PLACEHOLDER = "%QUERY%";
     private final static String FIELDS_COUNT_PLACEHOLDER = "%FIELDS_COUNT%";
     private final static String MAX_ROWS_PLACEHOLDER = "%MAX_ROWS%";
@@ -78,16 +79,17 @@ public class SugarCrmWrapper {
 
 
     public static void main(String[] arg) throws Exception {
-        SugarCrmWrapper s = new SugarCrmWrapper("trial.sugarondemand.com/mgfeum1640", "jim", "jim");
+        SugarCrmWrapper s = new SugarCrmWrapper("trial.sugarondemand.com/fanodg1159", "jim", "jim");
         s.connect();
         s.getAllEntries("Opportunities",
-                new String[] {"id","account_name","assigned_user_name","name","date_entered",
-                        "team_name","opportunity_type","lead_source","amount",
-                        "amount_usdollar","date_closed","next_step","sales_stage","probability"},
-                "/Users/zdenek/temp/sugar_opps.csv", "");
+                new String[] {"id","name"},
+                new String[] {"Accounts.id", "Leads.id"},
+                "",
+                "/Users/zdenek/temp/sugar_opps.csv");
     }
 
-    public int getAllEntries(String module, String[] fields, String csvFile, String query)
+    public int getAllEntries(String module, String[] fields, String[] linked_fields,
+                             String query, String csvFile)
             throws IOException, SOAPException, JaxenException {
         int cnt = 0;
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(csvFile));
@@ -95,11 +97,22 @@ public class SugarCrmWrapper {
             int nextIndex = 0;
             while (nextIndex >=0) {
                 List<Map<String,String>> ret = new ArrayList<Map<String,String>>();
-                nextIndex = getEntries(module, fields, query, nextIndex, ret);
+                nextIndex = getEntries(module, fields, linked_fields, query, nextIndex, ret);
                 for(Map<String,String>  m : ret) {
-                    String[] row = new String[fields.length];
+                    String[] row = null;
+                    if(linked_fields != null && linked_fields.length>0) {
+                        row = new String[fields.length + linked_fields.length];
+                    }
+                    else {
+                        row = new String[fields.length];
+                    }
                     for(int i=0; i<fields.length; i++) {
                         row[i] = m.get(fields[i]);
+                    }
+                    if(linked_fields != null && linked_fields.length>0) {
+                        for(int i=0; i<linked_fields.length; i++) {
+                            row[fields.length+i] = m.get(linked_fields[i]);
+                        }
                     }
                     cw.writeNext(row);
                 }
@@ -157,17 +170,34 @@ public class SugarCrmWrapper {
         return result.getNodeValue();
     }
 
-    public int getEntries(String module, String[] fields, String query, int offset, List<Map<String,String>> ret)
+    public int getEntries(String module, String[] fields,  String[] linked_fields,
+                          String query, int offset, List<Map<String,String>> ret)
             throws IOException, SOAPException, JaxenException {
         if(module != null && module.length() > 0) {
             String msg = FileUtil.readStringFromClasspath("/com/gooddata/sugar/GetEntryList.xml", SugarCrmWrapper.class);
             msg = msg.replaceAll(SESSION_PLACEHOLDER, getSessionToken());
             msg = msg.replaceAll(MODULE_PLACEHOLDER, module);
             msg = msg.replaceAll(FIELDS_COUNT_PLACEHOLDER, Integer.toString(fields.length));
+            String fieldsXml = "";
+            if(linked_fields != null && linked_fields.length > 0) {
+                fieldsXml += "<link_name_to_fields_array xsi:type='SOAP-ENC:Array' SOAP-ENC:arrayType='tns:link_name_to_fields_array["+
+                        linked_fields.length+"]'>";
+                for(int i=0; i<linked_fields.length; i++) {
+                    String[] components = linked_fields[i].split("\\.");
+                    if(components != null && components.length == 2) {
+                        fieldsXml += "<item><name>"+components[0].toLowerCase()+"</name><value><item>"+components[1]+"</item></value></item>";
+                    }
+                    else {
+                        throw new SOAPException("getEntries: the linked fields must have format module.field .");
+                    }
+                }
+                fieldsXml += "</link_name_to_fields_array>";
+            }
+            msg = msg.replaceAll(LINKED_FIELDS_PLACEHOLDER, fieldsXml);
             msg = msg.replaceAll(QUERY_PLACEHOLDER, query);
             msg = msg.replaceAll(MAX_ROWS_PLACEHOLDER, Integer.toString(MAX_ROWS));
             msg = msg.replaceAll(OFFSET_PLACEHOLDER, Integer.toString(offset));
-            String fieldsXml = "";
+            fieldsXml = "";
             if(fields != null && fields.length > 0) {
                 for(int i=0; i < fields.length; i++) {
                     fieldsXml += "<item xsi:type='xsd:string'>"+fields[i]+"</item>";
@@ -219,6 +249,36 @@ public class SugarCrmWrapper {
                             }
                             else {
                                 throw new SOAPException("getEntries: No record items in the result row.");
+                            }
+                            if(linked_fields != null && linked_fields.length > 0) {
+                                for(int k=0; k<linked_fields.length; k++) {
+                                    // take only the first item
+                                    xpd = soap.createXPath("//relationship_list/item["+(j+1)+"]/item["+(k+1)+"]/records/item/item[1]", response);
+                                    Object res = xpd.selectSingleNode(response.getSOAPBody());
+                                    if(res != null) {
+                                        SOAPElement dataNode = (SOAPElement)res;
+                                        NodeList names = dataNode.getElementsByTagName("name");
+                                        NodeList values = dataNode.getElementsByTagName("value");
+                                        if(names != null && names.getLength()>0 && values != null && values.getLength()>0) {
+                                            Node name = names.item(0).getFirstChild();
+                                            Node value = values.item(0).getFirstChild();
+                                            if(name != null) {
+                                                if(value != null) {
+                                                    record.put(linked_fields[k], value.getNodeValue());
+                                                }
+                                                else {
+                                                    record.put(linked_fields[k], "");
+                                                }
+                                            }
+                                            else {
+                                                throw new SOAPException("getEntries: No linked module name texts in the result row.");
+                                            }
+                                        }
+                                        else {
+                                            throw new SOAPException("getEntries: No name/value pair in the result row.");
+                                        }
+                                    }
+                                }
                             }
                             ret.add(record);
                         }

@@ -113,10 +113,16 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
             l.debug("Executing SugarCrm query entity: "+getEntity()+" fields: "+getFields());
             if(fields != null && fields.length() > 0) {
                 String[] fs = fields.split(",");
-                for(int i=0; i<fs.length; i++)
-                    fs[i] = fs[i].trim();
+                List<String> cfs = new ArrayList<String>();
+                List<String> lfs = new ArrayList<String>();
+                for(int i=0; i<fs.length; i++) {
+                    if(fs[i].contains("."))
+                        lfs.add(fs[i].trim());
+                    else
+                        cfs.add(fs[i].trim());
+                }
                 File dt = FileUtil.getTempFile();
-                int cnt = m.getAllEntries(getEntity(), fs, dt.getAbsolutePath(),"");
+                int cnt = m.getAllEntries(getEntity(), cfs.toArray(new String[]{}), lfs.toArray(new String[]{}), "", dt.getAbsolutePath());
 
                 int identityColumn = schema.getIdentityColumn();
                 CSVReader cr = FileUtil.createUtf8CsvReader(dt);
