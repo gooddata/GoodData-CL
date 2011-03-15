@@ -900,10 +900,16 @@ public class GdcDI implements Executor {
         if(result != null && result.length()>0) {
             String[] uris = result.split("\n");
             for(String uri : uris) {
-                String defUri = ctx.getRestApi(p).getReportDefinition(uri.trim());
-                l.info("Executing report uri="+defUri);
-                String task = ctx.getRestApi(p).executeReportDefinition(defUri.trim());
-                l.info("Report " +defUri+ " execution finished.");
+                try {
+                    String defUri = ctx.getRestApi(p).getReportDefinition(uri.trim());
+                    l.info("Executing report uri="+defUri);
+                    String task = ctx.getRestApi(p).executeReportDefinition(defUri.trim());
+                    l.info("Report " +defUri+ " execution finished.");
+                }
+                catch (GdcRestApiException e) {
+                    l.debug("The report uri="+uri+" can't be computed!");
+                    l.info("The report uri="+uri+" can't be computed!");
+                }
             }
         }
         else {
