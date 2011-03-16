@@ -81,9 +81,9 @@ public class SugarCrmWrapper {
     public static void main(String[] arg) throws Exception {
         SugarCrmWrapper s = new SugarCrmWrapper("trial.sugarondemand.com/fanodg1159", "jim", "jim");
         s.connect();
-        s.getAllEntries("Opportunities",
-                new String[] {"id","name"},
-                new String[] {"Accounts.id", "Leads.id"},
+        s.getAllEntries("Users",
+                new String[] {},
+                new String[] {},
                 "",
                 "/Users/zdenek/temp/sugar_opps.csv");
     }
