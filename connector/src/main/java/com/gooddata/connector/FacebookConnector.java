@@ -23,6 +23,7 @@
 
 package com.gooddata.connector;
 
+import com.gooddata.Constants;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.exception.SfdcException;
@@ -31,6 +32,7 @@ import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.transform.Transformer;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
@@ -163,59 +165,20 @@ public class FacebookConnector extends AbstractConnector implements Connector {
         }
     }
 
-    private final DateTimeFormatter baseFmt = DateTimeFormat.forPattern(Constants.DEFAULT_DATETIME_FMT_STRING);
-    private final DateTime base = baseFmt.parseDateTime("1900-01-01 00:00:00");
-
-
-    private String convertUnixTimeToString(String value) {
-        DateTime dt;
-        try {
-            long l = Long.parseLong(value);
-            dt = new DateTime(l*1000);
-        }
-        catch (NumberFormatException e) {
-            dt = base;
-        }
-        return baseFmt.print(dt);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void extract(String dir) throws IOException {
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        extract(dataFile.getAbsolutePath(), true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void dump(String file) throws IOException {
         extract(file, false);
     }
 
     /**
-     * Extract rows
-     * @param file name of the target file
-     * @param extendDates add date/time facts
-     * @throws IOException
+     * {@inheritDoc}
      */
-    public void extract(String file, final boolean extendDates) throws IOException {
+    public void extract(String file, final boolean transform) throws IOException {
         File dataFile = new File(file);
-
-        // Is there an IDENTITY connection point?
-        final int identityColumn = schema.getIdentityColumn();
-        final List<SourceColumn> columns = schema.getColumns();
 
         l.debug("Extracting Facebook data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-        String[] header = this.populateCsvHeaderFromSchema(schema);
-
-        // add the extra date headers
-        final DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-        if(extendDates)
-            header = dateExt.extendHeader(header);
-
+        Transformer t = Transformer.create(schema);
+        String[] header = t.getHeader(true);
         cw.writeNext(header);
 
         List<String> cols = getSelectColumns(getQuery());
@@ -228,51 +191,22 @@ public class FacebookConnector extends AbstractConnector implements Connector {
         if(result != null && result.size() > 0) {
             l.debug("Started retrieving Facebook data.");
             for(Object o : result) {
-                String[] row;
-                String key = "";
-                List<String> rowL = new ArrayList<String>(cols.size()+1);
+                String[] row = new String[cols.size()];
                 for(int i=0; i< cols.size(); i++) {
-                    String value = extractValue(o, StringUtil.toIdentifier(cols.get(i)));
-                    if(identityColumn>=0) {
-                        int adjustedConfigIndex = (i >= identityColumn) ? (i+1) : (i);
-                        if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                           SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                           SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
-                        ) {
-                            key += value + "|";
-                        }
-                        if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) &&
-                        Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(columns.get(adjustedConfigIndex).getFormat())) {
-                            value = convertUnixTimeToString(value);
-                        }
-                    }
-                    else {
-                        if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(i).getLdmType()) &&
-                        Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(columns.get(i).getFormat())) {
-                            value = convertUnixTimeToString(value);
-                        }
-                    }
-                    rowL.add(value);
+                    row[i] = extractValue(o, StringUtil.toIdentifier(cols.get(i)));
                 }
-                if(identityColumn>=0) {
-                    String hex = DigestUtils.md5Hex(key);
-                    rowL.add(identityColumn,hex);
-                }
-                row = rowL.toArray(new String[]{});
-                // add the extra date columns
-                if(extendDates)
-                    row = dateExt.extendRow(row);
+                if(transform)
+                    row = t.transformRow(row, DATE_LENGTH_UNRESTRICTED);
                 cw.writeNext(row);
+                cw.flush();
             }
         }
         else {
             l.debug("The Facebook query hasn't returned any row.");
-            throw new SfdcException("The Facebook query hasn't returned any row.");
+            throw new IOException("The Facebook query hasn't returned any row.");
         }
         l.debug("Retrieved " + result.size() + " rows of Facebook data.");
-        cw.flush();
         cw.close();
-        l.debug("Extracted Facebook data.");
     }
 
     /**

@@ -77,7 +77,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
     /**
      * {@inheritDoc}
      */
-    public void extract(String dir) throws IOException {
+    public void extract(String dir, boolean transform) throws IOException {
         l.debug("Extracting time dimension data "+name);
         if(name == null || name.trim().length()<=0)
             name = "";

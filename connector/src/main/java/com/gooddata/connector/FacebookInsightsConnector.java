@@ -23,12 +23,14 @@
 
 package com.gooddata.connector;
 
+import com.gooddata.Constants;
 import com.gooddata.exception.*;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.transform.Transformer;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import net.sf.json.JSONArray;
@@ -128,21 +130,6 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
         s.writeConfig(new File(configFileName));
         l.debug("Saved Facebook Insights config template.");
     }
-
-
-
-    private String convertUnixTimeToString(String value) {
-        DateTime dt;
-        try {
-            long l = Long.parseLong(value);
-            dt = new DateTime(l*1000);
-        }
-        catch (NumberFormatException e) {
-            dt = base;
-        }
-        return baseFmt.print(dt);
-    }
-
 
     private String fetchData(String uri) {
         try {
@@ -327,40 +314,12 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
     /**
      * {@inheritDoc}
      */
-    public void extract(String dir) throws IOException {
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        extract(dataFile.getAbsolutePath(), true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void dump(String file) throws IOException {
-        extract(file, false);
-    }
-
-    /**
-     * Extract rows
-     * @param file name of the target file
-     * @param extendDates add date/time facts
-     * @throws IOException
-     */
-    public void extract(String file, final boolean extendDates) throws IOException {
+    public void extract(String file, final boolean transform) throws IOException {
         File dataFile = new File(file);
-
-        // Is there an IDENTITY connection point?
-        final int identityColumn = schema.getIdentityColumn();
-        final List<SourceColumn> columns = schema.getColumns();
-
         l.debug("Extracting Facebook data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-        String[] header = this.populateCsvHeaderFromSchema(schema);
-
-        // add the extra date headers
-        final DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-        if(extendDates)
-            header = dateExt.extendHeader(header);
-
+        Transformer t = Transformer.create(schema);
+        String[] header = t.getHeader(transform);
         cw.writeNext(header);
 
         String url = constructInsightsApiUrl(getBaseUrl(), getStartDate(), getEndDate());
@@ -373,50 +332,21 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
             l.debug("Started retrieving Facebook data.");
             for(InsightsRecord o : result) {
                 String[] record = o.getRecord();
-                String[] row;
-                String key = "";
-                List<String> rowL = new ArrayList<String>(record.length+1);
+                String[] row = new String[record.length];
                 for(int i=0; i< record.length; i++) {
-                    String value = record[i];
-                    if(identityColumn>=0) {
-                        int adjustedConfigIndex = (i >= identityColumn) ? (i+1) : (i);
-                        if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                           SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                           SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
-                        ) {
-                            key += value + "|";
-                        }
-                        if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) &&
-                        Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(columns.get(adjustedConfigIndex).getFormat())) {
-                            value = convertUnixTimeToString(value);
-                        }
-                    }
-                    else {
-                        if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(i).getLdmType()) &&
-                        Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(columns.get(i).getFormat())) {
-                            value = convertUnixTimeToString(value);
-                        }
-                    }
-                    rowL.add(value);
+                    row[i] = record[i];
                 }
-                if(identityColumn>=0) {
-                    String hex = DigestUtils.md5Hex(key);
-                    rowL.add(identityColumn,hex);
-                }
-                row = rowL.toArray(new String[]{});
-                // add the extra date columns
-                if(extendDates)
-                    row = dateExt.extendRow(row);
+                if(transform)
+                    row = t.transformRow(row, DATE_LENGTH_UNRESTRICTED);
                 cw.writeNext(row);
+                cw.flush();
             }
             result.clear();
             url = fetchInsightsRecords(url, result);
         }
 
         l.debug("Retrieved " + cnt + " rows of Facebook data.");
-        cw.flush();
         cw.close();
-        l.debug("Extracted Facebook data.");
     }
 
     /**

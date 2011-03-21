@@ -24,6 +24,7 @@
 package com.gooddata.connector;
 
 import com.gooddata.exception.*;
+import com.gooddata.transform.Transformer;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.google.analytics.FeedDumper;
 import com.gooddata.google.analytics.GaQuery;
@@ -149,25 +150,7 @@ public class GaConnector extends AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
-    public void extract(String dir) throws IOException {
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        extract(dataFile.getAbsolutePath(), true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void dump(String file) throws IOException {
-        extract(file, false);
-    }
-
-    /**
-     * Extract rows
-     * @param file name of the target file
-     * @param extendDates add date/time facts
-     * @throws IOException
-     */
-    public void extract(String file, final boolean extendDates) throws IOException {
+    public void extract(String file, final boolean transform) throws IOException {
         try {
             AnalyticsService as = new AnalyticsService(APP_NAME);
             if(googleAnalyticsToken != null && googleAnalyticsToken.length() > 0) {
@@ -186,24 +169,18 @@ public class GaConnector extends AbstractConnector implements Connector {
             int cnt = 1;
 
             CSVWriter cw = FileUtil.createUtf8CsvWriter(dataFile);
+            Transformer t = Transformer.create(schema);
 
-            String[] header = this.populateCsvHeaderFromSchema(schema);
-
-            // add the extra date headers
-            final DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-            if(extendDates)
-                header = dateExt.extendHeader(header);
-
+            String[] header = t.getHeader(transform);
             cw.writeNext(header);
             
             for(int startIndex = 1; cnt > 0; startIndex += cnt + 1) {
                 gaq.setStartIndex(startIndex);
                 DataFeed feed = as.getFeed(gaq.getUrl(), DataFeed.class);
                 l.debug("Retrieving GA data from index="+startIndex);
-                cnt = FeedDumper.dump(schema, cw, feed, gaq, dateExt, extendDates);
+                cnt = FeedDumper.dump(cw, feed, gaq, t, transform);
                 l.debug("Retrieved "+cnt+" entries.");
             }
-            cw.flush();
             cw.close();
         }
         catch (AuthenticationException e) {

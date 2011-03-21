@@ -25,6 +25,7 @@ package com.gooddata.util;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.sql.*;
 
 
@@ -133,7 +134,7 @@ public class JdbcUtil {
      * @param fetchSize max fetch size  
      * @throws SQLException in case of a db issue 
      */
-    public static void executeQuery(Connection c, String sql, ResultSetHandler handler, int limit, int fetchSize) throws SQLException {
+    public static void executeQuery(Connection c, String sql, ResultSetHandler handler, int limit, int fetchSize) throws SQLException, IOException {
     	Statement st = null;
     	ResultSet rs = null;
     	try {
@@ -160,7 +161,7 @@ public class JdbcUtil {
      * @param fetchSize max fetch size
      * @throws SQLException in case of a db issue
      */
-    public static void executeQuery(Connection c, String sql, ResultSetHandler handler, int fetchSize) throws SQLException {
+    public static void executeQuery(Connection c, String sql, ResultSetHandler handler, int fetchSize) throws SQLException, IOException {
     	executeQuery(c,sql,handler,Integer.MAX_VALUE, fetchSize);
     }
 
@@ -168,7 +169,7 @@ public class JdbcUtil {
      * Result set handler callback interface for {@link JdbcUtil#executeQuery(Connection, String, ResultSetHandler, int)}
      */
     public static interface ResultSetHandler {
-    	public void handle(ResultSet rs) throws SQLException;
+    	public void handle(ResultSet rs) throws SQLException, IOException;
     }
     
     /**

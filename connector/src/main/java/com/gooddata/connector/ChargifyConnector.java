@@ -30,6 +30,7 @@ import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.chargify.ChargifyWrapper;
+import com.gooddata.transform.Transformer;
 import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
@@ -83,28 +84,11 @@ public class ChargifyConnector extends AbstractConnector implements Connector {
         return new ChargifyConnector();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void extract(String dir) throws IOException {
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        extract(dataFile.getAbsolutePath(), true);
-    }
 
     /**
      * {@inheritDoc}
      */
-    public void dump(String file) throws IOException {
-        extract(file, false);
-    }
-
-    /**
-     * Extract rows
-     * @param file name of the target file
-     * @param extendDates add date/time facts
-     * @throws java.io.IOException
-     */
-    public void extract(String file, boolean extendDates) throws IOException {
+    public void extract(String file, boolean transform) throws IOException {
         l.debug("Extracting Chargify data.");
         try {
             ChargifyWrapper m = new ChargifyWrapper(getDomain(), getApiToken());
@@ -114,82 +98,9 @@ public class ChargifyConnector extends AbstractConnector implements Connector {
                 for(int i=0; i<fs.length; i++)
                     fs[i] = fs[i].trim();
                 File dt = FileUtil.getTempFile();
-                int cnt = m.getAllData(getEntity(), fs, dt.getAbsolutePath());
-
-                int identityColumn = schema.getIdentityColumn();
-                CSVReader cr = FileUtil.createUtf8CsvReader(dt);
-                CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(file));
-                String[] header = this.populateCsvHeaderFromSchema(schema);
-                int colCnt = header.length - ((identityColumn>=0)?1:0);
-                String[] row = null;
-                DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-                if(extendDates)
-                    header = dateExt.extendHeader(header);
-                cw.writeNext(header);
-                row = cr.readNext();
-                int rowCnt = 0;
-                while (row != null) {
-                    rowCnt++;
-                    if(row.length != colCnt) {
-                        if(!(row.length == 1 && row[0].length() == 0)) {
-                            // this is not empty line
-                            throw new InvalidParameterException("The delimited file "+dt.getAbsolutePath()+" has different number of columns than " +
-                                "it's configuration file. Row="+rowCnt);
-                        }
-                        else {
-                            row = cr.readNext();
-                            continue;
-                        }
-                    }
-                    if(identityColumn>=0) {
-                        String key = "";
-                        List<String> rowL = new ArrayList<String>(row.length+1);
-                        List<SourceColumn> columns = schema.getColumns();
-                        for(int i=0; i< row.length; i++) {
-                            int adjustedConfigIndex = (i >= identityColumn) ? (i+1) : (i);
-                            if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                               SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                               SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
-                            ) {
-                                key += row[i] + "|";
-                            }
-                            if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())) {
-                                // cut off the time portion of the timestamp
-                                if(row[i] != null && row[i].length()>10) {
-                                    row[i] = row[i].substring(0,10);
-                                }
-                            }
-                            rowL.add(row[i]);
-                        }
-                        String hex = DigestUtils.md5Hex(key);
-                        rowL.add(identityColumn,hex);
-                        row = rowL.toArray(new String[]{});
-                    }
-                    else {
-                        List<String> rowL = new ArrayList<String>(row.length);
-                        List<SourceColumn> columns = schema.getColumns();
-                        for(int i=0; i< row.length; i++) {
-                            if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(i).getLdmType())) {
-                                // cut off the time portion of the timestamp
-                                if(row[i] != null && row[i].length()>10) {
-                                    row[i] = row[i].substring(0,10);
-                                }
-                            }
-                            rowL.add(row[i]);
-                        }
-                        row = rowL.toArray(new String[]{});
-                    }
-                    // add the extra date columns
-                    if(extendDates)
-                        row = dateExt.extendRow(row);
-                    cw.writeNext(row);
-                    row = cr.readNext();
-                }
-                cw.flush();
-                cw.close();
-                cr.close();
-                l.debug("Finished Chargify query execution. Retrieved "+cnt+" rows of data.");
-                l.info("Finished Chargify query execution. Retrieved "+cnt+" rows of data.");
+                m.getAllData(getEntity(), fs, dt.getAbsolutePath());
+                int rowCnt = copyAndTransform(FileUtil.createUtf8CsvReader(dt), FileUtil.createUtf8CsvWriter(new File(file)), transform, 10);
+                l.info("Finished Chargify query execution. Retrieved "+rowCnt+" rows of data.");
             }
             else {
                 throw new InvalidParameterException("The Chargify fields parameter must contain the comma separated list " +

@@ -23,7 +23,7 @@
 
 package com.gooddata.web;
 
-import com.gooddata.connector.Constants;
+import com.gooddata.Constants;
 import com.gooddata.util.FileUtil;
 import com.google.gdata.util.common.util.Base64DecoderException;
 import net.sf.json.JSONObject;
@@ -34,7 +34,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.*;
-import java.net.URLEncoder;
 import java.util.*;
 import javax.servlet.http.*;
 import javax.servlet.*;

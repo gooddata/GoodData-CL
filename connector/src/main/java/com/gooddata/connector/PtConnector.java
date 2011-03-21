@@ -33,6 +33,7 @@ import com.gooddata.pivotal.PivotalApi;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.transform.Transformer;
 import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
@@ -92,14 +93,17 @@ public class PtConnector extends AbstractConnector implements Connector {
     public void initSchema(String labelConfig, String labelToStoryConfig, String storyConfig)
         throws IOException {
         labelSchema = SourceSchema.createSchema(new File(labelConfig));
+        expandDates(labelSchema);
         labelToStorySchema = SourceSchema.createSchema(new File(labelToStoryConfig));
+        expandDates(labelToStorySchema);
         storySchema = SourceSchema.createSchema(new File(storyConfig));
+        expandDates(storySchema);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void extract(String dir) {
+    public void extract(String dir, boolean transform) {
         // do nothing
     }
 
@@ -114,41 +118,28 @@ public class PtConnector extends AbstractConnector implements Connector {
         File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
         l.debug("Extracting PT data to file=" + dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-        String[] header = this.populateCsvHeaderFromSchema(schema);
-
-        // add the extra date headers
-        DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-        header = dateExt.extendHeader(header);
-
-        List<SourceColumn> columns = schema.getColumns();
-
-        cw.writeNext(header);
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(inputFile));
-        //skip header
+        // skip header
         cr.readNext();
+        Transformer t = Transformer.create(schema);
+        String[] header = t.getHeader(true);
+        cw.writeNext(header);
         String[] row = cr.readNext();
-        while(row != null) {
-            List<String> vals = new ArrayList<String>();
-            for (int i = 0; i < row.length; i++) {
-
-                String val = row[i];
-                if (columns.get(i).getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
-                    if (val != null && val.length() > 0) {
-                        val = val.substring(0, 10);
-                    }
-                    else {
-                        val = "";
-                    }
+        int rowCnt = 0;
+        while (row != null) {
+                rowCnt++;
+                if(row.length == 1 && row[0].length() == 0) {
+                    row = cr.readNext();
+                    continue;
                 }
-                vals.add(val);
-            }
-            String[] data = dateExt.extendRow(vals.toArray(new String[]{}));
-            cw.writeNext(data);
-            row = cr.readNext();
+                row = t.transformRow(row, 10);
+                cw.writeNext(row);
+                cw.flush();
+                row = cr.readNext();
         }
-        cw.flush();
         cw.close();
-        l.debug("Extracted Pivotal data.");
+        cr.close();
+        l.debug("Extracted "+rowCnt+" rows of Pivotal data.");
     }
 
 

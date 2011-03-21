@@ -34,7 +34,8 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.*;
 
-import org.apache.commons.codec.digest.DigestUtils;
+import com.gooddata.Constants;
+import com.gooddata.transform.Transformer;
 import org.apache.log4j.Logger;
 
 import com.gooddata.util.CSVWriter;
@@ -208,32 +209,21 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     }
 
     /**
-     * Extract rows
-     * @param file name of the target file
-     * @param extendDates add date/time facts
-     * @throws IOException
+     * {@inheritDoc}
      */
-    public void extract(String file, final boolean extendDates) throws IOException {
+    public void extract(String file, final boolean transform) throws IOException {
         Connection con = null;
         Statement s = null;
         ResultSet rs = null;
-        File dataFile = new File(file);
-
-        // Is there an IDENTITY connection point?
-        final int identityColumn = schema.getIdentityColumn();
-        final List<SourceColumn> columns = schema.getColumns();
-        
         try {
             con = connect();
+            File dataFile = new File(file);
+            final DateTimeFormatter dtf = DateTimeFormat.forPattern(Constants.DEFAULT_DATETIME_FMT_STRING);
+            final List<SourceColumn> columns = schema.getColumns();
             l.debug("Extracting JDBC data to file="+dataFile.getAbsolutePath());
-            CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-            String[] header = this.populateCsvHeaderFromSchema(schema);
-
-            // add the extra date headers
-            final DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-            if(extendDates)
-                header = dateExt.extendHeader(header);
-            
+            final CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
+            final Transformer t = Transformer.create(schema);
+            String[] header = t.getHeader(true);
             cw.writeNext(header);
             s = con.createStatement();
 
@@ -246,66 +236,37 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                     this.cw = cw;
                 }
 
-                public void handle(ResultSet rs) throws SQLException {
+                public void handle(ResultSet rs) throws SQLException, IOException {
                     final int length = rs.getMetaData().getColumnCount();
-                    final Map<String,DateTimeFormatter> dateFormatsCache = new HashMap<String,DateTimeFormatter>();
-                    String key = "";
-                    List<String> lineL = new ArrayList<String>(length+1);
-                    String[] line = new String[length];
+                    Object[] row = new Object[length];
                     for (int i = 1; i <= length; i++) {
-                        int adjustedConfigIndex = ((identityColumn >=0) && (i - 1 >= identityColumn)) ? (i) : (i-1);
                         final int sqlType = rs.getMetaData().getColumnType(i);
                         final Object value = rs.getObject(i);
                         if (value == null || rs.wasNull())
-                            line[i - 1] = "";
+                            row[i - 1] = "";
                         else {
                             switch (sqlType) {
                                 case Types.DATE:
                                 case Types.TIMESTAMP:
-                                    DateTime date = new DateTime((Date)value);
-                                    SourceColumn c = columns.get(adjustedConfigIndex);
-                                    String fmt = c.getFormat();
-                                    if(fmt == null || fmt.length() <= 0) {
-                                        if(c.isDatetime())
-                                            fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
-                                        else
-                                            fmt = Constants.DEFAULT_DATE_FMT_STRING;
-                                    }
-                                    // in case of UNIX TIME we don't format but create the date from the UNIX time number
-                                    if(Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
-                                        fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
-                                    }
-                                    DateTimeFormatter dtf = null;
-                                    if(dateFormatsCache.containsKey(fmt)) {
-                                        dtf = dateFormatsCache.get(fmt);
-                                    }
-                                    else {
-                                        dtf = DateTimeFormat.forPattern(fmt);
-                                        dateFormatsCache.put(fmt,dtf);
-                                    }
-                                    line[i - 1] = dtf.print(date);
+                                    row[i - 1] = new DateTime((Date)value);
                                     break;
                                 default:
-                                    line[i - 1] = value.toString();
+                                    row[i - 1] = value.toString();
                             }
                         }
-                        lineL.add(line[i-1]);
-                        if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                           SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                           SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
-                        ) {
-                            key += line[i-1] + "|";
+                    }
+                    String[] nrow = null;
+                    if(transform) {
+                        nrow = t.transformRow(row, DATE_LENGTH_UNRESTRICTED);
+                    }
+                    else {
+                        nrow = new String[row.length];
+                        for(int i = 0; i<row.length; i++) {
+                            nrow[i] = row[i].toString();
                         }
                     }
-                    if(identityColumn>=0) {
-                        String hex = DigestUtils.md5Hex(key);
-                        lineL.add(identityColumn, hex);
-                        line = lineL.toArray(new String[]{});
-                    }
-                    // add the extra date columns
-                    if(extendDates)
-                        line = dateExt.extendRow(line);
-                    cw.writeNext(line);
+                    cw.writeNext(nrow);
+                    cw.flush();
                     rowCnt++;
                 }
             }
@@ -314,7 +275,6 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
             JdbcUtil.executeQuery(con, getSqlQuery(), rw, FETCH_SIZE);
             l.debug("Finished retrieving JDBC data. Retrieved "+rw.rowCnt+" rows.");
-            cw.flush();
             cw.close();
             }
         catch (SQLException e) {

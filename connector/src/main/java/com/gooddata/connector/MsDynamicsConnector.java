@@ -101,12 +101,9 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
     }
 
     /**
-     * Extract rows
-     * @param file name of the target file
-     * @param extendDates add date/time facts
-     * @throws java.io.IOException
+     * {@inheritDoc}
      */
-    public void extract(String file, boolean extendDates) throws IOException {
+    public void extract(String file, boolean transform) throws IOException {
         l.debug("Extracting MS CRM data.");
         try {
             MsDynamicsWrapper m = new MsDynamicsWrapper(getHostname(), getOrganization(), getUsername(), getPassword());
@@ -117,82 +114,9 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
                 for(int i=0; i<fs.length; i++)
                     fs[i] = fs[i].trim();
                 File dt = FileUtil.getTempFile();
-                int cnt = m.retrieveMultiple(getEntity(), fs, dt.getAbsolutePath());
-
-                int identityColumn = schema.getIdentityColumn();
-                CSVReader cr = FileUtil.createUtf8CsvReader(dt);
-                CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(file));
-                String[] header = this.populateCsvHeaderFromSchema(schema);
-                int colCnt = header.length - ((identityColumn>=0)?1:0);
-                String[] row = null;
-                DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-                if(extendDates)
-                    header = dateExt.extendHeader(header);
-                cw.writeNext(header);
-                row = cr.readNext();
-                int rowCnt = 0;
-                while (row != null) {
-                    rowCnt++;
-                    if(row.length != colCnt) {
-                        if(!(row.length == 1 && row[0].length() == 0)) {
-                            // this is not empty line
-                            throw new InvalidParameterException("The delimited file "+dt.getAbsolutePath()+" has different number of columns than " +
-                                "it's configuration file. Row="+rowCnt);
-                        }
-                        else {
-                            row = cr.readNext();
-                            continue;
-                        }
-                    }
-                    if(identityColumn>=0) {
-                        String key = "";
-                        List<String> rowL = new ArrayList<String>(row.length+1);
-                        List<SourceColumn> columns = schema.getColumns();
-                        for(int i=0; i< row.length; i++) {
-                            int adjustedConfigIndex = (i >= identityColumn) ? (i+1) : (i);
-                            if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                               SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                               SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
-                            ) {
-                                key += row[i] + "|";
-                            }
-                            if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())) {
-                                // cut off the time portion of the timestamp
-                                if(row[i] != null && row[i].length()>10) {
-                                    row[i] = row[i].substring(0,10);
-                                }
-                            }
-                            rowL.add(row[i]);
-                        }
-                        String hex = DigestUtils.md5Hex(key);
-                        rowL.add(identityColumn,hex);
-                        row = rowL.toArray(new String[]{});
-                    }
-                    else {
-                        List<String> rowL = new ArrayList<String>(row.length);
-                        List<SourceColumn> columns = schema.getColumns();
-                        for(int i=0; i< row.length; i++) {
-                            if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(i).getLdmType())) {
-                                // cut off the time portion of the timestamp
-                                if(row[i] != null && row[i].length()>10) {
-                                    row[i] = row[i].substring(0,10);
-                                }
-                            }
-                            rowL.add(row[i]);
-                        }
-                        row = rowL.toArray(new String[]{});
-                    }
-                    // add the extra date columns
-                    if(extendDates)
-                        row = dateExt.extendRow(row);
-                    cw.writeNext(row);
-                    row = cr.readNext();
-                }
-                cw.flush();
-                cw.close();
-                cr.close();
-                l.debug("Finished MS CRM query execution. Retrieved "+cnt+" rows of data.");
-                l.info("Finished MS CRM query execution. Retrieved "+cnt+" rows of data.");
+                m.retrieveMultiple(getEntity(), fs, dt.getAbsolutePath());
+                int rowCnt = copyAndTransform(FileUtil.createUtf8CsvReader(dt), FileUtil.createUtf8CsvWriter(new File(file)), transform, 10);
+                l.info("Finished MS CRM query execution. Retrieved "+rowCnt+" rows of data.");
             }
             else {
                 throw new InvalidParameterException("The MS CRM fields parameter must contain the comma separated list " +

@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.gooddata.transform.Transformer;
 import com.sforce.soap.partner.*;
 import org.apache.axis.message.MessageElement;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -236,54 +237,21 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         return type;
     }
 
-    protected DecimalFormat nf = new DecimalFormat("###.00");
-
     /**
      * {@inheritDoc}
      */
-    public void extract(String dir) throws IOException {
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        extract(dataFile.getAbsolutePath(), true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void dump(String file) throws IOException {
-        extract(file, false);
-    }
-
-    /**
-     * Extract rows
-     * @param file name of the target file
-     * @param extendDates add date/time facts
-     * @throws IOException
-     */
-    public void extract(String file, boolean extendDates) throws IOException {
-        l.debug("Extracting SFDC data.");
+    public void extract(String file, boolean transform) throws IOException {
         File dataFile = new File(file);
-
-        // Is there an IDENTITY connection point?
-        final int identityColumn = schema.getIdentityColumn();
-
-        final List<SourceColumn> columns = schema.getColumns();
-
         l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
-        String[] header = this.populateCsvHeaderFromSchema(schema);
-
-        // add the extra date headers
-        DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-        if(extendDates)
-            header = dateExt.extendHeader(header);
-
+        Transformer t = Transformer.create(schema);
+        String[] header = t.getHeader(transform);
         cw.writeNext(header);
         SoapBindingStub c = connect(getSfdcHostname(), getSfdcUsername(), getSfdcPassword(), getSfdcToken(), getClientID());
         l.debug("Executing SFDC query "+sfdcQuery);
         QueryOptions qo = new QueryOptions();
         qo.setBatchSize(500);
-        c.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),
-             "QueryOptions", qo);
+        c.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),"QueryOptions", qo);
         String[] colTypes = null;
         boolean firstBatch = true;
         int rowCnt = 0;
@@ -294,7 +262,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 if(sObjects != null && sObjects.length >0) {
                     l.debug("Started retrieving SFDC data.");
                     boolean firstRow = true;
-                    for( SObject row : sObjects) {
+                    for( SObject srow : sObjects) {
                         if(firstBatch && firstRow) {
                             SObject hdr = sObjects[0];
                             Map<String,Field> fields = describeObject(c, hdr.getType());
@@ -307,51 +275,23 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                             firstRow = false;
                         }
                         else {
-                            MessageElement[] cols = row.get_any();
-                            String key = "";
-                            List<String> valsL = new ArrayList<String>(cols.length+1);
-                            String[] vals = new String[cols.length];
-                            for(int i=0; i<vals.length; i++) {
-                                int adjustedConfigIndex = ((identityColumn >=0) && (i >= identityColumn)) ? (i+1) : (i);
-                                vals[i] = cols[i].getValue();
-                                if(colTypes[i].equals(SourceColumn.LDM_TYPE_DATE)) {
-                                    if(vals[i] != null && vals[i].length()>0)
-                                        vals[i] = vals[i].substring(0,10);
-                                    else
-                                        vals[i] = "";
-                                }
-                                else if(colTypes[i].equals(SourceColumn.LDM_TYPE_FACT)) {
-                                    if(vals[i] != null && vals[i].length()>0) {
-                                        try {
-                                            double d = Double.parseDouble(vals[i]);
-                                            vals[i] = nf.format(d);
-                                        }
-                                        catch (NumberFormatException e) {
-                                            vals[i] = "";
-                                        }
-                                    }
-                                    else {
-                                        vals[i] = "";
-                                    }
-                                }
-                                if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                                   SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                                   SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
-                                ) {
-                                    key += vals[i] + "|";
-                                }
-                                valsL.add(vals[i]);
+                            MessageElement[] cols = srow.get_any();
+                            Object[] row = new Object[cols.length];
+                            for(int i=0; i<row.length; i++) {
+                                row[i] = cols[i].getValue();
                             }
-
-                            if(identityColumn>=0) {
-                                String hex = DigestUtils.md5Hex(key);
-                                valsL.add(identityColumn, hex);
-                                vals = valsL.toArray(new String[]{});
+                            String[] nrow = null;
+                            if(transform) {
+                                nrow = t.transformRow(row, 10);
                             }
-                            // add the extra date columns
-                            if(extendDates)
-                                vals = dateExt.extendRow(vals);
-                            cw.writeNext(vals);
+                            else {
+                                nrow = new String[row.length];
+                                for(int i = 0; i<row.length; i++) {
+                                    nrow[i] = row[i].toString();
+                                }
+                            }
+                            cw.writeNext(nrow);
+                            cw.flush();
                             rowCnt++;
                         }
                     }
@@ -362,9 +302,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 }
             } while(!qr.isDone());
             l.debug("Retrieved " + rowCnt + " rows of SFDC data.");
-            cw.flush();
             cw.close();
-            l.debug("Extracted SFDC data.");
 
         }
         catch (ApiQueryFault ex) {

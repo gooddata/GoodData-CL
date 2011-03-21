@@ -7,7 +7,7 @@
       <name>id</name>
       <title>ID (Content)</title>
       <ldmType>CONNECTION_POINT</ldmType>
-      <dataType>IDENTITY</dataType>  
+      <transformation>IDENTITY</transformation>
     </column>
     <column>
       <name>profileId</name>

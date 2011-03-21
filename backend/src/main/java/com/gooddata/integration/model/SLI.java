@@ -23,7 +23,7 @@
 
 package com.gooddata.integration.model;
 
-import com.gooddata.connector.Constants;
+import com.gooddata.Constants;
 import com.gooddata.util.StringUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

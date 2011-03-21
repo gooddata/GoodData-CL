@@ -26,15 +26,17 @@ package com.gooddata.connector;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import com.gooddata.Constants;
 import com.gooddata.exception.GdcIntegrationErrorException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
+import com.gooddata.transform.Transformer;
+import com.gooddata.util.CSVReader;
+import com.gooddata.util.CSVWriter;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
@@ -71,6 +73,8 @@ public abstract class AbstractConnector implements Connector {
     protected String projectId;
 
 
+    public static final int DATE_LENGTH_UNRESTRICTED = -1;
+
     /**
      * Default constructor
      */
@@ -91,17 +95,64 @@ public abstract class AbstractConnector implements Connector {
         this.schema = schema;
     }
 
-    /**
+
+
+/**
      * {@inheritDoc}
      */
-    public abstract void extract(String dir) throws IOException;
+    public void extract(String dir) throws IOException {
+        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
+        extract(dataFile.getAbsolutePath(), true);
+    }
 
     /**
      * {@inheritDoc}
      */
     public void dump(String file) throws IOException {
-        throw new IOException("The dump to CSV is not implemented for the connector "+this.getClass().toString());
+        extract(file, true);
     }
+
+
+    /**
+     * Copies the extracted data and transform them
+     * @param cr - reader
+     * @param cw - writer
+     * @param transform  - perform transformations?
+     * @param dateLength - cuts the fate to first dateLength chars
+     * @return number of extracted rows
+     * @throws IOException
+     */
+    protected int copyAndTransform(CSVReader cr, CSVWriter cw, boolean transform, int dateLength) throws IOException {
+        Transformer t = Transformer.create(schema);
+        String[] header = t.getHeader(transform);
+        cw.writeNext(header);
+        String[] row = cr.readNext();
+        int rowCnt = 0;
+        while (row != null) {
+                rowCnt++;
+                if(row.length == 1 && row[0].length() == 0) {
+                    row = cr.readNext();
+                    continue;
+                }
+                if(transform) {
+                    row = t.transformRow(row, dateLength);
+                }
+                cw.writeNext(row);
+                cw.flush();
+                row = cr.readNext();
+        }
+        cw.close();
+        cr.close();
+        return rowCnt;
+    }
+
+/**
+     * Extract rows
+     * @param file name of the target file
+     * @param transform perform transformations
+     * @throws IOException
+     */
+     public abstract void extract(String file, final boolean transform) throws IOException;
 
     /**
      * {@inheritDoc}
@@ -123,8 +174,35 @@ public abstract class AbstractConnector implements Connector {
      */
     protected void initSchema(String configFileName) throws IOException {
         schema = SourceSchema.createSchema(new File(configFileName));
+        expandDates(getSchema());
     }
-    
+
+    protected void expandDates(SourceSchema s) {
+        List<SourceColumn> dates = s.getDates();
+        if(dates != null && dates.size()>0) {
+            for(SourceColumn d : dates) {
+                SourceColumn dateFact = new SourceColumn(d.getName()+ N.DT_SLI_SFX, SourceColumn.LDM_TYPE_FACT, d.getTitle()+" (Date)");
+                String fmt = d.getFormat();
+                dateFact.setDateFact(true);
+                dateFact.setDataType("INT");
+                dateFact.setTransformation("GdcDateArithmetics.computeDateFact("+d.getName() +",\""+fmt+"\")");
+                s.addColumn(dateFact);
+                if(d.isDatetime()) {
+                    SourceColumn timeFact = new SourceColumn(d.getName() + N.TM_SLI_SFX, SourceColumn.LDM_TYPE_FACT, d.getTitle()+" (Time)");
+                    timeFact.setTimeFact(true);
+                    timeFact.setDataType("INT");
+                    timeFact.setTransformation("GdcDateArithmetics.computeTimeFact("+d.getName() + ",\""+fmt+"\")");
+                    s.addColumn(timeFact);
+                    SourceColumn timeAttr = new SourceColumn(d.getName() +"_"+N.ID, SourceColumn.LDM_TYPE_REFERENCE, d.getTitle()+" (Time)");
+                    timeAttr.setTimeFact(true);
+                    timeAttr.setSchemaReference(d.getSchemaReference());
+                    timeAttr.setTransformation("GdcDateArithmetics.computeTimeAttribute("+d.getName() + ",\""+fmt+"\")");
+                    s.addColumn(timeAttr);
+                }
+            }
+        }
+    }
+
     public String generateMaqlCreate() {
     	MaqlGenerator mg = new MaqlGenerator(schema);
     	return mg.generateMaqlCreate();
@@ -245,20 +323,8 @@ public abstract class AbstractConnector implements Connector {
         Connector cc = ctx.getConnectorMandatory();
         String csvFile = c.getParamMandatory("csvFile");
         cc.dump(csvFile);
-        l.debug("Data dump finished. Data dumped into the file '"+csvFile+"'");
         l.info("Data dump finished. Data dumped into the file '"+csvFile+"'");
     }
-
-
-    protected String[] populateCsvHeaderFromSchema(SourceSchema schema) {
-        List<SourceColumn> columns = schema.getColumns();
-        String[] header = new String[columns.size()];
-        for(int i = 0; i < header.length; i++) {
-            header[i] = StringUtil.toIdentifier(columns.get(i).getName());
-        }
-        return header;
-    }
-    
 
     public static List<Column> populateColumnsFromSchema(SourceSchema schema) {
         List<Column> columns = new ArrayList<Column>();
@@ -273,12 +339,20 @@ public abstract class AbstractConnector implements Connector {
                    sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
                    sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
                     c.setReferenceKey(1);
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
-                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT))
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE))
                     c.setPopulates(new String[] {"label." + ssn + "." + scn});
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE))
-                    c.setPopulates(new String[] {"label." + StringUtil.toIdentifier(sc.getSchemaReference()) +
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT))
+                    c.setPopulates(new String[] {"label." + ssn + "." + scn});
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE)) {
+                    if(sc.isTimeFact()) {
+                        c.setName(StringUtil.toIdentifier(sc.getName()));
+                        c.setPopulates(new String[] {Constants.DEFAULT_TIME_LABEL+StringUtil.toIdentifier(sc.getSchemaReference())});
+
+                    }
+                    else
+                        c.setPopulates(new String[] {"label." + StringUtil.toIdentifier(sc.getSchemaReference()) +
                             "." + StringUtil.toIdentifier(sc.getReference())});
+                }
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL))
                     c.setPopulates(new String[] {"label." + ssn + "." + StringUtil.toIdentifier(sc.getReference()) +
                             "." + scn});
@@ -307,33 +381,25 @@ public abstract class AbstractConnector implements Connector {
                             c.setPopulates(new String[] {sr + "." + Constants.DEFAULT_DATE_LABEL +
                                     Constants.DEFAULT_DATE_LABEL_SUFFIX});
                         }
-                        // add a new column for the date fact
-                        Column dfc = new Column(sc.getName() + N.DT_SLI_SFX);
-                        dfc.setMode(Column.LM_FULL);
-                        dfc.setPopulates(new String[] {N.DT + "." + ssn + "." + scn});
-                        columns.add(dfc);
-
-
-                        if(sc.isDatetime()) {
-                            Column tfc = new Column(sc.getName() + N.TM_SLI_SFX);
-                            tfc.setMode(Column.LM_FULL);
-                            tfc.setPopulates(new String[] {N.TM + "." + N.DT + "." + ssn + "." + scn});
-                            columns.add(tfc);
-
-                            Column tid = new Column(N.TM_PFX+StringUtil.toIdentifier(sc.getName())+"_"+N.ID);
-                            tid.setMode(Column.LM_FULL);
-                            tid.setPopulates(new String[] {Constants.DEFAULT_TIME_LABEL+sr});
-                            tid.setReferenceKey(1);
-                            columns.add(tid);
-                        }
                     }
                     else {
                         c.setPopulates(new String[] {"label." + ssn + "." + scn});   
                     }
 
                 }
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT))
-                    c.setPopulates(new String[] {"fact." + ssn + "." + scn});
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT)) {
+                    if(sc.isDateFact()) {
+                        c.setName(sc.getName());
+                        c.setPopulates(new String[] {N.DT + "." + ssn + "." + scn.replace(N.DT_SLI_SFX,"")});
+                    }
+                    else if(sc.isTimeFact()) {
+                        c.setName(sc.getName());
+                        c.setPopulates(new String[] {N.TM + "." + N.DT + "." + ssn + "." + scn.replace(N.TM_SLI_SFX,"")});
+                    }
+                    else {
+                        c.setPopulates(new String[] {"fact." + ssn + "." + scn});
+                    }
+                }
                 columns.add(c);
             }
         }
@@ -360,18 +426,6 @@ public abstract class AbstractConnector implements Connector {
         SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
         List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
         List<Column> columns = populateColumnsFromSchema(cc.getSchema());
-
-        /*
-        l.info("SLI COLUMNS");
-        for(Column co : sliColumns) {
-            l.info("name = "+co.getName()+" populates = "+co.getPopulates());
-        }
-
-        l.info("XML COLUMNS");
-        for(Column co : columns) {
-            l.info("name = "+co.getName()+" populates = "+co.getPopulates());
-        }
-        */
 
         if(sliColumns.size() > columns.size())
             throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");

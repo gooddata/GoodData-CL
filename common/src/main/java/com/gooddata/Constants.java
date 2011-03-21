@@ -21,7 +21,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.gooddata.connector;
+package com.gooddata;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -33,6 +33,9 @@ public class Constants {
 
 	public final static int MAX_TABLE_NAME_LENGTH = 44;
     public final static int MAX_SCHEMA_NAME_LENGTH = 24;
+
+    public final static String DEFAULT_INT_FMT_STRING = "###";
+    public final static String DEFAULT_DEC_FMT_STRING = "###.00";
 
 	public final static String DEFAULT_DATE_FMT_STRING = "yyyy-MM-dd";
     public final static String DEFAULT_DATETIME_FMT_STRING = "yyyy-MM-dd HH:mm:ss";

@@ -23,6 +23,7 @@
 
 package com.gooddata.connector;
 
+import com.gooddata.Constants;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;

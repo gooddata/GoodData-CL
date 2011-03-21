@@ -27,6 +27,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gooddata.connector.AbstractConnector;
+import com.gooddata.transform.Transformer;
+import com.gooddata.util.DateUtil;
+import com.restfb.util.DateUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -60,15 +64,14 @@ public class FeedDumper {
 
     /**
      * Dupmps the gdata feed to CSV
-     * @param schema input schema
      * @param cw CSVWriter
      * @param feed Google feed
      * @param gaq Google Analytics Query
-     * @param dateExt date columns extender
-     * @param extendDates add the date facts?
+     * @param t Transformer
+     * @param transform perform transformations?
      * @throws IOException in case of an IO problem
      */
-    public static int dump(SourceSchema schema, CSVWriter cw, DataFeed feed, GaQuery gaq, DateColumnsExtender dateExt, boolean extendDates) throws IOException {
+    public static int dump(CSVWriter cw, DataFeed feed, GaQuery gaq, Transformer t, boolean transform) throws IOException {
         l.debug("Dumping GA feed.");
         String profileId = gaq.getIds();
         if(profileId == null || profileId.length() <=0)
@@ -77,9 +80,6 @@ public class FeedDumper {
         List<Dimension> dimensions = null;
         List<String> dimensionNames = new ArrayList<String>();
         List<Metric> metrics = null;
-
-        // Is there an IDENTITY connection point?
-        int identityColumn = schema.getIdentityColumn();
 
         if (!entries.isEmpty()) {
             DataEntry singleEntry = entries.get(0);
@@ -98,15 +98,12 @@ public class FeedDumper {
             headers.add(metric.getName());
         }
 
-        final DateTimeFormatter inFmt = DateTimeFormat.forPattern(IN_FMT);
-        final DateTimeFormatter outFmt = DateTimeFormat.forPattern(OUT_FMT);
+        final DateTimeFormatter inFmt = DateUtil.getDateFormatter(IN_FMT, false);
+        final DateTimeFormatter outFmt = DateUtil.getDateFormatter(OUT_FMT, false);
         for (DataEntry entry : entries) {
             final List<String> row = new ArrayList<String>();
-            String key = "";
             for (String dataName : headers) {
                 final String valueIn = entry.stringValueOf(dataName);
-                if(dimensionNames.contains(dataName))
-                    key += valueIn + "|";
                 String valueOut;
                 if (GaConnector.GA_DATE.equalsIgnoreCase(dataName)) {
                 	if (valueIn == null || valueIn.length() !=8 || UNKNOWN_DATE.equals(valueIn)) {
@@ -127,18 +124,10 @@ public class FeedDumper {
                 }
                 row.add(valueOut);
             }
-            key += profileId;
             row.add(0,profileId);
-            String hex = DigestUtils.md5Hex(key);
-            if(identityColumn >= 0) {
-                row.add(identityColumn,hex);
-            }
-
             String[] r = row.toArray(new String[]{});
-            // add the extra date columns
-            if(extendDates)
-                r = dateExt.extendRow(r);
-
+            if(transform)
+                r = t.transformRow(r, AbstractConnector.DATE_LENGTH_UNRESTRICTED);
             cw.writeNext(r);
         }
         l.debug("Dumped "+entries.size()+" rows from GA feed.");

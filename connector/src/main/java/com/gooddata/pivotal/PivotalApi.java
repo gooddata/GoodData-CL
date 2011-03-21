@@ -23,37 +23,23 @@
 
 package com.gooddata.pivotal;
 
-import com.gooddata.connector.Constants;
-import com.gooddata.exception.GdcLoginException;
-import com.gooddata.exception.GdcRestApiException;
-import com.gooddata.exception.HttpMethodException;
+import com.gooddata.Constants;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
-import com.gooddata.util.XPathReader;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.auth.AuthPolicy;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.*;
-import java.net.HttpCookie;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -105,6 +91,8 @@ public class PivotalApi {
      * Shared HTTP client
      */
     private HttpClient client;
+
+    protected DecimalFormat decf = new DecimalFormat(Constants.DEFAULT_DEC_FMT_STRING);
 
     /**
      * The Pivotal API wrapper constructor
@@ -289,7 +277,7 @@ public class PivotalApi {
      * @throws Exception in case of an IO issue
      */
     public void computeIterationVelocity(String csvFile, int velocityIterationCount,
-                                         Map<Integer,Double> velocities, Map<String,String> releaseInfo) throws IOException {
+                                         Map<Integer,String> velocities, Map<String,String> releaseInfo) throws IOException {
         Map<Integer,Integer> estimates = new HashMap<Integer,Integer>();
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
         String[] header = cr.readNext();
@@ -369,7 +357,8 @@ public class PivotalApi {
                     double velocity = 0;
                     if(cnt>0)
                         velocity = (double)estimate / (double)cnt;
-                    velocities.put(iteration, new Double(velocity));
+                    String vs = decf.format(velocity);
+                    velocities.put(iteration, vs);
 
                 }
             }
@@ -397,7 +386,7 @@ public class PivotalApi {
      */
     public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, DateTime t, int velocityIterationCount) throws IOException {
         String today = writer.print(t);
-        Map<Integer,Double> velocities = new HashMap<Integer,Double>();
+        Map<Integer,String> velocities = new HashMap<Integer,String>();
         Map<String,String> releases = new HashMap<String,String>();
         computeIterationVelocity(csvFile, velocityIterationCount, velocities, releases);
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
@@ -464,7 +453,8 @@ public class PivotalApi {
                             storiesRecord.add(convertDate(header, row[i]));
                             if(row[i] != null && row[i].length()>0) {
                                 Integer iteration = Integer.parseInt(row[i]);
-                                storiesRecord.add(convertDate(header, velocities.get(iteration).toString()));
+
+                                storiesRecord.add(convertDate(header, velocities.get(iteration)));
                             }
                             else {
                                 storiesRecord.add(convertDate(header, "0"));

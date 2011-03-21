@@ -281,6 +281,15 @@ public class SourceSchema {
     }
 
     /**
+     * Returns all IGNORE columns
+     * @return all IGNORE columns
+     */
+    public List<SourceColumn> getIgnored() {
+        return getColumnByType(SourceColumn.LDM_TYPE_IGNORE);
+    }
+
+
+    /**
      * Returns all CONNECTION POINT columns
      * @return all CONNECTION POINT columns
      */
@@ -325,7 +334,7 @@ public class SourceSchema {
         int identityColumn = -1;
         for(int i=0; i<cps.size(); i++) {
             SourceColumn cp = cps.get(i);
-            if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(cp.getDataType())) {
+            if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(cp.getTransformation())) {
                 if(identityColumn >= 0) {
                     l.debug("There are multiple CONNECTION POINTS in the schema "+getName());
                     throw new InvalidParameterException("There are multiple CONNECTION POINTS in the schema "+getName());

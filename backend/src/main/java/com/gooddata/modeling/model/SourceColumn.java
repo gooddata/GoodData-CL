@@ -47,50 +47,29 @@ public class SourceColumn {
 
     public static final String IDENTITY_DATATYPE = "VARCHAR(32)";
 
-    /**
-     * Column name
-     */
     private String name;
     
-    /**
-     * Column title
-     */
     private String title;
     
-    /**
-     * Column LDM type (ATTRIBUTE | LABEL | FACT)
-     */
     private String ldmType;
     
-    /**
-     * LABEL's or REFERENCE's primary source column
-     */
     private String reference;
 
-    /**
-     * REFERENCE's primary source schema
-     */
     private String schemaReference;
 
-    /**
-     * Column's folder
-     */
     private String folder;
     
-    /**
-     * Column's format
-     */
     private String format;
 
-    /**
-     * Column's datatype
-     */
     private String dataType;
 
-    /**
-     * Include time
-     */
     private String datetime;
+
+    private String transformation;
+
+    private boolean isDateFact;
+
+    private boolean isTimeFact;
 
 
     /**
@@ -147,6 +126,8 @@ public class SourceColumn {
     }
 
     /**
+     * Column name
+     */ /**
      * Column's name getter
      * @return column name
      */
@@ -163,6 +144,8 @@ public class SourceColumn {
     }
 
     /**
+     * Column LDM type (ATTRIBUTE | LABEL | FACT)
+     */ /**
      * Column's LDM type getter
      * @return column LDM type
      */
@@ -179,14 +162,16 @@ public class SourceColumn {
     }
 
     /**
+     * LABEL's or REFERENCE's primary source column
+     */ /**
      * LABEL's or REFERENCE's primary source column getter.
      * 
      * @return LABEL's or REFERENCE's primary source column, <tt>null</tt> for other LDM types regardless
      *      of earlier invocations of {@link #setReference(String)}
      */
     public String getReference() {
-        if (SourceColumn.LDM_TYPE_REFERENCE.equals(ldmType) || SourceColumn.LDM_TYPE_LABEL.equals(ldmType) ||
-                SourceColumn.LDM_TYPE_DATE.equals(ldmType) ){
+        if (SourceColumn.LDM_TYPE_REFERENCE.equals(getLdmType()) || SourceColumn.LDM_TYPE_LABEL.equals(getLdmType()) ||
+                SourceColumn.LDM_TYPE_DATE.equals(getLdmType()) ){
             return reference;
         }
         return null;
@@ -201,12 +186,14 @@ public class SourceColumn {
     }
 
     /**
+     * REFERENCE's primary source schema
+     */ /**
      * LABEL's, DATE's or REFERENCE's primary source schema getter
      * @return LABEL's, DATE's or REFERENCE's primary source schema. Returns <tt>null</tt> for other
      *      LDM types regardless of previous invocations of {@link #setSchemaReference(String)}
      */
     public String getSchemaReference() {
-        if (SourceColumn.LDM_TYPE_REFERENCE.equals(ldmType) || SourceColumn.LDM_TYPE_DATE.equals(ldmType) || SourceColumn.LDM_TYPE_LABEL.equals(ldmType)){
+        if (SourceColumn.LDM_TYPE_REFERENCE.equals(getLdmType()) || SourceColumn.LDM_TYPE_DATE.equals(getLdmType()) || SourceColumn.LDM_TYPE_LABEL.equals(getLdmType())){
             return schemaReference;
         }
         return null;
@@ -221,6 +208,8 @@ public class SourceColumn {
     }
 
     /**
+     * Column title
+     */ /**
      * Column's title getter
      * @return column title
      */
@@ -237,6 +226,8 @@ public class SourceColumn {
     }
 
     /**
+     * Column's folder
+     */ /**
      * Column's folder getter
      * @return column folder
      */
@@ -253,6 +244,8 @@ public class SourceColumn {
     }
 
     /**
+     * Column's format
+     */ /**
      * Format getter
      * @return column format
      */
@@ -268,6 +261,9 @@ public class SourceColumn {
         this.format = format;
     }
 
+    /**
+     * Column's datatype
+     */
     public String getDataType() {
         return dataType;
     }
@@ -276,12 +272,15 @@ public class SourceColumn {
         this.dataType = dataType;
     }
 
+    /**
+     * Include time
+     */
     public String getDatetime() {
         return datetime;
     }
 
     public boolean isDatetime() {
-        return (datetime != null && ("true".equalsIgnoreCase(datetime) || "1".equalsIgnoreCase(datetime)));
+        return (getDatetime() != null && ("true".equalsIgnoreCase(getDatetime()) || "1".equalsIgnoreCase(getDatetime())));
     }
 
     public void setDatetime(String datetime) {
@@ -302,22 +301,22 @@ public class SourceColumn {
         if(StringUtil.containsInvvalidIdentifierChar(name))
             throw new ModelException("Column name "+name+" contains invalid characters");
         */
-        if( !LDM_TYPE_ATTRIBUTE.equals(ldmType) && 
-            !LDM_TYPE_CONNECTION_POINT.equals(ldmType) &&
-            !LDM_TYPE_DATE.equals(ldmType) && 
-            !LDM_TYPE_FACT.equals(ldmType) &&
-            !LDM_TYPE_IGNORE.equals(ldmType) && 
-            !LDM_TYPE_LABEL.equals(ldmType) &&
-            !LDM_TYPE_REFERENCE.equals(ldmType) )
-                throw new ModelException("Column "+name+" has invalid LDM type "+ldmType);
-        if(LDM_TYPE_LABEL.equals(ldmType) && (reference == null || reference.length()<=0))
-            throw new ModelException("Column "+name+" has type LABEL but doesn't contain any reference.");
-        if(LDM_TYPE_REFERENCE.equals(ldmType) && (reference == null || reference.length()<=0))
-            throw new ModelException("Column "+name+" has type REFERENCE but doesn't contain any reference.");
-        if(LDM_TYPE_REFERENCE.equals(ldmType) && (schemaReference == null || schemaReference.length()<=0))
-            throw new ModelException("Column "+name+" has type REFERENCE but doesn't contain any schema reference.");
-        if(LDM_TYPE_DATE.equals(ldmType) && (format == null || format.length()<=0))
-            throw new ModelException("Column "+name+" has type DATE but doesn't contain any date format.");
+        if( !LDM_TYPE_ATTRIBUTE.equals(getLdmType()) &&
+            !LDM_TYPE_CONNECTION_POINT.equals(getLdmType()) &&
+            !LDM_TYPE_DATE.equals(getLdmType()) &&
+            !LDM_TYPE_FACT.equals(getLdmType()) &&
+            !LDM_TYPE_IGNORE.equals(getLdmType()) &&
+            !LDM_TYPE_LABEL.equals(getLdmType()) &&
+            !LDM_TYPE_REFERENCE.equals(getLdmType()) )
+                throw new ModelException("Column "+ getName() +" has invalid LDM type "+ getLdmType());
+        if(LDM_TYPE_LABEL.equals(getLdmType()) && (getReference() == null || getReference().length()<=0))
+            throw new ModelException("Column "+ getName() +" has type LABEL but doesn't contain any reference.");
+        if(LDM_TYPE_REFERENCE.equals(getLdmType()) && (getReference() == null || getReference().length()<=0))
+            throw new ModelException("Column "+ getName() +" has type REFERENCE but doesn't contain any reference.");
+        if(LDM_TYPE_REFERENCE.equals(getLdmType()) && (getSchemaReference() == null || getSchemaReference().length()<=0))
+            throw new ModelException("Column "+ getName() +" has type REFERENCE but doesn't contain any schema reference.");
+        if(LDM_TYPE_DATE.equals(getLdmType()) && (getFormat() == null || getFormat().length()<=0))
+            throw new ModelException("Column "+ getName() +" has type DATE but doesn't contain any date format.");
     }
 
 	/* (non-Javadoc)
@@ -327,12 +326,14 @@ public class SourceColumn {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((ldmType == null) ? 0 : ldmType.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((getLdmType() == null) ? 0 : getLdmType().hashCode());
+		result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
 		result = prime * result
-				+ ((reference == null) ? 0 : reference.hashCode());
+				+ ((getReference() == null) ? 0 : getReference().hashCode());
 		result = prime * result
-				+ ((schemaReference == null) ? 0 : schemaReference.hashCode());
+				+ ((getSchemaReference() == null) ? 0 : getSchemaReference().hashCode());
+        result = prime * result
+				+ ((getTransformation() == null) ? 0 : getTransformation().hashCode());
 		return result;
 	}
 
@@ -348,27 +349,58 @@ public class SourceColumn {
 		if (getClass() != obj.getClass())
 			return false;
 		SourceColumn other = (SourceColumn) obj;
-		if (ldmType == null) {
-			if (other.ldmType != null)
+		if (getLdmType() == null) {
+			if (other.getLdmType() != null)
 				return false;
-		} else if (!ldmType.equals(other.ldmType))
+		} else if (!getLdmType().equals(other.getLdmType()))
 			return false;
-		if (name == null) {
-			if (other.name != null)
+		if (getName() == null) {
+			if (other.getName() != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!getName().equals(other.getName()))
 			return false;
-		if (reference == null) {
-			if (other.reference != null)
+		if (getReference() == null) {
+			if (other.getReference() != null)
 				return false;
-		} else if (!reference.equals(other.reference))
+		} else if (!getReference().equals(other.getReference()))
 			return false;
-		if (schemaReference == null) {
-			if (other.schemaReference != null)
+		if (getSchemaReference() == null) {
+			if (other.getSchemaReference() != null)
 				return false;
-		} else if (!schemaReference.equals(other.schemaReference))
+		} else if (!getSchemaReference().equals(other.getSchemaReference()))
+			return false;
+        if (getTransformation() == null) {
+			if (other.getTransformation() != null)
+				return false;
+		} else if (!getTransformation().equals(other.getTransformation()))
 			return false;
 		return true;
 	}
 
+    /**
+     * Transformation
+     */
+    public String getTransformation() {
+        return transformation;
+    }
+
+    public void setTransformation(String transformation) {
+        this.transformation = transformation;
+    }
+
+    public boolean isDateFact() {
+        return isDateFact;
+    }
+
+    public void setDateFact(boolean dateFact) {
+        isDateFact = dateFact;
+    }
+
+    public boolean isTimeFact() {
+        return isTimeFact;
+    }
+
+    public void setTimeFact(boolean timeFact) {
+        isTimeFact = timeFact;
+    }
 }

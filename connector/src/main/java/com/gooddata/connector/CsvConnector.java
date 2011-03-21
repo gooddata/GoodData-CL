@@ -28,10 +28,9 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.*;
 
+import com.gooddata.Constants;
 import com.gooddata.exception.InvalidParameterException;
-import com.gooddata.naming.N;
 import com.gooddata.util.*;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
 import com.gooddata.csv.DataTypeGuess;
@@ -41,10 +40,6 @@ import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  * GoodData CSV Connector
@@ -83,86 +78,13 @@ public class CsvConnector extends AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
-    public void extract(String dir) throws IOException {
-        File dataFile = new File(dir + System.getProperty("file.separator") + "data.csv");
-        extract(dataFile.getAbsolutePath(), true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void dump(String file) throws IOException {
-        extract(file, false);
-    }
-
-    /**
-     * Extract rows
-     * @param file name of the target file
-     * @param extendDates add date/time facts
-     * @throws IOException
-     */
-    public void extract(String file, final boolean extendDates) throws IOException {
-        // Is there an IDENTITY connection point?
-        int identityColumn = schema.getIdentityColumn();
+    public void extract(String file, final boolean transform) throws IOException {
         CSVReader cr = FileUtil.createUtf8CsvReader(this.getDataFile(), this.getSeparator());
         CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(file));
-        String[] header = this.populateCsvHeaderFromSchema(schema);
-        int colCnt = header.length - ((identityColumn>=0)?1:0);
-        String[] row = null;
-        if(hasHeader)  {
-            row = cr.readNext();
-            if(row.length != colCnt) {
-                throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
-                        "it's configuration file. Row="+1);
-            }
-        }
-        // add the extra date headers
-        DateColumnsExtender dateExt = new DateColumnsExtender(schema);
-        if(extendDates)
-            header = dateExt.extendHeader(header);
-        cw.writeNext(header);
-        row = cr.readNext();
-        int rowCnt = 0;
-        while (row != null) {
-            rowCnt++;
-            if(row.length != colCnt) {
-                if(!(row.length == 1 && row[0].length() == 0)) {
-                    // this is not empty line
-                    throw new InvalidParameterException("The delimited file "+this.getDataFile()+" has different number of columns than " +
-                        "it's configuration file. Row="+rowCnt);
-                }
-                else {
-                    row = cr.readNext();
-                    continue;
-                }
-            }
-            if(identityColumn>=0) {
-                String key = "";
-                List<String> rowL = new ArrayList<String>(row.length+1);
-                List<SourceColumn> columns = schema.getColumns();
-                for(int i=0; i< row.length; i++) {
-                    int adjustedConfigIndex = (i >= identityColumn) ? (i+1) : (i);
-                    if(SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                       SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType()) ||
-                       SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(columns.get(adjustedConfigIndex).getLdmType())
-                    ) {
-                        key += row[i] + "|";
-                    }
-                    rowL.add(row[i]);
-                }
-                String hex = DigestUtils.md5Hex(key);
-                rowL.add(identityColumn,hex);
-                row = rowL.toArray(new String[]{});
-            }
-            // add the extra date columns
-            if(extendDates)
-                row = dateExt.extendRow(row);
-            cw.writeNext(row);
-            row = cr.readNext();
-        }
-        cw.flush();
-        cw.close();
-        cr.close();
+        if(hasHeader)
+            cr.readNext();
+        int rowCnt = copyAndTransform(cr, cw, transform, DATE_LENGTH_UNRESTRICTED);
+        l.info("The CSV connector extracted "+rowCnt+ " rows.");
     }
 
     /**
