@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public class SugarCrmWrapper {
 
-    private final static String PROTOCOL = "http://";
+    private final static String PROTOCOL = "https://";
     private final static String SUGAR_ENDPOINT = "/service/v2/soap.php";
 
     private final static int MAX_ROWS = 1000;
@@ -78,9 +78,9 @@ public class SugarCrmWrapper {
 
 
     public static void main(String[] arg) throws Exception {
-        SugarCrmWrapper s = new SugarCrmWrapper("trial.sugarondemand.com/fanodg1159", "jim", "jim");
+        SugarCrmWrapper s = new SugarCrmWrapper("trial.sugarcrm.com/dcowhv3912/", "jim", "jim");
         s.connect();
-        s.getAllEntries("Users",
+        s.getAllEntries("Opportunities",
                 new String[] {},
                 new String[] {},
                 "",
