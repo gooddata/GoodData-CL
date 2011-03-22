@@ -8,12 +8,19 @@
 UseProject(fileName="examples/sugar/pid");
 
 # CREATE THE ACCOUNT
-#UseSugarCrm(configFile="examples/sugar/account.xml",host="trial.sugarondemand.com/fanodg1159", username="jim", password="jim", entity="Accounts", fields="id, id, name, website, industry, rating");
-#Dump(csvFile="examples/sugar/account.csv");
+#UseSugarCrm(configFile="examples/sugar/account.xml",host="trial.sugarcrm.com/dcowhv3912", username="jim", password="jim", entity="Accounts", fields="id, id, name, website, industry, rating");
 #TransferData();
 
 # CREATE THE USER
-UseSugarCrm(configFile="examples/sugar/user.xml",host="trial.sugarondemand.com/fanodg1159", username="jim", password="jim", entity="Users", fields="user_name, user_name, user_name, last_name, email1, department, team_name");
-#Dump(csvFile="examples/sugar/users.csv");
-TransferData();
+#UseSugarCrm(configFile="examples/sugar/user.xml",host="trial.sugarcrm.com/dcowhv3912", username="jim", password="jim", entity="Users", fields="user_name, user_name, user_name, first_name, last_name, email1, department, team_name");
+#TransferData();
+
+# CREATE THE OPPORTUNITY
+#UseSugarCrm(configFile="examples/sugar/opportunity.xml",host="trial.sugarcrm.com/dcowhv3912", username="jim", password="jim", entity="Opportunities", fields="id, id, name, url, lead_source, opportunity_type, sales_stage");
+#TransferData();
+
+# CREATE THE OPPORTUNITY
+UseSugarCrm(configFile="examples/sugar/opportunitysnapshot.xml",host="trial.sugarcrm.com/dcowhv3912", username="jim", password="jim", entity="Opportunities", fields="id, id, date_entered, date_closed, sales_stage, probability, amount, amount, date_modified, date_closed, assigned_user_name, accounts.id");
+Dump(csvFile="examples/sugar/opportunitysnapshots.csv");
+#TransferData();
 

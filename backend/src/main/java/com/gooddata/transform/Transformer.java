@@ -30,10 +30,10 @@ import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.DateUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.jexl.Expression;
-import org.apache.commons.jexl.ExpressionFactory;
-import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.jexl.JexlHelper;
+import org.apache.commons.jexl2.Expression;
+import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.MapContext;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -93,6 +93,7 @@ public class Transformer {
     protected DecimalFormat decf = new DecimalFormat(Constants.DEFAULT_DEC_FMT_STRING);
     protected DecimalFormat intf = new DecimalFormat(Constants.DEFAULT_INT_FMT_STRING);
 
+    protected JexlEngine jexl = new JexlEngine();
 
     /**
      * Runs all the row transformations
@@ -103,11 +104,11 @@ public class Transformer {
     public String[] transformRow(Object[] row, int dateLength) {
         try {
             if(row != null) {
-                Map<String, Object> fields = new HashMap<String, Object>();
                 List<SourceColumn> columns = schema.getColumns();
                 boolean computeIdentity = (schema.getIdentityColumn() >=0);
                 int idx = 0;
                 String key = "";
+                JexlContext jc = new MapContext();
                 for(int i=0; i<columns.size(); i++) {
                     SourceColumn c = columns.get(i);
                     String t = c.getTransformation();
@@ -127,7 +128,7 @@ public class Transformer {
                                     SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(c.getLdmType())) {
                                 key += row[idx] + "|";
                             }
-                            fields.put(c.getName(), row[idx]);
+                            jc.set(c.getName(), row[idx]);
                             idx++;
                         }
                         else {
@@ -140,13 +141,11 @@ public class Transformer {
                 // insert identity var
                 if(computeIdentity) {
                     String identity = DigestUtils.md5Hex(key);
-                    fields.put("IDENTITY", identity);
+                    jc.set("IDENTITY", identity);
                 }
 
-                fields.put("GdcDateArithmetics", da);
+                jc.set("GdcDateArithmetics", da);
 
-                JexlContext jc = JexlHelper.createContext();
-                jc.setVars(fields);
 
                 idx = 0;
                 int cntWithoutIgnored = columns.size();
@@ -159,11 +158,13 @@ public class Transformer {
                     String t = c.getTransformation();
                     if(!SourceColumn.LDM_TYPE_IGNORE.equalsIgnoreCase(c.getLdmType())) {
                         if( t == null) {
-                            nrow.add(fields.get(c.getName()).toString());
+                            nrow.add(jc.get(c.getName()).toString());
                         }
                         else {
                             Object result = expressions[i].evaluate(jc);
-                            nrow.add((result != null)?(result.toString()):(""));
+                            String value = (result != null)?(result.toString()):("");
+                            nrow.add(value);
+                            jc.set(c.getName(), result);
                         }
                     }
                 }
@@ -259,7 +260,7 @@ public class Transformer {
                         if(c != null) {
                             String t = c.getTransformation();
                             if( t != null) {
-                                es[i] = ExpressionFactory.createExpression(t);
+                                es[i] = jexl.createExpression(t);
                             }
                         }
                     }

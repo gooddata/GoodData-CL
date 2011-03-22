@@ -23,9 +23,20 @@
           <folder>User</folder>
       </column>
       <column>
+        <name>firstname</name>
+        <title>Firstname</title>
+          <ldmType>IGNORE</ldmType>
+      </column>
+      <column>
+        <name>lastname</name>
+        <title>Lastname</title>
+          <ldmType>IGNORE</ldmType>
+      </column>
+      <column>
         <name>name</name>
         <title>Name</title>
           <ldmType>LABEL</ldmType>
+		  <transformation>lastname+", "+firstname</transformation>
           <reference>sfdcid</reference>
           <folder>User</folder>
       </column>

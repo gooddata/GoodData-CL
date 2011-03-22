@@ -1,0 +1,125 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<schema>
+  <name>Opportunity Snapshot</name>
+  <columns>
+      <column>
+        <name>id</name>
+        <title>Opportunity Snapshot</title>
+        <ldmType>CONNECTION_POINT</ldmType>
+        <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>opportunityid</name>
+        <title>Opportunity Id</title>
+          <ldmType>REFERENCE</ldmType>
+          <schemaReference>Opportunity</schemaReference>
+          <reference>id</reference>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>createddate</name>
+        <title>Created Date</title>
+          <ldmType>DATE</ldmType>
+          <schemaReference>Created</schemaReference>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>closedate</name>
+        <title>Closed Date</title>
+          <ldmType>DATE</ldmType>
+          <schemaReference>Closed</schemaReference>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>snapshotdate</name>
+        <title>Snapshot Date</title>
+          <ldmType>DATE</ldmType>
+          <schemaReference>Snapshot</schemaReference>
+		  <transformation>GdcDateArithmetics.today()</transformation>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>stagename</name>
+        <title>Opportunity Stage</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>stageorder</name>
+        <title>Opportunity Stage Order</title>
+          <ldmType>LABEL</ldmType>
+          <reference>stagename</reference>
+		  <transformation>{"Qualification":"1","Perception Analysis":"2","Value Proposition":"3","Id. Decision Makers":"4","Prospecting":"5","Proposal/Price Quote":"6","Needs Analysis":"7","Negotiation/Review":"8","Closed Lost":"9","Closed Won":"10"}.get(stagename)</transformation>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>stageisactive</name>
+        <title>Opportunity Stage Order</title>
+          <ldmType>ATTRIBUTE</ldmType>
+		  <transformation>"true"</transformation>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>snapshotid</name>
+        <title>Snapshot Id</title>
+          <ldmType>FACT</ldmType>
+          <folder>Opportunity Snapshot</folder>
+		  <transformation>GdcDateArithmetics.computeDateFact(snapshotdate, "yyyy-MM-dd")</transformation>
+      </column>
+      <column>
+        <name>probability</name>
+        <title>Opportunity Probability</title>
+          <ldmType>FACT</ldmType>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>expectedrevenue</name>
+        <title>Opportunity Expected Revenue</title>
+          <ldmType>FACT</ldmType>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>amount</name>
+        <title>Opportunity Amount</title>
+          <ldmType>FACT</ldmType>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>date_modified</name>
+        <title>Opportunity Days Since Last Activity</title>
+          <ldmType>IGNORE</ldmType>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>dayssincelastactivity</name>
+        <title>Opportunity Days Since Last Activity</title>
+          <ldmType>FACT</ldmType>
+          <folder>Opportunity Snapshot</folder>
+		  <transformation>GdcDateArithmetics.computeDateFact(snapshotdate, "yyyy-MM-dd") - GdcDateArithmetics.computeDateFact(date_modified, "yyyy-MM-dd HH:mm:ss")</transformation>
+      </column>
+      <column>
+        <name>daystoclose</name>
+        <title>Opportunity Days to Close</title>
+          <ldmType>FACT</ldmType>
+          <folder>Opportunity Snapshot</folder>
+		  <transformation>GdcDateArithmetics.computeDateFact(closedate, "yyyy-MM-dd") - GdcDateArithmetics.computeDateFact(snapshotdate, "yyyy-MM-dd")</transformation>
+      </column>
+      <column>
+        <name>userid</name>
+        <title>User Id</title>
+          <ldmType>REFERENCE</ldmType>
+          <schemaReference>User</schemaReference>
+          <reference>id</reference>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+      <column>
+        <name>accountid</name>
+        <title>Account Id</title>
+          <ldmType>REFERENCE</ldmType>
+          <schemaReference>Account</schemaReference>
+          <reference>id</reference>
+          <folder>Opportunity Snapshot</folder>
+      </column>
+  </columns>
+</schema>

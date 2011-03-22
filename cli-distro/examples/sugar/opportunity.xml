@@ -10,79 +10,63 @@
         <folder>Opportunity</folder>
       </column>
       <column>
-        <name>name</name>
-        <title>Opportunity Name</title>
-          <ldmType>LABEL</ldmType>
+        <name>sfdcid</name>
+        <title>Opportunity Id</title>
+          <ldmType>ATTRIBUTE</ldmType>
           <reference>id</reference>
           <folder>Opportunity</folder>
       </column>
       <column>
-        <name>account_name</name>
-        <title>Account</title>
-        <ldmType>ATTRIBUTE</ldmType>
-        <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>assigned_user_name</name>
-        <title>Sales Rep.</title>
-        <ldmType>ATTRIBUTE</ldmType>
-        <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>createddate</name>
-        <title>Created</title>
-          <ldmType>DATE</ldmType>
-          <schemaReference>Created</schemaReference>
+        <name>name</name>
+        <title>Opportunity Name</title>
+          <ldmType>LABEL</ldmType>
+          <reference>sfdcid</reference>
           <folder>Opportunity</folder>
       </column>
       <column>
-        <name>closedate</name>
-        <title>Closed</title>
-          <ldmType>DATE</ldmType>
-          <schemaReference>Closed</schemaReference>
+        <name>url</name>
+        <title>Opportunity URL</title>
+          <ldmType>LABEL</ldmType>
+          <reference>sfdcid</reference>
           <folder>Opportunity</folder>
       </column>
       <column>
-        <name>amount</name>
-        <title>Amount</title>
-          <ldmType>FACT</ldmType>
+        <name>leadsource</name>
+        <title>Opportunity Lead Source</title>
+          <ldmType>ATTRIBUTE</ldmType>
           <folder>Opportunity</folder>
       </column>
       <column>
-        <name>team_name</name>
-        <title>Team</title>
-        <ldmType>ATTRIBUTE</ldmType>
-        <folder>Opportunity</folder>
+        <name>type</name>
+        <title>Opportunity Type</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Opportunity</folder>
       </column>
       <column>
-        <name>opportunity_type</name>
-        <title>Type</title>
-        <ldmType>ATTRIBUTE</ldmType>
-        <folder>Opportunity</folder>
+        <name>stage</name>
+        <title>Opportunity Type</title>
+          <ldmType>IGNORE</ldmType>
       </column>
       <column>
-        <name>lead_source</name>
-        <title>Lead Source</title>
-        <ldmType>ATTRIBUTE</ldmType>
-        <folder>Opportunity</folder>
+        <name>status</name>
+        <title>Opportunity Status</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Opportunity</folder>
+          <transformation><![CDATA[ (stage.indexOf("Closed")>=0)?((stage.indexOf("Won")>=0)?("Won"):("Lost")):("Open")]]></transformation>
       </column>
       <column>
-        <name>next_step</name>
-        <title>Next step</title>
-        <ldmType>ATTRIBUTE</ldmType>
-        <folder>Opportunity</folder>
+        <name>isclosed</name>
+        <title>Opportunity Is Closed</title>
+          <ldmType>ATTRIBUTE</ldmType>
+		  <transformation><![CDATA[(stage.indexOf("Closed")>=0)?("true"):("false")]]></transformation>
+          <folder>Opportunity</folder>
       </column>
       <column>
-        <name>sales_stage</name>
-        <title>Sales Stage</title>
-        <ldmType>ATTRIBUTE</ldmType>
-        <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>probability</name>
-        <title>Probability</title>
-        <ldmType>FACT</ldmType>
-        <folder>Opportunity</folder>
+        <name>iswon</name>
+        <title>Opportunity Is Won</title>
+          <ldmType>ATTRIBUTE</ldmType>
+          <folder>Opportunity</folder>
+		  <transformation><![CDATA[(stage.indexOf("Won")>=0)?("true"):("false")]]></transformation>
       </column>
   </columns>
 </schema>

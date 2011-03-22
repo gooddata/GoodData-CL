@@ -183,6 +183,14 @@ public abstract class AbstractConnector implements Connector {
             for(SourceColumn d : dates) {
                 SourceColumn dateFact = new SourceColumn(d.getName()+ N.DT_SLI_SFX, SourceColumn.LDM_TYPE_FACT, d.getTitle()+" (Date)");
                 String fmt = d.getFormat();
+                if(fmt == null || fmt.length()<=0) {
+                    if(d.isDatetime()) {
+                        fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
+                    }
+                    else {
+                        fmt = Constants.DEFAULT_DATE_FMT_STRING;
+                    }
+                }
                 dateFact.setDateFact(true);
                 dateFact.setDataType("INT");
                 dateFact.setTransformation("GdcDateArithmetics.computeDateFact("+d.getName() +",\""+fmt+"\")");

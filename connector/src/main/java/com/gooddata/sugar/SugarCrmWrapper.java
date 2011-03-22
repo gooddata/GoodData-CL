@@ -47,8 +47,7 @@ import java.util.Map;
  */
 public class SugarCrmWrapper {
 
-    private final static String HTTPS = "https://";
-    private final static String HTTP = "http://";
+    private final static String PROTOCOL = "http://";
     private final static String SUGAR_ENDPOINT = "/service/v2/soap.php";
 
     private final static int MAX_ROWS = 1000;
@@ -163,7 +162,7 @@ public class SugarCrmWrapper {
         String msg = FileUtil.readStringFromClasspath("/com/gooddata/sugar/Login.xml", SugarCrmWrapper.class);
         msg = msg.replaceAll(USERNAME_PLACEHOLDER, getUsername());
         msg = msg.replaceAll(PASSWORD_PLACEHOLDER, getPasswordMD5());
-        String endpoint = HTTPS + getHost() + SUGAR_ENDPOINT;
+        String endpoint = PROTOCOL + getHost() + SUGAR_ENDPOINT;
         SOAPMessage response = soap.execute(endpoint, msg);
         XPath xp = soap.createXPath("//id/text()", response);
         Node result = (Node)xp.selectSingleNode(response.getSOAPBody());
@@ -205,7 +204,7 @@ public class SugarCrmWrapper {
             }
             msg = msg.replaceAll(FIELDS_PLACEHOLDER, fieldsXml);
             //System.err.println(msg);
-            String endpoint = HTTPS + getHost() + SUGAR_ENDPOINT;
+            String endpoint = PROTOCOL + getHost() + SUGAR_ENDPOINT;
             SOAPMessage response = soap.execute(endpoint, msg);
             //System.err.println(soap.dumpSoapMessage(response));
             XPath xp = soap.createXPath("//entry_list/item", response);

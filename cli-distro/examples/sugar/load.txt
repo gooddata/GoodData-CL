@@ -5,6 +5,6 @@
 UseProject(fileName="examples/sugar/pid");
 
 # LOAD THE OPPORTUNITY DATA
-UseSugarCrm(configFile="examples/sugar/opportunity.xml",host="trial.sugarondemand.com/mgfeum1640", 
+UseSugarCrm(configFile="examples/sugar/opportunity.xml",host="trial.sugarcrm.com/dcowhv3912", 
          username="jim", password="jim", entity="Opportunities", fields="id, name, account_name, assigned_user_name, date_entered, date_closed, amount, team_name, opportunity_type, lead_source, next_step, sales_stage, probability");
 TransferData();

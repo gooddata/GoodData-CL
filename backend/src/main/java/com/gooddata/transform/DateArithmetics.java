@@ -32,6 +32,9 @@ import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
  * GoodData DATE transformations
  *
@@ -44,6 +47,8 @@ public class DateArithmetics {
 
     private final DateTimeFormatter baseFmt = DateTimeFormat.forPattern(Constants.DEFAULT_DATE_FMT_STRING);
     private final DateTime base = baseFmt.parseDateTime("1900-01-01");
+    private final DateTime today = new DateTime();
+    private final String todayText = baseFmt.print(today);
 
     public String computeDateFact(String dateValue, String format) {
         String ret = "";
@@ -61,6 +66,9 @@ public class DateArithmetics {
         return ret;
     }
 
+    public String today() {
+        return todayText;
+    }
 
     public String computeTimeFact(String dateValue, String format) {
         String ret = "";

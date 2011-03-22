@@ -44,10 +44,10 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.jexl.Expression;
-import org.apache.commons.jexl.ExpressionFactory;
-import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.jexl.JexlHelper;
+import org.apache.commons.jexl2.Expression;
+import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.MapContext;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -273,16 +273,16 @@ public class GdcNotification {
                 GdcRESTApiWrapper rest = new GdcRESTApiWrapper(cliParams.getHttpConfig());
                 rest.login();
                 Expression e = null;
-                e = ExpressionFactory.createExpression(m.getCondition());
-                JexlContext jc = JexlHelper.createContext();
-                Map<String, Number> vars = new HashMap<String, Number>();
+                JexlEngine jexl = new JexlEngine();
+                e = jexl.createExpression(m.getCondition());
+                JexlContext jc = new MapContext();
                 List<Metric> metrics = m.getMetrics();
                 double[] values = null;
                 if(metrics != null && metrics.size() >0) {
                     values = new double[metrics.size()];
                     for(int i=0; i<metrics.size(); i++) {
                         values[i] = rest.computeMetric(metrics.get(i).getUri());
-                        vars.put(metrics.get(i).getAlias(), new Double(values[i]));
+                        jc.set(metrics.get(i).getAlias(), new Double(values[i]));
                     }
                 }
                 String[] texts = null;
@@ -293,7 +293,6 @@ public class GdcNotification {
                         texts[i] = rest.computeReport(reports.get(i).getUri());
                     }
                 }
-                jc.setVars(vars);
                 boolean result = decide(e.evaluate(jc));
                 if(result) {
                     NotificationTransport t = selectTransport(m.getUri());
