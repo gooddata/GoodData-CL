@@ -257,6 +257,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         int rowCnt = 0;
         try {
             QueryResult qr = c.query(sfdcQuery);
+            boolean isdone = false;
             do {
                 SObject[] sObjects = qr.getRecords();
                 if(sObjects != null && sObjects.length >0) {
@@ -295,12 +296,13 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                             rowCnt++;
                         }
                     }
-                    if(!qr.isDone()) {
+                    isdone = qr.isDone();
+                    if(!isdone) {
                         qr = c.queryMore(qr.getQueryLocator());
                         firstBatch = false;
                     }
                 }
-            } while(!qr.isDone());
+            } while(!isdone);
             l.debug("Retrieved " + rowCnt + " rows of SFDC data.");
             cw.close();
 

@@ -156,6 +156,7 @@ public class Transformer {
                 for(int i=0; i < columns.size(); i++) {
                     SourceColumn c = columns.get(i);
                     String t = c.getTransformation();
+                    //System.err.println("Column "+c.getName()+" tx:"+c.getTransformation());
                     if(!SourceColumn.LDM_TYPE_IGNORE.equalsIgnoreCase(c.getLdmType())) {
                         if( t == null) {
                             nrow.add(jc.get(c.getName()).toString());
