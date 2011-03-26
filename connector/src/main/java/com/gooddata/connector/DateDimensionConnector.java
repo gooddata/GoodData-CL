@@ -77,13 +77,12 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
     /**
      * {@inheritDoc}
      */
-    public void extract(String dir, boolean transform) throws IOException {
+    public void extract(String file, boolean transform) throws IOException {
         l.debug("Extracting time dimension data "+name);
         if(name == null || name.trim().length()<=0)
             name = "";
         InputStream r = DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/data.csv");
-        FileOutputStream w = new FileOutputStream(dir +
-                System.getProperty("file.separator") + "data.csv");
+        FileOutputStream w = new FileOutputStream(file);
         byte[] buf = new byte[BUF_LEN];
         int cnt = r.read(buf,0,BUF_LEN);
         while(cnt > 0) {
