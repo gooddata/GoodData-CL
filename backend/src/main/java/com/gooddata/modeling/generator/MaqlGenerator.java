@@ -587,7 +587,7 @@ public class MaqlGenerator {
                includeTime = column.isDatetime();
 	        }
 
-@Override
+	        @Override
 	        public String generateMaqlDdlAdd() {
 	            String reference = column.getSchemaReference();
 

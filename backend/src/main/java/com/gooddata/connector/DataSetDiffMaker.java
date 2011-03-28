@@ -57,6 +57,7 @@ class DataSetDiffMaker {
 			       schemaReference = null;
 			final int prefixLen;
 			boolean remoteColumn = true;
+			boolean dateFact = false;
 			
 			// fields populating a fact table column
 			if (c.getName().startsWith(factPrefix)) {   // FACT
@@ -65,20 +66,23 @@ class DataSetDiffMaker {
 				name = c.getName().substring(prefixLen).replaceAll("\\..*$", "");
 			} else if (c.getName().startsWith(datePrefix)) { // DATE
 				prefixLen = datePrefix.length();
-				ldmType = SourceColumn.LDM_TYPE_DATE;
-				name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "").replaceAll("_id$", "");
-				for (String pop : c.getPopulates()) {
-					// HACK - where is this naming convention defined?
-					if (pop.startsWith("dt.") && pop.endsWith(name)) { // date fact
-					    remoteColumn = false; // date attribute provides more information than the date fact
-					} else if (pop.contains(".date.")) { // date attribute
-						schemaReference = pop.replaceAll("\\.date\\..*$", "");
-					} else {
-						l.warn(String.format("Cannot determine the ldm type for field '%s'", name));
-						continue;
-					}
+				if (c.getName().endsWith("_" + N.ID)) {
+				    ldmType = SourceColumn.LDM_TYPE_DATE;
+				    name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "").replaceAll("_id$", "");
+	                for (String pop : c.getPopulates()) {
+	                    // HACK - where is this naming convention defined?
+	                    if (pop.contains(".date.")) { // date attribute
+	                        schemaReference = pop.replaceAll("\\.date\\..*$", "");
+	                    } else {
+	                        l.warn(String.format("Cannot determine the ldm type for field '%s'", name));
+	                        continue;
+	                    }
+	                }
+				} else {
+				    ldmType = SourceColumn.LDM_TYPE_FACT;
+				    name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "");
+				    dateFact = true;
 				}
-				
 			} else if (c.getName().startsWith(cpPrefix)) {  // CONNECTION_POINT (or its LABEL)
 				prefixLen = cpPrefix.length();
 				name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.NM_PFX, "");
@@ -129,10 +133,10 @@ class DataSetDiffMaker {
 						"Unsupported naming convention: '%s' field in dataset '%s",
 						c.getName(), datasetId));
 			}
-			if ("DATE".equals(ldmType) && schemaReference == null) {
-			    continue; // date fact, let's skip it - all information will be provided by the DATE attribute
-			}
 			final SourceColumn column = new SourceColumn(name, ldmType, name); // title (3rd) arg is ignored in this use case
+			if (SourceColumn.LDM_TYPE_FACT.equals(ldmType)) {
+			    column.setDateFact(dateFact);
+			}
 			if (reference != null) {
 				column.setReference(reference);
 			}
@@ -150,7 +154,8 @@ class DataSetDiffMaker {
 	            } else {
 	                deletedColumns.add(column);
 	            }
-	        }		}
+	        }
+		}
 		if (sourceConnectionPoint != null && remoteConnectionPointName == null) {
 			throw new UnsupportedOperationException("Adding a new connection point is not supported yet.");
 		}
