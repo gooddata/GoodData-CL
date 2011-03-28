@@ -141,7 +141,6 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         if(name == null || name.trim().length()<=0)
             name = "";
         String idp = StringUtil.toIdentifier(name);
-        String ts = StringUtil.toTitle(name);
         String script = "";
         BufferedReader is = new BufferedReader(new InputStreamReader(
                 DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/upload_info.json")));

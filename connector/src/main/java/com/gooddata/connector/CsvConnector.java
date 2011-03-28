@@ -181,11 +181,6 @@ public class CsvConnector extends AbstractConnector implements Connector {
         		
         	}
         }, srcColumnNames);
-        NameTransformer titleGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
-        	public String transform(String str) {
-        		return StringUtil.toTitle(str);
-        	}
-        });
         if (knownColumns < headers.length) {
         	DataTypeGuess guesser = new DataTypeGuess(true);
         	guesser.setDefaultLdmType(defaultLdmType);
@@ -197,7 +192,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
 	        	final String header = headers[j];
 	            final SourceColumn sc;
 	            final String identifier = idGen.transform(header);
-	            final String title = titleGen.transform(header);
+	            final String title = StringUtil.toTitle(header);
                 if(identifier == null || identifier.length() <= 0) {
                     throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
                 }
@@ -329,7 +324,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
     private static Set<String> getColumnNames(List<SourceColumn> columns) {
     	Set<String> result = new HashSet<String>();
 		for (final SourceColumn col : columns) {
-			result.add(StringUtil.toIdentifier(col.getName()));
+			result.add(col.getName());
 		}
 		return result;
 	}

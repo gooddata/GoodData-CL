@@ -715,7 +715,7 @@ public class GdcDI implements Executor {
                     File sf = new File(schema);
                     if(sf.exists()) {
                         SourceSchema srcSchema = SourceSchema.createSchema(sf);
-                        String ssn = StringUtil.toIdentifier(srcSchema.getName());
+                        String ssn = srcSchema.getName();
                         List<Column> columns = AbstractConnector.populateColumnsFromSchema(srcSchema);
                         SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
                         String manifest = sli.getSLIManifest(columns);

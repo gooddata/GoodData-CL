@@ -24,6 +24,7 @@
 package com.gooddata.modeling.model;
 
 import com.gooddata.exception.ModelException;
+import com.gooddata.util.StringUtil;
 
 /**
  * GoodData LDM schema column
@@ -137,10 +138,10 @@ public class SourceColumn {
 
     /**
      * Column's name setter
-     * @param name column's name
+     * @param nm column's name
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String nm) {
+        this.name = StringUtil.toIdentifier(nm);
     }
 
     /**
@@ -182,7 +183,7 @@ public class SourceColumn {
      * @param reference LABEL's or REFERENCE's primary source column
      */
     public void setReference(String reference) {
-        this.reference = reference;
+        this.reference = StringUtil.toIdentifier(reference);
     }
 
     /**
@@ -204,7 +205,7 @@ public class SourceColumn {
      * @param pks LABEL's or REFERENCE's primary source schema
      */
     public void setSchemaReference(String pks) {
-        this.schemaReference = pks;
+        this.schemaReference = StringUtil.toIdentifier(pks);
     }
 
     /**
@@ -222,7 +223,7 @@ public class SourceColumn {
      * @param title column's title
      */    
     public void setTitle(String title) {
-        this.title = title;
+        this.title = StringUtil.toTitle(title);
     }
 
     /**
@@ -240,7 +241,7 @@ public class SourceColumn {
      * @param folder column's folder
      */    
     public void setFolder(String folder) {
-        this.folder = folder;
+        this.folder = StringUtil.toTitle(folder);
     }
 
     /**

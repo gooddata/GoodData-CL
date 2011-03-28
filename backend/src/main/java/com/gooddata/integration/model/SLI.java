@@ -104,7 +104,7 @@ public class SLI {
         JSONArray oParts = new JSONArray();
         for(Column column : columns) {
             JSONObject oPart = new JSONObject();
-            oPart.put("columnName", StringUtil.toIdentifier(column.getName()));
+            oPart.put("columnName", column.getName());
             oPart.put("mode", column.getMode());
             oPart.put("populates", column.getPopulates());
             String fmt = column.getFormat();

@@ -119,7 +119,7 @@ public class SourceSchema {
      * @return
      */
     public String getDatasetName() {
-    	return "dataset." + StringUtil.toIdentifier(getName());
+    	return "dataset." + getName();
     }
 
     /**
@@ -155,6 +155,16 @@ public class SourceSchema {
         Reader r = new InputStreamReader(is, "utf8");
         SourceSchema schema = (SourceSchema)xstream.fromXML(r);
         r.close();
+        // normalize names
+        // for some reason the XML Stream doesn't use setters
+        schema.setName(schema.getName());
+        for(SourceColumn c : schema.getColumns()) {
+            c.setName(c.getName());
+            c.setTitle(c.getTitle());
+            c.setFolder(c.getFolder());
+            c.setReference(c.getReference());
+            c.setSchemaReference(c.getSchemaReference());
+        }
         return schema;
     }
 
@@ -217,7 +227,7 @@ public class SourceSchema {
      * @param name schema name
      */
     public void setName(String name) {
-        this.name = name;
+        this.name = StringUtil.toIdentifier(name);
     }
 
     /**

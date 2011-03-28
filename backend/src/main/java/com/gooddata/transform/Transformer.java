@@ -77,12 +77,12 @@ public class Transformer {
             SourceColumn c = columns.get(i);
             if(!SourceColumn.LDM_TYPE_IGNORE.equalsIgnoreCase(c.getLdmType())) {
                 if(transform) {
-                    header.add(StringUtil.toIdentifier(c.getName()));
+                    header.add(c.getName());
                 }
                 else {
                     String t = c.getTransformation();
                     if(t == null) {
-                        header.add(StringUtil.toIdentifier(c.getName()));
+                        header.add(c.getName());
                     }
                 }
             }
@@ -157,15 +157,16 @@ public class Transformer {
                     SourceColumn c = columns.get(i);
                     String t = c.getTransformation();
                     //System.err.println("Column "+c.getName()+" tx:"+c.getTransformation());
+                    String cid = c.getName();
                     if(!SourceColumn.LDM_TYPE_IGNORE.equalsIgnoreCase(c.getLdmType())) {
                         if( t == null) {
-                            nrow.add(jc.get(c.getName()).toString());
+                            nrow.add(jc.get(cid).toString());
                         }
                         else {
                             Object result = expressions[i].evaluate(jc);
                             String value = (result != null)?(result.toString()):("");
                             nrow.add(value);
-                            jc.set(c.getName(), result);
+                            jc.set(cid, result);
                         }
                     }
                 }

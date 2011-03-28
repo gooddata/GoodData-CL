@@ -84,10 +84,10 @@ public class DateColumnsExtender {
         List<String> rowExt = new ArrayList<String>();
         for(int i= 0; i < dates.size(); i++)  {
             SourceColumn c = dates.get(i);
-            rowExt.add(StringUtil.toIdentifier(c.getName()) + N.DT_SLI_SFX);
+            rowExt.add(c.getName() + N.DT_SLI_SFX);
             if(c.isDatetime()) {
-                rowExt.add(StringUtil.toIdentifier(c.getName()) + N.TM_SLI_SFX);
-                rowExt.add(N.TM_PFX+StringUtil.toIdentifier(c.getName())+"_"+N.ID);
+                rowExt.add(c.getName() + N.TM_SLI_SFX);
+                rowExt.add(N.TM_PFX+c.getName()+"_"+N.ID);
             }
         }
         if(rowExt.size() > 0)

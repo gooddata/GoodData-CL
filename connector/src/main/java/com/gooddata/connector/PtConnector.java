@@ -153,7 +153,7 @@ public class PtConnector extends AbstractConnector implements Connector {
             archiveName + ".zip";
 
         // get information about the data loading package
-        String ssn = StringUtil.toIdentifier(schema.getName());
+        String ssn = schema.getName();
         SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
         List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
         List<Column> columns = populateColumnsFromSchema(schema);

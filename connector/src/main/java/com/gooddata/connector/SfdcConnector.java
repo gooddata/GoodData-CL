@@ -190,12 +190,12 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 String nm = column.getName();
                 String tp = getColumnType(fields, nm);
                 if(tp.equals(SourceColumn.LDM_TYPE_DATE)) {
-                    SourceColumn sc = new SourceColumn(StringUtil.toIdentifier(nm), tp, nm, name);
+                    SourceColumn sc = new SourceColumn(nm, tp, nm, name);
                     sc.setFormat("yyyy-MM-dd");
                     s.addColumn(sc);
                 }
                 else {
-                    SourceColumn sc = new SourceColumn(StringUtil.toIdentifier(nm), tp, nm, name);
+                    SourceColumn sc = new SourceColumn(nm, tp, nm, name);
                     s.addColumn(sc);
                 }
             }

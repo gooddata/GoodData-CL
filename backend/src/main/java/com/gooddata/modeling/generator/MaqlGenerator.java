@@ -61,8 +61,8 @@ public class MaqlGenerator {
 
     public MaqlGenerator(SourceSchema schema) {
         this.schema = schema;
-        this.ssn = StringUtil.toIdentifier(schema.getName());
-        this.lsn = StringUtil.toTitle(schema.getName());
+        this.ssn = schema.getName();
+        this.lsn = schema.getName();
         this.factsOfAttrMaqlDdl = createFactOfMaqlDdl(schema.getName());
     }
 
@@ -106,8 +106,8 @@ public class MaqlGenerator {
      * @return the attribute table name
      */
 	public static String createAttributeTableName(SourceSchema schema, SourceColumn sc) {
-		final String ssn = StringUtil.toIdentifier(schema.getName());
-		return "d_" + ssn + "_" + StringUtil.toIdentifier(sc.getName());
+		final String ssn = schema.getName();
+		return "d_" + ssn + "_" + sc.getName();
 	}
 	
 	/**
@@ -286,7 +286,7 @@ public class MaqlGenerator {
         // Generate statements for the ATTRIBUTE folders
         for (String folder : attributeFolders) {
             String sfn = StringUtil.toIdentifier(folder);
-            String lfn = StringUtil.toTitle(folder);
+            String lfn = folder;
             script += "CREATE FOLDER {dim." + sfn + "} VISUAL(TITLE \"" + lfn + "\") TYPE ATTRIBUTE;\n";
         }
         script += "\n";
@@ -294,7 +294,7 @@ public class MaqlGenerator {
         // Generate statements for the FACT folders
         for (String folder : factFolders) {
             String sfn = StringUtil.toIdentifier(folder);
-            String lfn = StringUtil.toTitle(folder);
+            String lfn = folder;
             script += "CREATE FOLDER {ffld." + sfn + "} VISUAL(TITLE \"" + lfn + "\") TYPE FACT;\n";
         }
 
@@ -316,7 +316,7 @@ public class MaqlGenerator {
      * @return facts of attribute MAQL DDL
      */
     private static String createFactOfMaqlDdl(String schemaName) {
-    	return "{attr." + StringUtil.toIdentifier(schemaName) + "." + N.FACTS_OF + "}";
+    	return "{attr." + schemaName + "." + N.FACTS_OF + "}";
 	}
     
 
@@ -394,8 +394,8 @@ public class MaqlGenerator {
 
 	        Column(SourceColumn column, String idprefix) {
 	            this.column = column;
-	            this.scn = StringUtil.toIdentifier(column.getName());
-	            this.lcn = StringUtil.toTitle(column.getTitle());
+	            this.scn = column.getName();
+	            this.lcn = column.getTitle();
 	            this.identifier = idprefix + "." + ssn + "." + scn;
 	        }
 
@@ -498,15 +498,22 @@ public class MaqlGenerator {
 	                String sfn = StringUtil.toIdentifier(folder);
 	                folderStatement = ", FOLDER {ffld." + sfn + "}";
 	            }
-
+                // unfortunate backward compatibility fix
+                // we have converted the date/time facts and the time attribute to explicit schema elements
+                // we needed to keep the dt_ and tm_ prefixes instead of the f_
+                String prefix = N.FCT_PFX;
+                if(column.isDateFact())
+                    prefix = N.DT_PFX;
+                if(column.isTimeFact())
+                    prefix = N.TM_PFX;
 	            String script =  "CREATE FACT {"+identifier+"} VISUAL(TITLE \"" + lcn
-	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+N.FCT_PFX + scn + "};\n"
+	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+prefix + scn + "};\n"
 	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {" + identifier + "};\n";
                 String dataType = column.getDataType();
                 if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(column.getTransformation()))
                     dataType = SourceColumn.IDENTITY_DATATYPE;
                 if(dataType != null && dataType.length() > 0) {
-                    script += "ALTER DATATYPE {" + getFactTableName() + "."+N.FCT_PFX + scn + "} "+dataType+";\n";
+                    script += "ALTER DATATYPE {" + getFactTableName() + "."+prefix + scn + "} "+dataType+";\n";
                 }
                 else {
                     script += "\n";
@@ -523,7 +530,7 @@ public class MaqlGenerator {
 
 	        Label(SourceColumn column) {
 	            super(column, "label");
-	            scnPk = StringUtil.toIdentifier(column.getReference());
+	            scnPk = column.getReference();
 	        }
 
 	        @Override
@@ -593,7 +600,6 @@ public class MaqlGenerator {
 
                 String stat = generateFactMaqlCreate();
 	            if(reference != null && reference.length() > 0) {
-	                reference = StringUtil.toIdentifier(reference);
                     String r = column.getReference();
                     if(r == null || r.length() <= 0) {
                         r = N.DT_ATTR_NAME;
@@ -617,7 +623,6 @@ public class MaqlGenerator {
 	        	String reference = column.getSchemaReference();
                 boolean includeTime = column.isDatetime();
 	        	if(reference != null && reference.length() > 0) {
-	                reference = StringUtil.toIdentifier(reference);
                     String r = column.getReference();
                     if(r == null || r.length() <= 0) {
                         r = N.DT_ATTR_NAME;
@@ -693,10 +698,10 @@ public class MaqlGenerator {
 
 	    	@Override
 	    	public String generateMaqlDdlAdd() {
-                String foreignAttrId = "{attr"+"."+StringUtil.toIdentifier(column.getSchemaReference())+"."+StringUtil.toIdentifier(column.getReference())+"}";
+                String foreignAttrId = "{attr"+"."+column.getSchemaReference()+"."+column.getReference()+"}";
                 String fk = createForeignKeyMaqlDdl();
                 if(column.isTimeFact()) {
-	    		    foreignAttrId = "{"+N.TM_ATTR_NAME+StringUtil.toIdentifier(column.getSchemaReference())+"}";
+	    		    foreignAttrId = "{"+N.TM_ATTR_NAME+column.getSchemaReference()+"}";
                     fk = "{"+getFactTableName() + "."+N.TM_PFX + scn+"}";
                 }
 	            String script = "# CONNECT THE REFERENCE TO THE APPROPRIATE DIMENSION\n";
@@ -707,10 +712,10 @@ public class MaqlGenerator {
 
 	    	
 	    	public String generateMaqlDdlDrop() {
-                String foreignAttrId = "{attr"+"."+StringUtil.toIdentifier(column.getSchemaReference())+"."+StringUtil.toIdentifier(column.getReference())+"}";
+                String foreignAttrId = "{attr"+"."+column.getSchemaReference()+"."+column.getReference()+"}";
                 String fk = createForeignKeyMaqlDdl();
                 if(column.isTimeFact()) {
-	    		    foreignAttrId = "{"+N.TM_ATTR_NAME+StringUtil.toIdentifier(column.getSchemaReference())+"}";
+	    		    foreignAttrId = "{"+N.TM_ATTR_NAME+column.getSchemaReference()+"}";
                     fk = "{"+getFactTableName() + "."+N.TM_PFX + scn+"}";
                 }
 	    		String script = "# DISCONNECT THE REFERENCE FROM THE APPROPRIATE DIMENSION\n";

@@ -92,7 +92,7 @@ public class FacebookConnector extends AbstractConnector implements Connector {
         final SourceSchema s = SourceSchema.createSchema(name);
         List<String> fields = getSelectColumns(query);
         for(String field : fields) {
-            SourceColumn column = new SourceColumn(StringUtil.toIdentifier(field), SourceColumn.LDM_TYPE_ATTRIBUTE, field);
+            SourceColumn column = new SourceColumn(field, SourceColumn.LDM_TYPE_ATTRIBUTE, field);
             if(folder != null && folder.length()>0)
                 column.setFolder(folder);
             s.addColumn(column);
@@ -137,7 +137,7 @@ public class FacebookConnector extends AbstractConnector implements Connector {
             Annotation ant = new Annotation(cf.getConstPool(), ClassPool.getDefault().get("com.restfb.Facebook"));
             attribute.addAnnotation(ant);
             for(String col : cols) {
-                CtField f = CtField.make("public String "+StringUtil.toIdentifier(col)+";", c);
+                CtField f = CtField.make("public String "+col+";", c);
                 f.getFieldInfo().addAttribute(attribute);
                 c.addField(f);
             }
@@ -193,7 +193,7 @@ public class FacebookConnector extends AbstractConnector implements Connector {
             for(Object o : result) {
                 String[] row = new String[cols.size()];
                 for(int i=0; i< cols.size(); i++) {
-                    row[i] = extractValue(o, StringUtil.toIdentifier(cols.get(i)));
+                    row[i] = extractValue(o, cols.get(i));
                 }
                 if(transform)
                     row = t.transformRow(row, DATE_LENGTH_UNRESTRICTED);

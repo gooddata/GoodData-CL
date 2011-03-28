@@ -33,9 +33,9 @@ class DataSetDiffMaker {
 	    String remoteConnectionPointName = null;
 
 		for (SourceColumn sc : ss.getColumns()) {
-			sc.setName(StringUtil.toIdentifier(sc.getName()));
-			sc.setReference(StringUtil.toIdentifier(sc.getReference()));
-			sc.setSchemaReference(StringUtil.toIdentifier(sc.getSchemaReference()));
+			sc.setName(sc.getName());
+			sc.setReference(sc.getReference());
+			sc.setSchemaReference(sc.getSchemaReference());
 			sourceColumns.add(sc);
 			if (SourceColumn.LDM_TYPE_CONNECTION_POINT.equals(sc.getLdmType())) {
 				sourceConnectionPoint = sc;
