@@ -128,7 +128,7 @@ public class Transformer {
                                     SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(c.getLdmType())) {
                                 key += row[idx] + "|";
                             }
-                            jc.set(c.getName(), row[idx]);
+                            jc.set(c.getName(), (row[idx]!=null)?(row[idx]):(""));
                             idx++;
                         }
                         else {
@@ -160,7 +160,14 @@ public class Transformer {
                     String cid = c.getName();
                     if(!SourceColumn.LDM_TYPE_IGNORE.equalsIgnoreCase(c.getLdmType())) {
                         if( t == null) {
-                            nrow.add(jc.get(cid).toString());
+                            Object value = jc.get(cid);
+                            if(value != null) {
+                                nrow.add(value.toString());
+                            }
+                            else {
+                                l.debug("The column "+cid+" doesn't contain any value.");
+                            }
+
                         }
                         else {
                             Object result = expressions[i].evaluate(jc);
@@ -177,7 +184,7 @@ public class Transformer {
             }
         }
         catch(Exception e) {
-            throw new InvalidParameterException("Transformation expression error", e);
+            throw new InvalidParameterException("Transformation expression error (see debug log).", e);
         }
     }
 

@@ -161,7 +161,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                 }
             }
         }
-        l.debug("SFDC object \"+name+\" metadata retrieved.");
+        l.debug("SFDC object "+name+" metadata retrieved.");
         return result;
     }
 
@@ -275,26 +275,24 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                             }
                             firstRow = false;
                         }
-                        else {
-                            MessageElement[] cols = srow.get_any();
-                            Object[] row = new Object[cols.length];
-                            for(int i=0; i<row.length; i++) {
-                                row[i] = cols[i].getValue();
-                            }
-                            String[] nrow = null;
-                            if(transform) {
-                                nrow = t.transformRow(row, 10);
-                            }
-                            else {
-                                nrow = new String[row.length];
-                                for(int i = 0; i<row.length; i++) {
-                                    nrow[i] = row[i].toString();
-                                }
-                            }
-                            cw.writeNext(nrow);
-                            cw.flush();
-                            rowCnt++;
+                        MessageElement[] cols = srow.get_any();
+                        Object[] row = new Object[cols.length];
+                        for(int i=0; i<row.length; i++) {
+                            row[i] = cols[i].getValue();
                         }
+                        String[] nrow = null;
+                        if(transform) {
+                            nrow = t.transformRow(row, 10);
+                        }
+                        else {
+                            nrow = new String[row.length];
+                            for(int i = 0; i<row.length; i++) {
+                                nrow[i] = row[i].toString();
+                            }
+                        }
+                        cw.writeNext(nrow);
+                        cw.flush();
+                        rowCnt++;
                     }
                     isdone = qr.isDone();
                     if(!isdone) {
