@@ -36,17 +36,7 @@ In each `<column>` entry, following tags can be used:
     * REFERENCE -- a counterpart of CONNECTION_POINT in the other schema
     * IGNORE -- this column will be skipped and not uploaded
 
-4. `<folder>` allows to specify what folder this column is organized into (on UI level). 
-5. `<dataType>` specified type of the column and size allocation. Possible values:
-
-    * VARCHAR(N) -- N (1..255)
-    * DECIMAL(M,D) -- M min(-1e+15) max(1e+15), D max = 6
-    * INT -- min(-2147483648) max(2147483647)
-    * BIGINT -- min(-1e+15) max(1e+15)
-    * DATE -- 'YYYY-MM-DD'
-    * IDENTITY -- **only for** `ldmType` CONNECTION_POINT, this column is automatically populated by CL tool with MD5 hash of all non-fact fields (attributes, labels etc.) in the current row
-
-6. `<format>` only allowed (and required) for columns with ldmType DATE, this field specifies what the date format looks like (`yyyy-MM-dd` by default). We currently support following formatting characters:
+4. `<format>` only allowed (and required) for columns with ldmType DATE, this field specifies what the date format looks like (`yyyy-MM-dd` by default). We currently support following formatting characters:
     * yyyy -- year (e.g. 2010), _currently no support for the short format (yy)_
     * MM -- month (01 - 12)
     * dd -- day (01 - 31)
@@ -55,6 +45,17 @@ In each `<column>` entry, following tags can be used:
     * mm -- minutes (00 - 59)
     * ss -- seconds (00 - 59)
     * kk/kkkk -- microseconds or fractions of seconds (00-99, 000-999, 0000-9999)
-7. `<reference>` - used with LABEL columns for pointing to the primary column; used with CONNECTION_POINT column and `<schemaReference>`
-8. `<schemaReference>` - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column. When connecting to a date dimension, use the same value as in the `name` parameter of the `LoadDateDimension` command (see also [the CLI commands documentation](http://developer.gooddata.com/gooddata-cl/cli-commands.html#time_dimension_connector_commands)).
+5. `<reference>` - used with LABEL columns for pointing to the primary column; used with CONNECTION_POINT column and `<schemaReference>`
+6. `<schemaReference>` - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column. When connecting to a date dimension, use the same value as in the `name` parameter of the `LoadDateDimension` command (see also [the CLI commands documentation](http://developer.gooddata.com/gooddata-cl/cli-commands.html#time_dimension_connector_commands)).
+7. `<folder>` allows to specify what folder this column is organized into (on UI level). 
+8. `<transformation>` - apply transformation on this column. Currently supports:
+    * `IDENTITY` -- automatically fills this fields with an MD5 hash of all non-fact fields (attributes, labels etc.) in the current row. This column does must not have any representation in the datasource (ie. it's purely generated).
 9. `<datetime>` - used in a DATE column to indicate that the date contains time (in the form of `<datetime>true</datetime>`)
+
+10. `<dataType>` specified type of the column and size allocation. Possible values:
+
+    * VARCHAR(N) -- N (1..255)
+    * DECIMAL(M,D) -- M min(-1e+15) max(1e+15), D max = 6
+    * INT -- min(-2147483648) max(2147483647)
+    * BIGINT -- min(-1e+15) max(1e+15)
+    * DATE -- 'YYYY-MM-DD'
