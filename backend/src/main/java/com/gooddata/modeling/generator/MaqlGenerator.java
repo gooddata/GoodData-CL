@@ -62,7 +62,7 @@ public class MaqlGenerator {
     public MaqlGenerator(SourceSchema schema) {
         this.schema = schema;
         this.ssn = schema.getName();
-        this.lsn = schema.getName();
+        this.lsn = schema.getTitle();
         this.factsOfAttrMaqlDdl = createFactOfMaqlDdl(schema.getName());
     }
 

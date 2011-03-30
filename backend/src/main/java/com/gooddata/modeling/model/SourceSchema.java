@@ -62,6 +62,12 @@ public class SourceSchema {
     private String name;
 
     /**
+     * The LDM schema tile
+     * This is derived from the name automatically
+     */
+    private String title;
+
+    /**
      * Schema columns
      */
     private List<SourceColumn> columns;
@@ -223,10 +229,19 @@ public class SourceSchema {
     }
 
     /**
+     * Title getter
+     * @return schema title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
      * Name setter
      * @param name schema name
      */
     public void setName(String name) {
+        this.title = StringUtil.toTitle(name);
         this.name = StringUtil.toIdentifier(name);
     }
 
