@@ -482,10 +482,10 @@ public class MaqlGenerator {
                 // we needed to distinguish these schema columns, so we have added the suffixes
                 // we need to strip the suffixes here to make sure that the identifiers have backward compatible names
                 if(column.isDateFact()) {
-                     this.identifier = N.DT + "." + ssn + "." + scn.replace(N.DT_SLI_SFX,"");
+                     this.identifier = N.DT + "." + ssn + "." + scn/*.replace(N.DT_SLI_SFX,"")*/;
                 }
                 if(column.isTimeFact()) {
-                     this.identifier = N.TM + "." +  N.DT + "." + ssn + "." + scn.replace(N.TM_SLI_SFX,"");
+                     this.identifier = N.TM + "." +  N.DT + "." + ssn + "." + scn/*.replace(N.TM_SLI_SFX,"")*/;
                 }
 
 	        }
