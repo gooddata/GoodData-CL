@@ -131,3 +131,14 @@ bin/gdi.sh tests/gum_label_nocp/cmd.txt
 
 echo 'Dropping the gum_label_nocp test'
 drop "`cat tests/gum_label_nocp/pid`"
+
+echo 'Running gum_no_change test'
+bin/gdi.sh tests/gum_no_change/cmd.txt
+
+if [ -r 'tests/gum_no_change/alter.maql' ] ; then
+  echo "GenerateUpdateMaql produced an ALTER MAQL file even though there's no change" 1>&2
+  exit 1
+fi
+
+echo 'Dropping gum_no_change test'
+drop "`cat tests/gum_no_change/pid`"

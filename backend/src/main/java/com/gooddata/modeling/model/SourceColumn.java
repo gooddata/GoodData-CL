@@ -370,11 +370,7 @@ public class SourceColumn {
 				return false;
 		} else if (!getSchemaReference().equals(other.getSchemaReference()))
 			return false;
-        if (getTransformation() == null) {
-			if (other.getTransformation() != null)
-				return false;
-		} else if (!getTransformation().equals(other.getTransformation()))
-			return false;
+        
 		return true;
 	}
 

@@ -81,7 +81,8 @@
       <title>Quote Date</title>
       <ldmType>DATE</ldmType>
       <folder>Quotes</folder>
-      <format>yyyy-MM-dd</format>
+      <datetime>true</datetime>
+      <format>yyyy-MM-dd HH:mm:ss</format>
       <schemaReference>Date1</schemaReference>
     </column>
     <column>

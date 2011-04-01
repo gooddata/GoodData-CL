@@ -8,7 +8,7 @@ CreateProject(name="Reconnect Date");
 RememberProject(fileName="tests/reconnect_date/pid");
 
 # Loads time dimension to the project
-UseDateDimension(name="Date1");
+UseDateDimension(name="Date1", includeTime="true");
 
 # Generate the MAQL script describing the data model for the date dimension
 GenerateMaql(maqlFile="tests/reconnect_date/date1.maql");
@@ -16,12 +16,18 @@ GenerateMaql(maqlFile="tests/reconnect_date/date1.maql");
 # Execute the date dimension MAQL script
 ExecuteMaql(maqlFile="tests/reconnect_date/date1.maql");
 
+# Populate the time dimension
+TransferData();
+
 # Import yet another date dimension
-UseDateDimension(name="Date2");
+UseDateDimension(name="Date2", includeTime="true");
 GenerateMaql(maqlFile="tests/reconnect_date/date2.maql");
 
 # Execute the date dimension MAQL script
 ExecuteMaql(maqlFile="tests/reconnect_date/date2.maql");
+
+# Populate the time dimension
+TransferData();
 
 # load the stock quotes data file
 # the data file config has been generated
