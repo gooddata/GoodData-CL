@@ -182,7 +182,7 @@ public abstract class AbstractConnector implements Connector {
         if(dates != null && dates.size()>0) {
             for(SourceColumn d : dates) {
                 String scid = d.getName();
-                SourceColumn dateFact = new SourceColumn(scid/* + N.DT_SLI_SFX*/, SourceColumn.LDM_TYPE_FACT, d.getTitle()+" (Date)");
+                SourceColumn dateFact = new SourceColumn(scid + N.DT_SLI_SFX, SourceColumn.LDM_TYPE_FACT, d.getTitle()+" (Date)");
                 String fmt = d.getFormat();
                 if(fmt == null || fmt.length()<=0) {
                     if(d.isDatetime()) {
@@ -197,7 +197,7 @@ public abstract class AbstractConnector implements Connector {
                 dateFact.setTransformation("GdcDateArithmetics.computeDateFact("+ scid +",\""+fmt+"\")");
                 s.addColumn(dateFact);
                 if(d.isDatetime()) {
-                    SourceColumn timeFact = new SourceColumn(scid /*+ N.TM_SLI_SFX*/, SourceColumn.LDM_TYPE_FACT, d.getTitle()+" (Time)");
+                    SourceColumn timeFact = new SourceColumn(scid + N.TM_SLI_SFX, SourceColumn.LDM_TYPE_FACT, d.getTitle()+" (Time)");
                     timeFact.setTimeFact(true);
                     timeFact.setDataType("INT");
                     timeFact.setTransformation("GdcDateArithmetics.computeTimeFact("+ scid + ",\""+fmt+"\")");

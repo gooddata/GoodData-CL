@@ -482,10 +482,10 @@ public class MaqlGenerator {
                 // we needed to distinguish these schema columns, so we have added the suffixes
                 // we need to strip the suffixes here to make sure that the identifiers have backward compatible names
                 if(column.isDateFact()) {
-                     this.identifier = N.DT + "." + ssn + "." + scn/*.replace(N.DT_SLI_SFX,"")*/;
+                     this.identifier = N.DT + "." + ssn + "." + scn.replace(N.DT_SLI_SFX,"");
                 }
                 if(column.isTimeFact()) {
-                     this.identifier = N.TM + "." +  N.DT + "." + ssn + "." + scn/*.replace(N.TM_SLI_SFX,"")*/;
+                     this.identifier = N.TM + "." +  N.DT + "." + ssn + "." + scn.replace(N.TM_SLI_SFX,"");
                 }
 
 	        }
@@ -501,19 +501,19 @@ public class MaqlGenerator {
                 // unfortunate backward compatibility fix
                 // we have converted the date/time facts and the time attribute to explicit schema elements
                 // we needed to keep the dt_ and tm_ prefixes instead of the f_
-                String prefix = N.FCT_PFX;
+                String fcolname = N.FCT_PFX + scn;
                 if(column.isDateFact())
-                    prefix = N.DT_PFX;
+                    fcolname = N.DT_PFX + scn.replace(N.DT_SLI_SFX,"");
                 if(column.isTimeFact())
-                    prefix = N.TM_PFX;
+                    fcolname = N.TM_PFX + scn.replace(N.TM_SLI_SFX,"");
 	            String script =  "CREATE FACT {"+identifier+"} VISUAL(TITLE \"" + lcn
-	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+prefix + scn + "};\n"
+	                    + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+ fcolname + "};\n"
 	                    + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {" + identifier + "};\n";
                 String dataType = column.getDataType();
                 if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(column.getTransformation()))
                     dataType = SourceColumn.IDENTITY_DATATYPE;
                 if(dataType != null && dataType.length() > 0) {
-                    script += "ALTER DATATYPE {" + getFactTableName() + "."+prefix + scn + "} "+dataType+";\n";
+                    script += "ALTER DATATYPE {" + getFactTableName() + "."+ fcolname + "} "+dataType+";\n";
                 }
                 else {
                     script += "\n";
