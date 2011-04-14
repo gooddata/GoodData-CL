@@ -49,7 +49,7 @@ In each `<column>` entry, following tags can be used:
 6. `<schemaReference>` - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column. When connecting to a date dimension, use the same value as in the `name` parameter of the `LoadDateDimension` command (see also [the CLI commands documentation](http://developer.gooddata.com/gooddata-cl/cli-commands.html#time_dimension_connector_commands)).
 7. `<folder>` allows to specify what folder this column is organized into (on UI level). 
 8. `<transformation>` - apply transformation on this column. Currently supports:
-    * `IDENTITY` -- automatically fills this fields with an MD5 hash of all non-fact fields (attributes, labels etc.) in the current row. This column does must not have any representation in the datasource (ie. it's purely generated).
+    * `IDENTITY` -- automatically fills this fields with an MD5 hash of all non-fact fields (attributes, labels etc.) in the current row. This column does not have any representation in the datasource (ie. it's purely generated).
 9. `<datetime>` - used in a DATE column to indicate that the date contains time (in the form of `<datetime>true</datetime>`)
 
 10. `<dataType>` specified type of the column and size allocation. Possible values:
