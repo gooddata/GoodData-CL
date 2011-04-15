@@ -1,0 +1,20 @@
+#1 - CREATE OR RETRIEVE PROJECT ID
+CreateProject(name="CL Error Test");
+StoreProject(fileName="tests/gum_no_change/pid");
+
+#2 - GENERATE XML FILES (DATA MODEL) - DO THIS STEP ONLY ONCE!!!
+
+#3 - CREATE DATE DIMENSIONS - DO THIS STEP ONLY ONCE!!!
+UseDateDimension(name="Date", includeTime="false");
+GenerateMaql(maqlFile="tests/gum_no_change/date.maql");
+ExecuteMaql(maqlFile="tests/gum_no_change/date.maql");
+TransferData();
+
+#4 - CREATE DATA MODEL
+LoadCsv(csvDataFile="tests/gum_no_change/data1.csv", header="true", configFile="tests/gum_no_change/data.xml");
+GenerateMaql(maqlFile="tests/gum_no_change/create.maql");
+ExecuteMaql(maqlFile="tests/gum_no_change/create.maql");
+
+#5 - GENERATE ALTER MAQL SCRIPT
+LoadCsv(csvDataFile="tests/gum_no_change/data2.csv", header="true", configFile="tests/gum_no_change/data_resort.xml");
+GenerateUpdateMaql(maqlFile="tests/gum_no_change/alter.maql");
