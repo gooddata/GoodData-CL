@@ -72,9 +72,9 @@ public class MaqlGenerator {
      * @return the MAQL as a String
      */
     public String generateMaqlCreate() {
-        String script = "# THIS IS MAQL SCRIPT THAT GENERATES PROJECT LOGICAL MODEL.\n# SEE THE MAQL DOCUMENTATION " +
-                "AT http://developer.gooddata.com/api/maql-ddl.html FOR MORE DETAILS\n\n";
-        script += "# CREATE DATASET. DATASET GROUPS ALL FOLLOWING LOGICAL MODEL ELEMENTS TOGETHER.\n";
+        String script = "# This is MAQL script that generates project logical model.\n# See the MAQL documentation " +
+                "at http://developer.gooddata.com/api/maql-ddl.html for more details.\n\n";
+        script += "# Create dataset. Dataset groups all following logical model elements together.\n";
         script += "CREATE DATASET {" + schema.getDatasetName() + "} VISUAL(TITLE \"" + lsn + "\");\n\n";
         script += generateFoldersMaqlDdl(schema.getColumns());
         
@@ -122,21 +122,21 @@ public class MaqlGenerator {
         	state.processColumn(column);
         }
         
-        StringBuffer nonLabelsScript = new StringBuffer("# DROP ATTRIBUTES.\n");
+        StringBuffer nonLabelsScript = new StringBuffer("# Drop attributes.\n");
         
         for (final Column c : state.attributes.values()) {
             nonLabelsScript.append(c.generateMaqlDdlDrop());
         }
-        nonLabelsScript.append("# DROP FACTS\n");
+        nonLabelsScript.append("# Drop facts.\n");
         for (final Column c : state.facts) {
             nonLabelsScript.append(c.generateMaqlDdlDrop());
         }
-        nonLabelsScript.append("# DROP DATEs\n# DATES ARE REPRESENTED AS FACTS\n");
-        nonLabelsScript.append("# DATES ARE ALSO CONNECTED TO THE DATE DIMENSIONS\n");
+        nonLabelsScript.append("# Drop dates.\n# Dates are represented as facts.\n");
+        nonLabelsScript.append("# Dates are also connected to the date dimensions.\n");
         for (final Column c : state.dates) {
             nonLabelsScript.append(c.generateMaqlDdlDrop());
         }
-        nonLabelsScript.append("# DROP REFERENCES\n# REFERENCES CONNECT THE DATASET TO OTHER DATASETS\n");
+        nonLabelsScript.append("# Drop references.\n# References connect the dataset to other datasets.\n");
         for (final Column c : state.references) {
             nonLabelsScript.append(c.generateMaqlDdlDrop());
         }
@@ -144,7 +144,7 @@ public class MaqlGenerator {
         state.addKnownColumns(knownColumns);
         
         StringBuilder script = new StringBuilder();
-        script.append("# DROP LABELS\n");
+        script.append("# Drop labels\n");
         for (final Column c: state.labels) {
             script.append(c.generateMaqlDdlDrop());
         }
@@ -152,7 +152,7 @@ public class MaqlGenerator {
 
         // finally 
         if (synchronize) {
-            script.append("# SYNCHRONIZE THE STORAGE AND DATA LOADING INTERFACES WITH THE NEW LOGICAL MODEL\n");
+            script.append("# Synchronize the storage and data loading interfaces with the new logical model.\n");
             script.append("SYNCHRONIZE {" + schema.getDatasetName() + "};\n\n");
         }
         
@@ -168,7 +168,7 @@ public class MaqlGenerator {
      */
 	public String generateMaqlSynchronize() {
 		StringBuffer script = new StringBuffer();
-		script.append("# SYNCHRONIZE THE STORAGE AND DATA LOADING INTERFACES WITH THE NEW LOGICAL MODEL\n");
+		script.append("# Synchronize the storage and data loading interfaces with the new logical model.\n");
         script.append("SYNCHRONIZE {" + schema.getDatasetName() + "};\n\n");
         return script.toString();
 	}
@@ -187,8 +187,8 @@ public class MaqlGenerator {
             state.processColumn(column);
         }
 
-        String script = "# CREATE ATTRIBUTES.\n# ATTRIBUTES ARE CATEGORIES THAT ARE USED FOR SLICING AND DICING THE " +
-                    "NUMBERS (FACTS)\n";
+        String script = "# Create attributes.\n# Attributes are categories that are used for slicing and dicing the " +
+                    "numbers (facts)\n";
         
         ConnectionPoint connectionPoint = null; // hold the CP's default label to be created at the end
         for (final Column c : state.attributes.values()) {
@@ -201,23 +201,23 @@ public class MaqlGenerator {
                 script += a.generateDefaultLabelMaqlDdl();
             }
         }
-        script += "# CREATE FACTS\n# FACTS ARE NUMBERS THAT ARE AGGREGATED BY ATTRIBUTES.\n";
+        script += "# Create facts.\n# Facts are numbers that are aggregated by attributes.\n";
         for (final Column c : state.facts) {
             script += c.generateMaqlDdlAdd();
         }
-        script += "# CREATE DATE FACTS\n# DATES ARE REPRESENTED AS FACTS\n# DATES ARE ALSO CONNECTED TO THE " +
-                "DATE DIMENSIONS\n";
+        script += "# Create date facts.\n# Dates are represented as facts.\n# Dates are also connected to the " +
+                "date dimensions.\n";
         for (final Column c : state.dates) {
             script += c.generateMaqlDdlAdd();
         }
-        script += "# CREATE REFERENCES\n# REFERENCES CONNECT THE DATASET TO OTHER DATASETS\n";
+        script += "# Create references.\n# References connect the dataset to other datasets.\n";
         for (final Column c : state.references) {
         	script += c.generateMaqlDdlAdd();
         }
 
         if (createFactsOf & (!state.hasCp)) {
-	        script += "# THE FACTS OF ATTRIBUTE IS SORT OF DATASET IDENTIFIER\n";
-	        script += "# IT IS USED FOR COUNT AGGREGATIONS\n";
+	        script += "# The facts of attribute is sort of dataset identifier,\n";
+	        script += "# it is used for COUNT aggregations.\n";
 	        // generate the facts of / record id special attribute
 	        script += "CREATE ATTRIBUTE " + factsOfAttrMaqlDdl + " VISUAL(TITLE \""
 	                  + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+state.factsOfPrimaryColumn+"} FULLSET;\n";
@@ -244,7 +244,7 @@ public class MaqlGenerator {
         
         // finally 
         if (synchronize) {
-	        script += "# SYNCHRONIZE THE STORAGE AND DATA LOADING INTERFACES WITH THE NEW LOGICAL MODEL\n";
+	        script += "# Synchronize the storage and data loading interfaces with the new logical model.\n";
 	        script += "SYNCHRONIZE {" + schema.getDatasetName() + "};\n\n";
         }
         return script;
@@ -282,7 +282,7 @@ public class MaqlGenerator {
 
         String script = "";
         if(!attributeFolders.isEmpty() || !factFolders.isEmpty())
-            script += "# CREATE THE FOLDERS THAT GROUP ATTRIBUTES AND FACTS\n";
+            script += "# Create the folders that group attributes and facts.\n";
         // Generate statements for the ATTRIBUTE folders
         for (String folder : attributeFolders) {
             String sfn = StringUtil.toIdentifier(folder);
@@ -539,7 +539,7 @@ public class MaqlGenerator {
 	            if (attr == null) {
 	            	throw new IllegalArgumentException("Label " + scn + " points to non-existing attribute " + scnPk);
 	            }
-	            String script = "# ADD LABELS TO ATTRIBUTES\n";
+	            String script = "# Add labels to attributes\n";
 	            script += "ALTER ATTRIBUTE {attr." + ssn + "." + scnPk + "} ADD LABELS {label." + ssn + "." + scnPk + "."
 	                    + scn + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + "."+N.NM_PFX + scn + "};\n";
 
@@ -560,7 +560,7 @@ public class MaqlGenerator {
                 if (attr == null) {
                     throw new IllegalArgumentException("Label " + scn + " points to non-existing attribute " + scnPk);
                 }
-                String script = "# DROP LABELS FROM ATTRIBUTES\n";
+                String script = "# Drop labels from attributes.\n";
                 final String labelId = "label." + ssn + "." + scnPk + "." + scn;
                 script += "ALTER ATTRIBUTE  {" + attr.identifier + "} DROP LABELS {" + labelId + "};\n";
                 return script;
@@ -604,12 +604,12 @@ public class MaqlGenerator {
                     if(r == null || r.length() <= 0) {
                         r = N.DT_ATTR_NAME;
                     }
-	                stat += "# CONNECT THE DATE TO THE DATE DIMENSION\n";
+	                stat += "# Connect the date to the date dimension.\n";
 	                stat += "ALTER ATTRIBUTE {"+reference+"."+r+"} ADD KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     /* This is now handled by adding entirely new attribute to the schema in the initSchema
                     if(includeTime) {
-                        stat += "# CONNECT THE TIME TO THE TIME DIMENSION\n";
+                        stat += "# Connect the time to the time dimension.\n";
 	                    stat += "ALTER ATTRIBUTE {"+N.TM_ATTR_NAME+reference+"} ADD KEYS {"+getFactTableName() +
 	                        "."+N.TM_PFX + scn + "_"+N.ID+"};\n\n";
                     }
@@ -627,7 +627,7 @@ public class MaqlGenerator {
                     if(r == null || r.length() <= 0) {
                         r = N.DT_ATTR_NAME;
                     }
-	                script += "# DISCONNECT THE DATE DIMENSION\n";
+	                script += "# Disconnect the date dimension.\n";
                     script += "ALTER ATTRIBUTE {"+reference+"."+r+"} DROP KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
                     if(includeTime) {
@@ -704,7 +704,7 @@ public class MaqlGenerator {
 	    		    foreignAttrId = "{"+N.TM_ATTR_NAME+column.getSchemaReference()+"}";
                     fk = "{"+getFactTableName() + "."+N.TM_PFX + scn+"}";
                 }
-	            String script = "# CONNECT THE REFERENCE TO THE APPROPRIATE DIMENSION\n";
+	            String script = "# Connect the reference to the appropriate dimension.\n";
 	    		script += "ALTER ATTRIBUTE " + foreignAttrId
 	    					  + " ADD KEYS " + fk + ";\n\n";
 	    		return script;
@@ -718,7 +718,7 @@ public class MaqlGenerator {
 	    		    foreignAttrId = "{"+N.TM_ATTR_NAME+column.getSchemaReference()+"}";
                     fk = "{"+getFactTableName() + "."+N.TM_PFX + scn+"}";
                 }
-	    		String script = "# DISCONNECT THE REFERENCE FROM THE APPROPRIATE DIMENSION\n";
+			String script = "# Disconnect the reference from the appropriate dimension.\n";
 	    		script += "ALTER ATTRIBUTE " + foreignAttrId
 	    					  + " DROP KEYS " + fk + ";\n\n";
 	    		return script;
