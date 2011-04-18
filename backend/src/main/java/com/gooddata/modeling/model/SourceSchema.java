@@ -136,6 +136,9 @@ public class SourceSchema {
     protected String toXml() throws IOException {
         XStream xstream = new XStream();
         xstream.alias("column", SourceColumn.class);
+        // omit isTimeFact and isDateFact from serializing to XML
+        xstream.omitField(SourceColumn.class, "isDateFact");
+        xstream.omitField(SourceColumn.class, "isTimeFact");
         xstream.alias("schema", SourceSchema.class);
         return xstream.toXML(this);
     }
