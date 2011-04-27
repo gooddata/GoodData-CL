@@ -583,7 +583,6 @@ public abstract class AbstractConnector implements Connector {
             l.info("MAQL update ran on a connector with no schema file (e.g. the default GDC Date dimension). This has no effect.");
             l.info("MAQL update successfully finished - no changes detected.");
         }
-
     }
 
     public String getProjectId() {

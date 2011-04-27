@@ -333,8 +333,6 @@ public class SourceColumn {
 				+ ((getReference() == null) ? 0 : getReference().hashCode());
 		result = prime * result
 				+ ((getSchemaReference() == null) ? 0 : getSchemaReference().hashCode());
-        result = prime * result
-				+ ((getTransformation() == null) ? 0 : getTransformation().hashCode());
 		return result;
 	}
 

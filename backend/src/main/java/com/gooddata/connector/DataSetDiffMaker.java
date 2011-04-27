@@ -194,19 +194,29 @@ class DataSetDiffMaker {
 	 * @return
 	 */
 	private static boolean contains(Set<SourceColumn> sourceColumns, SourceColumn column) {
-        if (!"REFERENCE".equals(column.getLdmType())) {
-            return sourceColumns.contains(column);
-        }
-        for (final SourceColumn sc : sourceColumns) {
-            if ("REFERENCE".equals(sc.getLdmType())) {
-                if (sc.getSchemaReference().equals(column.getSchemaReference())
-                        && sc.getReference().equals(column.getReference()))
-                {
-                    return true;
+        if (SourceColumn.LDM_TYPE_REFERENCE.equals(column.getLdmType())) {
+            for (final SourceColumn sc : sourceColumns) {
+                if ("REFERENCE".equals(sc.getLdmType())) {
+                    if (sc.getSchemaReference().equals(column.getSchemaReference())
+                            && sc.getReference().equals(column.getReference()))
+                    {
+                        return true;
+                    }
                 }
             }
+            return false;
         }
-        return false;
+        if (SourceColumn.LDM_TYPE_FACT.equals(column.getLdmType())) {
+            if (column.isDateFact()) {
+                String bk  = column.getName();
+                String tmp = bk.endsWith(N.DT_SLI_SFX) ? bk.replaceAll(N.DT_SLI_SFX + "$", "") : bk + N.DT_SLI_SFX;
+                column.setName(tmp);
+                boolean result = sourceColumns.contains(column);
+                column.setName(bk);
+                return result;
+            }
+        }
+        return sourceColumns.contains(column);
     }
 
     List<SourceColumn> findNewColumns() {
