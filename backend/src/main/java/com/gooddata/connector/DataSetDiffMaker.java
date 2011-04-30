@@ -49,6 +49,7 @@ class DataSetDiffMaker {
 				sourceDateColumns.put(sc.getName(), sc);
 			}
 		}
+		Map<String, String> dateColumns = new HashMap<String, String>(); // maps date dim names to column names
 		String datasetId = sli.getId().replaceAll("^dataset\\.", "");
 		String factPrefix = N.FCT_PFX + datasetId + "." + N.FCT_PFX;
 		String cpPrefix   = N.FCT_PFX + datasetId + "." + N.NM_PFX;
@@ -77,11 +78,13 @@ class DataSetDiffMaker {
 				prefixLen = datePrefix.length();
 				if (c.getName().endsWith("_" + N.ID)) {
 				    ldmType = LDM_TYPE_DATE;
-				    name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "").replaceAll("_id$", "");
+				    String sourceName = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "").replaceAll("_id", "");
+				    name = sourceName; // + "_" + N.DT;
 	                for (String pop : c.getPopulates()) {
 	                    // HACK - where is this naming convention defined?
 	                    if (pop.contains(".date.")) { // date attribute
 	                        schemaReference = pop.replaceAll("\\.date\\..*$", "");
+	                        dateColumns.put(schemaReference, sourceName);
 	                    } else {
 	                        l.warn(String.format("Cannot determine the ldm type for field '%s'", name));
 	                        continue;
@@ -89,15 +92,14 @@ class DataSetDiffMaker {
 	                }
 				} else {
 				    ldmType = LDM_TYPE_FACT;
-				    name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "");
+				    name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.DT, "") + "_" + N.DT;
 				    dateFact = true;
 				}
 			} else if (c.getName().startsWith(timeFactPrefix)) { // TIME
                 prefixLen = timeFactPrefix.length();
                 ldmType = LDM_TYPE_FACT;
-                name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.TM, "").replaceAll("_" + N.TM + "$", "");
+                name = c.getName().substring(prefixLen).replaceAll(".*\\." + N.TM, "") + "_" + N.TM;
                 timeFact = true;
-                remote.timeFactNames.add(name);
             } else if (c.getName().startsWith(timeAttrPrefix)) {
                 prefixLen = timeAttrPrefix.length();
                 name = c.getName().substring(prefixLen).replaceAll("\\..*$", "");
@@ -173,16 +175,29 @@ class DataSetDiffMaker {
 			    final boolean cond = LDM_TYPE_REFERENCE.equals(column.getLdmType()) && !column.isTimeFact();
 			    if (cond) {
 			        l.warn(String.format(
-			                "Reference from %s to %s.%s has been removed locally. Removing remoted references is not supported yet. Skipping.",
+			                "Reference from %s to %s.%s has been removed locally. Removing remote references is not supported yet. Skipping.",
 			                 datasetId, column.getSchemaReference(), column.getReference()));
 	            } else {
 	                deletedColumns.add(column);
 	            }
 	        }
 		}
+		fixTimeDimensions(remote, dateColumns);
 		if (sourceConnectionPoint != null && remoteConnectionPointName == null) {
 			throw new UnsupportedOperationException("Adding a new connection point is not supported yet.");
 		}
+	}
+
+	private void fixTimeDimensions(ColumnsSet columns, Map<String,String> dim2column) {
+	    for (final SourceColumn sc : columns.columns) {
+	        if (LDM_TYPE_REFERENCE.equals(sc.getLdmType()) && sc.isTimeFact()) {
+	            String columnName = dim2column.get(sc.getName());
+	            if (columnName == null) {
+	                throw new IllegalStateException(String.format("Time dimension '%s' without a corresponding date field", sc.getName()));
+	            }
+	            sc.setName(columnName + "_id");
+	        }
+	    }
 	}
 
 	/**
@@ -206,16 +221,6 @@ class DataSetDiffMaker {
             }
             return false;
         }
-        if (SourceColumn.LDM_TYPE_FACT.equals(column.getLdmType())) {
-            if (column.isDateFact()) {
-                String bk  = column.getName();
-                String tmp = bk.endsWith(N.DT_SLI_SFX) ? bk.replaceAll(N.DT_SLI_SFX + "$", "") : bk + N.DT_SLI_SFX;
-                column.setName(tmp);
-                boolean result = sourceColumns.contains(column);
-                column.setName(bk);
-                return result;
-            }
-        }
         return sourceColumns.contains(column);
     }
 
@@ -230,15 +235,12 @@ class DataSetDiffMaker {
 	List<SourceColumn> findDiff(ColumnsSet src, ColumnsSet tgt) {
 		final List<SourceColumn> result = new ArrayList<SourceColumn>();
 		for (final SourceColumn sc : src.columns) {
-		    if (LDM_TYPE_REFERENCE.equals(sc.getLdmType()) && sc.isTimeFact()) {
-		        if (!tgt.timeDimensions.contains(sc.getSchemaReference())) {
-		            result.add(sc);
-		        }
-		    } else if (LDM_TYPE_FACT.equals(sc.getLdmType()) && sc.isTimeFact()) {
-		        if (!tgt.timeFactNames.contains(sc.getName())) {
-		            result.add(sc);
-		        }
-		    } if (!contains(tgt.columns, sc)) {
+//		    if (LDM_TYPE_REFERENCE.equals(sc.getLdmType()) && sc.isTimeFact()) {
+//		        if (!tgt.timeDimensions.contains(sc.getSchemaReference())) {
+//		            result.add(sc);
+//		        }
+//		    }
+		    if (!contains(tgt.columns, sc)) {
 				result.add(sc);
 			}
 		}
@@ -251,7 +253,6 @@ class DataSetDiffMaker {
 
 	private static class ColumnsSet {
 	    public final Set<SourceColumn> columns = new HashSet<SourceColumn>();
-	    public final Set<String> timeFactNames = new HashSet<String>();
 	    public final Set<String> timeDimensions = new HashSet<String>();
 	}
 }

@@ -630,10 +630,12 @@ public class MaqlGenerator {
 	                script += "# Disconnect the date dimension.\n";
                     script += "ALTER ATTRIBUTE {"+reference+"."+r+"} DROP KEYS {"+getFactTableName() +
 	                        "."+N.DT_PFX + scn + "_"+N.ID+"};\n\n";
+                    /* Consistently with generateMaqlAddDrop(), it's moved somewhere else
                     if(includeTime) {
                         script += "ALTER ATTRIBUTE {"+N.TM_ATTR_NAME+reference+"} DROP KEYS {"+getFactTableName() +
                                 "."+N.TM_PFX + scn + "_"+N.ID+"};\n\n";
                     }
+                    */
 	            }
 	        	return script;
 	        }

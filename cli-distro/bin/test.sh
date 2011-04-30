@@ -142,3 +142,13 @@ fi
 
 echo 'Dropping gum_no_change test'
 drop "`cat tests/gum_no_change/pid`"
+
+echo 'Running readd_time test'
+bin/gdi.sh tests/readd_time/cmd.txt
+if [ ! -r 'tests/readd_time/drop.maql' ] ; then
+  echo "Dropped time not detected!" 1>&2
+  exit 1
+elif [ ! -r 'tests/readd_time/readd.maql' ] ;then
+  echo 'Re-added time not detected!' 1>&2
+  exit 1
+fi
