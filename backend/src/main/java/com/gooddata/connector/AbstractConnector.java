@@ -135,7 +135,12 @@ public abstract class AbstractConnector implements Connector {
                     continue;
                 }
                 if(transform) {
-                    row = t.transformRow(row, dateLength);
+                    try {
+                        row = t.transformRow(row, dateLength);
+                    }
+                    catch (InvalidParameterException e) {
+                        throw new InvalidParameterException(e.getMessage()+" Error occured at row "+rowCnt);
+                    }
                 }
                 cw.writeNext(row);
                 cw.flush();
