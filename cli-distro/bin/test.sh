@@ -152,3 +152,13 @@ elif [ ! -r 'tests/readd_time/readd.maql' ] ;then
   echo 'Re-added time not detected!' 1>&2
   exit 1
 fi
+
+echo 'Dropping readd_time test'
+drop "`cat tests/readd_time/pid`"
+
+echo 'Running cross_schema_attribute test'
+bin/gdi.sh tests/cross_schema_attribute/cmd.txt
+
+echo 'Droping cross_schema_attribute test'
+drop "`cat tests/cross_schema_attribute/pid`"
+

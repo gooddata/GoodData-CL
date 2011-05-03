@@ -56,7 +56,7 @@ class DataSetDiffMaker {
 		String datePrefix = N.FCT_PFX + datasetId + "." + N.DT_PFX;
 		String timeFactPrefix = N.FCT_PFX + datasetId + "." + N.TM_PFX;
 		String timeAttrPrefix = "d_time_second_of_day_";
-		String lookupPrefix = N.LKP_PFX + datasetId + "_";
+		String lookupPrefix = N.LKP_PFX;
 		final List<Column> sliColumns = gd.getSLIColumns(sli.getUri());
 					
 		for (final Column c : sliColumns) {
@@ -126,10 +126,14 @@ class DataSetDiffMaker {
 					
 			// fields populating a lookup table column
 			} else if (c.getName().startsWith(lookupPrefix)) {
-				prefixLen = lookupPrefix.length();
+			    String remoteSchemaReference = c.getName().replaceAll("^" + lookupPrefix, "").replaceAll("_.*$", "");
+				prefixLen = (lookupPrefix + remoteSchemaReference + "_").length();
 				String nameAndRemoteField = c.getName().substring(prefixLen);
 				String referenceName = nameAndRemoteField.replaceAll("\\..*$", "");
 				name = nameAndRemoteField.replaceAll(".*\\." + N.NM_PFX, "");
+				if ((remoteSchemaReference != null) && !remoteSchemaReference.equals(datasetId)) {
+				    schemaReference = remoteSchemaReference;
+				}
 				if (name.equals(referenceName)) {
 					ldmType = LDM_TYPE_ATTRIBUTE;
 				} else {

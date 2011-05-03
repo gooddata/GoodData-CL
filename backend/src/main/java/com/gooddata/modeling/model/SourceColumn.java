@@ -194,7 +194,7 @@ public class SourceColumn {
      *      LDM types regardless of previous invocations of {@link #setSchemaReference(String)}
      */
     public String getSchemaReference() {
-        if (SourceColumn.LDM_TYPE_REFERENCE.equals(getLdmType()) || SourceColumn.LDM_TYPE_DATE.equals(getLdmType()) || SourceColumn.LDM_TYPE_LABEL.equals(getLdmType())){
+        if (LDM_TYPE_REFERENCE.equals(getLdmType()) || LDM_TYPE_DATE.equals(getLdmType()) || LDM_TYPE_LABEL.equals(getLdmType()) || LDM_TYPE_ATTRIBUTE.equals(getLdmType())) {
             return schemaReference;
         }
         return null;
