@@ -85,6 +85,9 @@ class DataSetDiffMaker {
 	                    if (pop.contains(".date.")) { // date attribute
 	                        schemaReference = pop.replaceAll("\\.date\\..*$", "");
 	                        dateColumns.put(schemaReference, sourceName);
+	                    } else if (pop.matches(".*\\.[^\\.]*$")) { // old date dimension, identifiers like "${schema}.${randomString}"
+	                        schemaReference = pop.replaceAll("\\.[^\\.]*$", "");
+	                        dateColumns.put(schemaReference, sourceName);
 	                    } else {
 	                        l.warn(String.format("Cannot determine the ldm type for field '%s'", name));
 	                        continue;
