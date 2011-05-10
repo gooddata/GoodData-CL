@@ -74,6 +74,7 @@ public class GdcRESTApiWrapper {
     private static final String IDENTIFIER_URI = "/identifiers";
     private static final String SLI_DESCRIPTOR_URI = "/descriptor";
     public static final String MAQL_EXEC_URI = "/ldm/manage";
+    public static final String DML_EXEC_URI = "/dml/manage";
     public static final String REPORT_QUERY = "/query/reports";
     public static final String EXECUTOR = "/gdc/xtab2/executor3";
     public static final String INVITATION_URI = "/invitations";
@@ -1130,6 +1131,36 @@ public class GdcRESTApiWrapper {
             maqlPost.releaseConnection();
         }
     }
+
+    /**
+     * Executes the MAQL and creates/modifies the project's LDM
+     *
+     * @param projectId the project's ID
+     * @param maql String with the MAQL statements
+     * @return result String
+     * @throws GdcRestApiException
+     */
+    public String executeDML(String projectId, String maql) throws GdcRestApiException {
+        l.debug("Executing MAQL DML projectId="+projectId+" MAQL DML:\n"+maql);
+        PostMethod maqlPost = createPostMethod(getProjectMdUrl(projectId) + DML_EXEC_URI);
+        JSONObject maqlStructure = getMAQLExecStructure(maql);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                maqlStructure.toString().getBytes()));
+        maqlPost.setRequestEntity(request);
+        String result = null;
+        try {
+            String response = executeMethodOk(maqlPost);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            String uris = responseObject.getString("uri");
+            return uris;
+        } catch (HttpMethodException ex) {
+            l.debug("MAQL DML execution: ",ex);
+            throw new GdcRestApiException("MAQL DML execution: ",ex);
+        } finally {
+            maqlPost.releaseConnection();
+        }
+    }
+
 
     /**
      * Returns the pull API JSON structure

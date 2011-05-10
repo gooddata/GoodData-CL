@@ -134,8 +134,8 @@ Logical Model Management Commands:
 - ifExists - *(optional)* if set to true the command quits silently if the maqlFile does not exist (true | false, default is false)
 
 
-Data Transfer Commands:
------------------------
+Data Commands:
+--------------
 
 > **Important:** All the commands in this section expect
 > to know what project to work in and know the data model
@@ -150,6 +150,8 @@ Data Transfer Commands:
 `Dump(csvFile="...");` - dumps the connector data to a local CSV file
 - csvFile   - path to the CSV file
 
+`ExecuteDml(maql="...");` - executes a MAQL DML command (e.g. DELETE)
+- maql   - the maqlDML command
 
 Data Connectors:
 ==================

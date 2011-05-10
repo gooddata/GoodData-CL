@@ -543,6 +543,9 @@ public class GdcDI implements Executor {
             else if(c.match("StoreProject") || c.match("RememberProject")) {
                 storeProject(c, cli, ctx);
             }
+            else if(c.match("ExecuteDml")) {
+                executeDML(c, cli, ctx);
+            }
             else if(c.match("RetrieveProject") || c.match("UseProject")) {
                 retrieveProject(c, cli, ctx);
             }
@@ -594,6 +597,22 @@ public class GdcDI implements Executor {
         }
         l.debug("Processed command "+c.getCommand());
         return true;
+    }
+
+    /**
+     * Executes MAQL DML
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void executeDML(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        l.debug("Executing MAQL DML.");
+        String pid = ctx.getProjectIdMandatory();
+        final String cmd = c.getParamMandatory("maql");
+	    ctx.getRestApi(p).executeDML(pid, cmd);
+        l.debug("Finished MAQL execution.");
+        l.info("MAQL DML command '"+cmd+"' successfully executed.");
     }
 
 

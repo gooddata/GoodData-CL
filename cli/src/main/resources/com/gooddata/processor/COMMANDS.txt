@@ -1,5 +1,3 @@
-Project Management Commands:
-
 CreateProject(name="...", desc="...", templateUri="..."); - create a new project on the server
 - name        - name of the new project
 - desc        - (optional) project description
@@ -81,7 +79,7 @@ ExecuteMaql(maqlFile="...", ifExists="..."); - run MAQL DDL script on server to 
 - maqlFile - path to the MAQL file (relative to PWD)
 - ifExists - (optional) if set to true the command quits silently if the maqlFile does not exist (true | false, default is false)
 
-Data Transfer Commands:
+Data Commands:
 
 Important: All the commands in this section expect
 to know what project to work in and know the data model
@@ -95,6 +93,9 @@ TransferData(incremental="...", waitForFinish="..."); - upload data to the GoodD
 
 Dump(csvFile="..."); - dumps the connector data to a local CSV file
 - csvFile   - path to the CSV file
+
+ExecuteDml(maql="..."); - executes a MAQL DML command (e.g. DELETE)
+- maql   - the maqlDML command
 
 Data Connectors:
 
