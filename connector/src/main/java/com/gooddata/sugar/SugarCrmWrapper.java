@@ -47,7 +47,7 @@ import java.util.Map;
  */
 public class SugarCrmWrapper {
 
-    private final static String PROTOCOL = "http://";
+    private final static String PROTOCOL = "https://";
     private final static String SUGAR_ENDPOINT = "/service/v2/soap.php";
 
     private final static int MAX_ROWS = 1000;
