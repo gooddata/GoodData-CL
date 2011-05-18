@@ -923,7 +923,7 @@ public class GdcDI implements Executor {
                     String defUri = ctx.getRestApi(p).getReportDefinition(uri.trim());
                     l.info("Executing report uri="+defUri);
                     String task = ctx.getRestApi(p).executeReportDefinition(defUri.trim());
-                    l.info("Report " +defUri+ " execution finished.");
+                    l.info("Report " +defUri+ " execution finished: " + task);
                 }
                 catch (GdcRestApiException e) {
                     l.debug("The report uri="+uri+" can't be computed!");
