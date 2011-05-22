@@ -47,6 +47,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2364,16 +2365,19 @@ public class GdcRESTApiWrapper {
     public JSONObject modifyMetadataObject(String uri, JSON content) {
         l.debug("Executing modifyMetadataObject on uri="+uri+" content='"+content.toString()+"'");
         PostMethod req = createPostMethod(getServerUrl() + uri);
-        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                content.toString().getBytes()));
-        req.setRequestEntity(request);
         try {
+            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                    content.toString().getBytes("utf-8")));
+            req.setRequestEntity(request);
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
             return parsedResp;
         } catch (HttpMethodException ex) {
             l.debug("Failed executing modifyMetadataObject on uri="+uri+" content='"+content.toString()+"'");
             throw new GdcRestApiException("Failed executing modifyMetadataObject on uri="+uri+" content='"+content.toString()+"'",ex);
+        } catch (UnsupportedEncodingException e) {
+            l.debug("String#getBytes(\"utf-8\") threw UnsupportedEncodingException", e);
+            throw new IllegalStateException(e);
         } finally {
             req.releaseConnection();
         }
@@ -2389,8 +2393,6 @@ public class GdcRESTApiWrapper {
         l.debug("Executing deleteMetadataObject on project id="+projectId+" objectId="+objectId);
         deleteMetadataObject(MD_URI + projectId + OBJ_URI + "/" + objectId);
     }
-
-
 
     /**
      * Deletes an object in the metadata server
