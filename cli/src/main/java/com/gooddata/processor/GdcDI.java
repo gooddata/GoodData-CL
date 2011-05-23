@@ -266,7 +266,7 @@ public class GdcDI implements Executor {
         }
         catch (GdcRestApiException e) {
             l.error("REST API invocation error: " + e.getMessage());
-            l.debug(e);
+            l.debug(e, e);
             Throwable c = e.getCause();
             while(c!=null) {
                 if(c instanceof HttpMethodException) {

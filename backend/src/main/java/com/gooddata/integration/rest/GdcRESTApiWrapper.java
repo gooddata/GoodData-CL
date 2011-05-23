@@ -1496,7 +1496,7 @@ public class GdcRESTApiWrapper {
         try {
             String resp = executeMethodOk(req);
             // workaround for a possible mess in MAQL source and missing charset in /obj response
-            resp = resp.replace("\\\\_", " "); 
+            resp = resp.replace("\\\\_", " ").replace("\u00A0", " ");
             JSONObject parsedResp = JSONObject.fromObject(resp);
             if(parsedResp.isNullObject()) {
                 l.debug("Can't getObjectByUri object uri="+objectUri);
@@ -2329,16 +2329,19 @@ public class GdcRESTApiWrapper {
     public JSONObject createMetadataObject(String projectId, JSON content) {
         l.debug("Executing createMetadataObject on project id="+projectId+ "content='"+content.toString()+"'");
         PostMethod req = createPostMethod(getProjectMdUrl(projectId) + OBJ_URI + "?createAndGet=true");
-        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                content.toString().getBytes()));
-        req.setRequestEntity(request);
         try {
+            String str = content.toString();
+            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(str.getBytes("utf-8")));
+            req.setRequestEntity(request);
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
             return parsedResp;
         } catch (HttpMethodException ex) {
             l.debug("Failed executing createMetadataObject on project id="+projectId+ "content='"+content.toString()+"'");
             throw new GdcRestApiException("Failed executing createMetadataObject on project id="+projectId+ "content='"+content.toString()+"'",ex);
+        } catch (UnsupportedEncodingException e) {
+            l.debug("String#getBytes(\"utf-8\") threw UnsupportedEncodingException", e);
+            throw new IllegalStateException(e);
         } finally {
             req.releaseConnection();
         }

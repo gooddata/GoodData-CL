@@ -43,10 +43,8 @@ import java.util.zip.ZipOutputStream;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-import org.apache.log4j.Logger;
 
-import com.gooddata.util.CSVReader;
-import com.gooddata.util.CSVWriter;
+import org.apache.log4j.Logger;
 
 /**
  * File utils
@@ -231,7 +229,9 @@ public class FileUtil {
      */
     public static void writeJSONToFile(JSON content, String fileName) throws IOException {
         BufferedWriter fw = createBufferedUtf8Writer(fileName);
-        fw.write(content.toString(2));
+        String str = content.toString(2);
+        str = str.replace("å", " "); // ugly but works
+        fw.write(str);
         fw.flush();
         fw.close();
     }
