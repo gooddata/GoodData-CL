@@ -219,10 +219,12 @@ class DataSetDiffMaker {
         if (SourceColumn.LDM_TYPE_REFERENCE.equals(column.getLdmType())) {
             for (final SourceColumn sc : sourceColumns) {
                 if ("REFERENCE".equals(sc.getLdmType())) {
-                    if (sc.getSchemaReference().equals(column.getSchemaReference())
-                            && sc.getReference().equals(column.getReference()))
-                    {
-                        return true;
+                    if (sc.getSchemaReference().equals(column.getSchemaReference())) {
+                        if ((sc.isDateFact() && column.isDateFact()) || (sc.isTimeFact() && column.isTimeFact())) {
+                            return true;
+                        } else if (sc.getReference() != null && sc.getReference().equals(column.getReference())) {
+                            return true;
+                        }
                     }
                 }
             }
