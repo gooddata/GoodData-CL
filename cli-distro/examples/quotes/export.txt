@@ -5,5 +5,9 @@
 UseProject(fileName="examples/quotes/pid");
 
 # Execute the date dimension MAQL script
-ExecuteDml(maql='DELETE FROM {attr.quotes.id} WHERE {label.quotes.industry} = "Conglomerates";');
+ExportProject(tokenFile="examples/quotes/importToken.txt", exportUsers="true", exportData="true");
+
+CreateProject(name="Quotes Copy");
+
+ImportProject(tokenFile="examples/quotes/importToken.txt");
 

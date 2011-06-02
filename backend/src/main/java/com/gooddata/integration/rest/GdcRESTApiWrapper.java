@@ -34,9 +34,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.cookie.CookieSpec;
-import org.apache.commons.httpclient.cookie.MalformedCookieException;
-import org.apache.commons.httpclient.cookie.RFC2109Spec;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
@@ -76,6 +73,8 @@ public class GdcRESTApiWrapper {
     private static final String SLI_DESCRIPTOR_URI = "/descriptor";
     public static final String MAQL_EXEC_URI = "/ldm/manage";
     public static final String DML_EXEC_URI = "/dml/manage";
+    public static final String PROJECT_EXPORT_URI = "/maintenance/export";
+    public static final String PROJECT_IMPORT_URI = "/maintenance/import";
     public static final String REPORT_QUERY = "/query/reports";
     public static final String EXECUTOR = "/gdc/xtab2/executor3";
     public static final String INVITATION_URI = "/invitations";
@@ -1131,6 +1130,117 @@ public class GdcRESTApiWrapper {
         } finally {
             maqlPost.releaseConnection();
         }
+    }
+
+    public static class ProjectExportResult {
+        private String taskUri;
+        private String exportToken;
+
+        public String getTaskUri() {
+            return taskUri;
+        }
+
+        public void setTaskUri(String taskUri) {
+            this.taskUri = taskUri;
+        }
+
+        public String getExportToken() {
+            return exportToken;
+        }
+
+        public void setExportToken(String exportToken) {
+            this.exportToken = exportToken;
+        }
+    }
+
+    /**
+     * Exports the project
+     *
+     * @param projectId the project's ID
+     * @param exportUsers flag
+     * @param exportData flag
+     * @param authorizedUsers list of authorized users
+     * @return result the taskUri and the export token
+     * @throws GdcRestApiException
+     */
+    public ProjectExportResult exportProject(String projectId, boolean exportUsers, boolean exportData, String[] authorizedUsers)
+            throws GdcRestApiException {
+        l.debug("Exporting project projectId="+projectId+" users:"+exportUsers+" data:"+exportData+" authorized users:"+
+        authorizedUsers);
+        PostMethod req = createPostMethod(getProjectMdUrl(projectId) + PROJECT_EXPORT_URI);
+        JSONObject param = getProjectExportStructure(exportUsers, exportData, authorizedUsers);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                param.toString().getBytes()));
+        req.setRequestEntity(request);
+        ProjectExportResult result = null;
+        try {
+            String response = executeMethodOk(req);
+            result = new ProjectExportResult();
+            JSONObject responseObject = JSONObject.fromObject(response);
+            JSONObject exportArtifact = responseObject.getJSONObject("exportArtifact");
+            JSONObject status = exportArtifact.getJSONObject("status");
+            result.setTaskUri(status.getString("uri"));
+            result.setExportToken(exportArtifact.getString("token"));
+            return result;
+        } catch (HttpMethodException ex) {
+            l.debug("Error exporting project",ex);
+            throw new GdcRestApiException("Error exporting project",ex);
+        } finally {
+            req.releaseConnection();
+        }
+    }
+
+    private JSONObject getProjectExportStructure(boolean exportUsers, boolean exportData, String[] authorizedUsers) {
+        JSONObject param = new JSONObject();
+        JSONObject exportProject = new JSONObject();
+        exportProject.put("exportUsers", exportUsers);
+        exportProject.put("exportData", exportData);
+        if(authorizedUsers != null && authorizedUsers.length > 0) {
+            JSONArray aUsers = new JSONArray();
+            aUsers.addAll(Arrays.asList(authorizedUsers));
+            exportProject.put("authorizedUsers", aUsers);
+        }
+        exportProject.put("exportProject", exportProject);
+        return param;
+    }
+
+
+    /**
+     * Imports the project
+     *
+     * @param projectId the project's ID
+     * @param token export token
+     * @return result the taskUri
+     * @throws GdcRestApiException
+     */
+    public String importProject(String projectId, String token)
+            throws GdcRestApiException {
+        l.debug("Importing project projectId="+projectId+" token:"+token);
+        PostMethod req = createPostMethod(getProjectMdUrl(projectId) + PROJECT_IMPORT_URI);
+        JSONObject param = getProjectImportStructure(token);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                param.toString().getBytes()));
+        req.setRequestEntity(request);
+        String result = null;
+        try {
+            String response = executeMethodOk(req);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            result = responseObject.getString("uri");
+            return result;
+        } catch (HttpMethodException ex) {
+            l.debug("Error importing project",ex);
+            throw new GdcRestApiException("Error importing project",ex);
+        } finally {
+            req.releaseConnection();
+        }
+    }
+
+    private JSONObject getProjectImportStructure(String token) {
+        JSONObject param = new JSONObject();
+        JSONObject importProject = new JSONObject();
+        importProject.put("token", token);
+        param.put("importProject", importProject);
+        return param;
     }
 
     /**

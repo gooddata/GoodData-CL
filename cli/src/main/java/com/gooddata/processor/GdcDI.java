@@ -33,6 +33,7 @@ import com.gooddata.connector.*;
 import com.gooddata.connector.FacebookConnector;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.SLI;
+import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.MetadataObject;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.DatabaseToCsv;
@@ -549,6 +550,12 @@ public class GdcDI implements Executor {
             else if(c.match("RetrieveProject") || c.match("UseProject")) {
                 retrieveProject(c, cli, ctx);
             }
+            else if(c.match("ExportProject")) {
+                exportProject(c, cli, ctx);
+            }
+            else if(c.match("ImportProject")) {
+                importProject(c, cli, ctx);
+            }
             else if(c.match( "Lock")) {
                 lock(c, cli, ctx);
             }
@@ -607,14 +614,133 @@ public class GdcDI implements Executor {
      * @throws IOException IO issues
      */
     private void executeDML(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-        l.debug("Executing MAQL DML.");
-        String pid = ctx.getProjectIdMandatory();
-        final String cmd = c.getParamMandatory("maql");
-	    ctx.getRestApi(p).executeDML(pid, cmd);
-        l.debug("Finished MAQL execution.");
-        l.info("MAQL DML command '"+cmd+"' successfully executed.");
+        try {
+            l.debug("Executing MAQL DML.");
+            String pid = ctx.getProjectIdMandatory();
+            final String cmd = c.getParamMandatory("maql");
+            String taskUri = ctx.getRestApi(p).executeDML(pid, cmd);
+            if(taskUri != null && taskUri.length() > 0) {
+                l.debug("Checking MAQL DML execution status.");
+                String status = "";
+                while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
+                    status = ctx.getRestApi(p).getMigrationStatus(taskUri);
+                    l.debug("MAQL DML execution status = "+status);
+                    Thread.sleep(500);
+                }
+                l.info("MAQL DML execution finished with status "+status);
+                if("ERROR".equalsIgnoreCase(status)) {
+                    l.error("Error executing the MAQL DML. Check debug log for more details.");
+                    throw new GdcRestApiException("Error executing the MAQL DML. Check debug log for more details.");
+                }
+            }
+            else {
+                l.error("MAQL DML execution hasn't returned any task URI.");
+                throw new InternalErrorException("MAQL DML execution hasn't returned any task URI.");
+            }
+            l.debug("Finished MAQL DML execution.");
+            l.info("MAQL DML command '"+cmd+"' successfully executed.");
+        }
+        catch (InterruptedException e) {
+            throw new InternalErrorException(e);
+        }
     }
 
+    /**
+     * Exports project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void exportProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        try {
+            l.info("Exporting project.");
+            String pid = ctx.getProjectIdMandatory();
+            final String eu = c.getParamMandatory("exportUsers");
+            final boolean exportUsers = (eu != null && "true".equalsIgnoreCase(eu));
+            final String ed = c.getParamMandatory("exportData");
+            final boolean exportData = (ed != null && "true".equalsIgnoreCase(ed));
+            final String fileName = c.getParamMandatory("tokenFile");
+            String au = c.getParam("authorizedUsers");
+            String[] authorizedUsers = null;
+            if(au != null && au.length() > 0) {
+                authorizedUsers = au.split(",");
+            }
+
+            GdcRESTApiWrapper.ProjectExportResult r = ctx.getRestApi(p).exportProject(pid, exportUsers, exportData,
+                    authorizedUsers);
+            String taskUri = r.getTaskUri();
+            String token = r.getExportToken();
+            if(taskUri != null && taskUri.length() > 0) {
+                l.debug("Checking project export status.");
+                String status = "";
+                while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
+                    status = ctx.getRestApi(p).getMigrationStatus(taskUri);
+                    l.debug("Project export status = "+status);
+                    Thread.sleep(500);
+                }
+                l.info("Project export finished with status "+status);
+                if("OK".equalsIgnoreCase(status) || "WARNING".equalsIgnoreCase(status)) {
+                    FileUtil.writeStringToFile(token, fileName);
+                }
+                else {
+                    l.error("Error exporting projectL. Check debug log for more details.");
+                    throw new GdcRestApiException("Error exporting projectL. Check debug log for more details.");
+                }
+            }
+            else {
+                l.error("Project export hasn't returned any task URI.");
+                throw new InternalErrorException("Project export hasn't returned any task URI.");
+
+            }
+            l.debug("Finished project export.");
+            l.info("Project "+pid+"' successfully executed. Import token is "+token);
+        }
+        catch (InterruptedException e) {
+            throw new InternalErrorException(e);
+        }
+    }
+
+    /**
+     * Imports project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void importProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        try {
+            l.info("Importing project.");
+            String pid = ctx.getProjectIdMandatory();
+            final String tokenFile = c.getParamMandatory("tokenFile");
+            String token = FileUtil.readStringFromFile(tokenFile).trim();
+            String taskUri  = ctx.getRestApi(p).importProject(pid, token);
+            if(taskUri != null && taskUri.length() > 0) {
+                l.debug("Checking project import status.");
+                String status = "";
+                while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
+                    status = ctx.getRestApi(p).getMigrationStatus(taskUri);
+                    l.debug("Project import status = "+status);
+                    Thread.sleep(500);
+                }
+                l.info("Project import finished with status "+status);
+                if("ERROR".equalsIgnoreCase(status)) {
+                    l.error("Error importing project. Check debug log for more details.");
+                    throw new GdcRestApiException("Error importing project. Check debug log for more details.");
+                }
+            }
+            else {
+                l.error("Project import hasn't returned any task URI.");
+                throw new InternalErrorException("Project import hasn't returned any task URI.");
+
+            }
+            l.debug("Finished project import.");
+            l.info("Project "+pid+"' successfully imported.");
+        }
+        catch (InterruptedException e) {
+            throw new InternalErrorException(e);
+        }
+    }
 
     /**
      * Create new project command processor
@@ -679,7 +805,7 @@ public class GdcDI implements Executor {
     private void checkProjectCreationStatus(String projectId, CliParams p, ProcessingContext ctx) throws InterruptedException {
         l.debug("Checking project "+projectId+" loading status.");
         String status = "LOADING";
-        while(status.equalsIgnoreCase("LOADING")) {
+        while("LOADING".equalsIgnoreCase(status)) {
             status = ctx.getRestApi(p).getProjectStatus(projectId);
             l.debug("Project "+projectId+" loading  status = "+status);
             Thread.sleep(500);
@@ -750,7 +876,7 @@ public class GdcDI implements Executor {
                 if(taskUri != null && taskUri.length() > 0) {
                     l.debug("Checking migration status.");
                     String status = "";
-                    while(!status.equalsIgnoreCase("OK") && !status.equalsIgnoreCase("ERROR") && !status.equalsIgnoreCase("WARNING")) {
+                    while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
                         status = ctx.getRestApi(p).getMigrationStatus(taskUri);
                         l.debug("Migration status = "+status);
                         Thread.sleep(500);

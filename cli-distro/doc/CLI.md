@@ -59,7 +59,6 @@ Project Management Commands:
 
 `OpenProject(id="...");` - open an existing project for data modeling and data upload.
 - id - identifier of an existing project (takes the form of an MD5 hash)
--
 
 `RememberProject(fileName="...");` - saves the current project identifier into the specified file
 - fileName - file to save the project identifier
@@ -74,6 +73,14 @@ Project Management Commands:
 - msg   - *(optional)* invitation message
 - role  - *(optional)* initial user's role: `admin`|`editor`|`dashboard only`
 
+`ExportProject(tokenfile="...", exportUsers="...", exportData="...", authorizedUsers="...");` - exports an existing project to temporary storage and returns the import token
+- tokenFile - a file where the import token will be stored
+- exportUsers - export existing project users `true` | `false`
+- exportData - export existing project data `true` | `false`
+- authorizedUsers  - *(optional)* comma separated list of valis GoodData users who can import the project
+
+`ImportProject(tokenfile="...");` - imports a previously exported project content identified by the import token to a new project (must be empty)
+- tokenFile - a file where the import token is stored
 
 Metadata Management Commands:
 -----------------------------

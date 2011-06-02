@@ -494,16 +494,16 @@ public abstract class AbstractConnector implements Connector {
     protected void checkLoadingStatus(String taskUri, String tmpDir, CliParams p, ProcessingContext ctx) throws InterruptedException,IOException {
         l.debug("Checking data transfer status.");
         String status = "";
-        while(!status.equalsIgnoreCase("OK") && !status.equalsIgnoreCase("ERROR") && !status.equalsIgnoreCase("WARNING")) {
+        while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
             status = ctx.getRestApi(p).getLoadingStatus(taskUri);
             l.debug("Loading status = "+status);
             Thread.sleep(500);
         }
         l.debug("Data transfer finished with status "+status);
-        if(status.equalsIgnoreCase("OK")) {
+        if("OK".equalsIgnoreCase(status)) {
             l.info("Data successfully loaded.");
         }
-        else if(status.equalsIgnoreCase("WARNING")) {   
+        else if("WARNING".equalsIgnoreCase(status)) {
             l.info("Data loading succeeded with warnings. Status: "+status);
             Map<String,String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
             for(String file : result.keySet()) {
