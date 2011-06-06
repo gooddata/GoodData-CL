@@ -1,13 +1,15 @@
-# A simple example that loads a flat file with a stock quote data and connect a time dimension
+# A simple example that clones the previously created Quotes project
 # see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
 
-# Store the project ID to file for possible other scripts
+# Use the quotes project that has been created already
 UseProject(fileName="examples/quotes/pid");
 
-# Execute the date dimension MAQL script
+# Export the project with data and users. Save the import token to examples/quotes/importToken.txt 
 ExportProject(tokenFile="examples/quotes/importToken.txt", exportUsers="true", exportData="true");
 
-CreateProject(name="Quotes Copy");
+# Create new empty project
+CreateProject(name="Clone");
 
+# Import the project metadata, data, and users to the new project.
 ImportProject(tokenFile="examples/quotes/importToken.txt");
 

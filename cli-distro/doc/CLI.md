@@ -73,13 +73,13 @@ Project Management Commands:
 - msg   - *(optional)* invitation message
 - role  - *(optional)* initial user's role: `admin`|`editor`|`dashboard only`
 
-`ExportProject(tokenfile="...", exportUsers="...", exportData="...", authorizedUsers="...");` - exports an existing project to temporary storage and returns the import token
+`ExportProject(tokenFile="...", exportUsers="...", exportData="...", authorizedUsers="...");` - exports an existing project to temporary storage and returns the import token
 - tokenFile - a file where the import token will be stored
 - exportUsers - export existing project users `true` | `false`
 - exportData - export existing project data `true` | `false`
 - authorizedUsers  - *(optional)* comma separated list of valis GoodData users who can import the project
 
-`ImportProject(tokenfile="...");` - imports a previously exported project content identified by the import token to a new project (must be empty)
+`ImportProject(tokenFile="...");` - imports a previously exported project content identified by the import token to a new project (must be empty)
 - tokenFile - a file where the import token is stored
 
 Metadata Management Commands:
