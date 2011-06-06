@@ -14,11 +14,6 @@ _Unix like OS (Linux, Mac OS X and others):_
     $ ./bin/gdi.sh -u <username> -p <password> examples/facebook/facebook.txt
     Project id = 'f5977852bfec20271d4c9bc453a263cb' created.
 
-## What's Inside?
-
-The Facebook returns DATETIME values in the Unix (Epoch) time format (number of seconds since Jan 1 1970). Use the UNIXTIME
-date format in the DATE format.
-
 ### Not sure how to get an OAuth access token?
 
 It's really easy with the Facebook Graph API. Sign in to Facebook and navigate to the Graph API documentation.
