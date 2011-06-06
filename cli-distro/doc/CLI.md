@@ -79,8 +79,8 @@ Project Management Commands:
 - exportData - export existing project data `true` | `false`
 - authorizedUsers  - *(optional)* comma separated list of valid GoodData users who can import the project
 
-`ImportProject(tokenFile="...");` - imports a previously exported project content identified by the import token to a new empty project (must be empty)
-- tokenFile - a file where the import token is stored
+`ImportProject(tokenFile="...");` - imports a previously exported project content identified by the import token to a new empty project
+- tokenFile - a file where the import token will be stored
 
 Metadata Management Commands:
 -----------------------------
