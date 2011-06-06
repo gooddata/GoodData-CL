@@ -77,9 +77,9 @@ Project Management Commands:
 - tokenFile - a file where the import token will be stored
 - exportUsers - export existing project users `true` | `false`
 - exportData - export existing project data `true` | `false`
-- authorizedUsers  - *(optional)* comma separated list of valis GoodData users who can import the project
+- authorizedUsers  - *(optional)* comma separated list of valid GoodData users who can import the project
 
-`ImportProject(tokenFile="...");` - imports a previously exported project content identified by the import token to a new project (must be empty)
+`ImportProject(tokenFile="...");` - imports a previously exported project content identified by the import token to a new empty project (must be empty)
 - tokenFile - a file where the import token is stored
 
 Metadata Management Commands:
