@@ -7,7 +7,7 @@ SET PRJ=%PRJ_BIN%..
 if not "%JAVA_HOME%" == "" goto jhomeok
 
 if not "%JAVA_HOME%" == "" goto javaHomeAlreadySet
-for %%P in (%PATH%) do if exist %%P\java.exe set JAVA_EXE=%%P\java.exe
+for %%P in (java.exe) do set JAVA_EXE=%%~$PATH:P
 
 if not "%JAVA_EXE%" == "" goto execute
 
@@ -32,7 +32,8 @@ goto error
 
 :execute
 
-if defined CLASSPATH (set CLSPTH=%CLASSPATH%;%PRJ%;.) else (set CLSPTH=%PRJ%)
+set CLSPTH=%PRJ%
+if defined CLASSPATH set CLSPTH=%CLASSPATH%;%PRJ%;.
 
 FOR /R "%PRJ%\lib" %%G IN (*.jar) DO set CLSPTH=!CLSPTH!;%%G
 
