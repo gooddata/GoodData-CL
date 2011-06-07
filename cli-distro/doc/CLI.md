@@ -73,6 +73,17 @@ Project Management Commands:
 - msg   - *(optional)* invitation message
 - role  - *(optional)* initial user's role: `admin`|`editor`|`dashboard only`
 
+`CreateUser(domain="...", username="...", password="...", firstName="...", lastName="...", company="...", phone="...", country="...", position="...");` - creates a new user.
+- domain - the GoodData users domain. The domain needs to be created by GoodData admins and associated with your GoodData account
+- username   - the new user's username
+- password   - the new user's password
+- firstName   - the new user's first name
+- lastName   - the new user's last name
+- company   - *(optional)* the new user's company name
+- phone   - *(optional)* the new user's phone
+- country   - *(optional)* the new user's country (e.g. 'cz' or 'us;ca')
+- position   - *(optional)* the new user's position
+
 `ExportProject(tokenFile="...", exportUsers="...", exportData="...", authorizedUsers="...");` - exports an existing project to temporary storage and returns the import token
 - tokenFile - a file where the import token will be stored
 - exportUsers - export existing project users `true` | `false`

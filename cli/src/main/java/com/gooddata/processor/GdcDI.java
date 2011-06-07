@@ -562,6 +562,9 @@ public class GdcDI implements Executor {
             else if(c.match("GetReports")) {
                 getReports(c, cli, ctx);
             }
+            else if(c.match("CreateUser")) {
+                createUser(c, cli, ctx);
+            }
             else if(c.match("InviteUser")) {
                 inviteUser(c, cli, ctx);
             }
@@ -699,6 +702,34 @@ public class GdcDI implements Executor {
         catch (InterruptedException e) {
             throw new InternalErrorException(e);
         }
+    }
+
+    /**
+     * Creates a new user
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void createUser(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        l.info("Creating new user.");
+
+        String domain = c.getParamMandatory("domain");
+
+        GdcRESTApiWrapper.GdcUser user = new GdcRESTApiWrapper.GdcUser();
+        user.setLogin(c.getParamMandatory("username"));
+        user.setPassword(c.getParamMandatory("password"));
+        user.setVerifyPassword(c.getParamMandatory("password"));
+        user.setFirstName(c.getParamMandatory("firstName"));
+        user.setLastName(c.getParamMandatory("lastName"));
+        user.setCompanyName(c.getParam("company"));
+        user.setPosition(c.getParam("position"));
+        user.setCountry(c.getParam("country"));
+        user.setPhoneNumber(c.getParam("phone"));
+
+        String r = ctx.getRestApi(p).createUser(domain, user);
+        l.debug("New user created.");
+        l.info("User "+user.getLogin()+"' successfully created.");
     }
 
     /**

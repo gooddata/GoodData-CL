@@ -65,6 +65,8 @@ public class GdcRESTApiWrapper {
     private static final String MD_URI = "/gdc/md/";
     private static final String QUERY_URI = "/query/";
     private static final String LOGIN_URI = "/gdc/account/login";
+    private static final String DOMAIN_URI = "/gdc/account/domains";
+    private static final String DOMAIN_USERS_SUFFIX = "/users";
     private static final String TOKEN_URI = "/gdc/account/token";
     private static final String DATA_INTERFACES_URI = "/ldm/singleloadinterface";
     private static final String PROJECTS_URI = "/gdc/projects";
@@ -1204,6 +1206,198 @@ public class GdcRESTApiWrapper {
         return param;
     }
 
+    public static class GdcUser {
+        private String login;
+        private String licence;
+        private String firstName;
+        private String lastName;
+        private String companyName;
+        private String position;
+        private String timezone;
+        private String country;
+        private String phoneNumber;
+        private String password;
+        private String verifyPassword;
+        private String settings;
+        private String ssoProvider;
+
+        public boolean validate() {
+            if(getLogin() != null && getLogin().length()>0 && getPassword() != null
+                    && getPassword().length() > 0 && getVerifyPassword() != null
+                    && getVerifyPassword().length() > 0 && getFirstName() != null
+                    && getFirstName().length() > 0 && getLastName() != null
+                    && getLastName().length() > 0)
+                return true;
+            return false;
+        }
+
+        public String getLogin() {
+            return login;
+        }
+
+        public void setLogin(String login) {
+            this.login = login;
+        }
+
+        public String getLicence() {
+            return licence;
+        }
+
+        public void setLicence(String licence) {
+            this.licence = licence;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
+
+        public String getCompanyName() {
+            return companyName;
+        }
+
+        public void setCompanyName(String companyName) {
+            this.companyName = companyName;
+        }
+
+        public String getPosition() {
+            return position;
+        }
+
+        public void setPosition(String position) {
+            this.position = position;
+        }
+
+        public String getTimezone() {
+            return timezone;
+        }
+
+        public void setTimezone(String timezone) {
+            this.timezone = timezone;
+        }
+
+        public String getCountry() {
+            return country;
+        }
+
+        public void setCountry(String country) {
+            this.country = country;
+        }
+
+        public String getPhoneNumber() {
+            return phoneNumber;
+        }
+
+        public void setPhoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String getVerifyPassword() {
+            return verifyPassword;
+        }
+
+        public void setVerifyPassword(String verifyPassword) {
+            this.verifyPassword = verifyPassword;
+        }
+
+        public String getSettings() {
+            return settings;
+        }
+
+        public void setSettings(String settings) {
+            this.settings = settings;
+        }
+
+        public String getSsoProvider() {
+            return ssoProvider;
+        }
+
+        public void setSsoProvider(String ssoProvider) {
+            this.ssoProvider = ssoProvider;
+        }
+
+    }
+
+    /**
+     * Create a new user
+     *
+     * @param domain the domain where the user is going to be created
+     * @param user new user data
+     * @return the new user's URI
+     * @throws GdcRestApiException
+     */
+    public String createUser(String domain, GdcUser user)
+            throws GdcRestApiException {
+        if(user != null && user.validate()) {
+            l.debug("Creating new user "+user.getLogin()+" in domain "+domain);
+            PostMethod req = createPostMethod(getServerUrl()+ DOMAIN_URI+"/"+domain+DOMAIN_USERS_SUFFIX);
+            JSONObject param = getCreateUserStructure(user);
+            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                    param.toString().getBytes()));
+            req.setRequestEntity(request);
+            String result = null;
+            try {
+                String response = executeMethodOk(req);
+                JSONObject responseObject = JSONObject.fromObject(response);
+                result = responseObject.getString("uri");
+                return result;
+            } catch (HttpMethodException ex) {
+                l.debug("Error creating user ",ex);
+                throw new GdcRestApiException("Error creating user ",ex);
+            } finally {
+                req.releaseConnection();
+            }
+        }
+        else {
+            throw new InvalidParameterException("The new user must contain valid login, firstName, lastName, and password fields.");
+        }
+    }
+
+    private JSONObject getCreateUserStructure(GdcUser user) {
+        JSONObject param = new JSONObject();
+        JSONObject accountSetting = new JSONObject();
+        accountSetting.put("login", user.getLogin());
+        accountSetting.put("password", user.getPassword());
+        accountSetting.put("verifyPassword", user.getVerifyPassword());
+        accountSetting.put("firstName", user.getFirstName());
+        accountSetting.put("lastName", user.getLastName());
+
+        if(user.getCompanyName() != null && user.getCompanyName().length() > 0)
+            accountSetting.put("companyName", user.getCompanyName());
+        if(user.getPosition() != null && user.getPosition().length() > 0)
+            accountSetting.put("position", user.getPosition());
+        if(user.getCountry() != null && user.getCountry().length() > 0)
+            accountSetting.put("country", user.getCountry());
+        if(user.getTimezone() != null && user.getTimezone().length() > 0)
+            accountSetting.put("timezone", user.getTimezone());
+        else
+            accountSetting.put("timezone", null);
+        if(user.getPhoneNumber() != null && user.getPhoneNumber().length() > 0)
+            accountSetting.put("phoneNumber", user.getPhoneNumber());
+        if(user.getSsoProvider() != null && user.getSsoProvider().length() > 0)
+            accountSetting.put("ssoProvider", user.getSsoProvider());
+        param.put("accountSetting", accountSetting);
+        return param;
+    }
 
     /**
      * Imports the project
