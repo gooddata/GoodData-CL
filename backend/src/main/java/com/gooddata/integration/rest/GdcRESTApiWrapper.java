@@ -1922,7 +1922,7 @@ public class GdcRESTApiWrapper {
     }
 
     /**
-     * Stores the variable ina project
+     * Stores the variable in a project
      * @param uri - variable uri
      * @param variable - variable JSON structure
      * @return the newly created variable

@@ -133,8 +133,7 @@ public class Transformer {
                         }
                         else {
                             throw new InvalidParameterException("Transform: The schema "+schema.getName()+" contains different" +
-                                    " number of columns than the processed row. This can happen if you forget to migrate the IDENTITY in " +
-                                    "your schema (<dataType>IDENTITY</dataType> => <transformation>IDENTITY</transformation>).");
+                                    " number of columns than the processed row.");
                         }
                     }
                 }
@@ -184,7 +183,7 @@ public class Transformer {
             }
         }
         catch(Exception e) {
-            throw new InvalidParameterException("Transformation expression error (see debug log).", e);
+            throw new InvalidParameterException("Transformation expression error (see debug log). "+e.getMessage(), e);
         }
     }
 
