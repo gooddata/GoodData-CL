@@ -1195,14 +1195,14 @@ public class GdcRESTApiWrapper {
     private JSONObject getProjectExportStructure(boolean exportUsers, boolean exportData, String[] authorizedUsers) {
         JSONObject param = new JSONObject();
         JSONObject exportProject = new JSONObject();
-        exportProject.put("exportUsers", exportUsers);
-        exportProject.put("exportData", exportData);
+        exportProject.put("exportUsers", (exportUsers)?(1):(0));
+        exportProject.put("exportData", (exportData)?(1):(0));
         if(authorizedUsers != null && authorizedUsers.length > 0) {
             JSONArray aUsers = new JSONArray();
             aUsers.addAll(Arrays.asList(authorizedUsers));
             exportProject.put("authorizedUsers", aUsers);
         }
-        exportProject.put("exportProject", exportProject);
+        param.put("exportProject", exportProject);
         return param;
     }
 
@@ -2845,7 +2845,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.29-BETA");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.30-BETA");
         return request;
     }
 
