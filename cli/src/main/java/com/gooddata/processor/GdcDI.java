@@ -726,6 +726,7 @@ public class GdcDI implements Executor {
         user.setPosition(c.getParam("position"));
         user.setCountry(c.getParam("country"));
         user.setPhoneNumber(c.getParam("phone"));
+        user.setSsoProvider(c.getParam("ssoProvider"));
 
         String r = ctx.getRestApi(p).createUser(domain, user);
         l.debug("New user created.");
