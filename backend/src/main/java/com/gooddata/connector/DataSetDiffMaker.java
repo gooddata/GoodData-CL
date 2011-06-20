@@ -129,7 +129,8 @@ class DataSetDiffMaker {
 					
 			// fields populating a lookup table column
 			} else if (c.getName().startsWith(lookupPrefix)) {
-			    String remoteSchemaReference = c.getName().replaceAll("^" + lookupPrefix, "").replaceAll("_.*$", "");
+			    String tmp = c.getName().replaceAll("^" + lookupPrefix, "");
+			    String remoteSchemaReference = tmp.replaceAll("_[^_]*\\..*$", "");
 				prefixLen = (lookupPrefix + remoteSchemaReference + "_").length();
 				String nameAndRemoteField = c.getName().substring(prefixLen);
 				String referenceName = nameAndRemoteField.replaceAll("\\..*$", "");
