@@ -80,6 +80,7 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
             ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
 
         if (proxyHost != null) {
+            l.debug("Configuring FTP/WEBDAV client with proxyHost="+proxyHost+", proxyPort="+proxyPort);
             client.getHostConfiguration().setProxy(proxyHost,proxyPort);
         }
 

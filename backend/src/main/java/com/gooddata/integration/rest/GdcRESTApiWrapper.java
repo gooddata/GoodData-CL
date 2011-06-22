@@ -134,6 +134,7 @@ public class GdcRESTApiWrapper {
             ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
 
         if (proxyHost != null) {
+            l.debug("Configuring REST client with proxyHost="+proxyHost+", proxyPort="+proxyPort);
             client.getHostConfiguration().setProxy(proxyHost,proxyPort);
         }
     }
