@@ -28,7 +28,7 @@
 
     <groupId>com.gooddata.cl</groupId>
     <artifactId>gooddata-cl</artifactId>
-    <version>1.2.31-BETA</version>
+    <version>1.2.32-BETA</version>
     <name>gooddata-cl</name>
     <description>GoodData CL command line tool and Java API framework.</description>
     <url>http://developer.gooddata.com</url>
@@ -75,42 +75,42 @@
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-cli</artifactId>
-                <version>1.2.31-BETA</version>
+                <version>1.2.32-BETA</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-web</artifactId>
-                <version>1.2.31-BETA</version>
+                <version>1.2.32-BETA</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-backend</artifactId>
-                <version>1.2.31-BETA</version>
+                <version>1.2.32-BETA</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-connector</artifactId>
-                <version>1.2.31-BETA</version>
+                <version>1.2.32-BETA</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-snaplogic</artifactId>
-                <version>1.2.31-BETA</version>
+                <version>1.2.32-BETA</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-common</artifactId>
-                <version>1.2.31-BETA</version>
+                <version>1.2.32-BETA</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-snaplogic-lib</artifactId>
-                <version>1.2.31-BETA</version>
+                <version>1.2.32-BETA</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-sfdc-lib</artifactId>
-                <version>1.2.31-BETA</version>
+                <version>1.2.32-BETA</version>
             </dependency>
             <dependency>
                 <groupId>org.snaplogic</groupId>
@@ -135,7 +135,7 @@
             <dependency>
                 <artifactId>gooddata-notification</artifactId>
                 <groupId>com.gooddata.cl</groupId>
-                <version>1.2.31-BETA</version>
+                <version>1.2.32-BETA</version>
             </dependency>
 
 
