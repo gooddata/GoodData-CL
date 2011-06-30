@@ -35,6 +35,7 @@ import java.sql.Types;
 import java.util.*;
 
 import com.gooddata.Constants;
+import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.transform.Transformer;
 import org.apache.log4j.Logger;
 
@@ -440,7 +441,19 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             psw = c.getParam("password");
         String drv = c.getParamMandatory("driver");
         String url = c.getParamMandatory("url");
-        String q = c.getParamMandatory("query");
+        String q = c.getParam("query");
+        String qf = c.getParam("queryFile");
+        if(q != null && qf != null) {
+            l.error("Only one of the query and queryFile parameters can be specified with the UseJdbc command.");
+            throw new InvalidParameterException("Only one of the query and queryFile parameters can be specified with the UseJdbc command.");
+        }
+        if(qf != null && qf.length() >0) {
+            q = FileUtil.readStringFromFile(qf);
+        }
+        if(q == null || q.length() < 0) {
+            l.error("The UseJdbc command requires either query or queryFIle parameter.");
+            throw new InvalidParameterException("The UseJdbc command requires either query or queryFIle parameter.");
+        }
         loadDriver(drv);
         // Fix for the MySQL driver OutOfMemory error
         if(drv.equals("com.mysql.jdbc.Driver"))

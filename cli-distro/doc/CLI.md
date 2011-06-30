@@ -235,6 +235,7 @@ JDBC Connector Commands:
 - driver     - JDBC driver string (e.g. "org.apache.derby.jdbc.EmbeddedDriver"), you'll need to place the JAR with the JDBC driver to the lib subdirectory
 - url        - JDBC url (e.g. "jdbc:derby:mydb")
 - query      - SQL query (e.g. "SELECT employee,dept,salary FROM payroll")
+- queryFile  - a file that contains the SQL query (e.g. "SELECT employee,dept,salary FROM payroll")
 - username   - *(optional)* JDBC username
 - password   - *(optional)* JDBC password
 

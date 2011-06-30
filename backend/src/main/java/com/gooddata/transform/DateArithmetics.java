@@ -60,7 +60,8 @@ public class DateArithmetics {
                 ret = Integer.toString(ds.getDays() + 1);
             }
             catch (IllegalArgumentException e) {
-                l.debug("Can't parse date "+dateValue);
+                l.info("Can't parse date "+dateValue);
+
             }
         }
         return ret;
