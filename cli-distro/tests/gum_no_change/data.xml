@@ -1,10 +1,11 @@
 <!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+<!-- weird underscores added to test a recent underscores related bug -->
 
 <schema>
-  <name>data</name>
+  <name>data_ratata</name>
   <columns>
     <column>
-      <name>date</name>
+      <name>da_te</name>
       <title>Date</title>
       <ldmType>DATE</ldmType>
       <datetime>false</datetime>
@@ -12,12 +13,12 @@
       <schemaReference>Date</schemaReference>
     </column>
     <column>
-      <name>number</name>
+      <name>num_ber</name>
       <title>Number</title>
       <ldmType>FACT</ldmType>
     </column>
     <column>
-      <name>state</name>
+      <name>sta_te</name>
       <title>State</title>
       <ldmType>ATTRIBUTE</ldmType>
     </column>

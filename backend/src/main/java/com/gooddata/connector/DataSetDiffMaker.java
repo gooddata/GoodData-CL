@@ -129,21 +129,25 @@ class DataSetDiffMaker {
 					
 			// fields populating a lookup table column
 			} else if (c.getName().startsWith(lookupPrefix)) {
-			    String tmp = c.getName().replaceAll("^" + lookupPrefix, "");
-			    String remoteSchemaReference = tmp.replaceAll("_[^_]*\\..*$", "");
-				prefixLen = (lookupPrefix + remoteSchemaReference + "_").length();
-				String nameAndRemoteField = c.getName().substring(prefixLen);
-				String referenceName = nameAndRemoteField.replaceAll("\\..*$", "");
-				name = nameAndRemoteField.replaceAll(".*\\." + N.NM_PFX, "");
-				if ((remoteSchemaReference != null) && !remoteSchemaReference.equals(datasetId)) {
-				    schemaReference = remoteSchemaReference;
-				}
-				if (name.equals(referenceName)) {
-					ldmType = LDM_TYPE_ATTRIBUTE;
-				} else {
-					ldmType = LDM_TYPE_LABEL;
-					reference = referenceName;
-				}
+			    String parts[] = c.getName().split("\\.", 2); // splits into [ table, nm_something ] where table starts with the lookupPrefix
+			    assert parts.length == 2;
+			    String table   = parts[0].replaceAll("^" + lookupPrefix, "");
+			    if (!parts[1].startsWith(N.NM_PFX)) {
+			        throw new IllegalStateException("Non-lookup column name '" + c.getName() + "' detected");
+			    }
+			    name    = parts[1].replaceAll("^" + N.NM_PFX, "");
+
+			    if (table.equals(datasetId + "_" + name)) {
+			        ldmType = LDM_TYPE_ATTRIBUTE;
+			    } else if (table.endsWith("_" + name)) { // cross data set attribute
+			        ldmType = LDM_TYPE_ATTRIBUTE;
+			        schemaReference = table.replaceAll("_" + name + "$", "");
+			    } else if (table.startsWith(datasetId + "_")) {
+			        ldmType = LDM_TYPE_LABEL;
+			        reference = table.replaceAll("^" + datasetId + "_", "");
+			    } else {
+			        throw new IllegalStateException("Unknown format of column name '" + c.getName() + "' detected");
+			    }
 				
 			// references to lookups from other data sets
 			} else if (c.getName().startsWith(N.LKP_PFX)) {
