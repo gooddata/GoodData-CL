@@ -98,7 +98,32 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>	   
+			</plugin>
+						<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<id>exec</id>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>com.gooddata.processor.GdcDI</mainClass>
+					<arguments>
+						<argument>examples/quotes/quotes.txt</argument>
+					</arguments>
+					<systemProperties>
+						<systemProperty>
+							<key>log4j.configuration</key>
+							<value>log4j.configuration</value>
+						</systemProperty>
+					</systemProperties>
+				</configuration>
+			</plugin>				   
 		</plugins>
 	</build>
 </project>
