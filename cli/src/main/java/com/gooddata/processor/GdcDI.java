@@ -729,8 +729,7 @@ public class GdcDI implements Executor {
         user.setSsoProvider(c.getParam("ssoProvider"));
 
         String r = ctx.getRestApi(p).createUser(domain, user);
-        l.debug("New user created.");
-        l.info("User "+user.getLogin()+"' successfully created.");
+        l.info("User "+user.getLogin()+"' successfully created. User URI: "+r);
     }
 
     /**
