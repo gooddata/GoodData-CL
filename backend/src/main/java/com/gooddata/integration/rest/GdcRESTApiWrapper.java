@@ -67,6 +67,8 @@ public class GdcRESTApiWrapper {
     private static final String LOGIN_URI = "/gdc/account/login";
     private static final String DOMAIN_URI = "/gdc/account/domains";
     private static final String DOMAIN_USERS_SUFFIX = "/users";
+    private static final String PROJECT_USERS_SUFFIX = "/users";
+    private static final String PROJECT_ROLES_SUFFIX = "/roles";
     private static final String TOKEN_URI = "/gdc/account/token";
     private static final String DATA_INTERFACES_URI = "/ldm/singleloadinterface";
     private static final String PROJECTS_URI = "/gdc/projects";
@@ -1401,6 +1403,83 @@ public class GdcRESTApiWrapper {
     }
 
     /**
+     * Create a new user
+     *
+     * @param projectId project ID
+     * @param uris user URIs
+     * @param role user's role
+     * @return the new user's URI
+     * @throws GdcRestApiException
+     */
+    public void addUsersToProject(String projectId, List<String> uris, String role)
+            throws GdcRestApiException {
+
+            l.debug("Adding users "+uris+" to project "+projectId);
+            String projectsUrl = getProjectUrl(projectId);
+
+            String roleUri = null;
+            if(role != null && role.length() > 0) {
+                Integer roleId = ROLES.get(role.toUpperCase());
+                if(roleId == null)
+                    throw new InvalidParameterException("The role '"+role+"' is not recognized by the GoodData platform.");
+                roleUri = PROJECTS_URI+"/"+projectId+PROJECT_ROLES_SUFFIX+"/"+roleId.toString();
+            }
+            PostMethod req = createPostMethod(projectsUrl+PROJECT_USERS_SUFFIX);
+            JSONObject param = getAddUsersToProjectStructure(uris, roleUri);
+            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                    param.toString().getBytes()));
+            req.setRequestEntity(request);
+            String result = null;
+            try {
+                String response = executeMethodOk(req);
+                JSONObject responseObject = JSONObject.fromObject(response);
+                JSONObject projectUsersUpdateResult = responseObject.getJSONObject("projectUsersUpdateResult");
+                JSONArray failed = projectUsersUpdateResult.getJSONArray("failed");
+                if(!failed.isEmpty()) {
+                    String errMsg = "Following users can't be added to the project:";
+                    for(Object uri : failed.toArray()) {
+                        errMsg += " "+uris.toString();
+                    }
+                    l.debug(errMsg);
+                    throw new GdcRestApiException(errMsg);
+                }
+                //JSONArray successful = projectUsersUpdateResult.getJSONArray("successful");
+            } catch (HttpMethodException ex) {
+                l.debug("Error adding users "+uris+" to project",ex);
+                throw new GdcRestApiException("Error adding users "+uris+" to project ",ex);
+            } finally {
+                req.releaseConnection();
+            }
+    }
+
+    private JSONObject getAddUsersToProjectStructure(List<String> uris, String roleUri) {
+        JSONObject param = new JSONObject();
+        JSONArray users = new JSONArray();
+        JSONArray roles = null;
+        if(roleUri != null && roleUri.trim().length()>0) {
+            roles = new JSONArray();
+            roles.add(roleUri);
+        }
+        for(String uri : uris) {
+            JSONObject user = new JSONObject();
+            JSONObject content = new JSONObject();
+            if(roles != null)
+                content.put("userRoles", roles);
+            content.put("status","ENABLED");
+            user.put("content", content);
+            JSONObject links = new JSONObject();
+            links.put("self", uri);
+            user.put("links", links);
+            JSONObject item = new JSONObject();
+            item.put("user",user);
+            users.add(item);
+        }
+        param.put("users", users);
+        return param;
+    }
+
+
+    /**
      * Imports the project
      *
      * @param projectId the project's ID
@@ -1565,6 +1644,15 @@ public class GdcRESTApiWrapper {
      */
     protected String getProjectMdUrl(String projectId) {
         return getServerUrl() + MD_URI + projectId;
+    }
+
+    /**
+     * Constructs project's projects uri
+     *
+     * @param projectId project ID
+     */
+    protected String getProjectUrl(String projectId) {
+        return getServerUrl() + PROJECTS_URI + "/" + projectId;
     }
 
     /**

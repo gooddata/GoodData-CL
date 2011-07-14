@@ -64,6 +64,8 @@ import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
 import com.gooddata.util.FileUtil;
 
+import javax.print.attribute.URISyntax;
+
 /**
  * The GoodData Data Integration CLI processor.
  *
@@ -565,6 +567,9 @@ public class GdcDI implements Executor {
             else if(c.match("CreateUser")) {
                 createUser(c, cli, ctx);
             }
+            else if(c.match("AddUsersToProject")) {
+                addUsersToProject(c, cli, ctx);
+            }
             else if(c.match("InviteUser")) {
                 inviteUser(c, cli, ctx);
             }
@@ -727,9 +732,38 @@ public class GdcDI implements Executor {
         user.setCountry(c.getParam("country"));
         user.setPhoneNumber(c.getParam("phone"));
         user.setSsoProvider(c.getParam("ssoProvider"));
-
+        String usersFile = c.getParam("usersFile");
+        String appnd = c.getParam("append");
+        final boolean append = (appnd != null && "true".equalsIgnoreCase(appnd));
         String r = ctx.getRestApi(p).createUser(domain, user);
+        if(r!=null && r.length()>0 && usersFile != null && usersFile.length() > 0) {
+            FileUtil.writeStringToFile(r+"\n", usersFile, append);
+        }
         l.info("User "+user.getLogin()+"' successfully created. User URI: "+r);
+    }
+
+    /**
+     * Adds a new user to project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void addUsersToProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        l.info("Adding users to project.");
+
+        String pid = ctx.getProjectIdMandatory();
+        String usersFile = c.getParamMandatory("usersFile");
+        List<String> uris = new ArrayList<String>();
+        BufferedReader r = FileUtil.createBufferedUtf8Reader(usersFile);
+        String uri = r.readLine();
+        while (uri != null && uri.trim().length()>0) {
+            uris.add(uri.trim());
+            uri = r.readLine();
+        }
+        String role = c.getParam("role");
+        ctx.getRestApi(p).addUsersToProject(pid, uris, role);
+        l.info("Users "+uris+"' successfully added to project "+pid);
     }
 
     /**

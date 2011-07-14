@@ -23,19 +23,7 @@
 
 package com.gooddata.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
+import java.io.*;
 import java.net.URL;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -210,6 +198,21 @@ public class FileUtil {
     }
 
     /**
+     * Writes a string to a file.
+     *
+     * @param content  the content
+     * @param fileName the file
+     * @param append should be the content appended?
+     * @throws IOException
+     */
+    public static void writeStringToFile(String content, String fileName, boolean append) throws IOException {
+        BufferedWriter fw = createBufferedUtf8Writer(fileName, append);
+        fw.write(content);
+        fw.flush();
+        fw.close();
+    }
+
+    /**
      * Reads the entire file and returns its content as a single {@link String} 
      *
      * @param fileName the file
@@ -230,7 +233,7 @@ public class FileUtil {
     public static void writeJSONToFile(JSON content, String fileName) throws IOException {
         BufferedWriter fw = createBufferedUtf8Writer(fileName);
         String str = content.toString(2);
-        str = str.replace("å", " "); // ugly but works
+        str = str.replace("ï¿½", " "); // ugly but works
         fw.write(str);
         fw.flush();
         fw.close();
@@ -360,6 +363,19 @@ public class FileUtil {
 	 */
 	public static BufferedWriter createBufferedUtf8Writer(String path) throws IOException {
 		return createBufferedUtf8Writer(new File(path));
+	}
+
+    /**
+	 * Opens a file given by a path and returns its {@link BufferedWriter} using the
+	 * UTF-8 encoding
+	 *
+	 * @param path path to a file to write to
+     * @param append should be the content appended?
+	 * @return UTF8 BufferedWriter of the file <tt>path</tt>
+	 * @throws IOException
+	 */
+	public static BufferedWriter createBufferedUtf8Writer(String path, boolean append) throws IOException {
+		return new BufferedWriter(new FileWriter(path, append));
 	}
 	
 	/**
