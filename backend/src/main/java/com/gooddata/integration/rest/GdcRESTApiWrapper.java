@@ -1577,6 +1577,8 @@ public class GdcRESTApiWrapper {
             client.executeMethod(method);
             if (method.getStatusCode() == HttpStatus.SC_OK) {
                 return method.getResponseBodyAsString();
+            } else if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+                return "";
             } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reloginOn401) {
                 // refresh the temporary token
                 setTokenCookie();
@@ -1585,8 +1587,6 @@ public class GdcRESTApiWrapper {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
                 throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
-            } else if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
-                throw new HttpMethodNoContentException(method.getResponseBodyAsString());
             } else {
                 String msg = method.getStatusCode() + " " + method.getStatusText();
                 String body = method.getResponseBodyAsString();
