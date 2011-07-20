@@ -24,7 +24,6 @@
 package com.gooddata.integration.webdav;
 
 import com.gooddata.exception.HttpMethodException;
-import com.gooddata.exception.HttpMethodNoContentException;
 import com.gooddata.exception.HttpMethodNotFinishedYetException;
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
@@ -141,12 +140,12 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
             client.executeMethod(method);
             if (method.getStatusCode() == HttpStatus.SC_OK) {
                 return method.getResponseBodyAsString();
+            } else if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+                return "";
             } else if (method.getStatusCode() == HttpStatus.SC_CREATED) {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
                 throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
-            } else if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
-                throw new HttpMethodNoContentException(method.getResponseBodyAsString());
             } else if (method.getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
                 if(method instanceof PropFindMethod) {
                     PropFindMethod ls = (PropFindMethod)method;
