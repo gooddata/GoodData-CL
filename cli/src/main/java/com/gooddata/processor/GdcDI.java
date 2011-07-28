@@ -325,7 +325,7 @@ public class GdcDI implements Executor {
 
         if(cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.36-BETA" +
+            l.info("GoodData CL version 1.2.37-BETA" +
                     ((BUILD_NUMBER.length()>0) ? ", build "+BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -570,6 +570,9 @@ public class GdcDI implements Executor {
             else if(c.match("AddUsersToProject")) {
                 addUsersToProject(c, cli, ctx);
             }
+            else if(c.match("GetProjectUsers")) {
+                getProjectUsers(c, cli, ctx);
+            }
             else if(c.match("InviteUser")) {
                 inviteUser(c, cli, ctx);
             }
@@ -764,6 +767,37 @@ public class GdcDI implements Executor {
         String role = c.getParam("role");
         ctx.getRestApi(p).addUsersToProject(pid, uris, role);
         l.info("Users "+uris+"' successfully added to project "+pid);
+    }
+
+    /**
+     * Adds a new user to project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void getProjectUsers(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        String pid = ctx.getProjectIdMandatory();
+        l.info("Getting users from project"+pid);
+        String usersFile = c.getParamMandatory("usersFile");
+        String field = c.getParamMandatory("field");
+        String appnd = c.getParam("append");
+        final boolean append = (appnd != null && "true".equalsIgnoreCase(appnd));
+        if("email".equalsIgnoreCase(field) || "uri".equalsIgnoreCase(field)) {
+            List<GdcRESTApiWrapper.GdcUser> users = ctx.getRestApi(p).getProjectUsers(pid);
+            for(GdcRESTApiWrapper.GdcUser user : users) {
+                if("email".equalsIgnoreCase(field)) {
+                    FileUtil.writeStringToFile(user.getLogin()+"\n", usersFile, append);
+                }
+                if("uri".equalsIgnoreCase(field)) {
+                    FileUtil.writeStringToFile(user.getUri()+"\n", usersFile, append);
+                }
+                l.info("User "+user.getLogin()+"' successfully added. User URI: "+user.getUri());
+            }
+        }
+        else {
+            l.error("Invalid field parameter. Only values 'email' and 'uri' are currently supported.");
+        }
     }
 
     /**

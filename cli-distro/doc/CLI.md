@@ -87,6 +87,11 @@ Project Management Commands:
 - usersFile - (optional) writes the user's URI to the specified file
 - append - (optional) should the users file be appended (default is false)
 
+`GetProjectUsers(usersFile="...", field = "...", append="...");` - get list of users from the current project
+- usersFile - writes the user's URI to the specified file
+- field - uri | email - writes either user uri or e-mail to the usersFile
+- append - (optional) should the users file be appended (default is false)
+
 `AddUsersToProject(usersFile="...", role="...")` - adds users in the usersFile to the open project in a specific role
 - usersFile - (optional) writes the user's URI to the specified file
 - role  - (optional) initial user's role: admin|editor|dashboard only

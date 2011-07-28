@@ -1223,6 +1223,56 @@ public class GdcRESTApiWrapper {
         private String verifyPassword;
         private String settings;
         private String ssoProvider;
+        private String status;
+        private String uri;
+
+
+
+        public GdcUser() {}
+
+        public GdcUser(JSONObject user) {
+            if(user == null || user.isEmpty() || user.isNullObject()) {
+                throw new GdcRestApiException("Can't extract user from JSON. The JSON is empty.");
+            }
+            JSONObject u = user.getJSONObject("user");
+            if(u == null || u.isEmpty() || u.isNullObject()) {
+                throw new GdcRestApiException("Can't extract user from JSON. No user key in the JSON.");
+            }
+            JSONObject c = user.getJSONObject("content");
+            if(c == null || c.isEmpty() || c.isNullObject()) {
+                throw new GdcRestApiException("Can't extract user from JSON. No content key in the JSON.");
+            }
+            String v = c.getString("email");
+            if(v == null || v.trim().length()<=0) {
+                throw new GdcRestApiException("Can't extract user from JSON. No email key in the JSON.");
+            }
+            this.setLogin(v);
+            v = c.getString("firstname");
+            if(v != null && v.trim().length()<=0) {
+                this.setFirstName(v);
+            }
+            v = c.getString("lastname");
+            if(v != null && v.trim().length()<=0) {
+                this.setLastName(v);
+            }
+            v = c.getString("phonenumber");
+            if(v != null && v.trim().length()<=0) {
+                this.setPhoneNumber(v);
+            }
+            v = c.getString("status");
+            if(v != null && v.trim().length()<=0) {
+                this.setStatus(v);
+            }
+            JSONObject l = user.getJSONObject("links");
+            if(l == null || l.isEmpty() || l.isNullObject()) {
+                throw new GdcRestApiException("Can't extract user from JSON. No links key in the JSON.");
+            }
+            v = l.getString("self");
+            if(v == null || v.trim().length()<=0) {
+                throw new GdcRestApiException("Can't extract user from JSON. No self key in the JSON.");
+            }
+            this.setUri(v);
+        }
 
         public boolean validate() {
             if(getLogin() != null && getLogin().length()>0 && getPassword() != null
@@ -1240,6 +1290,22 @@ public class GdcRESTApiWrapper {
 
         public void setLogin(String login) {
             this.login = login;
+        }
+
+        public String getUri() {
+            return uri;
+        }
+
+        public void setUri(String u) {
+            this.uri = u;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String s) {
+            this.status = s;
         }
 
         public String getLicence() {
@@ -1476,6 +1542,38 @@ public class GdcRESTApiWrapper {
         }
         param.put("users", users);
         return param;
+    }
+
+    /**
+     * Returns the selected project's users
+     * @param pid  project ID
+     * @return array of the project's users
+     */
+    public ArrayList<GdcUser> getProjectUsers(String pid) {
+        ArrayList<GdcUser> ret = new ArrayList<GdcUser>();
+        l.debug("Executing getProjectUsers for project id="+pid);
+        HttpMethod req = createGetMethod(getProjectUrl(pid) + PROJECT_USERS_SUFFIX);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if(parsedResp == null || parsedResp.isNullObject() || parsedResp.isEmpty()) {
+                l.debug("Can't getProjectUsers for project id="+pid+". Invalid response.");
+                throw new GdcRestApiException("Can't getProjectUsers for project id="+pid+". Invalid response.");
+            }
+            JSONArray users = parsedResp.getJSONArray("user");
+            if(users == null) {
+                l.debug("Can't getProjectUsers for project id="+pid+". No users key in the response.");
+                throw new GdcRestApiException("Can't getProjectUsers for project id="+pid+". No users key in the response.");
+            }
+            for(Object o : users) {
+                JSONObject user = (JSONObject)o;
+                ret.add(new GdcUser(user));
+            }
+            return ret;
+        }
+        finally {
+            req.releaseConnection();
+        }
     }
 
 
@@ -2934,7 +3032,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.36-BETA");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.37-BETA");
         return request;
     }
 
