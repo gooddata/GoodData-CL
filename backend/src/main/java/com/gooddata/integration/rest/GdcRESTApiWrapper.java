@@ -1238,7 +1238,7 @@ public class GdcRESTApiWrapper {
             if(u == null || u.isEmpty() || u.isNullObject()) {
                 throw new GdcRestApiException("Can't extract user from JSON. No user key in the JSON.");
             }
-            JSONObject c = user.getJSONObject("content");
+            JSONObject c = u.getJSONObject("content");
             if(c == null || c.isEmpty() || c.isNullObject()) {
                 throw new GdcRestApiException("Can't extract user from JSON. No content key in the JSON.");
             }
@@ -1263,7 +1263,7 @@ public class GdcRESTApiWrapper {
             if(v != null && v.trim().length()<=0) {
                 this.setStatus(v);
             }
-            JSONObject l = user.getJSONObject("links");
+            JSONObject l = u.getJSONObject("links");
             if(l == null || l.isEmpty() || l.isNullObject()) {
                 throw new GdcRestApiException("Can't extract user from JSON. No links key in the JSON.");
             }
@@ -1560,7 +1560,7 @@ public class GdcRESTApiWrapper {
                 l.debug("Can't getProjectUsers for project id="+pid+". Invalid response.");
                 throw new GdcRestApiException("Can't getProjectUsers for project id="+pid+". Invalid response.");
             }
-            JSONArray users = parsedResp.getJSONArray("user");
+            JSONArray users = parsedResp.getJSONArray("users");
             if(users == null) {
                 l.debug("Can't getProjectUsers for project id="+pid+". No users key in the response.");
                 throw new GdcRestApiException("Can't getProjectUsers for project id="+pid+". No users key in the response.");
