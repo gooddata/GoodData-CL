@@ -781,16 +781,14 @@ public class GdcDI implements Executor {
         l.info("Getting users from project"+pid);
         String usersFile = c.getParamMandatory("usersFile");
         String field = c.getParamMandatory("field");
-        String appnd = c.getParam("append");
-        final boolean append = (appnd != null && "true".equalsIgnoreCase(appnd));
         if("email".equalsIgnoreCase(field) || "uri".equalsIgnoreCase(field)) {
             List<GdcRESTApiWrapper.GdcUser> users = ctx.getRestApi(p).getProjectUsers(pid);
             for(GdcRESTApiWrapper.GdcUser user : users) {
                 if("email".equalsIgnoreCase(field)) {
-                    FileUtil.writeStringToFile(user.getLogin()+"\n", usersFile, append);
+                    FileUtil.writeStringToFile(user.getLogin()+"\n", usersFile, true);
                 }
                 if("uri".equalsIgnoreCase(field)) {
-                    FileUtil.writeStringToFile(user.getUri()+"\n", usersFile, append);
+                    FileUtil.writeStringToFile(user.getUri()+"\n", usersFile, true);
                 }
                 l.info("User "+user.getLogin()+"' successfully added. User URI: "+user.getUri());
             }
