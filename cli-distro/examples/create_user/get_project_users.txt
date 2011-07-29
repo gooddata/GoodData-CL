@@ -1,0 +1,6 @@
+# This example shows how to get GoodData users from an existing project
+
+# We will create a new project for now. You can also use the OpenProject or UseProject commands to initialize the project
+CreateProject(name="Users Test");
+
+GetProjectUsers(usersFile="examples/create_user/users.txt", field = "email");
