@@ -80,6 +80,7 @@ public class GdcRESTApiWrapper {
     public static final String PROJECT_EXPORT_URI = "/maintenance/export";
     public static final String PROJECT_IMPORT_URI = "/maintenance/import";
     public static final String REPORT_QUERY = "/query/reports";
+    public static final String ATTR_QUERY = "/query/attributes";
     public static final String EXECUTOR = "/gdc/xtab2/executor3";
     public static final String INVITATION_URI = "/invitations";
     public static final String ETL_MODE_URI = "/etl/mode";
@@ -503,6 +504,249 @@ public class GdcRESTApiWrapper {
         return ssToken;
     }
 
+    /**
+     * Enumerates all attributes in the project
+     * @param projectId project Id
+     * @return LIst of attr uris
+     */
+    public List<String> enumerateAttributes(String projectId) {
+        l.debug("Enumerating attributes for project id="+projectId);
+        List<String> list = new ArrayList<String>();
+        String qUri = getProjectMdUrl(projectId) + ATTR_QUERY;
+        HttpMethod qGet = createGetMethod(qUri);
+        try {
+            String qr = executeMethodOk(qGet);
+            JSONObject q = JSONObject.fromObject(qr);
+            if (q.isNullObject()) {
+                l.debug("Enumerating attributes for project id="+projectId+" failed.");
+                throw new GdcProjectAccessException("Enumerating attributes for project id="+projectId+" failed.");
+            }
+            JSONObject qry = q.getJSONObject("query");
+            if (qry.isNullObject()) {
+                l.debug("Enumerating attributes for project id="+projectId+" failed.");
+                throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
+            }
+            JSONArray entries = qry.getJSONArray("entries");
+            if (entries == null) {
+                l.debug("Enumerating attributes for project id="+projectId+" failed.");
+                throw new GdcProjectAccessException("Enumerating reports for project id="+projectId+" failed.");
+            }
+            for(Object oentry : entries) {
+                JSONObject entry = (JSONObject)oentry;
+                list.add(entry.getString("link"));
+            }
+        }
+        finally {
+            qGet.releaseConnection();
+        }
+        return list;
+    }
+
+    /**
+     * Gets attribute PK
+     * @param attrUri attribute URI
+     * @return list of attribute PKs (columns)
+     */
+    public List<JSONObject> getAttributePk(String attrUri) {
+        List<JSONObject> ret = new ArrayList<JSONObject>();
+        JSONObject attr = getObjectByUri(attrUri);
+        JSONObject a = attr.getJSONObject("attribute");
+        if(a != null && !a.isEmpty() && !a.isEmpty()) {
+            JSONObject c = a.getJSONObject("content");
+            if(c != null && !c.isEmpty() && !c.isEmpty()) {
+                JSONArray pks = c.getJSONArray("pk");
+                if(pks != null && !pks.isEmpty()) {
+                    Object[] p = pks.toArray();
+                    for(Object pko : p) {
+                        JSONObject pk = (JSONObject)pko;
+                        String columnUri = pk.getString("data");
+                        if(columnUri != null) {
+                            ret.add(getObjectByUri(columnUri));
+                        }
+                        else {
+                            l.debug("Error getting attribute PK. No PK data.");
+                            throw new GdcProjectAccessException("Error getting attribute PK. No PK data.");
+                        }
+                    }
+                }
+            }
+            else {
+                l.debug("Error getting attribute PK. No content.");
+                throw new GdcProjectAccessException("Error getting attribute PK. No content.");
+            }
+
+        }
+        else {
+            l.debug("Error getting attribute PK. No attribute.");
+            throw new GdcProjectAccessException("Error getting attribute PK. No attribute.");
+        }
+        return ret;
+    }
+
+    /**
+     * Gets attribute FK
+     * @param attrUri attribute URI
+     * @return list of attribute FKs (columns)
+     */
+    public List<JSONObject> getAttributeFk(String attrUri) {
+        List<JSONObject> ret = new ArrayList<JSONObject>();
+        JSONObject attr = getObjectByUri(attrUri);
+        JSONObject a = attr.getJSONObject("attribute");
+        if(a != null && !a.isEmpty() && !a.isEmpty()) {
+            JSONObject c = a.getJSONObject("content");
+            if(c != null && !c.isEmpty() && !c.isEmpty()) {
+                if(c.containsKey("fk")) {
+                    JSONArray pks = c.getJSONArray("fk");
+                    if(pks != null && !pks.isEmpty()) {
+                        Object[] p = pks.toArray();
+                        for(Object pko : p) {
+                            JSONObject pk = (JSONObject)pko;
+                            String columnUri = pk.getString("data");
+                            if(columnUri != null && columnUri.trim().length()>0) {
+                                ret.add(getObjectByUri(columnUri));
+                            }
+                            else {
+                                l.debug("Error getting attribute FK. No FK data.");
+                                throw new GdcProjectAccessException("Error getting attribute FK. No FK data.");
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                l.debug("Error getting attribute FK. No content.");
+                throw new GdcProjectAccessException("Error getting attribute FK. No content.");
+            }
+
+        }
+        else {
+            l.debug("Error getting attribute FK. No attribute.");
+            throw new GdcProjectAccessException("Error getting attribute FK. No attribute.");
+        }
+        return ret;
+    }
+
+    /**
+     * Gets column DB name
+     * @param column column object
+     * @return column DB name
+     */
+    public String getColumnDbName(JSONObject column) {
+        JSONObject cl = column.getJSONObject("column");
+        if(cl != null && !cl.isEmpty() && !cl.isEmpty()) {
+            JSONObject c = cl.getJSONObject("content");
+            if(c != null && !c.isEmpty() && !c.isEmpty()) {
+                String cn = c.getString("columnDBName");
+                if(cn != null && cn.trim().length()>0) {
+                    return cn;
+                }
+                else {
+                    l.debug("Error getting column name. No columnDBName.");
+                    throw new GdcProjectAccessException("Error getting column name. No columnDBName.");
+                }
+            }
+            else {
+                l.debug("Error getting column name. No content.");
+                throw new GdcProjectAccessException("Error getting column name. No content.");
+            }
+        }
+        else {
+            l.debug("Error getting column name. No column.");
+            throw new GdcProjectAccessException("Error getting column name. No column.");
+        }
+    }
+
+    /**
+     * Gets column table name
+     * @param column column object
+     * @return column table name
+     */
+    public String getColumnTableName(JSONObject column) {
+        JSONObject cl = column.getJSONObject("column");
+        if(cl != null && !cl.isEmpty() && !cl.isEmpty()) {
+            JSONObject c = cl.getJSONObject("content");
+            if(c != null && !c.isEmpty() && !c.isEmpty()) {
+                String t = c.getString("table");
+                if(t != null && t.trim().length()>0) {
+                    JSONObject tbl = getObjectByUri(t);
+                    JSONObject root = tbl.getJSONObject("table");
+                    if(root != null && !root.isEmpty() && !root.isEmpty()) {
+                        c = root.getJSONObject("content");
+                        if(c != null && !c.isEmpty() && !c.isEmpty()) {
+                            String dl = c.getString("activeDataLoad");
+                            if(dl != null && dl.trim().length()>0) {
+                                JSONObject tdl = getObjectByUri(dl);
+                                root = tdl.getJSONObject("tableDataLoad");
+                                if(root != null && !root.isEmpty() && !root.isEmpty()) {
+                                    c = root.getJSONObject("content");
+                                    if(c != null && !c.isEmpty() && !c.isEmpty()) {
+                                        String tn = c.getString("dataSourceLocation");
+                                        if(tn != null && tn.trim().length()>0) {
+                                            return tn;
+                                        }
+                                        else {
+                                            l.debug("Error getting column name. No dataSourceLocation.");
+                                            throw new GdcProjectAccessException("Error getting column name. No dataSourceLocation.");
+                                        }
+                                    }
+                                    else {
+                                        l.debug("Error getting column name. No active table data load content.");
+                                        throw new GdcProjectAccessException("Error getting column name. No active table data load content.");
+                                    }
+                                }
+                                else {
+                                    l.debug("Error getting column name. No table data load root.");
+                                    throw new GdcProjectAccessException("Error getting column name. No table data load root.");
+                                }
+                            }
+                            else {
+                                l.debug("Error getting column name. No active data load.");
+                                throw new GdcProjectAccessException("Error getting column name. No active data load.");
+                            }
+                        }
+                        else {
+                            l.debug("Error getting column name. No table content.");
+                            throw new GdcProjectAccessException("Error getting column name. No table content.");
+                        }
+                    }
+                    else {
+                        l.debug("Error getting column table. No table root.");
+                        throw new GdcProjectAccessException("Error getting column table. No table root.");
+                    }
+                }
+                else {
+                    l.debug("Error getting column name. No table.");
+                    throw new GdcProjectAccessException("Error getting column name. No table.");
+                }
+            }
+            else {
+                l.debug("Error getting column name. No content.");
+                throw new GdcProjectAccessException("Error getting column name. No content.");
+            }
+        }
+        else {
+            l.debug("Error getting column name. No column.");
+            throw new GdcProjectAccessException("Error getting column name. No column.");
+        }
+    }
+
+    /**
+     * Enumerates all attributes in the project
+     * @param attrUri attribute URI
+     * @return attribute object
+     */
+    public JSONObject getAttribute (String attrUri) {
+        l.debug("Getting attribute uri="+attrUri);
+        String qUri = getServerUrl() + attrUri;
+        HttpMethod qGet = createGetMethod(qUri);
+        try {
+            String qr = executeMethodOk(qGet);
+            return JSONObject.fromObject(qr);
+        }
+        finally {
+            qGet.releaseConnection();
+        }
+    }
 
     /**
      * Enumerates all reports on in a project
@@ -1981,7 +2225,7 @@ public class GdcRESTApiWrapper {
      * @param objectUri object uri
      * @return the object to get
      */
-    protected JSONObject getObjectByUri(String objectUri) {
+    public JSONObject getObjectByUri(String objectUri) {
         l.debug("Executing getObjectByUri uri="+objectUri);
         HttpMethod req = createGetMethod(getServerUrl() + objectUri);
         try {
