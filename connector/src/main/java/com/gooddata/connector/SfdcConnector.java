@@ -39,6 +39,7 @@ import com.sforce.soap.partner.*;
 import org.apache.axis.message.MessageElement;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import com.gooddata.util.CSVWriter;
 
@@ -241,7 +242,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public void extract(String file, boolean transform) throws IOException {
-        File dataFile = new File(file);
+    	File dataFile = new File(file);
         l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
         Transformer t = Transformer.create(schema);
@@ -278,11 +279,15 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                         MessageElement[] cols = srow.get_any();
                         Object[] row = new Object[cols.length];
                         for(int i=0; i<row.length; i++) {
-                            row[i] = cols[i].getValue();
+                        	if (colTypes[i].equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
+                        		row[i] = new DateTime(cols[i].getValue());
+                        	} else {
+                        		row[i] = cols[i].getValue();
+                        	}
                         }
                         String[] nrow = null;
                         if(transform) {
-                            nrow = t.transformRow(row, 10);
+                            nrow = t.transformRow(row, DATE_LENGTH_UNRESTRICTED);
                         }
                         else {
                             nrow = new String[row.length];
