@@ -28,6 +28,7 @@ import com.gooddata.exception.HttpMethodNotFinishedYetException;
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.util.FileUtil;
+import com.gooddata.util.NetUtil;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.httpclient.*;
@@ -74,14 +75,7 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
         this.config = config;
         client = new HttpClient();
 
-        final String proxyHost = System.getProperty("http.proxyHost");
-        final int proxyPort = System.getProperty("http.proxyPort") == null
-            ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
-
-        if (proxyHost != null) {
-            l.debug("Configuring FTP/WEBDAV client with proxyHost="+proxyHost+", proxyPort="+proxyPort);
-            client.getHostConfiguration().setProxy(proxyHost,proxyPort);
-        }
+        NetUtil.configureHttpProxy(client);
 
         Credentials creds = new UsernamePasswordCredentials(this.config.getUsername(), this.config.getPassword());
         client.getState().setCredentials(AuthScope.ANY, creds);

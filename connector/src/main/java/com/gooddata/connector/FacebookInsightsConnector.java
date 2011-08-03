@@ -33,6 +33,7 @@ import com.gooddata.processor.ProcessingContext;
 import com.gooddata.transform.Transformer;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
+import com.gooddata.util.NetUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -76,13 +77,7 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
     protected FacebookInsightsConnector() {
         client = new HttpClient();
 
-        final String proxyHost = System.getProperty("http.proxyHost");
-        final int proxyPort = System.getProperty("http.proxyPort") == null
-            ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
-
-        if (proxyHost != null) {
-            client.getHostConfiguration().setProxy(proxyHost,proxyPort);
-        }
+        NetUtil.configureHttpProxy(client);
 
     }
 

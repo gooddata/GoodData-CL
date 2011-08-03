@@ -29,6 +29,7 @@ import com.gooddata.integration.model.Project;
 import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.util.FileUtil;
+import com.gooddata.util.NetUtil;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -131,15 +132,7 @@ public class GdcRESTApiWrapper {
     public GdcRESTApiWrapper(NamePasswordConfiguration config) {
         this.config = config;
         client = new HttpClient();
-
-        final String proxyHost = System.getProperty("http.proxyHost");
-        final int proxyPort = System.getProperty("http.proxyPort") == null
-            ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
-
-        if (proxyHost != null) {
-            l.debug("Configuring REST client with proxyHost="+proxyHost+", proxyPort="+proxyPort);
-            client.getHostConfiguration().setProxy(proxyHost,proxyPort);
-        }
+        NetUtil.configureHttpProxy(client);
     }
 
     /**

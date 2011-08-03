@@ -25,6 +25,7 @@ package com.gooddata.chargify;
 import com.gooddata.exception.HttpMethodException;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
+import com.gooddata.util.NetUtil;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.DeleteMethod;
@@ -88,13 +89,8 @@ public class ChargifyWrapper {
         setApiToken(apiToken);
         client = new HttpClient();
 
-        final String proxyHost = System.getProperty("http.proxyHost");
-        final int proxyPort = System.getProperty("http.proxyPort") == null
-                ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
+        NetUtil.configureHttpProxy(client);
 
-        if (proxyHost != null) {
-            client.getHostConfiguration().setProxy(proxyHost, proxyPort);
-        }
         client.getHostConfiguration().setHost(getDomain());
 
         client.getState().setCredentials(

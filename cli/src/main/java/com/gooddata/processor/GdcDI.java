@@ -44,6 +44,10 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.auth.AuthScheme;
+import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -493,6 +497,10 @@ public class GdcDI implements Executor {
         else {
             l.error("Can't find the logging config. Please configure the logging via the log4j.configuration.");
         }
+    }
+
+    private void setupHttpProxies() {
+        //CredentialsProvider proxyCredentials = new BasicCredentialsProvider ();
     }
 
 	/**

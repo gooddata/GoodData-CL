@@ -28,6 +28,7 @@ import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
+import com.gooddata.util.NetUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
@@ -107,13 +108,7 @@ public class PivotalApi {
 
         client = new HttpClient();
 
-        final String proxyHost = System.getProperty("http.proxyHost");
-        final int proxyPort = System.getProperty("http.proxyPort") == null
-            ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
-
-        if (proxyHost != null) {
-            client.getHostConfiguration().setProxy(proxyHost,proxyPort);
-        }
+        NetUtil.configureHttpProxy(client);
 
 
         client.getHostConfiguration().setHost(PIVOTAL_URL);
