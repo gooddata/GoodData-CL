@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeSoftphoneLayoutResult.java
  *
@@ -12,19 +8,19 @@
 package com.sforce.soap.partner;
 
 public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
-    private DescribeSoftphoneLayoutCallType[] callTypes;
+    private com.sforce.soap.partner.DescribeSoftphoneLayoutCallType[] callTypes;
 
-    private String id;
+    private java.lang.String id;
 
-    private String name;
+    private java.lang.String name;
 
     public DescribeSoftphoneLayoutResult() {
     }
 
     public DescribeSoftphoneLayoutResult(
-           DescribeSoftphoneLayoutCallType[] callTypes,
-           String id,
-           String name) {
+           com.sforce.soap.partner.DescribeSoftphoneLayoutCallType[] callTypes,
+           java.lang.String id,
+           java.lang.String name) {
            this.callTypes = callTypes;
            this.id = id;
            this.name = name;
@@ -36,7 +32,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
      * 
      * @return callTypes
      */
-    public DescribeSoftphoneLayoutCallType[] getCallTypes() {
+    public com.sforce.soap.partner.DescribeSoftphoneLayoutCallType[] getCallTypes() {
         return callTypes;
     }
 
@@ -46,15 +42,15 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
      * 
      * @param callTypes
      */
-    public void setCallTypes(DescribeSoftphoneLayoutCallType[] callTypes) {
+    public void setCallTypes(com.sforce.soap.partner.DescribeSoftphoneLayoutCallType[] callTypes) {
         this.callTypes = callTypes;
     }
 
-    public DescribeSoftphoneLayoutCallType getCallTypes(int i) {
+    public com.sforce.soap.partner.DescribeSoftphoneLayoutCallType getCallTypes(int i) {
         return this.callTypes[i];
     }
 
-    public void setCallTypes(int i, DescribeSoftphoneLayoutCallType _value) {
+    public void setCallTypes(int i, com.sforce.soap.partner.DescribeSoftphoneLayoutCallType _value) {
         this.callTypes[i] = _value;
     }
 
@@ -64,7 +60,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
      * 
      * @return id
      */
-    public String getId() {
+    public java.lang.String getId() {
         return id;
     }
 
@@ -74,7 +70,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
      * 
      * @param id
      */
-    public void setId(String id) {
+    public void setId(java.lang.String id) {
         this.id = id;
     }
 
@@ -84,7 +80,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
      * 
      * @return name
      */
-    public String getName() {
+    public java.lang.String getName() {
         return name;
     }
 
@@ -94,12 +90,12 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
      * 
      * @param name
      */
-    public void setName(String name) {
+    public void setName(java.lang.String name) {
         this.name = name;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeSoftphoneLayoutResult)) return false;
         DescribeSoftphoneLayoutResult other = (DescribeSoftphoneLayoutResult) obj;
         if (obj == null) return false;
@@ -134,7 +130,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getCallTypes());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getCallTypes(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getCallTypes(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -189,8 +185,8 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -201,8 +197,8 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

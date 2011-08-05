@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * ResetPassword.java
  *
@@ -12,13 +8,13 @@
 package com.sforce.soap.partner;
 
 public class ResetPassword  implements java.io.Serializable {
-    private String userId;
+    private java.lang.String userId;
 
     public ResetPassword() {
     }
 
     public ResetPassword(
-           String userId) {
+           java.lang.String userId) {
            this.userId = userId;
     }
 
@@ -28,7 +24,7 @@ public class ResetPassword  implements java.io.Serializable {
      * 
      * @return userId
      */
-    public String getUserId() {
+    public java.lang.String getUserId() {
         return userId;
     }
 
@@ -38,12 +34,12 @@ public class ResetPassword  implements java.io.Serializable {
      * 
      * @param userId
      */
-    public void setUserId(String userId) {
+    public void setUserId(java.lang.String userId) {
         this.userId = userId;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ResetPassword)) return false;
         ResetPassword other = (ResetPassword) obj;
         if (obj == null) return false;
@@ -100,8 +96,8 @@ public class ResetPassword  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -112,8 +108,8 @@ public class ResetPassword  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

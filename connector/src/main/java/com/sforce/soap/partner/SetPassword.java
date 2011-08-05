@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * SetPassword.java
  *
@@ -12,16 +8,16 @@
 package com.sforce.soap.partner;
 
 public class SetPassword  implements java.io.Serializable {
-    private String userId;
+    private java.lang.String userId;
 
-    private String password;
+    private java.lang.String password;
 
     public SetPassword() {
     }
 
     public SetPassword(
-           String userId,
-           String password) {
+           java.lang.String userId,
+           java.lang.String password) {
            this.userId = userId;
            this.password = password;
     }
@@ -32,7 +28,7 @@ public class SetPassword  implements java.io.Serializable {
      * 
      * @return userId
      */
-    public String getUserId() {
+    public java.lang.String getUserId() {
         return userId;
     }
 
@@ -42,7 +38,7 @@ public class SetPassword  implements java.io.Serializable {
      * 
      * @param userId
      */
-    public void setUserId(String userId) {
+    public void setUserId(java.lang.String userId) {
         this.userId = userId;
     }
 
@@ -52,7 +48,7 @@ public class SetPassword  implements java.io.Serializable {
      * 
      * @return password
      */
-    public String getPassword() {
+    public java.lang.String getPassword() {
         return password;
     }
 
@@ -62,12 +58,12 @@ public class SetPassword  implements java.io.Serializable {
      * 
      * @param password
      */
-    public void setPassword(String password) {
+    public void setPassword(java.lang.String password) {
         this.password = password;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SetPassword)) return false;
         SetPassword other = (SetPassword) obj;
         if (obj == null) return false;
@@ -136,8 +132,8 @@ public class SetPassword  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -148,8 +144,8 @@ public class SetPassword  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

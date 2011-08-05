@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeSoftphoneLayoutInfoField.java
  *
@@ -12,13 +8,13 @@
 package com.sforce.soap.partner;
 
 public class DescribeSoftphoneLayoutInfoField  implements java.io.Serializable {
-    private String name;
+    private java.lang.String name;
 
     public DescribeSoftphoneLayoutInfoField() {
     }
 
     public DescribeSoftphoneLayoutInfoField(
-           String name) {
+           java.lang.String name) {
            this.name = name;
     }
 
@@ -28,7 +24,7 @@ public class DescribeSoftphoneLayoutInfoField  implements java.io.Serializable {
      * 
      * @return name
      */
-    public String getName() {
+    public java.lang.String getName() {
         return name;
     }
 
@@ -38,12 +34,12 @@ public class DescribeSoftphoneLayoutInfoField  implements java.io.Serializable {
      * 
      * @param name
      */
-    public void setName(String name) {
+    public void setName(java.lang.String name) {
         this.name = name;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeSoftphoneLayoutInfoField)) return false;
         DescribeSoftphoneLayoutInfoField other = (DescribeSoftphoneLayoutInfoField) obj;
         if (obj == null) return false;
@@ -100,8 +96,8 @@ public class DescribeSoftphoneLayoutInfoField  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -112,8 +108,8 @@ public class DescribeSoftphoneLayoutInfoField  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

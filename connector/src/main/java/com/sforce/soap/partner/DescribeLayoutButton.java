@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeLayoutButton.java
  *
@@ -14,17 +10,17 @@ package com.sforce.soap.partner;
 public class DescribeLayoutButton  implements java.io.Serializable {
     private boolean custom;
 
-    private String label;
+    private java.lang.String label;
 
-    private String name;
+    private java.lang.String name;
 
     public DescribeLayoutButton() {
     }
 
     public DescribeLayoutButton(
            boolean custom,
-           String label,
-           String name) {
+           java.lang.String label,
+           java.lang.String name) {
            this.custom = custom;
            this.label = label;
            this.name = name;
@@ -56,7 +52,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
      * 
      * @return label
      */
-    public String getLabel() {
+    public java.lang.String getLabel() {
         return label;
     }
 
@@ -66,7 +62,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
      * 
      * @param label
      */
-    public void setLabel(String label) {
+    public void setLabel(java.lang.String label) {
         this.label = label;
     }
 
@@ -76,7 +72,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
      * 
      * @return name
      */
-    public String getName() {
+    public java.lang.String getName() {
         return name;
     }
 
@@ -86,12 +82,12 @@ public class DescribeLayoutButton  implements java.io.Serializable {
      * 
      * @param name
      */
-    public void setName(String name) {
+    public void setName(java.lang.String name) {
         this.name = name;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutButton)) return false;
         DescribeLayoutButton other = (DescribeLayoutButton) obj;
         if (obj == null) return false;
@@ -168,8 +164,8 @@ public class DescribeLayoutButton  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -180,8 +176,8 @@ public class DescribeLayoutButton  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

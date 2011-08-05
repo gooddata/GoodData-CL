@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * SingleEmailMessage.java
  *
@@ -11,54 +7,60 @@
 
 package com.sforce.soap.partner;
 
-public class SingleEmailMessage  extends Email  implements java.io.Serializable {
-    private String[] bccAddresses;
+public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implements java.io.Serializable {
+    private java.lang.String[] bccAddresses;
 
-    private String[] ccAddresses;
+    private java.lang.String[] ccAddresses;
 
-    private String charset;
+    private java.lang.String charset;
 
-    private String[] documentAttachments;
+    private java.lang.String[] documentAttachments;
 
-    private String htmlBody;
+    private java.lang.String htmlBody;
 
-    private EmailFileAttachment[] fileAttachments;
+    private java.lang.String inReplyTo;
 
-    private String orgWideEmailAddressId;
+    private com.sforce.soap.partner.EmailFileAttachment[] fileAttachments;
 
-    private String plainTextBody;
+    private java.lang.String orgWideEmailAddressId;
 
-    private String targetObjectId;
+    private java.lang.String plainTextBody;
 
-    private String templateId;
+    private java.lang.String references;
 
-    private String[] toAddresses;
+    private java.lang.String targetObjectId;
 
-    private String whatId;
+    private java.lang.String templateId;
+
+    private java.lang.String[] toAddresses;
+
+    private java.lang.String whatId;
 
     public SingleEmailMessage() {
     }
 
     public SingleEmailMessage(
-           Boolean bccSender,
-           EmailPriority emailPriority,
-           String replyTo,
-           Boolean saveAsActivity,
-           String senderDisplayName,
-           String subject,
-           Boolean useSignature,
-           String[] bccAddresses,
-           String[] ccAddresses,
-           String charset,
-           String[] documentAttachments,
-           String htmlBody,
-           EmailFileAttachment[] fileAttachments,
-           String orgWideEmailAddressId,
-           String plainTextBody,
-           String targetObjectId,
-           String templateId,
-           String[] toAddresses,
-           String whatId) {
+           java.lang.Boolean bccSender,
+           com.sforce.soap.partner.EmailPriority emailPriority,
+           java.lang.String replyTo,
+           java.lang.Boolean saveAsActivity,
+           java.lang.String senderDisplayName,
+           java.lang.String subject,
+           java.lang.Boolean useSignature,
+           java.lang.String[] bccAddresses,
+           java.lang.String[] ccAddresses,
+           java.lang.String charset,
+           java.lang.String[] documentAttachments,
+           java.lang.String htmlBody,
+           java.lang.String inReplyTo,
+           com.sforce.soap.partner.EmailFileAttachment[] fileAttachments,
+           java.lang.String orgWideEmailAddressId,
+           java.lang.String plainTextBody,
+           java.lang.String references,
+           java.lang.String targetObjectId,
+           java.lang.String templateId,
+           java.lang.String[] toAddresses,
+           java.lang.String whatId) {
         super(
             bccSender,
             emailPriority,
@@ -72,9 +74,11 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
         this.charset = charset;
         this.documentAttachments = documentAttachments;
         this.htmlBody = htmlBody;
+        this.inReplyTo = inReplyTo;
         this.fileAttachments = fileAttachments;
         this.orgWideEmailAddressId = orgWideEmailAddressId;
         this.plainTextBody = plainTextBody;
+        this.references = references;
         this.targetObjectId = targetObjectId;
         this.templateId = templateId;
         this.toAddresses = toAddresses;
@@ -87,7 +91,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return bccAddresses
      */
-    public String[] getBccAddresses() {
+    public java.lang.String[] getBccAddresses() {
         return bccAddresses;
     }
 
@@ -97,15 +101,15 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param bccAddresses
      */
-    public void setBccAddresses(String[] bccAddresses) {
+    public void setBccAddresses(java.lang.String[] bccAddresses) {
         this.bccAddresses = bccAddresses;
     }
 
-    public String getBccAddresses(int i) {
+    public java.lang.String getBccAddresses(int i) {
         return this.bccAddresses[i];
     }
 
-    public void setBccAddresses(int i, String _value) {
+    public void setBccAddresses(int i, java.lang.String _value) {
         this.bccAddresses[i] = _value;
     }
 
@@ -115,7 +119,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return ccAddresses
      */
-    public String[] getCcAddresses() {
+    public java.lang.String[] getCcAddresses() {
         return ccAddresses;
     }
 
@@ -125,15 +129,15 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param ccAddresses
      */
-    public void setCcAddresses(String[] ccAddresses) {
+    public void setCcAddresses(java.lang.String[] ccAddresses) {
         this.ccAddresses = ccAddresses;
     }
 
-    public String getCcAddresses(int i) {
+    public java.lang.String getCcAddresses(int i) {
         return this.ccAddresses[i];
     }
 
-    public void setCcAddresses(int i, String _value) {
+    public void setCcAddresses(int i, java.lang.String _value) {
         this.ccAddresses[i] = _value;
     }
 
@@ -143,7 +147,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return charset
      */
-    public String getCharset() {
+    public java.lang.String getCharset() {
         return charset;
     }
 
@@ -153,7 +157,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param charset
      */
-    public void setCharset(String charset) {
+    public void setCharset(java.lang.String charset) {
         this.charset = charset;
     }
 
@@ -163,7 +167,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return documentAttachments
      */
-    public String[] getDocumentAttachments() {
+    public java.lang.String[] getDocumentAttachments() {
         return documentAttachments;
     }
 
@@ -173,15 +177,15 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param documentAttachments
      */
-    public void setDocumentAttachments(String[] documentAttachments) {
+    public void setDocumentAttachments(java.lang.String[] documentAttachments) {
         this.documentAttachments = documentAttachments;
     }
 
-    public String getDocumentAttachments(int i) {
+    public java.lang.String getDocumentAttachments(int i) {
         return this.documentAttachments[i];
     }
 
-    public void setDocumentAttachments(int i, String _value) {
+    public void setDocumentAttachments(int i, java.lang.String _value) {
         this.documentAttachments[i] = _value;
     }
 
@@ -191,7 +195,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return htmlBody
      */
-    public String getHtmlBody() {
+    public java.lang.String getHtmlBody() {
         return htmlBody;
     }
 
@@ -201,8 +205,28 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param htmlBody
      */
-    public void setHtmlBody(String htmlBody) {
+    public void setHtmlBody(java.lang.String htmlBody) {
         this.htmlBody = htmlBody;
+    }
+
+
+    /**
+     * Gets the inReplyTo value for this SingleEmailMessage.
+     * 
+     * @return inReplyTo
+     */
+    public java.lang.String getInReplyTo() {
+        return inReplyTo;
+    }
+
+
+    /**
+     * Sets the inReplyTo value for this SingleEmailMessage.
+     * 
+     * @param inReplyTo
+     */
+    public void setInReplyTo(java.lang.String inReplyTo) {
+        this.inReplyTo = inReplyTo;
     }
 
 
@@ -211,7 +235,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return fileAttachments
      */
-    public EmailFileAttachment[] getFileAttachments() {
+    public com.sforce.soap.partner.EmailFileAttachment[] getFileAttachments() {
         return fileAttachments;
     }
 
@@ -221,15 +245,15 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param fileAttachments
      */
-    public void setFileAttachments(EmailFileAttachment[] fileAttachments) {
+    public void setFileAttachments(com.sforce.soap.partner.EmailFileAttachment[] fileAttachments) {
         this.fileAttachments = fileAttachments;
     }
 
-    public EmailFileAttachment getFileAttachments(int i) {
+    public com.sforce.soap.partner.EmailFileAttachment getFileAttachments(int i) {
         return this.fileAttachments[i];
     }
 
-    public void setFileAttachments(int i, EmailFileAttachment _value) {
+    public void setFileAttachments(int i, com.sforce.soap.partner.EmailFileAttachment _value) {
         this.fileAttachments[i] = _value;
     }
 
@@ -239,7 +263,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return orgWideEmailAddressId
      */
-    public String getOrgWideEmailAddressId() {
+    public java.lang.String getOrgWideEmailAddressId() {
         return orgWideEmailAddressId;
     }
 
@@ -249,7 +273,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param orgWideEmailAddressId
      */
-    public void setOrgWideEmailAddressId(String orgWideEmailAddressId) {
+    public void setOrgWideEmailAddressId(java.lang.String orgWideEmailAddressId) {
         this.orgWideEmailAddressId = orgWideEmailAddressId;
     }
 
@@ -259,7 +283,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return plainTextBody
      */
-    public String getPlainTextBody() {
+    public java.lang.String getPlainTextBody() {
         return plainTextBody;
     }
 
@@ -269,8 +293,28 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param plainTextBody
      */
-    public void setPlainTextBody(String plainTextBody) {
+    public void setPlainTextBody(java.lang.String plainTextBody) {
         this.plainTextBody = plainTextBody;
+    }
+
+
+    /**
+     * Gets the references value for this SingleEmailMessage.
+     * 
+     * @return references
+     */
+    public java.lang.String getReferences() {
+        return references;
+    }
+
+
+    /**
+     * Sets the references value for this SingleEmailMessage.
+     * 
+     * @param references
+     */
+    public void setReferences(java.lang.String references) {
+        this.references = references;
     }
 
 
@@ -279,7 +323,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return targetObjectId
      */
-    public String getTargetObjectId() {
+    public java.lang.String getTargetObjectId() {
         return targetObjectId;
     }
 
@@ -289,7 +333,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param targetObjectId
      */
-    public void setTargetObjectId(String targetObjectId) {
+    public void setTargetObjectId(java.lang.String targetObjectId) {
         this.targetObjectId = targetObjectId;
     }
 
@@ -299,7 +343,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return templateId
      */
-    public String getTemplateId() {
+    public java.lang.String getTemplateId() {
         return templateId;
     }
 
@@ -309,7 +353,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param templateId
      */
-    public void setTemplateId(String templateId) {
+    public void setTemplateId(java.lang.String templateId) {
         this.templateId = templateId;
     }
 
@@ -319,7 +363,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return toAddresses
      */
-    public String[] getToAddresses() {
+    public java.lang.String[] getToAddresses() {
         return toAddresses;
     }
 
@@ -329,15 +373,15 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param toAddresses
      */
-    public void setToAddresses(String[] toAddresses) {
+    public void setToAddresses(java.lang.String[] toAddresses) {
         this.toAddresses = toAddresses;
     }
 
-    public String getToAddresses(int i) {
+    public java.lang.String getToAddresses(int i) {
         return this.toAddresses[i];
     }
 
-    public void setToAddresses(int i, String _value) {
+    public void setToAddresses(int i, java.lang.String _value) {
         this.toAddresses[i] = _value;
     }
 
@@ -347,7 +391,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @return whatId
      */
-    public String getWhatId() {
+    public java.lang.String getWhatId() {
         return whatId;
     }
 
@@ -357,12 +401,12 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * 
      * @param whatId
      */
-    public void setWhatId(String whatId) {
+    public void setWhatId(java.lang.String whatId) {
         this.whatId = whatId;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SingleEmailMessage)) return false;
         SingleEmailMessage other = (SingleEmailMessage) obj;
         if (obj == null) return false;
@@ -388,6 +432,9 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
             ((this.htmlBody==null && other.getHtmlBody()==null) || 
              (this.htmlBody!=null &&
               this.htmlBody.equals(other.getHtmlBody()))) &&
+            ((this.inReplyTo==null && other.getInReplyTo()==null) || 
+             (this.inReplyTo!=null &&
+              this.inReplyTo.equals(other.getInReplyTo()))) &&
             ((this.fileAttachments==null && other.getFileAttachments()==null) || 
              (this.fileAttachments!=null &&
               java.util.Arrays.equals(this.fileAttachments, other.getFileAttachments()))) &&
@@ -397,6 +444,9 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
             ((this.plainTextBody==null && other.getPlainTextBody()==null) || 
              (this.plainTextBody!=null &&
               this.plainTextBody.equals(other.getPlainTextBody()))) &&
+            ((this.references==null && other.getReferences()==null) || 
+             (this.references!=null &&
+              this.references.equals(other.getReferences()))) &&
             ((this.targetObjectId==null && other.getTargetObjectId()==null) || 
              (this.targetObjectId!=null &&
               this.targetObjectId.equals(other.getTargetObjectId()))) &&
@@ -424,7 +474,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getBccAddresses());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getBccAddresses(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getBccAddresses(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -435,7 +485,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getCcAddresses());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getCcAddresses(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getCcAddresses(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -449,7 +499,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getDocumentAttachments());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getDocumentAttachments(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getDocumentAttachments(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -459,11 +509,14 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
         if (getHtmlBody() != null) {
             _hashCode += getHtmlBody().hashCode();
         }
+        if (getInReplyTo() != null) {
+            _hashCode += getInReplyTo().hashCode();
+        }
         if (getFileAttachments() != null) {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getFileAttachments());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getFileAttachments(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getFileAttachments(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -476,6 +529,9 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
         if (getPlainTextBody() != null) {
             _hashCode += getPlainTextBody().hashCode();
         }
+        if (getReferences() != null) {
+            _hashCode += getReferences().hashCode();
+        }
         if (getTargetObjectId() != null) {
             _hashCode += getTargetObjectId().hashCode();
         }
@@ -486,7 +542,7 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getToAddresses());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getToAddresses(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getToAddresses(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -541,6 +597,13 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
         elemField.setNillable(true);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("inReplyTo");
+        elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "inReplyTo"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("fileAttachments");
         elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "fileAttachments"));
         elemField.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "EmailFileAttachment"));
@@ -559,6 +622,13 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
         elemField.setFieldName("plainTextBody");
         elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "plainTextBody"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("references");
+        elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "references"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
         elemField.setNillable(true);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
@@ -599,8 +669,8 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -611,8 +681,8 @@ public class SingleEmailMessage  extends Email  implements java.io.Serializable 
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

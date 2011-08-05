@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * LeadConvert.java
  *
@@ -12,21 +8,21 @@
 package com.sforce.soap.partner;
 
 public class LeadConvert  implements java.io.Serializable {
-    private String accountId;
+    private java.lang.String accountId;
 
-    private String contactId;
+    private java.lang.String contactId;
 
-    private String convertedStatus;
+    private java.lang.String convertedStatus;
 
     private boolean doNotCreateOpportunity;
 
-    private String leadId;
+    private java.lang.String leadId;
 
-    private String opportunityName;
+    private java.lang.String opportunityName;
 
     private boolean overwriteLeadSource;
 
-    private String ownerId;
+    private java.lang.String ownerId;
 
     private boolean sendNotificationEmail;
 
@@ -34,14 +30,14 @@ public class LeadConvert  implements java.io.Serializable {
     }
 
     public LeadConvert(
-           String accountId,
-           String contactId,
-           String convertedStatus,
+           java.lang.String accountId,
+           java.lang.String contactId,
+           java.lang.String convertedStatus,
            boolean doNotCreateOpportunity,
-           String leadId,
-           String opportunityName,
+           java.lang.String leadId,
+           java.lang.String opportunityName,
            boolean overwriteLeadSource,
-           String ownerId,
+           java.lang.String ownerId,
            boolean sendNotificationEmail) {
            this.accountId = accountId;
            this.contactId = contactId;
@@ -60,7 +56,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @return accountId
      */
-    public String getAccountId() {
+    public java.lang.String getAccountId() {
         return accountId;
     }
 
@@ -70,7 +66,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @param accountId
      */
-    public void setAccountId(String accountId) {
+    public void setAccountId(java.lang.String accountId) {
         this.accountId = accountId;
     }
 
@@ -80,7 +76,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @return contactId
      */
-    public String getContactId() {
+    public java.lang.String getContactId() {
         return contactId;
     }
 
@@ -90,7 +86,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @param contactId
      */
-    public void setContactId(String contactId) {
+    public void setContactId(java.lang.String contactId) {
         this.contactId = contactId;
     }
 
@@ -100,7 +96,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @return convertedStatus
      */
-    public String getConvertedStatus() {
+    public java.lang.String getConvertedStatus() {
         return convertedStatus;
     }
 
@@ -110,7 +106,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @param convertedStatus
      */
-    public void setConvertedStatus(String convertedStatus) {
+    public void setConvertedStatus(java.lang.String convertedStatus) {
         this.convertedStatus = convertedStatus;
     }
 
@@ -140,7 +136,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @return leadId
      */
-    public String getLeadId() {
+    public java.lang.String getLeadId() {
         return leadId;
     }
 
@@ -150,7 +146,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @param leadId
      */
-    public void setLeadId(String leadId) {
+    public void setLeadId(java.lang.String leadId) {
         this.leadId = leadId;
     }
 
@@ -160,7 +156,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @return opportunityName
      */
-    public String getOpportunityName() {
+    public java.lang.String getOpportunityName() {
         return opportunityName;
     }
 
@@ -170,7 +166,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @param opportunityName
      */
-    public void setOpportunityName(String opportunityName) {
+    public void setOpportunityName(java.lang.String opportunityName) {
         this.opportunityName = opportunityName;
     }
 
@@ -200,7 +196,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @return ownerId
      */
-    public String getOwnerId() {
+    public java.lang.String getOwnerId() {
         return ownerId;
     }
 
@@ -210,7 +206,7 @@ public class LeadConvert  implements java.io.Serializable {
      * 
      * @param ownerId
      */
-    public void setOwnerId(String ownerId) {
+    public void setOwnerId(java.lang.String ownerId) {
         this.ownerId = ownerId;
     }
 
@@ -234,8 +230,8 @@ public class LeadConvert  implements java.io.Serializable {
         this.sendNotificationEmail = sendNotificationEmail;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof LeadConvert)) return false;
         LeadConvert other = (LeadConvert) obj;
         if (obj == null) return false;
@@ -376,8 +372,8 @@ public class LeadConvert  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -388,8 +384,8 @@ public class LeadConvert  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

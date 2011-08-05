@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * ProcessWorkitemRequest.java
  *
@@ -11,19 +7,19 @@
 
 package com.sforce.soap.partner;
 
-public class ProcessWorkitemRequest  extends ProcessRequest  implements java.io.Serializable {
-    private String action;
+public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequest  implements java.io.Serializable {
+    private java.lang.String action;
 
-    private String workitemId;
+    private java.lang.String workitemId;
 
     public ProcessWorkitemRequest() {
     }
 
     public ProcessWorkitemRequest(
-           String comments,
-           String[] nextApproverIds,
-           String action,
-           String workitemId) {
+           java.lang.String comments,
+           java.lang.String[] nextApproverIds,
+           java.lang.String action,
+           java.lang.String workitemId) {
         super(
             comments,
             nextApproverIds);
@@ -37,7 +33,7 @@ public class ProcessWorkitemRequest  extends ProcessRequest  implements java.io.
      * 
      * @return action
      */
-    public String getAction() {
+    public java.lang.String getAction() {
         return action;
     }
 
@@ -47,7 +43,7 @@ public class ProcessWorkitemRequest  extends ProcessRequest  implements java.io.
      * 
      * @param action
      */
-    public void setAction(String action) {
+    public void setAction(java.lang.String action) {
         this.action = action;
     }
 
@@ -57,7 +53,7 @@ public class ProcessWorkitemRequest  extends ProcessRequest  implements java.io.
      * 
      * @return workitemId
      */
-    public String getWorkitemId() {
+    public java.lang.String getWorkitemId() {
         return workitemId;
     }
 
@@ -67,12 +63,12 @@ public class ProcessWorkitemRequest  extends ProcessRequest  implements java.io.
      * 
      * @param workitemId
      */
-    public void setWorkitemId(String workitemId) {
+    public void setWorkitemId(java.lang.String workitemId) {
         this.workitemId = workitemId;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ProcessWorkitemRequest)) return false;
         ProcessWorkitemRequest other = (ProcessWorkitemRequest) obj;
         if (obj == null) return false;
@@ -141,8 +137,8 @@ public class ProcessWorkitemRequest  extends ProcessRequest  implements java.io.
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -153,8 +149,8 @@ public class ProcessWorkitemRequest  extends ProcessRequest  implements java.io.
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

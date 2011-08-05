@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * RelatedListColumn.java
  *
@@ -12,22 +8,22 @@
 package com.sforce.soap.partner;
 
 public class RelatedListColumn  implements java.io.Serializable {
-    private String field;
+    private java.lang.String field;
 
-    private String format;
+    private java.lang.String format;
 
-    private String label;
+    private java.lang.String label;
 
-    private String name;
+    private java.lang.String name;
 
     public RelatedListColumn() {
     }
 
     public RelatedListColumn(
-           String field,
-           String format,
-           String label,
-           String name) {
+           java.lang.String field,
+           java.lang.String format,
+           java.lang.String label,
+           java.lang.String name) {
            this.field = field;
            this.format = format;
            this.label = label;
@@ -40,7 +36,7 @@ public class RelatedListColumn  implements java.io.Serializable {
      * 
      * @return field
      */
-    public String getField() {
+    public java.lang.String getField() {
         return field;
     }
 
@@ -50,7 +46,7 @@ public class RelatedListColumn  implements java.io.Serializable {
      * 
      * @param field
      */
-    public void setField(String field) {
+    public void setField(java.lang.String field) {
         this.field = field;
     }
 
@@ -60,7 +56,7 @@ public class RelatedListColumn  implements java.io.Serializable {
      * 
      * @return format
      */
-    public String getFormat() {
+    public java.lang.String getFormat() {
         return format;
     }
 
@@ -70,7 +66,7 @@ public class RelatedListColumn  implements java.io.Serializable {
      * 
      * @param format
      */
-    public void setFormat(String format) {
+    public void setFormat(java.lang.String format) {
         this.format = format;
     }
 
@@ -80,7 +76,7 @@ public class RelatedListColumn  implements java.io.Serializable {
      * 
      * @return label
      */
-    public String getLabel() {
+    public java.lang.String getLabel() {
         return label;
     }
 
@@ -90,7 +86,7 @@ public class RelatedListColumn  implements java.io.Serializable {
      * 
      * @param label
      */
-    public void setLabel(String label) {
+    public void setLabel(java.lang.String label) {
         this.label = label;
     }
 
@@ -100,7 +96,7 @@ public class RelatedListColumn  implements java.io.Serializable {
      * 
      * @return name
      */
-    public String getName() {
+    public java.lang.String getName() {
         return name;
     }
 
@@ -110,12 +106,12 @@ public class RelatedListColumn  implements java.io.Serializable {
      * 
      * @param name
      */
-    public void setName(String name) {
+    public void setName(java.lang.String name) {
         this.name = name;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof RelatedListColumn)) return false;
         RelatedListColumn other = (RelatedListColumn) obj;
         if (obj == null) return false;
@@ -208,8 +204,8 @@ public class RelatedListColumn  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -220,8 +216,8 @@ public class RelatedListColumn  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

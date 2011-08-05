@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DebugLevel.java
  *
@@ -12,48 +8,48 @@
 package com.sforce.soap.partner;
 
 public class DebugLevel implements java.io.Serializable {
-    private String _value_;
+    private java.lang.String _value_;
     private static java.util.HashMap _table_ = new java.util.HashMap();
 
     // Constructor
-    protected DebugLevel(String value) {
+    protected DebugLevel(java.lang.String value) {
         _value_ = value;
         _table_.put(_value_,this);
     }
 
-    public static final String _None = "None";
-    public static final String _DebugOnly = "DebugOnly";
-    public static final String _Db = "Db";
+    public static final java.lang.String _None = "None";
+    public static final java.lang.String _DebugOnly = "DebugOnly";
+    public static final java.lang.String _Db = "Db";
     public static final DebugLevel None = new DebugLevel(_None);
     public static final DebugLevel DebugOnly = new DebugLevel(_DebugOnly);
     public static final DebugLevel Db = new DebugLevel(_Db);
-    public String getValue() { return _value_;}
-    public static DebugLevel fromValue(String value)
-          throws IllegalArgumentException {
+    public java.lang.String getValue() { return _value_;}
+    public static DebugLevel fromValue(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         DebugLevel enumeration = (DebugLevel)
             _table_.get(value);
-        if (enumeration==null) throw new IllegalArgumentException();
+        if (enumeration==null) throw new java.lang.IllegalArgumentException();
         return enumeration;
     }
-    public static DebugLevel fromString(String value)
-          throws IllegalArgumentException {
+    public static DebugLevel fromString(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         return fromValue(value);
     }
-    public boolean equals(Object obj) {return (obj == this);}
+    public boolean equals(java.lang.Object obj) {return (obj == this);}
     public int hashCode() { return toString().hashCode();}
-    public String toString() { return _value_;}
-    public Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
+    public java.lang.String toString() { return _value_;}
+    public java.lang.Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumSerializer(
             _javaType, _xmlType);
     }
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumDeserializer(

@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * RelatedList.java
  *
@@ -16,15 +12,15 @@ public class RelatedList  implements java.io.Serializable {
 
     private boolean custom;
 
-    private String field;
+    private java.lang.String field;
 
-    private String label;
+    private java.lang.String label;
 
     private int limitRows;
 
-    private String name;
+    private java.lang.String name;
 
-    private String sobject;
+    private java.lang.String sobject;
 
     private com.sforce.soap.partner.RelatedListSort[] sort;
 
@@ -34,11 +30,11 @@ public class RelatedList  implements java.io.Serializable {
     public RelatedList(
            com.sforce.soap.partner.RelatedListColumn[] columns,
            boolean custom,
-           String field,
-           String label,
+           java.lang.String field,
+           java.lang.String label,
            int limitRows,
-           String name,
-           String sobject,
+           java.lang.String name,
+           java.lang.String sobject,
            com.sforce.soap.partner.RelatedListSort[] sort) {
            this.columns = columns;
            this.custom = custom;
@@ -104,7 +100,7 @@ public class RelatedList  implements java.io.Serializable {
      * 
      * @return field
      */
-    public String getField() {
+    public java.lang.String getField() {
         return field;
     }
 
@@ -114,7 +110,7 @@ public class RelatedList  implements java.io.Serializable {
      * 
      * @param field
      */
-    public void setField(String field) {
+    public void setField(java.lang.String field) {
         this.field = field;
     }
 
@@ -124,7 +120,7 @@ public class RelatedList  implements java.io.Serializable {
      * 
      * @return label
      */
-    public String getLabel() {
+    public java.lang.String getLabel() {
         return label;
     }
 
@@ -134,7 +130,7 @@ public class RelatedList  implements java.io.Serializable {
      * 
      * @param label
      */
-    public void setLabel(String label) {
+    public void setLabel(java.lang.String label) {
         this.label = label;
     }
 
@@ -164,7 +160,7 @@ public class RelatedList  implements java.io.Serializable {
      * 
      * @return name
      */
-    public String getName() {
+    public java.lang.String getName() {
         return name;
     }
 
@@ -174,7 +170,7 @@ public class RelatedList  implements java.io.Serializable {
      * 
      * @param name
      */
-    public void setName(String name) {
+    public void setName(java.lang.String name) {
         this.name = name;
     }
 
@@ -184,7 +180,7 @@ public class RelatedList  implements java.io.Serializable {
      * 
      * @return sobject
      */
-    public String getSobject() {
+    public java.lang.String getSobject() {
         return sobject;
     }
 
@@ -194,7 +190,7 @@ public class RelatedList  implements java.io.Serializable {
      * 
      * @param sobject
      */
-    public void setSobject(String sobject) {
+    public void setSobject(java.lang.String sobject) {
         this.sobject = sobject;
     }
 
@@ -226,8 +222,8 @@ public class RelatedList  implements java.io.Serializable {
         this.sort[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof RelatedList)) return false;
         RelatedList other = (RelatedList) obj;
         if (obj == null) return false;
@@ -273,7 +269,7 @@ public class RelatedList  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getColumns());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getColumns(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getColumns(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -298,7 +294,7 @@ public class RelatedList  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getSort());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getSort(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getSort(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -379,8 +375,8 @@ public class RelatedList  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -391,8 +387,8 @@ public class RelatedList  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

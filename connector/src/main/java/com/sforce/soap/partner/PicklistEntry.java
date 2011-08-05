@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * PicklistEntry.java
  *
@@ -16,11 +12,11 @@ public class PicklistEntry  implements java.io.Serializable {
 
     private boolean defaultValue;
 
-    private String label;
+    private java.lang.String label;
 
     private byte[] validFor;
 
-    private String value;
+    private java.lang.String value;
 
     public PicklistEntry() {
     }
@@ -28,9 +24,9 @@ public class PicklistEntry  implements java.io.Serializable {
     public PicklistEntry(
            boolean active,
            boolean defaultValue,
-           String label,
+           java.lang.String label,
            byte[] validFor,
-           String value) {
+           java.lang.String value) {
            this.active = active;
            this.defaultValue = defaultValue;
            this.label = label;
@@ -84,7 +80,7 @@ public class PicklistEntry  implements java.io.Serializable {
      * 
      * @return label
      */
-    public String getLabel() {
+    public java.lang.String getLabel() {
         return label;
     }
 
@@ -94,7 +90,7 @@ public class PicklistEntry  implements java.io.Serializable {
      * 
      * @param label
      */
-    public void setLabel(String label) {
+    public void setLabel(java.lang.String label) {
         this.label = label;
     }
 
@@ -124,7 +120,7 @@ public class PicklistEntry  implements java.io.Serializable {
      * 
      * @return value
      */
-    public String getValue() {
+    public java.lang.String getValue() {
         return value;
     }
 
@@ -134,12 +130,12 @@ public class PicklistEntry  implements java.io.Serializable {
      * 
      * @param value
      */
-    public void setValue(String value) {
+    public void setValue(java.lang.String value) {
         this.value = value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PicklistEntry)) return false;
         PicklistEntry other = (PicklistEntry) obj;
         if (obj == null) return false;
@@ -181,7 +177,7 @@ public class PicklistEntry  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getValidFor());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getValidFor(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getValidFor(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -245,8 +241,8 @@ public class PicklistEntry  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -257,8 +253,8 @@ public class PicklistEntry  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

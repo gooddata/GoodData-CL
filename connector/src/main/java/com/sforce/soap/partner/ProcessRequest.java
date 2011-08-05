@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * ProcessRequest.java
  *
@@ -12,16 +8,16 @@
 package com.sforce.soap.partner;
 
 public class ProcessRequest  implements java.io.Serializable {
-    private String comments;
+    private java.lang.String comments;
 
-    private String[] nextApproverIds;
+    private java.lang.String[] nextApproverIds;
 
     public ProcessRequest() {
     }
 
     public ProcessRequest(
-           String comments,
-           String[] nextApproverIds) {
+           java.lang.String comments,
+           java.lang.String[] nextApproverIds) {
            this.comments = comments;
            this.nextApproverIds = nextApproverIds;
     }
@@ -32,7 +28,7 @@ public class ProcessRequest  implements java.io.Serializable {
      * 
      * @return comments
      */
-    public String getComments() {
+    public java.lang.String getComments() {
         return comments;
     }
 
@@ -42,7 +38,7 @@ public class ProcessRequest  implements java.io.Serializable {
      * 
      * @param comments
      */
-    public void setComments(String comments) {
+    public void setComments(java.lang.String comments) {
         this.comments = comments;
     }
 
@@ -52,7 +48,7 @@ public class ProcessRequest  implements java.io.Serializable {
      * 
      * @return nextApproverIds
      */
-    public String[] getNextApproverIds() {
+    public java.lang.String[] getNextApproverIds() {
         return nextApproverIds;
     }
 
@@ -62,20 +58,20 @@ public class ProcessRequest  implements java.io.Serializable {
      * 
      * @param nextApproverIds
      */
-    public void setNextApproverIds(String[] nextApproverIds) {
+    public void setNextApproverIds(java.lang.String[] nextApproverIds) {
         this.nextApproverIds = nextApproverIds;
     }
 
-    public String getNextApproverIds(int i) {
+    public java.lang.String getNextApproverIds(int i) {
         return this.nextApproverIds[i];
     }
 
-    public void setNextApproverIds(int i, String _value) {
+    public void setNextApproverIds(int i, java.lang.String _value) {
         this.nextApproverIds[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ProcessRequest)) return false;
         ProcessRequest other = (ProcessRequest) obj;
         if (obj == null) return false;
@@ -110,7 +106,7 @@ public class ProcessRequest  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getNextApproverIds());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getNextApproverIds(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getNextApproverIds(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -154,8 +150,8 @@ public class ProcessRequest  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -166,8 +162,8 @@ public class ProcessRequest  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

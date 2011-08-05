@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeTabSetResult.java
  *
@@ -12,25 +8,25 @@
 package com.sforce.soap.partner;
 
 public class DescribeTabSetResult  implements java.io.Serializable {
-    private String label;
+    private java.lang.String label;
 
-    private String logoUrl;
+    private java.lang.String logoUrl;
 
-    private String namespace;
+    private java.lang.String namespace;
 
     private boolean selected;
 
-    private DescribeTab[] tabs;
+    private com.sforce.soap.partner.DescribeTab[] tabs;
 
     public DescribeTabSetResult() {
     }
 
     public DescribeTabSetResult(
-           String label,
-           String logoUrl,
-           String namespace,
+           java.lang.String label,
+           java.lang.String logoUrl,
+           java.lang.String namespace,
            boolean selected,
-           DescribeTab[] tabs) {
+           com.sforce.soap.partner.DescribeTab[] tabs) {
            this.label = label;
            this.logoUrl = logoUrl;
            this.namespace = namespace;
@@ -44,7 +40,7 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * 
      * @return label
      */
-    public String getLabel() {
+    public java.lang.String getLabel() {
         return label;
     }
 
@@ -54,7 +50,7 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * 
      * @param label
      */
-    public void setLabel(String label) {
+    public void setLabel(java.lang.String label) {
         this.label = label;
     }
 
@@ -64,7 +60,7 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * 
      * @return logoUrl
      */
-    public String getLogoUrl() {
+    public java.lang.String getLogoUrl() {
         return logoUrl;
     }
 
@@ -74,7 +70,7 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * 
      * @param logoUrl
      */
-    public void setLogoUrl(String logoUrl) {
+    public void setLogoUrl(java.lang.String logoUrl) {
         this.logoUrl = logoUrl;
     }
 
@@ -84,7 +80,7 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * 
      * @return namespace
      */
-    public String getNamespace() {
+    public java.lang.String getNamespace() {
         return namespace;
     }
 
@@ -94,7 +90,7 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * 
      * @param namespace
      */
-    public void setNamespace(String namespace) {
+    public void setNamespace(java.lang.String namespace) {
         this.namespace = namespace;
     }
 
@@ -124,7 +120,7 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * 
      * @return tabs
      */
-    public DescribeTab[] getTabs() {
+    public com.sforce.soap.partner.DescribeTab[] getTabs() {
         return tabs;
     }
 
@@ -134,20 +130,20 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * 
      * @param tabs
      */
-    public void setTabs(DescribeTab[] tabs) {
+    public void setTabs(com.sforce.soap.partner.DescribeTab[] tabs) {
         this.tabs = tabs;
     }
 
-    public DescribeTab getTabs(int i) {
+    public com.sforce.soap.partner.DescribeTab getTabs(int i) {
         return this.tabs[i];
     }
 
-    public void setTabs(int i, DescribeTab _value) {
+    public void setTabs(int i, com.sforce.soap.partner.DescribeTab _value) {
         this.tabs[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeTabSetResult)) return false;
         DescribeTabSetResult other = (DescribeTabSetResult) obj;
         if (obj == null) return false;
@@ -196,7 +192,7 @@ public class DescribeTabSetResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getTabs());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getTabs(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getTabs(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -259,8 +255,8 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -271,8 +267,8 @@ public class DescribeTabSetResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

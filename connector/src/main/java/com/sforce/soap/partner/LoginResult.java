@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * LoginResult.java
  *
@@ -12,31 +8,31 @@
 package com.sforce.soap.partner;
 
 public class LoginResult  implements java.io.Serializable {
-    private String metadataServerUrl;
+    private java.lang.String metadataServerUrl;
 
     private boolean passwordExpired;
 
     private boolean sandbox;
 
-    private String serverUrl;
+    private java.lang.String serverUrl;
 
-    private String sessionId;
+    private java.lang.String sessionId;
 
-    private String userId;
+    private java.lang.String userId;
 
-    private GetUserInfoResult userInfo;
+    private com.sforce.soap.partner.GetUserInfoResult userInfo;
 
     public LoginResult() {
     }
 
     public LoginResult(
-           String metadataServerUrl,
+           java.lang.String metadataServerUrl,
            boolean passwordExpired,
            boolean sandbox,
-           String serverUrl,
-           String sessionId,
-           String userId,
-           GetUserInfoResult userInfo) {
+           java.lang.String serverUrl,
+           java.lang.String sessionId,
+           java.lang.String userId,
+           com.sforce.soap.partner.GetUserInfoResult userInfo) {
            this.metadataServerUrl = metadataServerUrl;
            this.passwordExpired = passwordExpired;
            this.sandbox = sandbox;
@@ -52,7 +48,7 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @return metadataServerUrl
      */
-    public String getMetadataServerUrl() {
+    public java.lang.String getMetadataServerUrl() {
         return metadataServerUrl;
     }
 
@@ -62,7 +58,7 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @param metadataServerUrl
      */
-    public void setMetadataServerUrl(String metadataServerUrl) {
+    public void setMetadataServerUrl(java.lang.String metadataServerUrl) {
         this.metadataServerUrl = metadataServerUrl;
     }
 
@@ -112,7 +108,7 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @return serverUrl
      */
-    public String getServerUrl() {
+    public java.lang.String getServerUrl() {
         return serverUrl;
     }
 
@@ -122,7 +118,7 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @param serverUrl
      */
-    public void setServerUrl(String serverUrl) {
+    public void setServerUrl(java.lang.String serverUrl) {
         this.serverUrl = serverUrl;
     }
 
@@ -132,7 +128,7 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @return sessionId
      */
-    public String getSessionId() {
+    public java.lang.String getSessionId() {
         return sessionId;
     }
 
@@ -142,7 +138,7 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @param sessionId
      */
-    public void setSessionId(String sessionId) {
+    public void setSessionId(java.lang.String sessionId) {
         this.sessionId = sessionId;
     }
 
@@ -152,7 +148,7 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @return userId
      */
-    public String getUserId() {
+    public java.lang.String getUserId() {
         return userId;
     }
 
@@ -162,7 +158,7 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @param userId
      */
-    public void setUserId(String userId) {
+    public void setUserId(java.lang.String userId) {
         this.userId = userId;
     }
 
@@ -172,7 +168,7 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @return userInfo
      */
-    public GetUserInfoResult getUserInfo() {
+    public com.sforce.soap.partner.GetUserInfoResult getUserInfo() {
         return userInfo;
     }
 
@@ -182,12 +178,12 @@ public class LoginResult  implements java.io.Serializable {
      * 
      * @param userInfo
      */
-    public void setUserInfo(GetUserInfoResult userInfo) {
+    public void setUserInfo(com.sforce.soap.partner.GetUserInfoResult userInfo) {
         this.userInfo = userInfo;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof LoginResult)) return false;
         LoginResult other = (LoginResult) obj;
         if (obj == null) return false;
@@ -309,8 +305,8 @@ public class LoginResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -321,8 +317,8 @@ public class LoginResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

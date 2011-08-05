@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * Retrieve.java
  *
@@ -12,19 +8,19 @@
 package com.sforce.soap.partner;
 
 public class Retrieve  implements java.io.Serializable {
-    private String fieldList;
+    private java.lang.String fieldList;
 
-    private String sObjectType;
+    private java.lang.String sObjectType;
 
-    private String[] ids;
+    private java.lang.String[] ids;
 
     public Retrieve() {
     }
 
     public Retrieve(
-           String fieldList,
-           String sObjectType,
-           String[] ids) {
+           java.lang.String fieldList,
+           java.lang.String sObjectType,
+           java.lang.String[] ids) {
            this.fieldList = fieldList;
            this.sObjectType = sObjectType;
            this.ids = ids;
@@ -36,7 +32,7 @@ public class Retrieve  implements java.io.Serializable {
      * 
      * @return fieldList
      */
-    public String getFieldList() {
+    public java.lang.String getFieldList() {
         return fieldList;
     }
 
@@ -46,7 +42,7 @@ public class Retrieve  implements java.io.Serializable {
      * 
      * @param fieldList
      */
-    public void setFieldList(String fieldList) {
+    public void setFieldList(java.lang.String fieldList) {
         this.fieldList = fieldList;
     }
 
@@ -56,7 +52,7 @@ public class Retrieve  implements java.io.Serializable {
      * 
      * @return sObjectType
      */
-    public String getSObjectType() {
+    public java.lang.String getSObjectType() {
         return sObjectType;
     }
 
@@ -66,7 +62,7 @@ public class Retrieve  implements java.io.Serializable {
      * 
      * @param sObjectType
      */
-    public void setSObjectType(String sObjectType) {
+    public void setSObjectType(java.lang.String sObjectType) {
         this.sObjectType = sObjectType;
     }
 
@@ -76,7 +72,7 @@ public class Retrieve  implements java.io.Serializable {
      * 
      * @return ids
      */
-    public String[] getIds() {
+    public java.lang.String[] getIds() {
         return ids;
     }
 
@@ -86,20 +82,20 @@ public class Retrieve  implements java.io.Serializable {
      * 
      * @param ids
      */
-    public void setIds(String[] ids) {
+    public void setIds(java.lang.String[] ids) {
         this.ids = ids;
     }
 
-    public String getIds(int i) {
+    public java.lang.String getIds(int i) {
         return this.ids[i];
     }
 
-    public void setIds(int i, String _value) {
+    public void setIds(int i, java.lang.String _value) {
         this.ids[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Retrieve)) return false;
         Retrieve other = (Retrieve) obj;
         if (obj == null) return false;
@@ -140,7 +136,7 @@ public class Retrieve  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getIds());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getIds(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getIds(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -190,8 +186,8 @@ public class Retrieve  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -202,8 +198,8 @@ public class Retrieve  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

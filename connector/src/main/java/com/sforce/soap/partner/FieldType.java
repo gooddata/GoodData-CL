@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * FieldType.java
  *
@@ -12,36 +8,37 @@
 package com.sforce.soap.partner;
 
 public class FieldType implements java.io.Serializable {
-    private String _value_;
+    private java.lang.String _value_;
     private static java.util.HashMap _table_ = new java.util.HashMap();
 
     // Constructor
-    protected FieldType(String value) {
+    protected FieldType(java.lang.String value) {
         _value_ = value;
         _table_.put(_value_,this);
     }
 
-    public static final String _value1 = "string";
-    public static final String _value2 = "picklist";
-    public static final String _value3 = "multipicklist";
-    public static final String _value4 = "combobox";
-    public static final String _value5 = "reference";
-    public static final String _value6 = "base64";
-    public static final String _value7 = "boolean";
-    public static final String _value8 = "currency";
-    public static final String _value9 = "textarea";
-    public static final String _value10 = "int";
-    public static final String _value11 = "double";
-    public static final String _value12 = "percent";
-    public static final String _value13 = "phone";
-    public static final String _value14 = "id";
-    public static final String _value15 = "date";
-    public static final String _value16 = "datetime";
-    public static final String _value17 = "time";
-    public static final String _value18 = "url";
-    public static final String _value19 = "email";
-    public static final String _value20 = "encryptedstring";
-    public static final String _value21 = "anyType";
+    public static final java.lang.String _value1 = "string";
+    public static final java.lang.String _value2 = "picklist";
+    public static final java.lang.String _value3 = "multipicklist";
+    public static final java.lang.String _value4 = "combobox";
+    public static final java.lang.String _value5 = "reference";
+    public static final java.lang.String _value6 = "base64";
+    public static final java.lang.String _value7 = "boolean";
+    public static final java.lang.String _value8 = "currency";
+    public static final java.lang.String _value9 = "textarea";
+    public static final java.lang.String _value10 = "int";
+    public static final java.lang.String _value11 = "double";
+    public static final java.lang.String _value12 = "percent";
+    public static final java.lang.String _value13 = "phone";
+    public static final java.lang.String _value14 = "id";
+    public static final java.lang.String _value15 = "date";
+    public static final java.lang.String _value16 = "datetime";
+    public static final java.lang.String _value17 = "time";
+    public static final java.lang.String _value18 = "url";
+    public static final java.lang.String _value19 = "email";
+    public static final java.lang.String _value20 = "encryptedstring";
+    public static final java.lang.String _value21 = "datacategorygroupreference";
+    public static final java.lang.String _value22 = "anyType";
     public static final FieldType value1 = new FieldType(_value1);
     public static final FieldType value2 = new FieldType(_value2);
     public static final FieldType value3 = new FieldType(_value3);
@@ -63,33 +60,34 @@ public class FieldType implements java.io.Serializable {
     public static final FieldType value19 = new FieldType(_value19);
     public static final FieldType value20 = new FieldType(_value20);
     public static final FieldType value21 = new FieldType(_value21);
-    public String getValue() { return _value_;}
-    public static FieldType fromValue(String value)
-          throws IllegalArgumentException {
+    public static final FieldType value22 = new FieldType(_value22);
+    public java.lang.String getValue() { return _value_;}
+    public static FieldType fromValue(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         FieldType enumeration = (FieldType)
             _table_.get(value);
-        if (enumeration==null) throw new IllegalArgumentException();
+        if (enumeration==null) throw new java.lang.IllegalArgumentException();
         return enumeration;
     }
-    public static FieldType fromString(String value)
-          throws IllegalArgumentException {
+    public static FieldType fromString(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         return fromValue(value);
     }
-    public boolean equals(Object obj) {return (obj == this);}
+    public boolean equals(java.lang.Object obj) {return (obj == this);}
     public int hashCode() { return toString().hashCode();}
-    public String toString() { return _value_;}
-    public Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
+    public java.lang.String toString() { return _value_;}
+    public java.lang.Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumSerializer(
             _javaType, _xmlType);
     }
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumDeserializer(

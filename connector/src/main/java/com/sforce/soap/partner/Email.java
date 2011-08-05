@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * Email.java
  *
@@ -12,31 +8,31 @@
 package com.sforce.soap.partner;
 
 public class Email  implements java.io.Serializable {
-    private Boolean bccSender;
+    private java.lang.Boolean bccSender;
 
     private com.sforce.soap.partner.EmailPriority emailPriority;
 
-    private String replyTo;
+    private java.lang.String replyTo;
 
-    private Boolean saveAsActivity;
+    private java.lang.Boolean saveAsActivity;
 
-    private String senderDisplayName;
+    private java.lang.String senderDisplayName;
 
-    private String subject;
+    private java.lang.String subject;
 
-    private Boolean useSignature;
+    private java.lang.Boolean useSignature;
 
     public Email() {
     }
 
     public Email(
-           Boolean bccSender,
+           java.lang.Boolean bccSender,
            com.sforce.soap.partner.EmailPriority emailPriority,
-           String replyTo,
-           Boolean saveAsActivity,
-           String senderDisplayName,
-           String subject,
-           Boolean useSignature) {
+           java.lang.String replyTo,
+           java.lang.Boolean saveAsActivity,
+           java.lang.String senderDisplayName,
+           java.lang.String subject,
+           java.lang.Boolean useSignature) {
            this.bccSender = bccSender;
            this.emailPriority = emailPriority;
            this.replyTo = replyTo;
@@ -52,7 +48,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @return bccSender
      */
-    public Boolean getBccSender() {
+    public java.lang.Boolean getBccSender() {
         return bccSender;
     }
 
@@ -62,7 +58,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @param bccSender
      */
-    public void setBccSender(Boolean bccSender) {
+    public void setBccSender(java.lang.Boolean bccSender) {
         this.bccSender = bccSender;
     }
 
@@ -92,7 +88,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @return replyTo
      */
-    public String getReplyTo() {
+    public java.lang.String getReplyTo() {
         return replyTo;
     }
 
@@ -102,7 +98,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @param replyTo
      */
-    public void setReplyTo(String replyTo) {
+    public void setReplyTo(java.lang.String replyTo) {
         this.replyTo = replyTo;
     }
 
@@ -112,7 +108,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @return saveAsActivity
      */
-    public Boolean getSaveAsActivity() {
+    public java.lang.Boolean getSaveAsActivity() {
         return saveAsActivity;
     }
 
@@ -122,7 +118,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @param saveAsActivity
      */
-    public void setSaveAsActivity(Boolean saveAsActivity) {
+    public void setSaveAsActivity(java.lang.Boolean saveAsActivity) {
         this.saveAsActivity = saveAsActivity;
     }
 
@@ -132,7 +128,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @return senderDisplayName
      */
-    public String getSenderDisplayName() {
+    public java.lang.String getSenderDisplayName() {
         return senderDisplayName;
     }
 
@@ -142,7 +138,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @param senderDisplayName
      */
-    public void setSenderDisplayName(String senderDisplayName) {
+    public void setSenderDisplayName(java.lang.String senderDisplayName) {
         this.senderDisplayName = senderDisplayName;
     }
 
@@ -152,7 +148,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @return subject
      */
-    public String getSubject() {
+    public java.lang.String getSubject() {
         return subject;
     }
 
@@ -162,7 +158,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @param subject
      */
-    public void setSubject(String subject) {
+    public void setSubject(java.lang.String subject) {
         this.subject = subject;
     }
 
@@ -172,7 +168,7 @@ public class Email  implements java.io.Serializable {
      * 
      * @return useSignature
      */
-    public Boolean getUseSignature() {
+    public java.lang.Boolean getUseSignature() {
         return useSignature;
     }
 
@@ -182,12 +178,12 @@ public class Email  implements java.io.Serializable {
      * 
      * @param useSignature
      */
-    public void setUseSignature(Boolean useSignature) {
+    public void setUseSignature(java.lang.Boolean useSignature) {
         this.useSignature = useSignature;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Email)) return false;
         Email other = (Email) obj;
         if (obj == null) return false;
@@ -316,8 +312,8 @@ public class Email  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -328,8 +324,8 @@ public class Email  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

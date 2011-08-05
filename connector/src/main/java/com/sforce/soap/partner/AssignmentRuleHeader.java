@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * AssignmentRuleHeader.java
  *
@@ -12,16 +8,16 @@
 package com.sforce.soap.partner;
 
 public class AssignmentRuleHeader  implements java.io.Serializable {
-    private String assignmentRuleId;
+    private java.lang.String assignmentRuleId;
 
-    private Boolean useDefaultRule;
+    private java.lang.Boolean useDefaultRule;
 
     public AssignmentRuleHeader() {
     }
 
     public AssignmentRuleHeader(
-           String assignmentRuleId,
-           Boolean useDefaultRule) {
+           java.lang.String assignmentRuleId,
+           java.lang.Boolean useDefaultRule) {
            this.assignmentRuleId = assignmentRuleId;
            this.useDefaultRule = useDefaultRule;
     }
@@ -32,7 +28,7 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
      * 
      * @return assignmentRuleId
      */
-    public String getAssignmentRuleId() {
+    public java.lang.String getAssignmentRuleId() {
         return assignmentRuleId;
     }
 
@@ -42,7 +38,7 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
      * 
      * @param assignmentRuleId
      */
-    public void setAssignmentRuleId(String assignmentRuleId) {
+    public void setAssignmentRuleId(java.lang.String assignmentRuleId) {
         this.assignmentRuleId = assignmentRuleId;
     }
 
@@ -52,7 +48,7 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
      * 
      * @return useDefaultRule
      */
-    public Boolean getUseDefaultRule() {
+    public java.lang.Boolean getUseDefaultRule() {
         return useDefaultRule;
     }
 
@@ -62,12 +58,12 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
      * 
      * @param useDefaultRule
      */
-    public void setUseDefaultRule(Boolean useDefaultRule) {
+    public void setUseDefaultRule(java.lang.Boolean useDefaultRule) {
         this.useDefaultRule = useDefaultRule;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof AssignmentRuleHeader)) return false;
         AssignmentRuleHeader other = (AssignmentRuleHeader) obj;
         if (obj == null) return false;
@@ -136,8 +132,8 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -148,8 +144,8 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

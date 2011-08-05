@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * EmailFileAttachment.java
  *
@@ -14,16 +10,24 @@ package com.sforce.soap.partner;
 public class EmailFileAttachment  implements java.io.Serializable {
     private byte[] body;
 
-    private String fileName;
+    private java.lang.String contentType;
+
+    private java.lang.String fileName;
+
+    private java.lang.Boolean inline;
 
     public EmailFileAttachment() {
     }
 
     public EmailFileAttachment(
            byte[] body,
-           String fileName) {
+           java.lang.String contentType,
+           java.lang.String fileName,
+           java.lang.Boolean inline) {
            this.body = body;
+           this.contentType = contentType;
            this.fileName = fileName;
+           this.inline = inline;
     }
 
 
@@ -48,11 +52,31 @@ public class EmailFileAttachment  implements java.io.Serializable {
 
 
     /**
+     * Gets the contentType value for this EmailFileAttachment.
+     * 
+     * @return contentType
+     */
+    public java.lang.String getContentType() {
+        return contentType;
+    }
+
+
+    /**
+     * Sets the contentType value for this EmailFileAttachment.
+     * 
+     * @param contentType
+     */
+    public void setContentType(java.lang.String contentType) {
+        this.contentType = contentType;
+    }
+
+
+    /**
      * Gets the fileName value for this EmailFileAttachment.
      * 
      * @return fileName
      */
-    public String getFileName() {
+    public java.lang.String getFileName() {
         return fileName;
     }
 
@@ -62,12 +86,32 @@ public class EmailFileAttachment  implements java.io.Serializable {
      * 
      * @param fileName
      */
-    public void setFileName(String fileName) {
+    public void setFileName(java.lang.String fileName) {
         this.fileName = fileName;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+
+    /**
+     * Gets the inline value for this EmailFileAttachment.
+     * 
+     * @return inline
+     */
+    public java.lang.Boolean getInline() {
+        return inline;
+    }
+
+
+    /**
+     * Sets the inline value for this EmailFileAttachment.
+     * 
+     * @param inline
+     */
+    public void setInline(java.lang.Boolean inline) {
+        this.inline = inline;
+    }
+
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof EmailFileAttachment)) return false;
         EmailFileAttachment other = (EmailFileAttachment) obj;
         if (obj == null) return false;
@@ -81,9 +125,15 @@ public class EmailFileAttachment  implements java.io.Serializable {
             ((this.body==null && other.getBody()==null) || 
              (this.body!=null &&
               java.util.Arrays.equals(this.body, other.getBody()))) &&
+            ((this.contentType==null && other.getContentType()==null) || 
+             (this.contentType!=null &&
+              this.contentType.equals(other.getContentType()))) &&
             ((this.fileName==null && other.getFileName()==null) || 
              (this.fileName!=null &&
-              this.fileName.equals(other.getFileName())));
+              this.fileName.equals(other.getFileName()))) &&
+            ((this.inline==null && other.getInline()==null) || 
+             (this.inline!=null &&
+              this.inline.equals(other.getInline())));
         __equalsCalc = null;
         return _equals;
     }
@@ -99,15 +149,21 @@ public class EmailFileAttachment  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getBody());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getBody(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getBody(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
         }
+        if (getContentType() != null) {
+            _hashCode += getContentType().hashCode();
+        }
         if (getFileName() != null) {
             _hashCode += getFileName().hashCode();
+        }
+        if (getInline() != null) {
+            _hashCode += getInline().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -127,9 +183,23 @@ public class EmailFileAttachment  implements java.io.Serializable {
         elemField.setNillable(true);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("contentType");
+        elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "contentType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("fileName");
         elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "fileName"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("inline");
+        elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "inline"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }
@@ -145,8 +215,8 @@ public class EmailFileAttachment  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -157,8 +227,8 @@ public class EmailFileAttachment  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

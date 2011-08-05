@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeSoftphoneLayoutSection.java
  *
@@ -12,16 +8,16 @@
 package com.sforce.soap.partner;
 
 public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
-    private String entityApiName;
+    private java.lang.String entityApiName;
 
-    private DescribeSoftphoneLayoutItem[] items;
+    private com.sforce.soap.partner.DescribeSoftphoneLayoutItem[] items;
 
     public DescribeSoftphoneLayoutSection() {
     }
 
     public DescribeSoftphoneLayoutSection(
-           String entityApiName,
-           DescribeSoftphoneLayoutItem[] items) {
+           java.lang.String entityApiName,
+           com.sforce.soap.partner.DescribeSoftphoneLayoutItem[] items) {
            this.entityApiName = entityApiName;
            this.items = items;
     }
@@ -32,7 +28,7 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
      * 
      * @return entityApiName
      */
-    public String getEntityApiName() {
+    public java.lang.String getEntityApiName() {
         return entityApiName;
     }
 
@@ -42,7 +38,7 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
      * 
      * @param entityApiName
      */
-    public void setEntityApiName(String entityApiName) {
+    public void setEntityApiName(java.lang.String entityApiName) {
         this.entityApiName = entityApiName;
     }
 
@@ -52,7 +48,7 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
      * 
      * @return items
      */
-    public DescribeSoftphoneLayoutItem[] getItems() {
+    public com.sforce.soap.partner.DescribeSoftphoneLayoutItem[] getItems() {
         return items;
     }
 
@@ -62,20 +58,20 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
      * 
      * @param items
      */
-    public void setItems(DescribeSoftphoneLayoutItem[] items) {
+    public void setItems(com.sforce.soap.partner.DescribeSoftphoneLayoutItem[] items) {
         this.items = items;
     }
 
-    public DescribeSoftphoneLayoutItem getItems(int i) {
+    public com.sforce.soap.partner.DescribeSoftphoneLayoutItem getItems(int i) {
         return this.items[i];
     }
 
-    public void setItems(int i, DescribeSoftphoneLayoutItem _value) {
+    public void setItems(int i, com.sforce.soap.partner.DescribeSoftphoneLayoutItem _value) {
         this.items[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeSoftphoneLayoutSection)) return false;
         DescribeSoftphoneLayoutSection other = (DescribeSoftphoneLayoutSection) obj;
         if (obj == null) return false;
@@ -110,7 +106,7 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getItems());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getItems(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getItems(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -153,8 +149,8 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -165,8 +161,8 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

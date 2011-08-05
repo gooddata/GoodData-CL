@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * SearchRecord.java
  *
@@ -42,8 +38,8 @@ public class SearchRecord  implements java.io.Serializable {
         this.record = record;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SearchRecord)) return false;
         SearchRecord other = (SearchRecord) obj;
         if (obj == null) return false;
@@ -100,8 +96,8 @@ public class SearchRecord  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -112,8 +108,8 @@ public class SearchRecord  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

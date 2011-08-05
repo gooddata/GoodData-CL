@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * EmptyRecycleBinResult.java
  *
@@ -14,7 +10,7 @@ package com.sforce.soap.partner;
 public class EmptyRecycleBinResult  implements java.io.Serializable {
     private com.sforce.soap.partner.Error[] errors;
 
-    private String id;
+    private java.lang.String id;
 
     private boolean success;
 
@@ -23,7 +19,7 @@ public class EmptyRecycleBinResult  implements java.io.Serializable {
 
     public EmptyRecycleBinResult(
            com.sforce.soap.partner.Error[] errors,
-           String id,
+           java.lang.String id,
            boolean success) {
            this.errors = errors;
            this.id = id;
@@ -64,7 +60,7 @@ public class EmptyRecycleBinResult  implements java.io.Serializable {
      * 
      * @return id
      */
-    public String getId() {
+    public java.lang.String getId() {
         return id;
     }
 
@@ -74,7 +70,7 @@ public class EmptyRecycleBinResult  implements java.io.Serializable {
      * 
      * @param id
      */
-    public void setId(String id) {
+    public void setId(java.lang.String id) {
         this.id = id;
     }
 
@@ -98,8 +94,8 @@ public class EmptyRecycleBinResult  implements java.io.Serializable {
         this.success = success;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof EmptyRecycleBinResult)) return false;
         EmptyRecycleBinResult other = (EmptyRecycleBinResult) obj;
         if (obj == null) return false;
@@ -132,7 +128,7 @@ public class EmptyRecycleBinResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getErrors());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getErrors(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getErrors(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -186,8 +182,8 @@ public class EmptyRecycleBinResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -198,8 +194,8 @@ public class EmptyRecycleBinResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

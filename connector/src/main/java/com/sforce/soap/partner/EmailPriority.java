@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * EmailPriority.java
  *
@@ -12,52 +8,52 @@
 package com.sforce.soap.partner;
 
 public class EmailPriority implements java.io.Serializable {
-    private String _value_;
+    private java.lang.String _value_;
     private static java.util.HashMap _table_ = new java.util.HashMap();
 
     // Constructor
-    protected EmailPriority(String value) {
+    protected EmailPriority(java.lang.String value) {
         _value_ = value;
         _table_.put(_value_,this);
     }
 
-    public static final String _Highest = "Highest";
-    public static final String _High = "High";
-    public static final String _Normal = "Normal";
-    public static final String _Low = "Low";
-    public static final String _Lowest = "Lowest";
+    public static final java.lang.String _Highest = "Highest";
+    public static final java.lang.String _High = "High";
+    public static final java.lang.String _Normal = "Normal";
+    public static final java.lang.String _Low = "Low";
+    public static final java.lang.String _Lowest = "Lowest";
     public static final EmailPriority Highest = new EmailPriority(_Highest);
     public static final EmailPriority High = new EmailPriority(_High);
     public static final EmailPriority Normal = new EmailPriority(_Normal);
     public static final EmailPriority Low = new EmailPriority(_Low);
     public static final EmailPriority Lowest = new EmailPriority(_Lowest);
-    public String getValue() { return _value_;}
-    public static EmailPriority fromValue(String value)
-          throws IllegalArgumentException {
+    public java.lang.String getValue() { return _value_;}
+    public static EmailPriority fromValue(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         EmailPriority enumeration = (EmailPriority)
             _table_.get(value);
-        if (enumeration==null) throw new IllegalArgumentException();
+        if (enumeration==null) throw new java.lang.IllegalArgumentException();
         return enumeration;
     }
-    public static EmailPriority fromString(String value)
-          throws IllegalArgumentException {
+    public static EmailPriority fromString(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         return fromValue(value);
     }
-    public boolean equals(Object obj) {return (obj == this);}
+    public boolean equals(java.lang.Object obj) {return (obj == this);}
     public int hashCode() { return toString().hashCode();}
-    public String toString() { return _value_;}
-    public Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
+    public java.lang.String toString() { return _value_;}
+    public java.lang.Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumSerializer(
             _javaType, _xmlType);
     }
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumDeserializer(

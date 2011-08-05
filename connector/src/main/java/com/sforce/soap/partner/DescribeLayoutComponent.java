@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeLayoutComponent.java
  *
@@ -18,7 +14,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
 
     private com.sforce.soap.partner.LayoutComponentType type;
 
-    private String value;
+    private java.lang.String value;
 
     public DescribeLayoutComponent() {
     }
@@ -27,7 +23,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
            int displayLines,
            int tabOrder,
            com.sforce.soap.partner.LayoutComponentType type,
-           String value) {
+           java.lang.String value) {
            this.displayLines = displayLines;
            this.tabOrder = tabOrder;
            this.type = type;
@@ -100,7 +96,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
      * 
      * @return value
      */
-    public String getValue() {
+    public java.lang.String getValue() {
         return value;
     }
 
@@ -110,12 +106,12 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
      * 
      * @param value
      */
-    public void setValue(String value) {
+    public void setValue(java.lang.String value) {
         this.value = value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutComponent)) return false;
         DescribeLayoutComponent other = (DescribeLayoutComponent) obj;
         if (obj == null) return false;
@@ -200,8 +196,8 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -212,8 +208,8 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * CallOptions.java
  *
@@ -12,16 +8,16 @@
 package com.sforce.soap.partner;
 
 public class CallOptions  implements java.io.Serializable {
-    private String client;
+    private java.lang.String client;
 
-    private String defaultNamespace;
+    private java.lang.String defaultNamespace;
 
     public CallOptions() {
     }
 
     public CallOptions(
-           String client,
-           String defaultNamespace) {
+           java.lang.String client,
+           java.lang.String defaultNamespace) {
            this.client = client;
            this.defaultNamespace = defaultNamespace;
     }
@@ -32,7 +28,7 @@ public class CallOptions  implements java.io.Serializable {
      * 
      * @return client
      */
-    public String getClient() {
+    public java.lang.String getClient() {
         return client;
     }
 
@@ -42,7 +38,7 @@ public class CallOptions  implements java.io.Serializable {
      * 
      * @param client
      */
-    public void setClient(String client) {
+    public void setClient(java.lang.String client) {
         this.client = client;
     }
 
@@ -52,7 +48,7 @@ public class CallOptions  implements java.io.Serializable {
      * 
      * @return defaultNamespace
      */
-    public String getDefaultNamespace() {
+    public java.lang.String getDefaultNamespace() {
         return defaultNamespace;
     }
 
@@ -62,12 +58,12 @@ public class CallOptions  implements java.io.Serializable {
      * 
      * @param defaultNamespace
      */
-    public void setDefaultNamespace(String defaultNamespace) {
+    public void setDefaultNamespace(java.lang.String defaultNamespace) {
         this.defaultNamespace = defaultNamespace;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof CallOptions)) return false;
         CallOptions other = (CallOptions) obj;
         if (obj == null) return false;
@@ -136,8 +132,8 @@ public class CallOptions  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -148,8 +144,8 @@ public class CallOptions  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

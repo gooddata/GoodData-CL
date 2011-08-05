@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * SearchResult.java
  *
@@ -12,16 +8,16 @@
 package com.sforce.soap.partner;
 
 public class SearchResult  implements java.io.Serializable {
-    private SearchRecord[] searchRecords;
+    private com.sforce.soap.partner.SearchRecord[] searchRecords;
 
-    private String sforceReserved;
+    private java.lang.String sforceReserved;
 
     public SearchResult() {
     }
 
     public SearchResult(
-           SearchRecord[] searchRecords,
-           String sforceReserved) {
+           com.sforce.soap.partner.SearchRecord[] searchRecords,
+           java.lang.String sforceReserved) {
            this.searchRecords = searchRecords;
            this.sforceReserved = sforceReserved;
     }
@@ -32,7 +28,7 @@ public class SearchResult  implements java.io.Serializable {
      * 
      * @return searchRecords
      */
-    public SearchRecord[] getSearchRecords() {
+    public com.sforce.soap.partner.SearchRecord[] getSearchRecords() {
         return searchRecords;
     }
 
@@ -42,15 +38,15 @@ public class SearchResult  implements java.io.Serializable {
      * 
      * @param searchRecords
      */
-    public void setSearchRecords(SearchRecord[] searchRecords) {
+    public void setSearchRecords(com.sforce.soap.partner.SearchRecord[] searchRecords) {
         this.searchRecords = searchRecords;
     }
 
-    public SearchRecord getSearchRecords(int i) {
+    public com.sforce.soap.partner.SearchRecord getSearchRecords(int i) {
         return this.searchRecords[i];
     }
 
-    public void setSearchRecords(int i, SearchRecord _value) {
+    public void setSearchRecords(int i, com.sforce.soap.partner.SearchRecord _value) {
         this.searchRecords[i] = _value;
     }
 
@@ -60,7 +56,7 @@ public class SearchResult  implements java.io.Serializable {
      * 
      * @return sforceReserved
      */
-    public String getSforceReserved() {
+    public java.lang.String getSforceReserved() {
         return sforceReserved;
     }
 
@@ -70,12 +66,12 @@ public class SearchResult  implements java.io.Serializable {
      * 
      * @param sforceReserved
      */
-    public void setSforceReserved(String sforceReserved) {
+    public void setSforceReserved(java.lang.String sforceReserved) {
         this.sforceReserved = sforceReserved;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SearchResult)) return false;
         SearchResult other = (SearchResult) obj;
         if (obj == null) return false;
@@ -107,7 +103,7 @@ public class SearchResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getSearchRecords());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getSearchRecords(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getSearchRecords(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -155,8 +151,8 @@ public class SearchResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -167,8 +163,8 @@ public class SearchResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

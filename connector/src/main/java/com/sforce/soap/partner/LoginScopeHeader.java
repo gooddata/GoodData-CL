@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * LoginScopeHeader.java
  *
@@ -12,16 +8,16 @@
 package com.sforce.soap.partner;
 
 public class LoginScopeHeader  implements java.io.Serializable {
-    private String organizationId;
+    private java.lang.String organizationId;
 
-    private String portalId;
+    private java.lang.String portalId;
 
     public LoginScopeHeader() {
     }
 
     public LoginScopeHeader(
-           String organizationId,
-           String portalId) {
+           java.lang.String organizationId,
+           java.lang.String portalId) {
            this.organizationId = organizationId;
            this.portalId = portalId;
     }
@@ -32,7 +28,7 @@ public class LoginScopeHeader  implements java.io.Serializable {
      * 
      * @return organizationId
      */
-    public String getOrganizationId() {
+    public java.lang.String getOrganizationId() {
         return organizationId;
     }
 
@@ -42,7 +38,7 @@ public class LoginScopeHeader  implements java.io.Serializable {
      * 
      * @param organizationId
      */
-    public void setOrganizationId(String organizationId) {
+    public void setOrganizationId(java.lang.String organizationId) {
         this.organizationId = organizationId;
     }
 
@@ -52,7 +48,7 @@ public class LoginScopeHeader  implements java.io.Serializable {
      * 
      * @return portalId
      */
-    public String getPortalId() {
+    public java.lang.String getPortalId() {
         return portalId;
     }
 
@@ -62,12 +58,12 @@ public class LoginScopeHeader  implements java.io.Serializable {
      * 
      * @param portalId
      */
-    public void setPortalId(String portalId) {
+    public void setPortalId(java.lang.String portalId) {
         this.portalId = portalId;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof LoginScopeHeader)) return false;
         LoginScopeHeader other = (LoginScopeHeader) obj;
         if (obj == null) return false;
@@ -137,8 +133,8 @@ public class LoginScopeHeader  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -149,8 +145,8 @@ public class LoginScopeHeader  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

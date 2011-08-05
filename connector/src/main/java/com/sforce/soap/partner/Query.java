@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * Query.java
  *
@@ -12,13 +8,13 @@
 package com.sforce.soap.partner;
 
 public class Query  implements java.io.Serializable {
-    private String queryString;
+    private java.lang.String queryString;
 
     public Query() {
     }
 
     public Query(
-           String queryString) {
+           java.lang.String queryString) {
            this.queryString = queryString;
     }
 
@@ -28,7 +24,7 @@ public class Query  implements java.io.Serializable {
      * 
      * @return queryString
      */
-    public String getQueryString() {
+    public java.lang.String getQueryString() {
         return queryString;
     }
 
@@ -38,12 +34,12 @@ public class Query  implements java.io.Serializable {
      * 
      * @param queryString
      */
-    public void setQueryString(String queryString) {
+    public void setQueryString(java.lang.String queryString) {
         this.queryString = queryString;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Query)) return false;
         Query other = (Query) obj;
         if (obj == null) return false;
@@ -100,8 +96,8 @@ public class Query  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -112,8 +108,8 @@ public class Query  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

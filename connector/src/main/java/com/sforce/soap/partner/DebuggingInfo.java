@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DebuggingInfo.java
  *
@@ -12,13 +8,13 @@
 package com.sforce.soap.partner;
 
 public class DebuggingInfo  implements java.io.Serializable {
-    private String debugLog;
+    private java.lang.String debugLog;
 
     public DebuggingInfo() {
     }
 
     public DebuggingInfo(
-           String debugLog) {
+           java.lang.String debugLog) {
            this.debugLog = debugLog;
     }
 
@@ -28,7 +24,7 @@ public class DebuggingInfo  implements java.io.Serializable {
      * 
      * @return debugLog
      */
-    public String getDebugLog() {
+    public java.lang.String getDebugLog() {
         return debugLog;
     }
 
@@ -38,12 +34,12 @@ public class DebuggingInfo  implements java.io.Serializable {
      * 
      * @param debugLog
      */
-    public void setDebugLog(String debugLog) {
+    public void setDebugLog(java.lang.String debugLog) {
         this.debugLog = debugLog;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DebuggingInfo)) return false;
         DebuggingInfo other = (DebuggingInfo) obj;
         if (obj == null) return false;
@@ -100,8 +96,8 @@ public class DebuggingInfo  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -112,8 +108,8 @@ public class DebuggingInfo  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

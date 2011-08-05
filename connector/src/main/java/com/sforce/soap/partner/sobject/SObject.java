@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * SObject.java
  *
@@ -12,11 +8,11 @@
 package com.sforce.soap.partner.sobject;
 
 public class SObject  implements java.io.Serializable, org.apache.axis.encoding.AnyContentType {
-    private String type;
+    private java.lang.String type;
 
-    private String[] fieldsToNull;
+    private java.lang.String[] fieldsToNull;
 
-    private String id;
+    private java.lang.String id;
 
     private org.apache.axis.message.MessageElement [] _any;
 
@@ -24,9 +20,9 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
     }
 
     public SObject(
-           String type,
-           String[] fieldsToNull,
-           String id,
+           java.lang.String type,
+           java.lang.String[] fieldsToNull,
+           java.lang.String id,
            org.apache.axis.message.MessageElement [] _any) {
            this.type = type;
            this.fieldsToNull = fieldsToNull;
@@ -40,7 +36,7 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
      * 
      * @return type
      */
-    public String getType() {
+    public java.lang.String getType() {
         return type;
     }
 
@@ -50,7 +46,7 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
      * 
      * @param type
      */
-    public void setType(String type) {
+    public void setType(java.lang.String type) {
         this.type = type;
     }
 
@@ -60,7 +56,7 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
      * 
      * @return fieldsToNull
      */
-    public String[] getFieldsToNull() {
+    public java.lang.String[] getFieldsToNull() {
         return fieldsToNull;
     }
 
@@ -70,15 +66,15 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
      * 
      * @param fieldsToNull
      */
-    public void setFieldsToNull(String[] fieldsToNull) {
+    public void setFieldsToNull(java.lang.String[] fieldsToNull) {
         this.fieldsToNull = fieldsToNull;
     }
 
-    public String getFieldsToNull(int i) {
+    public java.lang.String getFieldsToNull(int i) {
         return this.fieldsToNull[i];
     }
 
-    public void setFieldsToNull(int i, String _value) {
+    public void setFieldsToNull(int i, java.lang.String _value) {
         this.fieldsToNull[i] = _value;
     }
 
@@ -88,7 +84,7 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
      * 
      * @return id
      */
-    public String getId() {
+    public java.lang.String getId() {
         return id;
     }
 
@@ -98,7 +94,7 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
      * 
      * @param id
      */
-    public void setId(String id) {
+    public void setId(java.lang.String id) {
         this.id = id;
     }
 
@@ -122,8 +118,8 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
         this._any = _any;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SObject)) return false;
         SObject other = (SObject) obj;
         if (obj == null) return false;
@@ -164,7 +160,7 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getFieldsToNull());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getFieldsToNull(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getFieldsToNull(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -178,7 +174,7 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(get_any());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(get_any(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(get_any(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -228,8 +224,8 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -240,8 +236,8 @@ public class SObject  implements java.io.Serializable, org.apache.axis.encoding.
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

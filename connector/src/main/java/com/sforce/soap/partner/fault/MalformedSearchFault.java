@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * MalformedSearchFault.java
  *
@@ -11,13 +7,13 @@
 
 package com.sforce.soap.partner.fault;
 
-public class MalformedSearchFault  extends ApiQueryFault  implements java.io.Serializable {
+public class MalformedSearchFault  extends com.sforce.soap.partner.fault.ApiQueryFault  implements java.io.Serializable {
     public MalformedSearchFault() {
     }
 
     public MalformedSearchFault(
-           ExceptionCode exceptionCode,
-           String exceptionMessage,
+           com.sforce.soap.partner.fault.ExceptionCode exceptionCode,
+           java.lang.String exceptionMessage,
            int row,
            int column) {
         super(
@@ -27,8 +23,8 @@ public class MalformedSearchFault  extends ApiQueryFault  implements java.io.Ser
             column);
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MalformedSearchFault)) return false;
         MalformedSearchFault other = (MalformedSearchFault) obj;
         if (obj == null) return false;
@@ -73,8 +69,8 @@ public class MalformedSearchFault  extends ApiQueryFault  implements java.io.Ser
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -85,8 +81,8 @@ public class MalformedSearchFault  extends ApiQueryFault  implements java.io.Ser
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

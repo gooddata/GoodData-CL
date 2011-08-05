@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeLayout.java
  *
@@ -18,7 +14,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     private com.sforce.soap.partner.DescribeLayoutSection[] editLayoutSections;
 
-    private String id;
+    private java.lang.String id;
 
     private com.sforce.soap.partner.RelatedList[] relatedLists;
 
@@ -29,7 +25,7 @@ public class DescribeLayout  implements java.io.Serializable {
            com.sforce.soap.partner.DescribeLayoutButton[] buttonLayoutSection,
            com.sforce.soap.partner.DescribeLayoutSection[] detailLayoutSections,
            com.sforce.soap.partner.DescribeLayoutSection[] editLayoutSections,
-           String id,
+           java.lang.String id,
            com.sforce.soap.partner.RelatedList[] relatedLists) {
            this.buttonLayoutSection = buttonLayoutSection;
            this.detailLayoutSections = detailLayoutSections;
@@ -120,7 +116,7 @@ public class DescribeLayout  implements java.io.Serializable {
      * 
      * @return id
      */
-    public String getId() {
+    public java.lang.String getId() {
         return id;
     }
 
@@ -130,7 +126,7 @@ public class DescribeLayout  implements java.io.Serializable {
      * 
      * @param id
      */
-    public void setId(String id) {
+    public void setId(java.lang.String id) {
         this.id = id;
     }
 
@@ -162,8 +158,8 @@ public class DescribeLayout  implements java.io.Serializable {
         this.relatedLists[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayout)) return false;
         DescribeLayout other = (DescribeLayout) obj;
         if (obj == null) return false;
@@ -204,7 +200,7 @@ public class DescribeLayout  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getButtonLayoutSection());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getButtonLayoutSection(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getButtonLayoutSection(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -215,7 +211,7 @@ public class DescribeLayout  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getDetailLayoutSections());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getDetailLayoutSections(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getDetailLayoutSections(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -226,7 +222,7 @@ public class DescribeLayout  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getEditLayoutSections());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getEditLayoutSections(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getEditLayoutSections(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -240,7 +236,7 @@ public class DescribeLayout  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getRelatedLists());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getRelatedLists(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getRelatedLists(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -308,8 +304,8 @@ public class DescribeLayout  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -320,8 +316,8 @@ public class DescribeLayout  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

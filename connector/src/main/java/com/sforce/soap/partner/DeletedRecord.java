@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DeletedRecord.java
  *
@@ -14,14 +10,14 @@ package com.sforce.soap.partner;
 public class DeletedRecord  implements java.io.Serializable {
     private java.util.Calendar deletedDate;
 
-    private String id;
+    private java.lang.String id;
 
     public DeletedRecord() {
     }
 
     public DeletedRecord(
            java.util.Calendar deletedDate,
-           String id) {
+           java.lang.String id) {
            this.deletedDate = deletedDate;
            this.id = id;
     }
@@ -52,7 +48,7 @@ public class DeletedRecord  implements java.io.Serializable {
      * 
      * @return id
      */
-    public String getId() {
+    public java.lang.String getId() {
         return id;
     }
 
@@ -62,12 +58,12 @@ public class DeletedRecord  implements java.io.Serializable {
      * 
      * @param id
      */
-    public void setId(String id) {
+    public void setId(java.lang.String id) {
         this.id = id;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DeletedRecord)) return false;
         DeletedRecord other = (DeletedRecord) obj;
         if (obj == null) return false;
@@ -136,8 +132,8 @@ public class DeletedRecord  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -148,8 +144,8 @@ public class DeletedRecord  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

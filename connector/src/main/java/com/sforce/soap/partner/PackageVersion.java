@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * PackageVersion.java
  *
@@ -16,7 +12,7 @@ public class PackageVersion  implements java.io.Serializable {
 
     private int minorNumber;
 
-    private String namespace;
+    private java.lang.String namespace;
 
     public PackageVersion() {
     }
@@ -24,7 +20,7 @@ public class PackageVersion  implements java.io.Serializable {
     public PackageVersion(
            int majorNumber,
            int minorNumber,
-           String namespace) {
+           java.lang.String namespace) {
            this.majorNumber = majorNumber;
            this.minorNumber = minorNumber;
            this.namespace = namespace;
@@ -76,7 +72,7 @@ public class PackageVersion  implements java.io.Serializable {
      * 
      * @return namespace
      */
-    public String getNamespace() {
+    public java.lang.String getNamespace() {
         return namespace;
     }
 
@@ -86,12 +82,12 @@ public class PackageVersion  implements java.io.Serializable {
      * 
      * @param namespace
      */
-    public void setNamespace(String namespace) {
+    public void setNamespace(java.lang.String namespace) {
         this.namespace = namespace;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PackageVersion)) return false;
         PackageVersion other = (PackageVersion) obj;
         if (obj == null) return false;
@@ -164,8 +160,8 @@ public class PackageVersion  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -176,8 +172,8 @@ public class PackageVersion  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

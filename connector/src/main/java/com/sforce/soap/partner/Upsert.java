@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * Upsert.java
  *
@@ -12,7 +8,7 @@
 package com.sforce.soap.partner;
 
 public class Upsert  implements java.io.Serializable {
-    private String externalIDFieldName;
+    private java.lang.String externalIDFieldName;
 
     private com.sforce.soap.partner.sobject.SObject[] sObjects;
 
@@ -20,7 +16,7 @@ public class Upsert  implements java.io.Serializable {
     }
 
     public Upsert(
-           String externalIDFieldName,
+           java.lang.String externalIDFieldName,
            com.sforce.soap.partner.sobject.SObject[] sObjects) {
            this.externalIDFieldName = externalIDFieldName;
            this.sObjects = sObjects;
@@ -32,7 +28,7 @@ public class Upsert  implements java.io.Serializable {
      * 
      * @return externalIDFieldName
      */
-    public String getExternalIDFieldName() {
+    public java.lang.String getExternalIDFieldName() {
         return externalIDFieldName;
     }
 
@@ -42,7 +38,7 @@ public class Upsert  implements java.io.Serializable {
      * 
      * @param externalIDFieldName
      */
-    public void setExternalIDFieldName(String externalIDFieldName) {
+    public void setExternalIDFieldName(java.lang.String externalIDFieldName) {
         this.externalIDFieldName = externalIDFieldName;
     }
 
@@ -74,8 +70,8 @@ public class Upsert  implements java.io.Serializable {
         this.sObjects[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Upsert)) return false;
         Upsert other = (Upsert) obj;
         if (obj == null) return false;
@@ -110,7 +106,7 @@ public class Upsert  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getSObjects());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getSObjects(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getSObjects(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -154,8 +150,8 @@ public class Upsert  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -166,8 +162,8 @@ public class Upsert  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

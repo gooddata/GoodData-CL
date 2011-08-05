@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeGlobalResult.java
  *
@@ -12,22 +8,22 @@
 package com.sforce.soap.partner;
 
 public class DescribeGlobalResult  implements java.io.Serializable {
-    private String encoding;
+    private java.lang.String encoding;
 
     private int maxBatchSize;
 
-    private String[] types;
+    private com.sforce.soap.partner.DescribeGlobalSObjectResult[] sobjects;
 
     public DescribeGlobalResult() {
     }
 
     public DescribeGlobalResult(
-           String encoding,
+           java.lang.String encoding,
            int maxBatchSize,
-           String[] types) {
+           com.sforce.soap.partner.DescribeGlobalSObjectResult[] sobjects) {
            this.encoding = encoding;
            this.maxBatchSize = maxBatchSize;
-           this.types = types;
+           this.sobjects = sobjects;
     }
 
 
@@ -36,7 +32,7 @@ public class DescribeGlobalResult  implements java.io.Serializable {
      * 
      * @return encoding
      */
-    public String getEncoding() {
+    public java.lang.String getEncoding() {
         return encoding;
     }
 
@@ -46,7 +42,7 @@ public class DescribeGlobalResult  implements java.io.Serializable {
      * 
      * @param encoding
      */
-    public void setEncoding(String encoding) {
+    public void setEncoding(java.lang.String encoding) {
         this.encoding = encoding;
     }
 
@@ -72,34 +68,34 @@ public class DescribeGlobalResult  implements java.io.Serializable {
 
 
     /**
-     * Gets the types value for this DescribeGlobalResult.
+     * Gets the sobjects value for this DescribeGlobalResult.
      * 
-     * @return types
+     * @return sobjects
      */
-    public String[] getTypes() {
-        return types;
+    public com.sforce.soap.partner.DescribeGlobalSObjectResult[] getSobjects() {
+        return sobjects;
     }
 
 
     /**
-     * Sets the types value for this DescribeGlobalResult.
+     * Sets the sobjects value for this DescribeGlobalResult.
      * 
-     * @param types
+     * @param sobjects
      */
-    public void setTypes(String[] types) {
-        this.types = types;
+    public void setSobjects(com.sforce.soap.partner.DescribeGlobalSObjectResult[] sobjects) {
+        this.sobjects = sobjects;
     }
 
-    public String getTypes(int i) {
-        return this.types[i];
+    public com.sforce.soap.partner.DescribeGlobalSObjectResult getSobjects(int i) {
+        return this.sobjects[i];
     }
 
-    public void setTypes(int i, String _value) {
-        this.types[i] = _value;
+    public void setSobjects(int i, com.sforce.soap.partner.DescribeGlobalSObjectResult _value) {
+        this.sobjects[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeGlobalResult)) return false;
         DescribeGlobalResult other = (DescribeGlobalResult) obj;
         if (obj == null) return false;
@@ -114,9 +110,9 @@ public class DescribeGlobalResult  implements java.io.Serializable {
              (this.encoding!=null &&
               this.encoding.equals(other.getEncoding()))) &&
             this.maxBatchSize == other.getMaxBatchSize() &&
-            ((this.types==null && other.getTypes()==null) || 
-             (this.types!=null &&
-              java.util.Arrays.equals(this.types, other.getTypes())));
+            ((this.sobjects==null && other.getSobjects()==null) || 
+             (this.sobjects!=null &&
+              java.util.Arrays.equals(this.sobjects, other.getSobjects())));
         __equalsCalc = null;
         return _equals;
     }
@@ -132,11 +128,11 @@ public class DescribeGlobalResult  implements java.io.Serializable {
             _hashCode += getEncoding().hashCode();
         }
         _hashCode += getMaxBatchSize();
-        if (getTypes() != null) {
+        if (getSobjects() != null) {
             for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getTypes());
+                 i<java.lang.reflect.Array.getLength(getSobjects());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getTypes(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getSobjects(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -166,11 +162,11 @@ public class DescribeGlobalResult  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("types");
-        elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "types"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setFieldName("sobjects");
+        elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "sobjects"));
+        elemField.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeGlobalSObjectResult"));
         elemField.setMinOccurs(0);
-        elemField.setNillable(true);
+        elemField.setNillable(false);
         elemField.setMaxOccursUnbounded(true);
         typeDesc.addFieldDesc(elemField);
     }
@@ -186,8 +182,8 @@ public class DescribeGlobalResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -198,8 +194,8 @@ public class DescribeGlobalResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

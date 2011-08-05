@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * SforceService.java
  *
@@ -16,7 +12,7 @@ public interface SforceService extends javax.xml.rpc.Service {
 /**
  * Sforce SOAP API
  */
-    public String getSoapAddress();
+    public java.lang.String getSoapAddress();
 
     public com.sforce.soap.partner.Soap getSoap() throws javax.xml.rpc.ServiceException;
 

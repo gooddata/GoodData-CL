@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * RecordTypeInfo.java
  *
@@ -16,9 +12,9 @@ public class RecordTypeInfo  implements java.io.Serializable {
 
     private boolean defaultRecordTypeMapping;
 
-    private String name;
+    private java.lang.String name;
 
-    private String recordTypeId;
+    private java.lang.String recordTypeId;
 
     public RecordTypeInfo() {
     }
@@ -26,8 +22,8 @@ public class RecordTypeInfo  implements java.io.Serializable {
     public RecordTypeInfo(
            boolean available,
            boolean defaultRecordTypeMapping,
-           String name,
-           String recordTypeId) {
+           java.lang.String name,
+           java.lang.String recordTypeId) {
            this.available = available;
            this.defaultRecordTypeMapping = defaultRecordTypeMapping;
            this.name = name;
@@ -80,7 +76,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
      * 
      * @return name
      */
-    public String getName() {
+    public java.lang.String getName() {
         return name;
     }
 
@@ -90,7 +86,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
      * 
      * @param name
      */
-    public void setName(String name) {
+    public void setName(java.lang.String name) {
         this.name = name;
     }
 
@@ -100,7 +96,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
      * 
      * @return recordTypeId
      */
-    public String getRecordTypeId() {
+    public java.lang.String getRecordTypeId() {
         return recordTypeId;
     }
 
@@ -110,12 +106,12 @@ public class RecordTypeInfo  implements java.io.Serializable {
      * 
      * @param recordTypeId
      */
-    public void setRecordTypeId(String recordTypeId) {
+    public void setRecordTypeId(java.lang.String recordTypeId) {
         this.recordTypeId = recordTypeId;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof RecordTypeInfo)) return false;
         RecordTypeInfo other = (RecordTypeInfo) obj;
         if (obj == null) return false;
@@ -200,8 +196,8 @@ public class RecordTypeInfo  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -212,8 +208,8 @@ public class RecordTypeInfo  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

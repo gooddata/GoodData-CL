@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * Field.java
  *
@@ -18,47 +14,47 @@ public class Field  implements java.io.Serializable {
 
     private boolean calculated;
 
-    private String calculatedFormula;
+    private java.lang.String calculatedFormula;
 
     private boolean caseSensitive;
 
-    private String controllerName;
+    private java.lang.String controllerName;
 
     private boolean createable;
 
     private boolean custom;
 
-    private String defaultValueFormula;
+    private java.lang.String defaultValueFormula;
 
     private boolean defaultedOnCreate;
 
-    private Boolean dependentPicklist;
+    private java.lang.Boolean dependentPicklist;
 
-    private Boolean deprecated;
-
-    private Boolean deprecatedAndHidden;
+    private boolean deprecatedAndHidden;
 
     private int digits;
 
-    private Boolean externalId;
+    private java.lang.Boolean externalId;
 
     private boolean filterable;
 
-    private Boolean htmlFormatted;
+    private boolean groupable;
+
+    private java.lang.Boolean htmlFormatted;
 
     private boolean idLookup;
 
-    private String inlineHelpText;
+    private java.lang.String inlineHelpText;
 
-    private String label;
+    private java.lang.String label;
 
     private int length;
 
-    private String name;
+    private java.lang.String name;
 
     private boolean nameField;
 
-    private Boolean namePointing;
+    private java.lang.Boolean namePointing;
 
     private boolean nillable;
 
@@ -66,11 +62,11 @@ public class Field  implements java.io.Serializable {
 
     private int precision;
 
-    private String[] referenceTo;
+    private java.lang.String[] referenceTo;
 
-    private String relationshipName;
+    private java.lang.String relationshipName;
 
-    private Integer relationshipOrder;
+    private java.lang.Integer relationshipOrder;
 
     private boolean restrictedPicklist;
 
@@ -78,7 +74,7 @@ public class Field  implements java.io.Serializable {
 
     private com.sforce.soap.partner.SoapType soapType;
 
-    private Boolean sortable;
+    private java.lang.Boolean sortable;
 
     private com.sforce.soap.partner.FieldType type;
 
@@ -86,7 +82,7 @@ public class Field  implements java.io.Serializable {
 
     private boolean updateable;
 
-    private Boolean writeRequiresMasterRead;
+    private java.lang.Boolean writeRequiresMasterRead;
 
     public Field() {
     }
@@ -95,41 +91,41 @@ public class Field  implements java.io.Serializable {
            boolean autoNumber,
            int byteLength,
            boolean calculated,
-           String calculatedFormula,
+           java.lang.String calculatedFormula,
            boolean caseSensitive,
-           String controllerName,
+           java.lang.String controllerName,
            boolean createable,
            boolean custom,
-           String defaultValueFormula,
+           java.lang.String defaultValueFormula,
            boolean defaultedOnCreate,
-           Boolean dependentPicklist,
-           Boolean deprecated,
-           Boolean deprecatedAndHidden,
+           java.lang.Boolean dependentPicklist,
+           boolean deprecatedAndHidden,
            int digits,
-           Boolean externalId,
+           java.lang.Boolean externalId,
            boolean filterable,
-           Boolean htmlFormatted,
+           boolean groupable,
+           java.lang.Boolean htmlFormatted,
            boolean idLookup,
-           String inlineHelpText,
-           String label,
+           java.lang.String inlineHelpText,
+           java.lang.String label,
            int length,
-           String name,
+           java.lang.String name,
            boolean nameField,
-           Boolean namePointing,
+           java.lang.Boolean namePointing,
            boolean nillable,
            com.sforce.soap.partner.PicklistEntry[] picklistValues,
            int precision,
-           String[] referenceTo,
-           String relationshipName,
-           Integer relationshipOrder,
+           java.lang.String[] referenceTo,
+           java.lang.String relationshipName,
+           java.lang.Integer relationshipOrder,
            boolean restrictedPicklist,
            int scale,
            com.sforce.soap.partner.SoapType soapType,
-           Boolean sortable,
+           java.lang.Boolean sortable,
            com.sforce.soap.partner.FieldType type,
            boolean unique,
            boolean updateable,
-           Boolean writeRequiresMasterRead) {
+           java.lang.Boolean writeRequiresMasterRead) {
            this.autoNumber = autoNumber;
            this.byteLength = byteLength;
            this.calculated = calculated;
@@ -141,11 +137,11 @@ public class Field  implements java.io.Serializable {
            this.defaultValueFormula = defaultValueFormula;
            this.defaultedOnCreate = defaultedOnCreate;
            this.dependentPicklist = dependentPicklist;
-           this.deprecated = deprecated;
            this.deprecatedAndHidden = deprecatedAndHidden;
            this.digits = digits;
            this.externalId = externalId;
            this.filterable = filterable;
+           this.groupable = groupable;
            this.htmlFormatted = htmlFormatted;
            this.idLookup = idLookup;
            this.inlineHelpText = inlineHelpText;
@@ -236,7 +232,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return calculatedFormula
      */
-    public String getCalculatedFormula() {
+    public java.lang.String getCalculatedFormula() {
         return calculatedFormula;
     }
 
@@ -246,7 +242,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param calculatedFormula
      */
-    public void setCalculatedFormula(String calculatedFormula) {
+    public void setCalculatedFormula(java.lang.String calculatedFormula) {
         this.calculatedFormula = calculatedFormula;
     }
 
@@ -276,7 +272,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return controllerName
      */
-    public String getControllerName() {
+    public java.lang.String getControllerName() {
         return controllerName;
     }
 
@@ -286,7 +282,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param controllerName
      */
-    public void setControllerName(String controllerName) {
+    public void setControllerName(java.lang.String controllerName) {
         this.controllerName = controllerName;
     }
 
@@ -336,7 +332,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return defaultValueFormula
      */
-    public String getDefaultValueFormula() {
+    public java.lang.String getDefaultValueFormula() {
         return defaultValueFormula;
     }
 
@@ -346,7 +342,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param defaultValueFormula
      */
-    public void setDefaultValueFormula(String defaultValueFormula) {
+    public void setDefaultValueFormula(java.lang.String defaultValueFormula) {
         this.defaultValueFormula = defaultValueFormula;
     }
 
@@ -376,7 +372,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return dependentPicklist
      */
-    public Boolean getDependentPicklist() {
+    public java.lang.Boolean getDependentPicklist() {
         return dependentPicklist;
     }
 
@@ -386,28 +382,8 @@ public class Field  implements java.io.Serializable {
      * 
      * @param dependentPicklist
      */
-    public void setDependentPicklist(Boolean dependentPicklist) {
+    public void setDependentPicklist(java.lang.Boolean dependentPicklist) {
         this.dependentPicklist = dependentPicklist;
-    }
-
-
-    /**
-     * Gets the deprecated value for this Field.
-     * 
-     * @return deprecated
-     */
-    public Boolean getDeprecated() {
-        return deprecated;
-    }
-
-
-    /**
-     * Sets the deprecated value for this Field.
-     * 
-     * @param deprecated
-     */
-    public void setDeprecated(Boolean deprecated) {
-        this.deprecated = deprecated;
     }
 
 
@@ -416,7 +392,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return deprecatedAndHidden
      */
-    public Boolean getDeprecatedAndHidden() {
+    public boolean isDeprecatedAndHidden() {
         return deprecatedAndHidden;
     }
 
@@ -426,7 +402,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param deprecatedAndHidden
      */
-    public void setDeprecatedAndHidden(Boolean deprecatedAndHidden) {
+    public void setDeprecatedAndHidden(boolean deprecatedAndHidden) {
         this.deprecatedAndHidden = deprecatedAndHidden;
     }
 
@@ -456,7 +432,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return externalId
      */
-    public Boolean getExternalId() {
+    public java.lang.Boolean getExternalId() {
         return externalId;
     }
 
@@ -466,7 +442,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param externalId
      */
-    public void setExternalId(Boolean externalId) {
+    public void setExternalId(java.lang.Boolean externalId) {
         this.externalId = externalId;
     }
 
@@ -492,11 +468,31 @@ public class Field  implements java.io.Serializable {
 
 
     /**
+     * Gets the groupable value for this Field.
+     * 
+     * @return groupable
+     */
+    public boolean isGroupable() {
+        return groupable;
+    }
+
+
+    /**
+     * Sets the groupable value for this Field.
+     * 
+     * @param groupable
+     */
+    public void setGroupable(boolean groupable) {
+        this.groupable = groupable;
+    }
+
+
+    /**
      * Gets the htmlFormatted value for this Field.
      * 
      * @return htmlFormatted
      */
-    public Boolean getHtmlFormatted() {
+    public java.lang.Boolean getHtmlFormatted() {
         return htmlFormatted;
     }
 
@@ -506,7 +502,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param htmlFormatted
      */
-    public void setHtmlFormatted(Boolean htmlFormatted) {
+    public void setHtmlFormatted(java.lang.Boolean htmlFormatted) {
         this.htmlFormatted = htmlFormatted;
     }
 
@@ -536,7 +532,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return inlineHelpText
      */
-    public String getInlineHelpText() {
+    public java.lang.String getInlineHelpText() {
         return inlineHelpText;
     }
 
@@ -546,7 +542,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param inlineHelpText
      */
-    public void setInlineHelpText(String inlineHelpText) {
+    public void setInlineHelpText(java.lang.String inlineHelpText) {
         this.inlineHelpText = inlineHelpText;
     }
 
@@ -556,7 +552,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return label
      */
-    public String getLabel() {
+    public java.lang.String getLabel() {
         return label;
     }
 
@@ -566,7 +562,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param label
      */
-    public void setLabel(String label) {
+    public void setLabel(java.lang.String label) {
         this.label = label;
     }
 
@@ -596,7 +592,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return name
      */
-    public String getName() {
+    public java.lang.String getName() {
         return name;
     }
 
@@ -606,7 +602,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param name
      */
-    public void setName(String name) {
+    public void setName(java.lang.String name) {
         this.name = name;
     }
 
@@ -636,7 +632,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return namePointing
      */
-    public Boolean getNamePointing() {
+    public java.lang.Boolean getNamePointing() {
         return namePointing;
     }
 
@@ -646,7 +642,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param namePointing
      */
-    public void setNamePointing(Boolean namePointing) {
+    public void setNamePointing(java.lang.Boolean namePointing) {
         this.namePointing = namePointing;
     }
 
@@ -724,7 +720,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return referenceTo
      */
-    public String[] getReferenceTo() {
+    public java.lang.String[] getReferenceTo() {
         return referenceTo;
     }
 
@@ -734,15 +730,15 @@ public class Field  implements java.io.Serializable {
      * 
      * @param referenceTo
      */
-    public void setReferenceTo(String[] referenceTo) {
+    public void setReferenceTo(java.lang.String[] referenceTo) {
         this.referenceTo = referenceTo;
     }
 
-    public String getReferenceTo(int i) {
+    public java.lang.String getReferenceTo(int i) {
         return this.referenceTo[i];
     }
 
-    public void setReferenceTo(int i, String _value) {
+    public void setReferenceTo(int i, java.lang.String _value) {
         this.referenceTo[i] = _value;
     }
 
@@ -752,7 +748,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return relationshipName
      */
-    public String getRelationshipName() {
+    public java.lang.String getRelationshipName() {
         return relationshipName;
     }
 
@@ -762,7 +758,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param relationshipName
      */
-    public void setRelationshipName(String relationshipName) {
+    public void setRelationshipName(java.lang.String relationshipName) {
         this.relationshipName = relationshipName;
     }
 
@@ -772,7 +768,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return relationshipOrder
      */
-    public Integer getRelationshipOrder() {
+    public java.lang.Integer getRelationshipOrder() {
         return relationshipOrder;
     }
 
@@ -782,7 +778,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param relationshipOrder
      */
-    public void setRelationshipOrder(Integer relationshipOrder) {
+    public void setRelationshipOrder(java.lang.Integer relationshipOrder) {
         this.relationshipOrder = relationshipOrder;
     }
 
@@ -852,7 +848,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return sortable
      */
-    public Boolean getSortable() {
+    public java.lang.Boolean getSortable() {
         return sortable;
     }
 
@@ -862,7 +858,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @param sortable
      */
-    public void setSortable(Boolean sortable) {
+    public void setSortable(java.lang.Boolean sortable) {
         this.sortable = sortable;
     }
 
@@ -932,7 +928,7 @@ public class Field  implements java.io.Serializable {
      * 
      * @return writeRequiresMasterRead
      */
-    public Boolean getWriteRequiresMasterRead() {
+    public java.lang.Boolean getWriteRequiresMasterRead() {
         return writeRequiresMasterRead;
     }
 
@@ -942,12 +938,12 @@ public class Field  implements java.io.Serializable {
      * 
      * @param writeRequiresMasterRead
      */
-    public void setWriteRequiresMasterRead(Boolean writeRequiresMasterRead) {
+    public void setWriteRequiresMasterRead(java.lang.Boolean writeRequiresMasterRead) {
         this.writeRequiresMasterRead = writeRequiresMasterRead;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Field)) return false;
         Field other = (Field) obj;
         if (obj == null) return false;
@@ -977,17 +973,13 @@ public class Field  implements java.io.Serializable {
             ((this.dependentPicklist==null && other.getDependentPicklist()==null) || 
              (this.dependentPicklist!=null &&
               this.dependentPicklist.equals(other.getDependentPicklist()))) &&
-            ((this.deprecated==null && other.getDeprecated()==null) || 
-             (this.deprecated!=null &&
-              this.deprecated.equals(other.getDeprecated()))) &&
-            ((this.deprecatedAndHidden==null && other.getDeprecatedAndHidden()==null) || 
-             (this.deprecatedAndHidden!=null &&
-              this.deprecatedAndHidden.equals(other.getDeprecatedAndHidden()))) &&
+            this.deprecatedAndHidden == other.isDeprecatedAndHidden() &&
             this.digits == other.getDigits() &&
             ((this.externalId==null && other.getExternalId()==null) || 
              (this.externalId!=null &&
               this.externalId.equals(other.getExternalId()))) &&
             this.filterable == other.isFilterable() &&
+            this.groupable == other.isGroupable() &&
             ((this.htmlFormatted==null && other.getHtmlFormatted()==null) || 
              (this.htmlFormatted!=null &&
               this.htmlFormatted.equals(other.getHtmlFormatted()))) &&
@@ -1066,17 +1058,13 @@ public class Field  implements java.io.Serializable {
         if (getDependentPicklist() != null) {
             _hashCode += getDependentPicklist().hashCode();
         }
-        if (getDeprecated() != null) {
-            _hashCode += getDeprecated().hashCode();
-        }
-        if (getDeprecatedAndHidden() != null) {
-            _hashCode += getDeprecatedAndHidden().hashCode();
-        }
+        _hashCode += (isDeprecatedAndHidden() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         _hashCode += getDigits();
         if (getExternalId() != null) {
             _hashCode += getExternalId().hashCode();
         }
         _hashCode += (isFilterable() ? Boolean.TRUE : Boolean.FALSE).hashCode();
+        _hashCode += (isGroupable() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         if (getHtmlFormatted() != null) {
             _hashCode += getHtmlFormatted().hashCode();
         }
@@ -1100,7 +1088,7 @@ public class Field  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getPicklistValues());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getPicklistValues(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getPicklistValues(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -1112,7 +1100,7 @@ public class Field  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getReferenceTo());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getReferenceTo(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getReferenceTo(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -1222,17 +1210,9 @@ public class Field  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("deprecated");
-        elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "deprecated"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("deprecatedAndHidden");
         elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "deprecatedAndHidden"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
@@ -1251,6 +1231,12 @@ public class Field  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("filterable");
         elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "filterable"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("groupable");
+        elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "groupable"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
@@ -1410,8 +1396,8 @@ public class Field  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -1422,8 +1408,8 @@ public class Field  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

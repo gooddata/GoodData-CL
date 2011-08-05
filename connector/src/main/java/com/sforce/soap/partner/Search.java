@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * Search.java
  *
@@ -12,13 +8,13 @@
 package com.sforce.soap.partner;
 
 public class Search  implements java.io.Serializable {
-    private String searchString;
+    private java.lang.String searchString;
 
     public Search() {
     }
 
     public Search(
-           String searchString) {
+           java.lang.String searchString) {
            this.searchString = searchString;
     }
 
@@ -28,7 +24,7 @@ public class Search  implements java.io.Serializable {
      * 
      * @return searchString
      */
-    public String getSearchString() {
+    public java.lang.String getSearchString() {
         return searchString;
     }
 
@@ -38,12 +34,12 @@ public class Search  implements java.io.Serializable {
      * 
      * @param searchString
      */
-    public void setSearchString(String searchString) {
+    public void setSearchString(java.lang.String searchString) {
         this.searchString = searchString;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Search)) return false;
         Search other = (Search) obj;
         if (obj == null) return false;
@@ -100,8 +96,8 @@ public class Search  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -112,8 +108,8 @@ public class Search  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

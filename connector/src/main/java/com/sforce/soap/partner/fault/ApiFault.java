@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * ApiFault.java
  *
@@ -14,14 +10,14 @@ package com.sforce.soap.partner.fault;
 public class ApiFault  extends org.apache.axis.AxisFault  implements java.io.Serializable {
     private com.sforce.soap.partner.fault.ExceptionCode exceptionCode;
 
-    private String exceptionMessage;
+    private java.lang.String exceptionMessage;
 
     public ApiFault() {
     }
 
     public ApiFault(
            com.sforce.soap.partner.fault.ExceptionCode exceptionCode,
-           String exceptionMessage) {
+           java.lang.String exceptionMessage) {
         this.exceptionCode = exceptionCode;
         this.exceptionMessage = exceptionMessage;
     }
@@ -52,7 +48,7 @@ public class ApiFault  extends org.apache.axis.AxisFault  implements java.io.Ser
      * 
      * @return exceptionMessage
      */
-    public String getExceptionMessage() {
+    public java.lang.String getExceptionMessage() {
         return exceptionMessage;
     }
 
@@ -62,12 +58,12 @@ public class ApiFault  extends org.apache.axis.AxisFault  implements java.io.Ser
      * 
      * @param exceptionMessage
      */
-    public void setExceptionMessage(String exceptionMessage) {
+    public void setExceptionMessage(java.lang.String exceptionMessage) {
         this.exceptionMessage = exceptionMessage;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ApiFault)) return false;
         ApiFault other = (ApiFault) obj;
         if (obj == null) return false;
@@ -136,8 +132,8 @@ public class ApiFault  extends org.apache.axis.AxisFault  implements java.io.Ser
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -148,8 +144,8 @@ public class ApiFault  extends org.apache.axis.AxisFault  implements java.io.Ser
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

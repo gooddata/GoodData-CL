@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * LayoutComponentType.java
  *
@@ -12,50 +8,50 @@
 package com.sforce.soap.partner;
 
 public class LayoutComponentType implements java.io.Serializable {
-    private String _value_;
+    private java.lang.String _value_;
     private static java.util.HashMap _table_ = new java.util.HashMap();
 
     // Constructor
-    protected LayoutComponentType(String value) {
+    protected LayoutComponentType(java.lang.String value) {
         _value_ = value;
         _table_.put(_value_,this);
     }
 
-    public static final String _Field = "Field";
-    public static final String _Separator = "Separator";
-    public static final String _SControl = "SControl";
-    public static final String _EmptySpace = "EmptySpace";
+    public static final java.lang.String _Field = "Field";
+    public static final java.lang.String _Separator = "Separator";
+    public static final java.lang.String _SControl = "SControl";
+    public static final java.lang.String _EmptySpace = "EmptySpace";
     public static final LayoutComponentType Field = new LayoutComponentType(_Field);
     public static final LayoutComponentType Separator = new LayoutComponentType(_Separator);
     public static final LayoutComponentType SControl = new LayoutComponentType(_SControl);
     public static final LayoutComponentType EmptySpace = new LayoutComponentType(_EmptySpace);
-    public String getValue() { return _value_;}
-    public static LayoutComponentType fromValue(String value)
-          throws IllegalArgumentException {
+    public java.lang.String getValue() { return _value_;}
+    public static LayoutComponentType fromValue(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         LayoutComponentType enumeration = (LayoutComponentType)
             _table_.get(value);
-        if (enumeration==null) throw new IllegalArgumentException();
+        if (enumeration==null) throw new java.lang.IllegalArgumentException();
         return enumeration;
     }
-    public static LayoutComponentType fromString(String value)
-          throws IllegalArgumentException {
+    public static LayoutComponentType fromString(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         return fromValue(value);
     }
-    public boolean equals(Object obj) {return (obj == this);}
+    public boolean equals(java.lang.Object obj) {return (obj == this);}
     public int hashCode() { return toString().hashCode();}
-    public String toString() { return _value_;}
-    public Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
+    public java.lang.String toString() { return _value_;}
+    public java.lang.Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumSerializer(
             _javaType, _xmlType);
     }
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumDeserializer(

@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * UserTerritoryDeleteHeader.java
  *
@@ -12,13 +8,13 @@
 package com.sforce.soap.partner;
 
 public class UserTerritoryDeleteHeader  implements java.io.Serializable {
-    private String transferToUserId;
+    private java.lang.String transferToUserId;
 
     public UserTerritoryDeleteHeader() {
     }
 
     public UserTerritoryDeleteHeader(
-           String transferToUserId) {
+           java.lang.String transferToUserId) {
            this.transferToUserId = transferToUserId;
     }
 
@@ -28,7 +24,7 @@ public class UserTerritoryDeleteHeader  implements java.io.Serializable {
      * 
      * @return transferToUserId
      */
-    public String getTransferToUserId() {
+    public java.lang.String getTransferToUserId() {
         return transferToUserId;
     }
 
@@ -38,12 +34,12 @@ public class UserTerritoryDeleteHeader  implements java.io.Serializable {
      * 
      * @param transferToUserId
      */
-    public void setTransferToUserId(String transferToUserId) {
+    public void setTransferToUserId(java.lang.String transferToUserId) {
         this.transferToUserId = transferToUserId;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof UserTerritoryDeleteHeader)) return false;
         UserTerritoryDeleteHeader other = (UserTerritoryDeleteHeader) obj;
         if (obj == null) return false;
@@ -100,8 +96,8 @@ public class UserTerritoryDeleteHeader  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -112,8 +108,8 @@ public class UserTerritoryDeleteHeader  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

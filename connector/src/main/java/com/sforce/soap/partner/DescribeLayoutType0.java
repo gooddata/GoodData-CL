@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeLayoutType0.java
  *
@@ -12,16 +8,16 @@
 package com.sforce.soap.partner;
 
 public class DescribeLayoutType0  implements java.io.Serializable {
-    private String sObjectType;
+    private java.lang.String sObjectType;
 
-    private String[] recordTypeIds;
+    private java.lang.String[] recordTypeIds;
 
     public DescribeLayoutType0() {
     }
 
     public DescribeLayoutType0(
-           String sObjectType,
-           String[] recordTypeIds) {
+           java.lang.String sObjectType,
+           java.lang.String[] recordTypeIds) {
            this.sObjectType = sObjectType;
            this.recordTypeIds = recordTypeIds;
     }
@@ -32,7 +28,7 @@ public class DescribeLayoutType0  implements java.io.Serializable {
      * 
      * @return sObjectType
      */
-    public String getSObjectType() {
+    public java.lang.String getSObjectType() {
         return sObjectType;
     }
 
@@ -42,7 +38,7 @@ public class DescribeLayoutType0  implements java.io.Serializable {
      * 
      * @param sObjectType
      */
-    public void setSObjectType(String sObjectType) {
+    public void setSObjectType(java.lang.String sObjectType) {
         this.sObjectType = sObjectType;
     }
 
@@ -52,7 +48,7 @@ public class DescribeLayoutType0  implements java.io.Serializable {
      * 
      * @return recordTypeIds
      */
-    public String[] getRecordTypeIds() {
+    public java.lang.String[] getRecordTypeIds() {
         return recordTypeIds;
     }
 
@@ -62,20 +58,20 @@ public class DescribeLayoutType0  implements java.io.Serializable {
      * 
      * @param recordTypeIds
      */
-    public void setRecordTypeIds(String[] recordTypeIds) {
+    public void setRecordTypeIds(java.lang.String[] recordTypeIds) {
         this.recordTypeIds = recordTypeIds;
     }
 
-    public String getRecordTypeIds(int i) {
+    public java.lang.String getRecordTypeIds(int i) {
         return this.recordTypeIds[i];
     }
 
-    public void setRecordTypeIds(int i, String _value) {
+    public void setRecordTypeIds(int i, java.lang.String _value) {
         this.recordTypeIds[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutType0)) return false;
         DescribeLayoutType0 other = (DescribeLayoutType0) obj;
         if (obj == null) return false;
@@ -110,7 +106,7 @@ public class DescribeLayoutType0  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getRecordTypeIds());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getRecordTypeIds(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getRecordTypeIds(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -154,8 +150,8 @@ public class DescribeLayoutType0  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -166,8 +162,8 @@ public class DescribeLayoutType0  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

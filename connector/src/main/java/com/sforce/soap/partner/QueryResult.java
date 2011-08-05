@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * QueryResult.java
  *
@@ -14,7 +10,7 @@ package com.sforce.soap.partner;
 public class QueryResult  implements java.io.Serializable {
     private boolean done;
 
-    private String queryLocator;
+    private java.lang.String queryLocator;
 
     private com.sforce.soap.partner.sobject.SObject[] records;
 
@@ -25,7 +21,7 @@ public class QueryResult  implements java.io.Serializable {
 
     public QueryResult(
            boolean done,
-           String queryLocator,
+           java.lang.String queryLocator,
            com.sforce.soap.partner.sobject.SObject[] records,
            int size) {
            this.done = done;
@@ -60,7 +56,7 @@ public class QueryResult  implements java.io.Serializable {
      * 
      * @return queryLocator
      */
-    public String getQueryLocator() {
+    public java.lang.String getQueryLocator() {
         return queryLocator;
     }
 
@@ -70,7 +66,7 @@ public class QueryResult  implements java.io.Serializable {
      * 
      * @param queryLocator
      */
-    public void setQueryLocator(String queryLocator) {
+    public void setQueryLocator(java.lang.String queryLocator) {
         this.queryLocator = queryLocator;
     }
 
@@ -122,8 +118,8 @@ public class QueryResult  implements java.io.Serializable {
         this.size = size;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof QueryResult)) return false;
         QueryResult other = (QueryResult) obj;
         if (obj == null) return false;
@@ -161,7 +157,7 @@ public class QueryResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getRecords());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getRecords(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getRecords(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -218,8 +214,8 @@ public class QueryResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -230,8 +226,8 @@ public class QueryResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

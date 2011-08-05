@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * GetDeleted.java
  *
@@ -12,7 +8,7 @@
 package com.sforce.soap.partner;
 
 public class GetDeleted  implements java.io.Serializable {
-    private String sObjectType;
+    private java.lang.String sObjectType;
 
     private java.util.Calendar startDate;
 
@@ -22,7 +18,7 @@ public class GetDeleted  implements java.io.Serializable {
     }
 
     public GetDeleted(
-           String sObjectType,
+           java.lang.String sObjectType,
            java.util.Calendar startDate,
            java.util.Calendar endDate) {
            this.sObjectType = sObjectType;
@@ -36,7 +32,7 @@ public class GetDeleted  implements java.io.Serializable {
      * 
      * @return sObjectType
      */
-    public String getSObjectType() {
+    public java.lang.String getSObjectType() {
         return sObjectType;
     }
 
@@ -46,7 +42,7 @@ public class GetDeleted  implements java.io.Serializable {
      * 
      * @param sObjectType
      */
-    public void setSObjectType(String sObjectType) {
+    public void setSObjectType(java.lang.String sObjectType) {
         this.sObjectType = sObjectType;
     }
 
@@ -90,8 +86,8 @@ public class GetDeleted  implements java.io.Serializable {
         this.endDate = endDate;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GetDeleted)) return false;
         GetDeleted other = (GetDeleted) obj;
         if (obj == null) return false;
@@ -172,8 +168,8 @@ public class GetDeleted  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -184,8 +180,8 @@ public class GetDeleted  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

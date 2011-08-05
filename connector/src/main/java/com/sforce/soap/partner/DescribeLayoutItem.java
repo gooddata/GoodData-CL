@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeLayoutItem.java
  *
@@ -14,9 +10,9 @@ package com.sforce.soap.partner;
 public class DescribeLayoutItem  implements java.io.Serializable {
     private boolean editable;
 
-    private String label;
+    private java.lang.String label;
 
-    private DescribeLayoutComponent[] layoutComponents;
+    private com.sforce.soap.partner.DescribeLayoutComponent[] layoutComponents;
 
     private boolean placeholder;
 
@@ -27,8 +23,8 @@ public class DescribeLayoutItem  implements java.io.Serializable {
 
     public DescribeLayoutItem(
            boolean editable,
-           String label,
-           DescribeLayoutComponent[] layoutComponents,
+           java.lang.String label,
+           com.sforce.soap.partner.DescribeLayoutComponent[] layoutComponents,
            boolean placeholder,
            boolean required) {
            this.editable = editable;
@@ -64,7 +60,7 @@ public class DescribeLayoutItem  implements java.io.Serializable {
      * 
      * @return label
      */
-    public String getLabel() {
+    public java.lang.String getLabel() {
         return label;
     }
 
@@ -74,7 +70,7 @@ public class DescribeLayoutItem  implements java.io.Serializable {
      * 
      * @param label
      */
-    public void setLabel(String label) {
+    public void setLabel(java.lang.String label) {
         this.label = label;
     }
 
@@ -84,7 +80,7 @@ public class DescribeLayoutItem  implements java.io.Serializable {
      * 
      * @return layoutComponents
      */
-    public DescribeLayoutComponent[] getLayoutComponents() {
+    public com.sforce.soap.partner.DescribeLayoutComponent[] getLayoutComponents() {
         return layoutComponents;
     }
 
@@ -94,15 +90,15 @@ public class DescribeLayoutItem  implements java.io.Serializable {
      * 
      * @param layoutComponents
      */
-    public void setLayoutComponents(DescribeLayoutComponent[] layoutComponents) {
+    public void setLayoutComponents(com.sforce.soap.partner.DescribeLayoutComponent[] layoutComponents) {
         this.layoutComponents = layoutComponents;
     }
 
-    public DescribeLayoutComponent getLayoutComponents(int i) {
+    public com.sforce.soap.partner.DescribeLayoutComponent getLayoutComponents(int i) {
         return this.layoutComponents[i];
     }
 
-    public void setLayoutComponents(int i, DescribeLayoutComponent _value) {
+    public void setLayoutComponents(int i, com.sforce.soap.partner.DescribeLayoutComponent _value) {
         this.layoutComponents[i] = _value;
     }
 
@@ -146,8 +142,8 @@ public class DescribeLayoutItem  implements java.io.Serializable {
         this.required = required;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutItem)) return false;
         DescribeLayoutItem other = (DescribeLayoutItem) obj;
         if (obj == null) return false;
@@ -186,7 +182,7 @@ public class DescribeLayoutItem  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getLayoutComponents());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getLayoutComponents(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getLayoutComponents(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -250,8 +246,8 @@ public class DescribeLayoutItem  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -262,8 +258,8 @@ public class DescribeLayoutItem  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

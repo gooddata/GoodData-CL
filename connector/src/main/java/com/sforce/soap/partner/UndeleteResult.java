@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * UndeleteResult.java
  *
@@ -12,9 +8,9 @@
 package com.sforce.soap.partner;
 
 public class UndeleteResult  implements java.io.Serializable {
-    private Error[] errors;
+    private com.sforce.soap.partner.Error[] errors;
 
-    private String id;
+    private java.lang.String id;
 
     private boolean success;
 
@@ -22,8 +18,8 @@ public class UndeleteResult  implements java.io.Serializable {
     }
 
     public UndeleteResult(
-           Error[] errors,
-           String id,
+           com.sforce.soap.partner.Error[] errors,
+           java.lang.String id,
            boolean success) {
            this.errors = errors;
            this.id = id;
@@ -36,7 +32,7 @@ public class UndeleteResult  implements java.io.Serializable {
      * 
      * @return errors
      */
-    public Error[] getErrors() {
+    public com.sforce.soap.partner.Error[] getErrors() {
         return errors;
     }
 
@@ -46,15 +42,15 @@ public class UndeleteResult  implements java.io.Serializable {
      * 
      * @param errors
      */
-    public void setErrors(Error[] errors) {
+    public void setErrors(com.sforce.soap.partner.Error[] errors) {
         this.errors = errors;
     }
 
-    public Error getErrors(int i) {
+    public com.sforce.soap.partner.Error getErrors(int i) {
         return this.errors[i];
     }
 
-    public void setErrors(int i, Error _value) {
+    public void setErrors(int i, com.sforce.soap.partner.Error _value) {
         this.errors[i] = _value;
     }
 
@@ -64,7 +60,7 @@ public class UndeleteResult  implements java.io.Serializable {
      * 
      * @return id
      */
-    public String getId() {
+    public java.lang.String getId() {
         return id;
     }
 
@@ -74,7 +70,7 @@ public class UndeleteResult  implements java.io.Serializable {
      * 
      * @param id
      */
-    public void setId(String id) {
+    public void setId(java.lang.String id) {
         this.id = id;
     }
 
@@ -98,8 +94,8 @@ public class UndeleteResult  implements java.io.Serializable {
         this.success = success;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof UndeleteResult)) return false;
         UndeleteResult other = (UndeleteResult) obj;
         if (obj == null) return false;
@@ -132,7 +128,7 @@ public class UndeleteResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getErrors());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getErrors(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getErrors(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -186,8 +182,8 @@ public class UndeleteResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -198,8 +194,8 @@ public class UndeleteResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

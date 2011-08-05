@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * StatusCode.java
  *
@@ -12,164 +8,181 @@
 package com.sforce.soap.partner;
 
 public class StatusCode implements java.io.Serializable {
-    private String _value_;
+    private java.lang.String _value_;
     private static java.util.HashMap _table_ = new java.util.HashMap();
 
     // Constructor
-    protected StatusCode(String value) {
+    protected StatusCode(java.lang.String value) {
         _value_ = value;
         _table_.put(_value_,this);
     }
 
-    public static final String _ALREADY_IN_PROCESS = "ALREADY_IN_PROCESS";
-    public static final String _ASSIGNEE_TYPE_REQUIRED = "ASSIGNEE_TYPE_REQUIRED";
-    public static final String _BAD_CUSTOM_ENTITY_PARENT_DOMAIN = "BAD_CUSTOM_ENTITY_PARENT_DOMAIN";
-    public static final String _BCC_NOT_ALLOWED_IF_BCC_COMPLIANCE_ENABLED = "BCC_NOT_ALLOWED_IF_BCC_COMPLIANCE_ENABLED";
-    public static final String _CANNOT_CASCADE_PRODUCT_ACTIVE = "CANNOT_CASCADE_PRODUCT_ACTIVE";
-    public static final String _CANNOT_CHANGE_FIELD_TYPE_OF_APEX_REFERENCED_FIELD = "CANNOT_CHANGE_FIELD_TYPE_OF_APEX_REFERENCED_FIELD";
-    public static final String _CANNOT_CREATE_ANOTHER_MANAGED_PACKAGE = "CANNOT_CREATE_ANOTHER_MANAGED_PACKAGE";
-    public static final String _CANNOT_DEACTIVATE_DIVISION = "CANNOT_DEACTIVATE_DIVISION";
-    public static final String _CANNOT_DELETE_LAST_DATED_CONVERSION_RATE = "CANNOT_DELETE_LAST_DATED_CONVERSION_RATE";
-    public static final String _CANNOT_DELETE_MANAGED_OBJECT = "CANNOT_DELETE_MANAGED_OBJECT";
-    public static final String _CANNOT_DISABLE_LAST_ADMIN = "CANNOT_DISABLE_LAST_ADMIN";
-    public static final String _CANNOT_ENABLE_IP_RESTRICT_REQUESTS = "CANNOT_ENABLE_IP_RESTRICT_REQUESTS";
-    public static final String _CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY = "CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY";
-    public static final String _CANNOT_MODIFY_MANAGED_OBJECT = "CANNOT_MODIFY_MANAGED_OBJECT";
-    public static final String _CANNOT_RENAME_APEX_REFERENCED_FIELD = "CANNOT_RENAME_APEX_REFERENCED_FIELD";
-    public static final String _CANNOT_RENAME_APEX_REFERENCED_OBJECT = "CANNOT_RENAME_APEX_REFERENCED_OBJECT";
-    public static final String _CANNOT_REPARENT_RECORD = "CANNOT_REPARENT_RECORD";
-    public static final String _CANNOT_UPDATE_CONVERTED_LEAD = "CANNOT_UPDATE_CONVERTED_LEAD";
-    public static final String _CANT_DISABLE_CORP_CURRENCY = "CANT_DISABLE_CORP_CURRENCY";
-    public static final String _CANT_UNSET_CORP_CURRENCY = "CANT_UNSET_CORP_CURRENCY";
-    public static final String _CHILD_SHARE_FAILS_PARENT = "CHILD_SHARE_FAILS_PARENT";
-    public static final String _CIRCULAR_DEPENDENCY = "CIRCULAR_DEPENDENCY";
-    public static final String _CUSTOM_CLOB_FIELD_LIMIT_EXCEEDED = "CUSTOM_CLOB_FIELD_LIMIT_EXCEEDED";
-    public static final String _CUSTOM_ENTITY_OR_FIELD_LIMIT = "CUSTOM_ENTITY_OR_FIELD_LIMIT";
-    public static final String _CUSTOM_FIELD_INDEX_LIMIT_EXCEEDED = "CUSTOM_FIELD_INDEX_LIMIT_EXCEEDED";
-    public static final String _CUSTOM_INDEX_EXISTS = "CUSTOM_INDEX_EXISTS";
-    public static final String _CUSTOM_LINK_LIMIT_EXCEEDED = "CUSTOM_LINK_LIMIT_EXCEEDED";
-    public static final String _CUSTOM_TAB_LIMIT_EXCEEDED = "CUSTOM_TAB_LIMIT_EXCEEDED";
-    public static final String _DELETE_FAILED = "DELETE_FAILED";
-    public static final String _DELETE_REQUIRED_ON_CASCADE = "DELETE_REQUIRED_ON_CASCADE";
-    public static final String _DEPENDENCY_EXISTS = "DEPENDENCY_EXISTS";
-    public static final String _DUPLICATE_CASE_SOLUTION = "DUPLICATE_CASE_SOLUTION";
-    public static final String _DUPLICATE_COMM_NICKNAME = "DUPLICATE_COMM_NICKNAME";
-    public static final String _DUPLICATE_CUSTOM_ENTITY_DEFINITION = "DUPLICATE_CUSTOM_ENTITY_DEFINITION";
-    public static final String _DUPLICATE_CUSTOM_TAB_MOTIF = "DUPLICATE_CUSTOM_TAB_MOTIF";
-    public static final String _DUPLICATE_DEVELOPER_NAME = "DUPLICATE_DEVELOPER_NAME";
-    public static final String _DUPLICATE_EXTERNAL_ID = "DUPLICATE_EXTERNAL_ID";
-    public static final String _DUPLICATE_MASTER_LABEL = "DUPLICATE_MASTER_LABEL";
-    public static final String _DUPLICATE_SENDER_DISPLAY_NAME = "DUPLICATE_SENDER_DISPLAY_NAME";
-    public static final String _DUPLICATE_USERNAME = "DUPLICATE_USERNAME";
-    public static final String _DUPLICATE_VALUE = "DUPLICATE_VALUE";
-    public static final String _EMAIL_NOT_PROCESSED_DUE_TO_PRIOR_ERROR = "EMAIL_NOT_PROCESSED_DUE_TO_PRIOR_ERROR";
-    public static final String _EMPTY_SCONTROL_FILE_NAME = "EMPTY_SCONTROL_FILE_NAME";
-    public static final String _ENTITY_FAILED_IFLASTMODIFIED_ON_UPDATE = "ENTITY_FAILED_IFLASTMODIFIED_ON_UPDATE";
-    public static final String _ENTITY_IS_ARCHIVED = "ENTITY_IS_ARCHIVED";
-    public static final String _ENTITY_IS_DELETED = "ENTITY_IS_DELETED";
-    public static final String _ENTITY_IS_LOCKED = "ENTITY_IS_LOCKED";
-    public static final String _ERROR_IN_MAILER = "ERROR_IN_MAILER";
-    public static final String _FAILED_ACTIVATION = "FAILED_ACTIVATION";
-    public static final String _FIELD_CUSTOM_VALIDATION_EXCEPTION = "FIELD_CUSTOM_VALIDATION_EXCEPTION";
-    public static final String _FIELD_INTEGRITY_EXCEPTION = "FIELD_INTEGRITY_EXCEPTION";
-    public static final String _HTML_FILE_UPLOAD_NOT_ALLOWED = "HTML_FILE_UPLOAD_NOT_ALLOWED";
-    public static final String _IMAGE_TOO_LARGE = "IMAGE_TOO_LARGE";
-    public static final String _INACTIVE_OWNER_OR_USER = "INACTIVE_OWNER_OR_USER";
-    public static final String _INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY = "INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY";
-    public static final String _INSUFFICIENT_ACCESS_OR_READONLY = "INSUFFICIENT_ACCESS_OR_READONLY";
-    public static final String _INVALID_ACCESS_LEVEL = "INVALID_ACCESS_LEVEL";
-    public static final String _INVALID_ARGUMENT_TYPE = "INVALID_ARGUMENT_TYPE";
-    public static final String _INVALID_ASSIGNEE_TYPE = "INVALID_ASSIGNEE_TYPE";
-    public static final String _INVALID_ASSIGNMENT_RULE = "INVALID_ASSIGNMENT_RULE";
-    public static final String _INVALID_BATCH_OPERATION = "INVALID_BATCH_OPERATION";
-    public static final String _INVALID_CREDIT_CARD_INFO = "INVALID_CREDIT_CARD_INFO";
-    public static final String _INVALID_CROSS_REFERENCE_KEY = "INVALID_CROSS_REFERENCE_KEY";
-    public static final String _INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD = "INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD";
-    public static final String _INVALID_CURRENCY_CONV_RATE = "INVALID_CURRENCY_CONV_RATE";
-    public static final String _INVALID_CURRENCY_CORP_RATE = "INVALID_CURRENCY_CORP_RATE";
-    public static final String _INVALID_CURRENCY_ISO = "INVALID_CURRENCY_ISO";
-    public static final String _INVALID_EMAIL_ADDRESS = "INVALID_EMAIL_ADDRESS";
-    public static final String _INVALID_EMPTY_KEY_OWNER = "INVALID_EMPTY_KEY_OWNER";
-    public static final String _INVALID_FIELD = "INVALID_FIELD";
-    public static final String _INVALID_FIELD_FOR_INSERT_UPDATE = "INVALID_FIELD_FOR_INSERT_UPDATE";
-    public static final String _INVALID_FIELD_WHEN_USING_TEMPLATE = "INVALID_FIELD_WHEN_USING_TEMPLATE";
-    public static final String _INVALID_FILTER_ACTION = "INVALID_FILTER_ACTION";
-    public static final String _INVALID_GOOGLE_DOCS_URL = "INVALID_GOOGLE_DOCS_URL";
-    public static final String _INVALID_ID_FIELD = "INVALID_ID_FIELD";
-    public static final String _INVALID_INET_ADDRESS = "INVALID_INET_ADDRESS";
-    public static final String _INVALID_LINEITEM_CLONE_STATE = "INVALID_LINEITEM_CLONE_STATE";
-    public static final String _INVALID_MASTER_OR_TRANSLATED_SOLUTION = "INVALID_MASTER_OR_TRANSLATED_SOLUTION";
-    public static final String _INVALID_OPERATION = "INVALID_OPERATION";
-    public static final String _INVALID_OPERATOR = "INVALID_OPERATOR";
-    public static final String _INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST = "INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST";
-    public static final String _INVALID_PARTNER_NETWORK_STATUS = "INVALID_PARTNER_NETWORK_STATUS";
-    public static final String _INVALID_PERSON_ACCOUNT_OPERATION = "INVALID_PERSON_ACCOUNT_OPERATION";
-    public static final String _INVALID_SAVE_AS_ACTIVITY_FLAG = "INVALID_SAVE_AS_ACTIVITY_FLAG";
-    public static final String _INVALID_SESSION_ID = "INVALID_SESSION_ID";
-    public static final String _INVALID_SETUP_OWNER = "INVALID_SETUP_OWNER";
-    public static final String _INVALID_STATUS = "INVALID_STATUS";
-    public static final String _INVALID_TYPE = "INVALID_TYPE";
-    public static final String _INVALID_TYPE_FOR_OPERATION = "INVALID_TYPE_FOR_OPERATION";
-    public static final String _INVALID_TYPE_ON_FIELD_IN_RECORD = "INVALID_TYPE_ON_FIELD_IN_RECORD";
-    public static final String _IP_RANGE_LIMIT_EXCEEDED = "IP_RANGE_LIMIT_EXCEEDED";
-    public static final String _LICENSE_LIMIT_EXCEEDED = "LICENSE_LIMIT_EXCEEDED";
-    public static final String _LIMIT_EXCEEDED = "LIMIT_EXCEEDED";
-    public static final String _MALFORMED_ID = "MALFORMED_ID";
-    public static final String _MANAGER_NOT_DEFINED = "MANAGER_NOT_DEFINED";
-    public static final String _MASSMAIL_RETRY_LIMIT_EXCEEDED = "MASSMAIL_RETRY_LIMIT_EXCEEDED";
-    public static final String _MASS_MAIL_LIMIT_EXCEEDED = "MASS_MAIL_LIMIT_EXCEEDED";
-    public static final String _MAXIMUM_CCEMAILS_EXCEEDED = "MAXIMUM_CCEMAILS_EXCEEDED";
-    public static final String _MAXIMUM_DASHBOARD_COMPONENTS_EXCEEDED = "MAXIMUM_DASHBOARD_COMPONENTS_EXCEEDED";
-    public static final String _MAXIMUM_HIERARCHY_LEVELS_REACHED = "MAXIMUM_HIERARCHY_LEVELS_REACHED";
-    public static final String _MAXIMUM_SIZE_OF_ATTACHMENT = "MAXIMUM_SIZE_OF_ATTACHMENT";
-    public static final String _MAXIMUM_SIZE_OF_DOCUMENT = "MAXIMUM_SIZE_OF_DOCUMENT";
-    public static final String _MAX_ACTIONS_PER_RULE_EXCEEDED = "MAX_ACTIONS_PER_RULE_EXCEEDED";
-    public static final String _MAX_ACTIVE_RULES_EXCEEDED = "MAX_ACTIVE_RULES_EXCEEDED";
-    public static final String _MAX_APPROVAL_STEPS_EXCEEDED = "MAX_APPROVAL_STEPS_EXCEEDED";
-    public static final String _MAX_FORMULAS_PER_RULE_EXCEEDED = "MAX_FORMULAS_PER_RULE_EXCEEDED";
-    public static final String _MAX_RULES_EXCEEDED = "MAX_RULES_EXCEEDED";
-    public static final String _MAX_RULE_ENTRIES_EXCEEDED = "MAX_RULE_ENTRIES_EXCEEDED";
-    public static final String _MAX_TASK_DESCRIPTION_EXCEEEDED = "MAX_TASK_DESCRIPTION_EXCEEEDED";
-    public static final String _MAX_TM_RULES_EXCEEDED = "MAX_TM_RULES_EXCEEDED";
-    public static final String _MAX_TM_RULE_ITEMS_EXCEEDED = "MAX_TM_RULE_ITEMS_EXCEEDED";
-    public static final String _MERGE_FAILED = "MERGE_FAILED";
-    public static final String _MISSING_ARGUMENT = "MISSING_ARGUMENT";
-    public static final String _MIXED_DML_OPERATION = "MIXED_DML_OPERATION";
-    public static final String _NONUNIQUE_SHIPPING_ADDRESS = "NONUNIQUE_SHIPPING_ADDRESS";
-    public static final String _NO_APPLICABLE_PROCESS = "NO_APPLICABLE_PROCESS";
-    public static final String _NO_ATTACHMENT_PERMISSION = "NO_ATTACHMENT_PERMISSION";
-    public static final String _NO_INACTIVE_DIVISION_MEMBERS = "NO_INACTIVE_DIVISION_MEMBERS";
-    public static final String _NO_MASS_MAIL_PERMISSION = "NO_MASS_MAIL_PERMISSION";
-    public static final String _NUMBER_OUTSIDE_VALID_RANGE = "NUMBER_OUTSIDE_VALID_RANGE";
-    public static final String _NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED = "NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED";
-    public static final String _OPTED_OUT_OF_MASS_MAIL = "OPTED_OUT_OF_MASS_MAIL";
-    public static final String _PACKAGE_LICENSE_REQUIRED = "PACKAGE_LICENSE_REQUIRED";
-    public static final String _PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT = "PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT";
-    public static final String _PRIVATE_CONTACT_ON_ASSET = "PRIVATE_CONTACT_ON_ASSET";
-    public static final String _RECORD_IN_USE_BY_WORKFLOW = "RECORD_IN_USE_BY_WORKFLOW";
-    public static final String _REQUEST_RUNNING_TOO_LONG = "REQUEST_RUNNING_TOO_LONG";
-    public static final String _REQUIRED_FIELD_MISSING = "REQUIRED_FIELD_MISSING";
-    public static final String _SELF_REFERENCE_FROM_TRIGGER = "SELF_REFERENCE_FROM_TRIGGER";
-    public static final String _SHARE_NEEDED_FOR_CHILD_OWNER = "SHARE_NEEDED_FOR_CHILD_OWNER";
-    public static final String _STANDARD_PRICE_NOT_DEFINED = "STANDARD_PRICE_NOT_DEFINED";
-    public static final String _STORAGE_LIMIT_EXCEEDED = "STORAGE_LIMIT_EXCEEDED";
-    public static final String _STRING_TOO_LONG = "STRING_TOO_LONG";
-    public static final String _TABSET_LIMIT_EXCEEDED = "TABSET_LIMIT_EXCEEDED";
-    public static final String _TEMPLATE_NOT_ACTIVE = "TEMPLATE_NOT_ACTIVE";
-    public static final String _TERRITORY_REALIGN_IN_PROGRESS = "TERRITORY_REALIGN_IN_PROGRESS";
-    public static final String _TEXT_DATA_OUTSIDE_SUPPORTED_CHARSET = "TEXT_DATA_OUTSIDE_SUPPORTED_CHARSET";
-    public static final String _TOO_MANY_APEX_REQUESTS = "TOO_MANY_APEX_REQUESTS";
-    public static final String _TOO_MANY_ENUM_VALUE = "TOO_MANY_ENUM_VALUE";
-    public static final String _TRANSFER_REQUIRES_READ = "TRANSFER_REQUIRES_READ";
-    public static final String _UNABLE_TO_LOCK_ROW = "UNABLE_TO_LOCK_ROW";
-    public static final String _UNAVAILABLE_RECORDTYPE_EXCEPTION = "UNAVAILABLE_RECORDTYPE_EXCEPTION";
-    public static final String _UNDELETE_FAILED = "UNDELETE_FAILED";
-    public static final String _UNKNOWN_EXCEPTION = "UNKNOWN_EXCEPTION";
-    public static final String _UNSPECIFIED_EMAIL_ADDRESS = "UNSPECIFIED_EMAIL_ADDRESS";
-    public static final String _UNSUPPORTED_APEX_TRIGGER_OPERATON = "UNSUPPORTED_APEX_TRIGGER_OPERATON";
-    public static final String _UNVERIFIED_SENDER_ADDRESS = "UNVERIFIED_SENDER_ADDRESS";
-    public static final String _WEBLINK_SIZE_LIMIT_EXCEEDED = "WEBLINK_SIZE_LIMIT_EXCEEDED";
-    public static final String _WRONG_CONTROLLER_TYPE = "WRONG_CONTROLLER_TYPE";
+    public static final java.lang.String _ALL_OR_NONE_OPERATION_ROLLED_BACK = "ALL_OR_NONE_OPERATION_ROLLED_BACK";
+    public static final java.lang.String _ALREADY_IN_PROCESS = "ALREADY_IN_PROCESS";
+    public static final java.lang.String _ASSIGNEE_TYPE_REQUIRED = "ASSIGNEE_TYPE_REQUIRED";
+    public static final java.lang.String _BAD_CUSTOM_ENTITY_PARENT_DOMAIN = "BAD_CUSTOM_ENTITY_PARENT_DOMAIN";
+    public static final java.lang.String _BCC_NOT_ALLOWED_IF_BCC_COMPLIANCE_ENABLED = "BCC_NOT_ALLOWED_IF_BCC_COMPLIANCE_ENABLED";
+    public static final java.lang.String _CANNOT_CASCADE_PRODUCT_ACTIVE = "CANNOT_CASCADE_PRODUCT_ACTIVE";
+    public static final java.lang.String _CANNOT_CHANGE_FIELD_TYPE_OF_APEX_REFERENCED_FIELD = "CANNOT_CHANGE_FIELD_TYPE_OF_APEX_REFERENCED_FIELD";
+    public static final java.lang.String _CANNOT_CREATE_ANOTHER_MANAGED_PACKAGE = "CANNOT_CREATE_ANOTHER_MANAGED_PACKAGE";
+    public static final java.lang.String _CANNOT_DEACTIVATE_DIVISION = "CANNOT_DEACTIVATE_DIVISION";
+    public static final java.lang.String _CANNOT_DELETE_LAST_DATED_CONVERSION_RATE = "CANNOT_DELETE_LAST_DATED_CONVERSION_RATE";
+    public static final java.lang.String _CANNOT_DELETE_MANAGED_OBJECT = "CANNOT_DELETE_MANAGED_OBJECT";
+    public static final java.lang.String _CANNOT_DISABLE_LAST_ADMIN = "CANNOT_DISABLE_LAST_ADMIN";
+    public static final java.lang.String _CANNOT_ENABLE_IP_RESTRICT_REQUESTS = "CANNOT_ENABLE_IP_RESTRICT_REQUESTS";
+    public static final java.lang.String _CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY = "CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY";
+    public static final java.lang.String _CANNOT_MODIFY_MANAGED_OBJECT = "CANNOT_MODIFY_MANAGED_OBJECT";
+    public static final java.lang.String _CANNOT_RENAME_APEX_REFERENCED_FIELD = "CANNOT_RENAME_APEX_REFERENCED_FIELD";
+    public static final java.lang.String _CANNOT_RENAME_APEX_REFERENCED_OBJECT = "CANNOT_RENAME_APEX_REFERENCED_OBJECT";
+    public static final java.lang.String _CANNOT_REPARENT_RECORD = "CANNOT_REPARENT_RECORD";
+    public static final java.lang.String _CANNOT_UPDATE_CONVERTED_LEAD = "CANNOT_UPDATE_CONVERTED_LEAD";
+    public static final java.lang.String _CANT_DISABLE_CORP_CURRENCY = "CANT_DISABLE_CORP_CURRENCY";
+    public static final java.lang.String _CANT_UNSET_CORP_CURRENCY = "CANT_UNSET_CORP_CURRENCY";
+    public static final java.lang.String _CHILD_SHARE_FAILS_PARENT = "CHILD_SHARE_FAILS_PARENT";
+    public static final java.lang.String _CIRCULAR_DEPENDENCY = "CIRCULAR_DEPENDENCY";
+    public static final java.lang.String _COMMUNITY_NOT_ACCESSIBLE = "COMMUNITY_NOT_ACCESSIBLE";
+    public static final java.lang.String _CUSTOM_CLOB_FIELD_LIMIT_EXCEEDED = "CUSTOM_CLOB_FIELD_LIMIT_EXCEEDED";
+    public static final java.lang.String _CUSTOM_ENTITY_OR_FIELD_LIMIT = "CUSTOM_ENTITY_OR_FIELD_LIMIT";
+    public static final java.lang.String _CUSTOM_FIELD_INDEX_LIMIT_EXCEEDED = "CUSTOM_FIELD_INDEX_LIMIT_EXCEEDED";
+    public static final java.lang.String _CUSTOM_INDEX_EXISTS = "CUSTOM_INDEX_EXISTS";
+    public static final java.lang.String _CUSTOM_LINK_LIMIT_EXCEEDED = "CUSTOM_LINK_LIMIT_EXCEEDED";
+    public static final java.lang.String _CUSTOM_TAB_LIMIT_EXCEEDED = "CUSTOM_TAB_LIMIT_EXCEEDED";
+    public static final java.lang.String _DELETE_FAILED = "DELETE_FAILED";
+    public static final java.lang.String _DELETE_REQUIRED_ON_CASCADE = "DELETE_REQUIRED_ON_CASCADE";
+    public static final java.lang.String _DEPENDENCY_EXISTS = "DEPENDENCY_EXISTS";
+    public static final java.lang.String _DUPLICATE_CASE_SOLUTION = "DUPLICATE_CASE_SOLUTION";
+    public static final java.lang.String _DUPLICATE_COMM_NICKNAME = "DUPLICATE_COMM_NICKNAME";
+    public static final java.lang.String _DUPLICATE_CUSTOM_ENTITY_DEFINITION = "DUPLICATE_CUSTOM_ENTITY_DEFINITION";
+    public static final java.lang.String _DUPLICATE_CUSTOM_TAB_MOTIF = "DUPLICATE_CUSTOM_TAB_MOTIF";
+    public static final java.lang.String _DUPLICATE_DEVELOPER_NAME = "DUPLICATE_DEVELOPER_NAME";
+    public static final java.lang.String _DUPLICATE_EXTERNAL_ID = "DUPLICATE_EXTERNAL_ID";
+    public static final java.lang.String _DUPLICATE_MASTER_LABEL = "DUPLICATE_MASTER_LABEL";
+    public static final java.lang.String _DUPLICATE_SENDER_DISPLAY_NAME = "DUPLICATE_SENDER_DISPLAY_NAME";
+    public static final java.lang.String _DUPLICATE_USERNAME = "DUPLICATE_USERNAME";
+    public static final java.lang.String _DUPLICATE_VALUE = "DUPLICATE_VALUE";
+    public static final java.lang.String _EMAIL_NOT_PROCESSED_DUE_TO_PRIOR_ERROR = "EMAIL_NOT_PROCESSED_DUE_TO_PRIOR_ERROR";
+    public static final java.lang.String _EMPTY_SCONTROL_FILE_NAME = "EMPTY_SCONTROL_FILE_NAME";
+    public static final java.lang.String _ENTITY_FAILED_IFLASTMODIFIED_ON_UPDATE = "ENTITY_FAILED_IFLASTMODIFIED_ON_UPDATE";
+    public static final java.lang.String _ENTITY_IS_ARCHIVED = "ENTITY_IS_ARCHIVED";
+    public static final java.lang.String _ENTITY_IS_DELETED = "ENTITY_IS_DELETED";
+    public static final java.lang.String _ENTITY_IS_LOCKED = "ENTITY_IS_LOCKED";
+    public static final java.lang.String _ERROR_IN_MAILER = "ERROR_IN_MAILER";
+    public static final java.lang.String _FAILED_ACTIVATION = "FAILED_ACTIVATION";
+    public static final java.lang.String _FIELD_CUSTOM_VALIDATION_EXCEPTION = "FIELD_CUSTOM_VALIDATION_EXCEPTION";
+    public static final java.lang.String _FIELD_FILTER_VALIDATION_EXCEPTION = "FIELD_FILTER_VALIDATION_EXCEPTION";
+    public static final java.lang.String _FIELD_INTEGRITY_EXCEPTION = "FIELD_INTEGRITY_EXCEPTION";
+    public static final java.lang.String _FILTERED_LOOKUP_LIMIT_EXCEEDED = "FILTERED_LOOKUP_LIMIT_EXCEEDED";
+    public static final java.lang.String _HTML_FILE_UPLOAD_NOT_ALLOWED = "HTML_FILE_UPLOAD_NOT_ALLOWED";
+    public static final java.lang.String _IMAGE_TOO_LARGE = "IMAGE_TOO_LARGE";
+    public static final java.lang.String _INACTIVE_OWNER_OR_USER = "INACTIVE_OWNER_OR_USER";
+    public static final java.lang.String _INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY = "INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY";
+    public static final java.lang.String _INSUFFICIENT_ACCESS_OR_READONLY = "INSUFFICIENT_ACCESS_OR_READONLY";
+    public static final java.lang.String _INVALID_ACCESS_LEVEL = "INVALID_ACCESS_LEVEL";
+    public static final java.lang.String _INVALID_ARGUMENT_TYPE = "INVALID_ARGUMENT_TYPE";
+    public static final java.lang.String _INVALID_ASSIGNEE_TYPE = "INVALID_ASSIGNEE_TYPE";
+    public static final java.lang.String _INVALID_ASSIGNMENT_RULE = "INVALID_ASSIGNMENT_RULE";
+    public static final java.lang.String _INVALID_BATCH_OPERATION = "INVALID_BATCH_OPERATION";
+    public static final java.lang.String _INVALID_CONTENT_TYPE = "INVALID_CONTENT_TYPE";
+    public static final java.lang.String _INVALID_CREDIT_CARD_INFO = "INVALID_CREDIT_CARD_INFO";
+    public static final java.lang.String _INVALID_CROSS_REFERENCE_KEY = "INVALID_CROSS_REFERENCE_KEY";
+    public static final java.lang.String _INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD = "INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD";
+    public static final java.lang.String _INVALID_CURRENCY_CONV_RATE = "INVALID_CURRENCY_CONV_RATE";
+    public static final java.lang.String _INVALID_CURRENCY_CORP_RATE = "INVALID_CURRENCY_CORP_RATE";
+    public static final java.lang.String _INVALID_CURRENCY_ISO = "INVALID_CURRENCY_ISO";
+    public static final java.lang.String _INVALID_DATA_CATEGORY_GROUP_REFERENCE = "INVALID_DATA_CATEGORY_GROUP_REFERENCE";
+    public static final java.lang.String _INVALID_DATA_URI = "INVALID_DATA_URI";
+    public static final java.lang.String _INVALID_EMAIL_ADDRESS = "INVALID_EMAIL_ADDRESS";
+    public static final java.lang.String _INVALID_EMPTY_KEY_OWNER = "INVALID_EMPTY_KEY_OWNER";
+    public static final java.lang.String _INVALID_FIELD = "INVALID_FIELD";
+    public static final java.lang.String _INVALID_FIELD_FOR_INSERT_UPDATE = "INVALID_FIELD_FOR_INSERT_UPDATE";
+    public static final java.lang.String _INVALID_FIELD_WHEN_USING_TEMPLATE = "INVALID_FIELD_WHEN_USING_TEMPLATE";
+    public static final java.lang.String _INVALID_FILTER_ACTION = "INVALID_FILTER_ACTION";
+    public static final java.lang.String _INVALID_GOOGLE_DOCS_URL = "INVALID_GOOGLE_DOCS_URL";
+    public static final java.lang.String _INVALID_ID_FIELD = "INVALID_ID_FIELD";
+    public static final java.lang.String _INVALID_INET_ADDRESS = "INVALID_INET_ADDRESS";
+    public static final java.lang.String _INVALID_LINEITEM_CLONE_STATE = "INVALID_LINEITEM_CLONE_STATE";
+    public static final java.lang.String _INVALID_MASTER_OR_TRANSLATED_SOLUTION = "INVALID_MASTER_OR_TRANSLATED_SOLUTION";
+    public static final java.lang.String _INVALID_MESSAGE_ID_REFERENCE = "INVALID_MESSAGE_ID_REFERENCE";
+    public static final java.lang.String _INVALID_OPERATION = "INVALID_OPERATION";
+    public static final java.lang.String _INVALID_OPERATOR = "INVALID_OPERATOR";
+    public static final java.lang.String _INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST = "INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST";
+    public static final java.lang.String _INVALID_PARTNER_NETWORK_STATUS = "INVALID_PARTNER_NETWORK_STATUS";
+    public static final java.lang.String _INVALID_PERSON_ACCOUNT_OPERATION = "INVALID_PERSON_ACCOUNT_OPERATION";
+    public static final java.lang.String _INVALID_READ_ONLY_USER_DML = "INVALID_READ_ONLY_USER_DML";
+    public static final java.lang.String _INVALID_SAVE_AS_ACTIVITY_FLAG = "INVALID_SAVE_AS_ACTIVITY_FLAG";
+    public static final java.lang.String _INVALID_SESSION_ID = "INVALID_SESSION_ID";
+    public static final java.lang.String _INVALID_SETUP_OWNER = "INVALID_SETUP_OWNER";
+    public static final java.lang.String _INVALID_STATUS = "INVALID_STATUS";
+    public static final java.lang.String _INVALID_TYPE = "INVALID_TYPE";
+    public static final java.lang.String _INVALID_TYPE_FOR_OPERATION = "INVALID_TYPE_FOR_OPERATION";
+    public static final java.lang.String _INVALID_TYPE_ON_FIELD_IN_RECORD = "INVALID_TYPE_ON_FIELD_IN_RECORD";
+    public static final java.lang.String _IP_RANGE_LIMIT_EXCEEDED = "IP_RANGE_LIMIT_EXCEEDED";
+    public static final java.lang.String _LICENSE_LIMIT_EXCEEDED = "LICENSE_LIMIT_EXCEEDED";
+    public static final java.lang.String _LIGHT_PORTAL_USER_EXCEPTION = "LIGHT_PORTAL_USER_EXCEPTION";
+    public static final java.lang.String _LIMIT_EXCEEDED = "LIMIT_EXCEEDED";
+    public static final java.lang.String _MALFORMED_ID = "MALFORMED_ID";
+    public static final java.lang.String _MANAGER_NOT_DEFINED = "MANAGER_NOT_DEFINED";
+    public static final java.lang.String _MASSMAIL_RETRY_LIMIT_EXCEEDED = "MASSMAIL_RETRY_LIMIT_EXCEEDED";
+    public static final java.lang.String _MASS_MAIL_LIMIT_EXCEEDED = "MASS_MAIL_LIMIT_EXCEEDED";
+    public static final java.lang.String _MAXIMUM_CCEMAILS_EXCEEDED = "MAXIMUM_CCEMAILS_EXCEEDED";
+    public static final java.lang.String _MAXIMUM_DASHBOARD_COMPONENTS_EXCEEDED = "MAXIMUM_DASHBOARD_COMPONENTS_EXCEEDED";
+    public static final java.lang.String _MAXIMUM_HIERARCHY_LEVELS_REACHED = "MAXIMUM_HIERARCHY_LEVELS_REACHED";
+    public static final java.lang.String _MAXIMUM_SIZE_OF_ATTACHMENT = "MAXIMUM_SIZE_OF_ATTACHMENT";
+    public static final java.lang.String _MAXIMUM_SIZE_OF_DOCUMENT = "MAXIMUM_SIZE_OF_DOCUMENT";
+    public static final java.lang.String _MAX_ACTIONS_PER_RULE_EXCEEDED = "MAX_ACTIONS_PER_RULE_EXCEEDED";
+    public static final java.lang.String _MAX_ACTIVE_RULES_EXCEEDED = "MAX_ACTIVE_RULES_EXCEEDED";
+    public static final java.lang.String _MAX_APPROVAL_STEPS_EXCEEDED = "MAX_APPROVAL_STEPS_EXCEEDED";
+    public static final java.lang.String _MAX_FORMULAS_PER_RULE_EXCEEDED = "MAX_FORMULAS_PER_RULE_EXCEEDED";
+    public static final java.lang.String _MAX_RULES_EXCEEDED = "MAX_RULES_EXCEEDED";
+    public static final java.lang.String _MAX_RULE_ENTRIES_EXCEEDED = "MAX_RULE_ENTRIES_EXCEEDED";
+    public static final java.lang.String _MAX_TASK_DESCRIPTION_EXCEEEDED = "MAX_TASK_DESCRIPTION_EXCEEEDED";
+    public static final java.lang.String _MAX_TM_RULES_EXCEEDED = "MAX_TM_RULES_EXCEEDED";
+    public static final java.lang.String _MAX_TM_RULE_ITEMS_EXCEEDED = "MAX_TM_RULE_ITEMS_EXCEEDED";
+    public static final java.lang.String _MERGE_FAILED = "MERGE_FAILED";
+    public static final java.lang.String _MISSING_ARGUMENT = "MISSING_ARGUMENT";
+    public static final java.lang.String _MIXED_DML_OPERATION = "MIXED_DML_OPERATION";
+    public static final java.lang.String _NONUNIQUE_SHIPPING_ADDRESS = "NONUNIQUE_SHIPPING_ADDRESS";
+    public static final java.lang.String _NO_APPLICABLE_PROCESS = "NO_APPLICABLE_PROCESS";
+    public static final java.lang.String _NO_ATTACHMENT_PERMISSION = "NO_ATTACHMENT_PERMISSION";
+    public static final java.lang.String _NO_INACTIVE_DIVISION_MEMBERS = "NO_INACTIVE_DIVISION_MEMBERS";
+    public static final java.lang.String _NO_MASS_MAIL_PERMISSION = "NO_MASS_MAIL_PERMISSION";
+    public static final java.lang.String _NUMBER_OUTSIDE_VALID_RANGE = "NUMBER_OUTSIDE_VALID_RANGE";
+    public static final java.lang.String _NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED = "NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED";
+    public static final java.lang.String _OPTED_OUT_OF_MASS_MAIL = "OPTED_OUT_OF_MASS_MAIL";
+    public static final java.lang.String _OP_WITH_INVALID_USER_TYPE_EXCEPTION = "OP_WITH_INVALID_USER_TYPE_EXCEPTION";
+    public static final java.lang.String _PACKAGE_LICENSE_REQUIRED = "PACKAGE_LICENSE_REQUIRED";
+    public static final java.lang.String _PORTAL_NO_ACCESS = "PORTAL_NO_ACCESS";
+    public static final java.lang.String _PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT = "PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT";
+    public static final java.lang.String _PRIVATE_CONTACT_ON_ASSET = "PRIVATE_CONTACT_ON_ASSET";
+    public static final java.lang.String _RECORD_IN_USE_BY_WORKFLOW = "RECORD_IN_USE_BY_WORKFLOW";
+    public static final java.lang.String _REQUEST_RUNNING_TOO_LONG = "REQUEST_RUNNING_TOO_LONG";
+    public static final java.lang.String _REQUIRED_FEATURE_MISSING = "REQUIRED_FEATURE_MISSING";
+    public static final java.lang.String _REQUIRED_FIELD_MISSING = "REQUIRED_FIELD_MISSING";
+    public static final java.lang.String _SELF_REFERENCE_FROM_TRIGGER = "SELF_REFERENCE_FROM_TRIGGER";
+    public static final java.lang.String _SHARE_NEEDED_FOR_CHILD_OWNER = "SHARE_NEEDED_FOR_CHILD_OWNER";
+    public static final java.lang.String _SINGLE_EMAIL_LIMIT_EXCEEDED = "SINGLE_EMAIL_LIMIT_EXCEEDED";
+    public static final java.lang.String _STANDARD_PRICE_NOT_DEFINED = "STANDARD_PRICE_NOT_DEFINED";
+    public static final java.lang.String _STORAGE_LIMIT_EXCEEDED = "STORAGE_LIMIT_EXCEEDED";
+    public static final java.lang.String _STRING_TOO_LONG = "STRING_TOO_LONG";
+    public static final java.lang.String _TABSET_LIMIT_EXCEEDED = "TABSET_LIMIT_EXCEEDED";
+    public static final java.lang.String _TEMPLATE_NOT_ACTIVE = "TEMPLATE_NOT_ACTIVE";
+    public static final java.lang.String _TERRITORY_REALIGN_IN_PROGRESS = "TERRITORY_REALIGN_IN_PROGRESS";
+    public static final java.lang.String _TEXT_DATA_OUTSIDE_SUPPORTED_CHARSET = "TEXT_DATA_OUTSIDE_SUPPORTED_CHARSET";
+    public static final java.lang.String _TOO_MANY_APEX_REQUESTS = "TOO_MANY_APEX_REQUESTS";
+    public static final java.lang.String _TOO_MANY_ENUM_VALUE = "TOO_MANY_ENUM_VALUE";
+    public static final java.lang.String _TRANSFER_REQUIRES_READ = "TRANSFER_REQUIRES_READ";
+    public static final java.lang.String _UNABLE_TO_LOCK_ROW = "UNABLE_TO_LOCK_ROW";
+    public static final java.lang.String _UNAVAILABLE_RECORDTYPE_EXCEPTION = "UNAVAILABLE_RECORDTYPE_EXCEPTION";
+    public static final java.lang.String _UNDELETE_FAILED = "UNDELETE_FAILED";
+    public static final java.lang.String _UNKNOWN_EXCEPTION = "UNKNOWN_EXCEPTION";
+    public static final java.lang.String _UNSPECIFIED_EMAIL_ADDRESS = "UNSPECIFIED_EMAIL_ADDRESS";
+    public static final java.lang.String _UNSUPPORTED_APEX_TRIGGER_OPERATON = "UNSUPPORTED_APEX_TRIGGER_OPERATON";
+    public static final java.lang.String _UNVERIFIED_SENDER_ADDRESS = "UNVERIFIED_SENDER_ADDRESS";
+    public static final java.lang.String _USER_OWNS_PORTAL_ACCOUNT_EXCEPTION = "USER_OWNS_PORTAL_ACCOUNT_EXCEPTION";
+    public static final java.lang.String _USER_WITH_APEX_SHARES_EXCEPTION = "USER_WITH_APEX_SHARES_EXCEPTION";
+    public static final java.lang.String _WEBLINK_SIZE_LIMIT_EXCEEDED = "WEBLINK_SIZE_LIMIT_EXCEEDED";
+    public static final java.lang.String _WRONG_CONTROLLER_TYPE = "WRONG_CONTROLLER_TYPE";
+    public static final StatusCode ALL_OR_NONE_OPERATION_ROLLED_BACK = new StatusCode(_ALL_OR_NONE_OPERATION_ROLLED_BACK);
     public static final StatusCode ALREADY_IN_PROCESS = new StatusCode(_ALREADY_IN_PROCESS);
     public static final StatusCode ASSIGNEE_TYPE_REQUIRED = new StatusCode(_ASSIGNEE_TYPE_REQUIRED);
     public static final StatusCode BAD_CUSTOM_ENTITY_PARENT_DOMAIN = new StatusCode(_BAD_CUSTOM_ENTITY_PARENT_DOMAIN);
@@ -192,6 +205,7 @@ public class StatusCode implements java.io.Serializable {
     public static final StatusCode CANT_UNSET_CORP_CURRENCY = new StatusCode(_CANT_UNSET_CORP_CURRENCY);
     public static final StatusCode CHILD_SHARE_FAILS_PARENT = new StatusCode(_CHILD_SHARE_FAILS_PARENT);
     public static final StatusCode CIRCULAR_DEPENDENCY = new StatusCode(_CIRCULAR_DEPENDENCY);
+    public static final StatusCode COMMUNITY_NOT_ACCESSIBLE = new StatusCode(_COMMUNITY_NOT_ACCESSIBLE);
     public static final StatusCode CUSTOM_CLOB_FIELD_LIMIT_EXCEEDED = new StatusCode(_CUSTOM_CLOB_FIELD_LIMIT_EXCEEDED);
     public static final StatusCode CUSTOM_ENTITY_OR_FIELD_LIMIT = new StatusCode(_CUSTOM_ENTITY_OR_FIELD_LIMIT);
     public static final StatusCode CUSTOM_FIELD_INDEX_LIMIT_EXCEEDED = new StatusCode(_CUSTOM_FIELD_INDEX_LIMIT_EXCEEDED);
@@ -220,7 +234,9 @@ public class StatusCode implements java.io.Serializable {
     public static final StatusCode ERROR_IN_MAILER = new StatusCode(_ERROR_IN_MAILER);
     public static final StatusCode FAILED_ACTIVATION = new StatusCode(_FAILED_ACTIVATION);
     public static final StatusCode FIELD_CUSTOM_VALIDATION_EXCEPTION = new StatusCode(_FIELD_CUSTOM_VALIDATION_EXCEPTION);
+    public static final StatusCode FIELD_FILTER_VALIDATION_EXCEPTION = new StatusCode(_FIELD_FILTER_VALIDATION_EXCEPTION);
     public static final StatusCode FIELD_INTEGRITY_EXCEPTION = new StatusCode(_FIELD_INTEGRITY_EXCEPTION);
+    public static final StatusCode FILTERED_LOOKUP_LIMIT_EXCEEDED = new StatusCode(_FILTERED_LOOKUP_LIMIT_EXCEEDED);
     public static final StatusCode HTML_FILE_UPLOAD_NOT_ALLOWED = new StatusCode(_HTML_FILE_UPLOAD_NOT_ALLOWED);
     public static final StatusCode IMAGE_TOO_LARGE = new StatusCode(_IMAGE_TOO_LARGE);
     public static final StatusCode INACTIVE_OWNER_OR_USER = new StatusCode(_INACTIVE_OWNER_OR_USER);
@@ -231,12 +247,15 @@ public class StatusCode implements java.io.Serializable {
     public static final StatusCode INVALID_ASSIGNEE_TYPE = new StatusCode(_INVALID_ASSIGNEE_TYPE);
     public static final StatusCode INVALID_ASSIGNMENT_RULE = new StatusCode(_INVALID_ASSIGNMENT_RULE);
     public static final StatusCode INVALID_BATCH_OPERATION = new StatusCode(_INVALID_BATCH_OPERATION);
+    public static final StatusCode INVALID_CONTENT_TYPE = new StatusCode(_INVALID_CONTENT_TYPE);
     public static final StatusCode INVALID_CREDIT_CARD_INFO = new StatusCode(_INVALID_CREDIT_CARD_INFO);
     public static final StatusCode INVALID_CROSS_REFERENCE_KEY = new StatusCode(_INVALID_CROSS_REFERENCE_KEY);
     public static final StatusCode INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD = new StatusCode(_INVALID_CROSS_REFERENCE_TYPE_FOR_FIELD);
     public static final StatusCode INVALID_CURRENCY_CONV_RATE = new StatusCode(_INVALID_CURRENCY_CONV_RATE);
     public static final StatusCode INVALID_CURRENCY_CORP_RATE = new StatusCode(_INVALID_CURRENCY_CORP_RATE);
     public static final StatusCode INVALID_CURRENCY_ISO = new StatusCode(_INVALID_CURRENCY_ISO);
+    public static final StatusCode INVALID_DATA_CATEGORY_GROUP_REFERENCE = new StatusCode(_INVALID_DATA_CATEGORY_GROUP_REFERENCE);
+    public static final StatusCode INVALID_DATA_URI = new StatusCode(_INVALID_DATA_URI);
     public static final StatusCode INVALID_EMAIL_ADDRESS = new StatusCode(_INVALID_EMAIL_ADDRESS);
     public static final StatusCode INVALID_EMPTY_KEY_OWNER = new StatusCode(_INVALID_EMPTY_KEY_OWNER);
     public static final StatusCode INVALID_FIELD = new StatusCode(_INVALID_FIELD);
@@ -248,11 +267,13 @@ public class StatusCode implements java.io.Serializable {
     public static final StatusCode INVALID_INET_ADDRESS = new StatusCode(_INVALID_INET_ADDRESS);
     public static final StatusCode INVALID_LINEITEM_CLONE_STATE = new StatusCode(_INVALID_LINEITEM_CLONE_STATE);
     public static final StatusCode INVALID_MASTER_OR_TRANSLATED_SOLUTION = new StatusCode(_INVALID_MASTER_OR_TRANSLATED_SOLUTION);
+    public static final StatusCode INVALID_MESSAGE_ID_REFERENCE = new StatusCode(_INVALID_MESSAGE_ID_REFERENCE);
     public static final StatusCode INVALID_OPERATION = new StatusCode(_INVALID_OPERATION);
     public static final StatusCode INVALID_OPERATOR = new StatusCode(_INVALID_OPERATOR);
     public static final StatusCode INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST = new StatusCode(_INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST);
     public static final StatusCode INVALID_PARTNER_NETWORK_STATUS = new StatusCode(_INVALID_PARTNER_NETWORK_STATUS);
     public static final StatusCode INVALID_PERSON_ACCOUNT_OPERATION = new StatusCode(_INVALID_PERSON_ACCOUNT_OPERATION);
+    public static final StatusCode INVALID_READ_ONLY_USER_DML = new StatusCode(_INVALID_READ_ONLY_USER_DML);
     public static final StatusCode INVALID_SAVE_AS_ACTIVITY_FLAG = new StatusCode(_INVALID_SAVE_AS_ACTIVITY_FLAG);
     public static final StatusCode INVALID_SESSION_ID = new StatusCode(_INVALID_SESSION_ID);
     public static final StatusCode INVALID_SETUP_OWNER = new StatusCode(_INVALID_SETUP_OWNER);
@@ -262,6 +283,7 @@ public class StatusCode implements java.io.Serializable {
     public static final StatusCode INVALID_TYPE_ON_FIELD_IN_RECORD = new StatusCode(_INVALID_TYPE_ON_FIELD_IN_RECORD);
     public static final StatusCode IP_RANGE_LIMIT_EXCEEDED = new StatusCode(_IP_RANGE_LIMIT_EXCEEDED);
     public static final StatusCode LICENSE_LIMIT_EXCEEDED = new StatusCode(_LICENSE_LIMIT_EXCEEDED);
+    public static final StatusCode LIGHT_PORTAL_USER_EXCEPTION = new StatusCode(_LIGHT_PORTAL_USER_EXCEPTION);
     public static final StatusCode LIMIT_EXCEEDED = new StatusCode(_LIMIT_EXCEEDED);
     public static final StatusCode MALFORMED_ID = new StatusCode(_MALFORMED_ID);
     public static final StatusCode MANAGER_NOT_DEFINED = new StatusCode(_MANAGER_NOT_DEFINED);
@@ -292,14 +314,18 @@ public class StatusCode implements java.io.Serializable {
     public static final StatusCode NUMBER_OUTSIDE_VALID_RANGE = new StatusCode(_NUMBER_OUTSIDE_VALID_RANGE);
     public static final StatusCode NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED = new StatusCode(_NUM_HISTORY_FIELDS_BY_SOBJECT_EXCEEDED);
     public static final StatusCode OPTED_OUT_OF_MASS_MAIL = new StatusCode(_OPTED_OUT_OF_MASS_MAIL);
+    public static final StatusCode OP_WITH_INVALID_USER_TYPE_EXCEPTION = new StatusCode(_OP_WITH_INVALID_USER_TYPE_EXCEPTION);
     public static final StatusCode PACKAGE_LICENSE_REQUIRED = new StatusCode(_PACKAGE_LICENSE_REQUIRED);
+    public static final StatusCode PORTAL_NO_ACCESS = new StatusCode(_PORTAL_NO_ACCESS);
     public static final StatusCode PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT = new StatusCode(_PORTAL_USER_ALREADY_EXISTS_FOR_CONTACT);
     public static final StatusCode PRIVATE_CONTACT_ON_ASSET = new StatusCode(_PRIVATE_CONTACT_ON_ASSET);
     public static final StatusCode RECORD_IN_USE_BY_WORKFLOW = new StatusCode(_RECORD_IN_USE_BY_WORKFLOW);
     public static final StatusCode REQUEST_RUNNING_TOO_LONG = new StatusCode(_REQUEST_RUNNING_TOO_LONG);
+    public static final StatusCode REQUIRED_FEATURE_MISSING = new StatusCode(_REQUIRED_FEATURE_MISSING);
     public static final StatusCode REQUIRED_FIELD_MISSING = new StatusCode(_REQUIRED_FIELD_MISSING);
     public static final StatusCode SELF_REFERENCE_FROM_TRIGGER = new StatusCode(_SELF_REFERENCE_FROM_TRIGGER);
     public static final StatusCode SHARE_NEEDED_FOR_CHILD_OWNER = new StatusCode(_SHARE_NEEDED_FOR_CHILD_OWNER);
+    public static final StatusCode SINGLE_EMAIL_LIMIT_EXCEEDED = new StatusCode(_SINGLE_EMAIL_LIMIT_EXCEEDED);
     public static final StatusCode STANDARD_PRICE_NOT_DEFINED = new StatusCode(_STANDARD_PRICE_NOT_DEFINED);
     public static final StatusCode STORAGE_LIMIT_EXCEEDED = new StatusCode(_STORAGE_LIMIT_EXCEEDED);
     public static final StatusCode STRING_TOO_LONG = new StatusCode(_STRING_TOO_LONG);
@@ -317,35 +343,37 @@ public class StatusCode implements java.io.Serializable {
     public static final StatusCode UNSPECIFIED_EMAIL_ADDRESS = new StatusCode(_UNSPECIFIED_EMAIL_ADDRESS);
     public static final StatusCode UNSUPPORTED_APEX_TRIGGER_OPERATON = new StatusCode(_UNSUPPORTED_APEX_TRIGGER_OPERATON);
     public static final StatusCode UNVERIFIED_SENDER_ADDRESS = new StatusCode(_UNVERIFIED_SENDER_ADDRESS);
+    public static final StatusCode USER_OWNS_PORTAL_ACCOUNT_EXCEPTION = new StatusCode(_USER_OWNS_PORTAL_ACCOUNT_EXCEPTION);
+    public static final StatusCode USER_WITH_APEX_SHARES_EXCEPTION = new StatusCode(_USER_WITH_APEX_SHARES_EXCEPTION);
     public static final StatusCode WEBLINK_SIZE_LIMIT_EXCEEDED = new StatusCode(_WEBLINK_SIZE_LIMIT_EXCEEDED);
     public static final StatusCode WRONG_CONTROLLER_TYPE = new StatusCode(_WRONG_CONTROLLER_TYPE);
-    public String getValue() { return _value_;}
-    public static StatusCode fromValue(String value)
-          throws IllegalArgumentException {
+    public java.lang.String getValue() { return _value_;}
+    public static StatusCode fromValue(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         StatusCode enumeration = (StatusCode)
             _table_.get(value);
-        if (enumeration==null) throw new IllegalArgumentException();
+        if (enumeration==null) throw new java.lang.IllegalArgumentException();
         return enumeration;
     }
-    public static StatusCode fromString(String value)
-          throws IllegalArgumentException {
+    public static StatusCode fromString(java.lang.String value)
+          throws java.lang.IllegalArgumentException {
         return fromValue(value);
     }
-    public boolean equals(Object obj) {return (obj == this);}
+    public boolean equals(java.lang.Object obj) {return (obj == this);}
     public int hashCode() { return toString().hashCode();}
-    public String toString() { return _value_;}
-    public Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
+    public java.lang.String toString() { return _value_;}
+    public java.lang.Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumSerializer(
             _javaType, _xmlType);
     }
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new org.apache.axis.encoding.ser.EnumDeserializer(

@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * DescribeLayoutSection.java
  *
@@ -14,9 +10,9 @@ package com.sforce.soap.partner;
 public class DescribeLayoutSection  implements java.io.Serializable {
     private int columns;
 
-    private String heading;
+    private java.lang.String heading;
 
-    private DescribeLayoutRow[] layoutRows;
+    private com.sforce.soap.partner.DescribeLayoutRow[] layoutRows;
 
     private int rows;
 
@@ -29,8 +25,8 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     public DescribeLayoutSection(
            int columns,
-           String heading,
-           DescribeLayoutRow[] layoutRows,
+           java.lang.String heading,
+           com.sforce.soap.partner.DescribeLayoutRow[] layoutRows,
            int rows,
            boolean useCollapsibleSection,
            boolean useHeading) {
@@ -68,7 +64,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
      * 
      * @return heading
      */
-    public String getHeading() {
+    public java.lang.String getHeading() {
         return heading;
     }
 
@@ -78,7 +74,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
      * 
      * @param heading
      */
-    public void setHeading(String heading) {
+    public void setHeading(java.lang.String heading) {
         this.heading = heading;
     }
 
@@ -88,7 +84,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
      * 
      * @return layoutRows
      */
-    public DescribeLayoutRow[] getLayoutRows() {
+    public com.sforce.soap.partner.DescribeLayoutRow[] getLayoutRows() {
         return layoutRows;
     }
 
@@ -98,15 +94,15 @@ public class DescribeLayoutSection  implements java.io.Serializable {
      * 
      * @param layoutRows
      */
-    public void setLayoutRows(DescribeLayoutRow[] layoutRows) {
+    public void setLayoutRows(com.sforce.soap.partner.DescribeLayoutRow[] layoutRows) {
         this.layoutRows = layoutRows;
     }
 
-    public DescribeLayoutRow getLayoutRows(int i) {
+    public com.sforce.soap.partner.DescribeLayoutRow getLayoutRows(int i) {
         return this.layoutRows[i];
     }
 
-    public void setLayoutRows(int i, DescribeLayoutRow _value) {
+    public void setLayoutRows(int i, com.sforce.soap.partner.DescribeLayoutRow _value) {
         this.layoutRows[i] = _value;
     }
 
@@ -170,8 +166,8 @@ public class DescribeLayoutSection  implements java.io.Serializable {
         this.useHeading = useHeading;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutSection)) return false;
         DescribeLayoutSection other = (DescribeLayoutSection) obj;
         if (obj == null) return false;
@@ -211,7 +207,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getLayoutRows());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getLayoutRows(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getLayoutRows(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -281,8 +277,8 @@ public class DescribeLayoutSection  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -293,8 +289,8 @@ public class DescribeLayoutSection  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

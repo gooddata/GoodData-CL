@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * LeadConvertResult.java
  *
@@ -12,15 +8,15 @@
 package com.sforce.soap.partner;
 
 public class LeadConvertResult  implements java.io.Serializable {
-    private String accountId;
+    private java.lang.String accountId;
 
-    private String contactId;
+    private java.lang.String contactId;
 
-    private Error[] errors;
+    private com.sforce.soap.partner.Error[] errors;
 
-    private String leadId;
+    private java.lang.String leadId;
 
-    private String opportunityId;
+    private java.lang.String opportunityId;
 
     private boolean success;
 
@@ -28,11 +24,11 @@ public class LeadConvertResult  implements java.io.Serializable {
     }
 
     public LeadConvertResult(
-           String accountId,
-           String contactId,
-           Error[] errors,
-           String leadId,
-           String opportunityId,
+           java.lang.String accountId,
+           java.lang.String contactId,
+           com.sforce.soap.partner.Error[] errors,
+           java.lang.String leadId,
+           java.lang.String opportunityId,
            boolean success) {
            this.accountId = accountId;
            this.contactId = contactId;
@@ -48,7 +44,7 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @return accountId
      */
-    public String getAccountId() {
+    public java.lang.String getAccountId() {
         return accountId;
     }
 
@@ -58,7 +54,7 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @param accountId
      */
-    public void setAccountId(String accountId) {
+    public void setAccountId(java.lang.String accountId) {
         this.accountId = accountId;
     }
 
@@ -68,7 +64,7 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @return contactId
      */
-    public String getContactId() {
+    public java.lang.String getContactId() {
         return contactId;
     }
 
@@ -78,7 +74,7 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @param contactId
      */
-    public void setContactId(String contactId) {
+    public void setContactId(java.lang.String contactId) {
         this.contactId = contactId;
     }
 
@@ -88,7 +84,7 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @return errors
      */
-    public Error[] getErrors() {
+    public com.sforce.soap.partner.Error[] getErrors() {
         return errors;
     }
 
@@ -98,15 +94,15 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @param errors
      */
-    public void setErrors(Error[] errors) {
+    public void setErrors(com.sforce.soap.partner.Error[] errors) {
         this.errors = errors;
     }
 
-    public Error getErrors(int i) {
+    public com.sforce.soap.partner.Error getErrors(int i) {
         return this.errors[i];
     }
 
-    public void setErrors(int i, Error _value) {
+    public void setErrors(int i, com.sforce.soap.partner.Error _value) {
         this.errors[i] = _value;
     }
 
@@ -116,7 +112,7 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @return leadId
      */
-    public String getLeadId() {
+    public java.lang.String getLeadId() {
         return leadId;
     }
 
@@ -126,7 +122,7 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @param leadId
      */
-    public void setLeadId(String leadId) {
+    public void setLeadId(java.lang.String leadId) {
         this.leadId = leadId;
     }
 
@@ -136,7 +132,7 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @return opportunityId
      */
-    public String getOpportunityId() {
+    public java.lang.String getOpportunityId() {
         return opportunityId;
     }
 
@@ -146,7 +142,7 @@ public class LeadConvertResult  implements java.io.Serializable {
      * 
      * @param opportunityId
      */
-    public void setOpportunityId(String opportunityId) {
+    public void setOpportunityId(java.lang.String opportunityId) {
         this.opportunityId = opportunityId;
     }
 
@@ -170,8 +166,8 @@ public class LeadConvertResult  implements java.io.Serializable {
         this.success = success;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof LeadConvertResult)) return false;
         LeadConvertResult other = (LeadConvertResult) obj;
         if (obj == null) return false;
@@ -219,7 +215,7 @@ public class LeadConvertResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getErrors());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getErrors(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getErrors(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -294,8 +290,8 @@ public class LeadConvertResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -306,8 +302,8 @@ public class LeadConvertResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

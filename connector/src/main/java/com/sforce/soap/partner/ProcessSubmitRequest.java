@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * ProcessSubmitRequest.java
  *
@@ -11,16 +7,16 @@
 
 package com.sforce.soap.partner;
 
-public class ProcessSubmitRequest  extends ProcessRequest  implements java.io.Serializable {
-    private String objectId;
+public class ProcessSubmitRequest  extends com.sforce.soap.partner.ProcessRequest  implements java.io.Serializable {
+    private java.lang.String objectId;
 
     public ProcessSubmitRequest() {
     }
 
     public ProcessSubmitRequest(
-           String comments,
-           String[] nextApproverIds,
-           String objectId) {
+           java.lang.String comments,
+           java.lang.String[] nextApproverIds,
+           java.lang.String objectId) {
         super(
             comments,
             nextApproverIds);
@@ -33,7 +29,7 @@ public class ProcessSubmitRequest  extends ProcessRequest  implements java.io.Se
      * 
      * @return objectId
      */
-    public String getObjectId() {
+    public java.lang.String getObjectId() {
         return objectId;
     }
 
@@ -43,12 +39,12 @@ public class ProcessSubmitRequest  extends ProcessRequest  implements java.io.Se
      * 
      * @param objectId
      */
-    public void setObjectId(String objectId) {
+    public void setObjectId(java.lang.String objectId) {
         this.objectId = objectId;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ProcessSubmitRequest)) return false;
         ProcessSubmitRequest other = (ProcessSubmitRequest) obj;
         if (obj == null) return false;
@@ -105,8 +101,8 @@ public class ProcessSubmitRequest  extends ProcessRequest  implements java.io.Se
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -117,8 +113,8 @@ public class ProcessSubmitRequest  extends ProcessRequest  implements java.io.Se
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

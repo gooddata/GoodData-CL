@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * ChildRelationship.java
  *
@@ -14,29 +10,25 @@ package com.sforce.soap.partner;
 public class ChildRelationship  implements java.io.Serializable {
     private boolean cascadeDelete;
 
-    private String childSObject;
+    private java.lang.String childSObject;
 
-    private Boolean deprecated;
+    private boolean deprecatedAndHidden;
 
-    private Boolean deprecatedAndHidden;
+    private java.lang.String field;
 
-    private String field;
-
-    private String relationshipName;
+    private java.lang.String relationshipName;
 
     public ChildRelationship() {
     }
 
     public ChildRelationship(
            boolean cascadeDelete,
-           String childSObject,
-           Boolean deprecated,
-           Boolean deprecatedAndHidden,
-           String field,
-           String relationshipName) {
+           java.lang.String childSObject,
+           boolean deprecatedAndHidden,
+           java.lang.String field,
+           java.lang.String relationshipName) {
            this.cascadeDelete = cascadeDelete;
            this.childSObject = childSObject;
-           this.deprecated = deprecated;
            this.deprecatedAndHidden = deprecatedAndHidden;
            this.field = field;
            this.relationshipName = relationshipName;
@@ -68,7 +60,7 @@ public class ChildRelationship  implements java.io.Serializable {
      * 
      * @return childSObject
      */
-    public String getChildSObject() {
+    public java.lang.String getChildSObject() {
         return childSObject;
     }
 
@@ -78,28 +70,8 @@ public class ChildRelationship  implements java.io.Serializable {
      * 
      * @param childSObject
      */
-    public void setChildSObject(String childSObject) {
+    public void setChildSObject(java.lang.String childSObject) {
         this.childSObject = childSObject;
-    }
-
-
-    /**
-     * Gets the deprecated value for this ChildRelationship.
-     * 
-     * @return deprecated
-     */
-    public Boolean getDeprecated() {
-        return deprecated;
-    }
-
-
-    /**
-     * Sets the deprecated value for this ChildRelationship.
-     * 
-     * @param deprecated
-     */
-    public void setDeprecated(Boolean deprecated) {
-        this.deprecated = deprecated;
     }
 
 
@@ -108,7 +80,7 @@ public class ChildRelationship  implements java.io.Serializable {
      * 
      * @return deprecatedAndHidden
      */
-    public Boolean getDeprecatedAndHidden() {
+    public boolean isDeprecatedAndHidden() {
         return deprecatedAndHidden;
     }
 
@@ -118,7 +90,7 @@ public class ChildRelationship  implements java.io.Serializable {
      * 
      * @param deprecatedAndHidden
      */
-    public void setDeprecatedAndHidden(Boolean deprecatedAndHidden) {
+    public void setDeprecatedAndHidden(boolean deprecatedAndHidden) {
         this.deprecatedAndHidden = deprecatedAndHidden;
     }
 
@@ -128,7 +100,7 @@ public class ChildRelationship  implements java.io.Serializable {
      * 
      * @return field
      */
-    public String getField() {
+    public java.lang.String getField() {
         return field;
     }
 
@@ -138,7 +110,7 @@ public class ChildRelationship  implements java.io.Serializable {
      * 
      * @param field
      */
-    public void setField(String field) {
+    public void setField(java.lang.String field) {
         this.field = field;
     }
 
@@ -148,7 +120,7 @@ public class ChildRelationship  implements java.io.Serializable {
      * 
      * @return relationshipName
      */
-    public String getRelationshipName() {
+    public java.lang.String getRelationshipName() {
         return relationshipName;
     }
 
@@ -158,12 +130,12 @@ public class ChildRelationship  implements java.io.Serializable {
      * 
      * @param relationshipName
      */
-    public void setRelationshipName(String relationshipName) {
+    public void setRelationshipName(java.lang.String relationshipName) {
         this.relationshipName = relationshipName;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ChildRelationship)) return false;
         ChildRelationship other = (ChildRelationship) obj;
         if (obj == null) return false;
@@ -178,12 +150,7 @@ public class ChildRelationship  implements java.io.Serializable {
             ((this.childSObject==null && other.getChildSObject()==null) || 
              (this.childSObject!=null &&
               this.childSObject.equals(other.getChildSObject()))) &&
-            ((this.deprecated==null && other.getDeprecated()==null) || 
-             (this.deprecated!=null &&
-              this.deprecated.equals(other.getDeprecated()))) &&
-            ((this.deprecatedAndHidden==null && other.getDeprecatedAndHidden()==null) || 
-             (this.deprecatedAndHidden!=null &&
-              this.deprecatedAndHidden.equals(other.getDeprecatedAndHidden()))) &&
+            this.deprecatedAndHidden == other.isDeprecatedAndHidden() &&
             ((this.field==null && other.getField()==null) || 
              (this.field!=null &&
               this.field.equals(other.getField()))) &&
@@ -205,12 +172,7 @@ public class ChildRelationship  implements java.io.Serializable {
         if (getChildSObject() != null) {
             _hashCode += getChildSObject().hashCode();
         }
-        if (getDeprecated() != null) {
-            _hashCode += getDeprecated().hashCode();
-        }
-        if (getDeprecatedAndHidden() != null) {
-            _hashCode += getDeprecatedAndHidden().hashCode();
-        }
+        _hashCode += (isDeprecatedAndHidden() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         if (getField() != null) {
             _hashCode += getField().hashCode();
         }
@@ -240,17 +202,9 @@ public class ChildRelationship  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("deprecated");
-        elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "deprecated"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("deprecatedAndHidden");
         elemField.setXmlName(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "deprecatedAndHidden"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
@@ -279,8 +233,8 @@ public class ChildRelationship  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -291,8 +245,8 @@ public class ChildRelationship  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * ProcessResult.java
  *
@@ -12,17 +8,17 @@
 package com.sforce.soap.partner;
 
 public class ProcessResult  implements java.io.Serializable {
-    private String[] actorIds;
+    private java.lang.String[] actorIds;
 
-    private String entityId;
+    private java.lang.String entityId;
 
-    private Error[] errors;
+    private com.sforce.soap.partner.Error[] errors;
 
-    private String instanceId;
+    private java.lang.String instanceId;
 
-    private String instanceStatus;
+    private java.lang.String instanceStatus;
 
-    private String[] newWorkitemIds;
+    private java.lang.String[] newWorkitemIds;
 
     private boolean success;
 
@@ -30,12 +26,12 @@ public class ProcessResult  implements java.io.Serializable {
     }
 
     public ProcessResult(
-           String[] actorIds,
-           String entityId,
-           Error[] errors,
-           String instanceId,
-           String instanceStatus,
-           String[] newWorkitemIds,
+           java.lang.String[] actorIds,
+           java.lang.String entityId,
+           com.sforce.soap.partner.Error[] errors,
+           java.lang.String instanceId,
+           java.lang.String instanceStatus,
+           java.lang.String[] newWorkitemIds,
            boolean success) {
            this.actorIds = actorIds;
            this.entityId = entityId;
@@ -52,7 +48,7 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @return actorIds
      */
-    public String[] getActorIds() {
+    public java.lang.String[] getActorIds() {
         return actorIds;
     }
 
@@ -62,15 +58,15 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @param actorIds
      */
-    public void setActorIds(String[] actorIds) {
+    public void setActorIds(java.lang.String[] actorIds) {
         this.actorIds = actorIds;
     }
 
-    public String getActorIds(int i) {
+    public java.lang.String getActorIds(int i) {
         return this.actorIds[i];
     }
 
-    public void setActorIds(int i, String _value) {
+    public void setActorIds(int i, java.lang.String _value) {
         this.actorIds[i] = _value;
     }
 
@@ -80,7 +76,7 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @return entityId
      */
-    public String getEntityId() {
+    public java.lang.String getEntityId() {
         return entityId;
     }
 
@@ -90,7 +86,7 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @param entityId
      */
-    public void setEntityId(String entityId) {
+    public void setEntityId(java.lang.String entityId) {
         this.entityId = entityId;
     }
 
@@ -100,7 +96,7 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @return errors
      */
-    public Error[] getErrors() {
+    public com.sforce.soap.partner.Error[] getErrors() {
         return errors;
     }
 
@@ -110,15 +106,15 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @param errors
      */
-    public void setErrors(Error[] errors) {
+    public void setErrors(com.sforce.soap.partner.Error[] errors) {
         this.errors = errors;
     }
 
-    public Error getErrors(int i) {
+    public com.sforce.soap.partner.Error getErrors(int i) {
         return this.errors[i];
     }
 
-    public void setErrors(int i, Error _value) {
+    public void setErrors(int i, com.sforce.soap.partner.Error _value) {
         this.errors[i] = _value;
     }
 
@@ -128,7 +124,7 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @return instanceId
      */
-    public String getInstanceId() {
+    public java.lang.String getInstanceId() {
         return instanceId;
     }
 
@@ -138,7 +134,7 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @param instanceId
      */
-    public void setInstanceId(String instanceId) {
+    public void setInstanceId(java.lang.String instanceId) {
         this.instanceId = instanceId;
     }
 
@@ -148,7 +144,7 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @return instanceStatus
      */
-    public String getInstanceStatus() {
+    public java.lang.String getInstanceStatus() {
         return instanceStatus;
     }
 
@@ -158,7 +154,7 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @param instanceStatus
      */
-    public void setInstanceStatus(String instanceStatus) {
+    public void setInstanceStatus(java.lang.String instanceStatus) {
         this.instanceStatus = instanceStatus;
     }
 
@@ -168,7 +164,7 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @return newWorkitemIds
      */
-    public String[] getNewWorkitemIds() {
+    public java.lang.String[] getNewWorkitemIds() {
         return newWorkitemIds;
     }
 
@@ -178,15 +174,15 @@ public class ProcessResult  implements java.io.Serializable {
      * 
      * @param newWorkitemIds
      */
-    public void setNewWorkitemIds(String[] newWorkitemIds) {
+    public void setNewWorkitemIds(java.lang.String[] newWorkitemIds) {
         this.newWorkitemIds = newWorkitemIds;
     }
 
-    public String getNewWorkitemIds(int i) {
+    public java.lang.String getNewWorkitemIds(int i) {
         return this.newWorkitemIds[i];
     }
 
-    public void setNewWorkitemIds(int i, String _value) {
+    public void setNewWorkitemIds(int i, java.lang.String _value) {
         this.newWorkitemIds[i] = _value;
     }
 
@@ -210,8 +206,8 @@ public class ProcessResult  implements java.io.Serializable {
         this.success = success;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ProcessResult)) return false;
         ProcessResult other = (ProcessResult) obj;
         if (obj == null) return false;
@@ -256,7 +252,7 @@ public class ProcessResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getActorIds());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getActorIds(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getActorIds(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -270,7 +266,7 @@ public class ProcessResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getErrors());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getErrors(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getErrors(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -287,7 +283,7 @@ public class ProcessResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getNewWorkitemIds());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getNewWorkitemIds(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getNewWorkitemIds(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -366,8 +362,8 @@ public class ProcessResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -378,8 +374,8 @@ public class ProcessResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

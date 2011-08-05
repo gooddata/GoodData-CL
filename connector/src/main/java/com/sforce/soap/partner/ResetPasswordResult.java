@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * ResetPasswordResult.java
  *
@@ -12,13 +8,13 @@
 package com.sforce.soap.partner;
 
 public class ResetPasswordResult  implements java.io.Serializable {
-    private String password;
+    private java.lang.String password;
 
     public ResetPasswordResult() {
     }
 
     public ResetPasswordResult(
-           String password) {
+           java.lang.String password) {
            this.password = password;
     }
 
@@ -28,7 +24,7 @@ public class ResetPasswordResult  implements java.io.Serializable {
      * 
      * @return password
      */
-    public String getPassword() {
+    public java.lang.String getPassword() {
         return password;
     }
 
@@ -38,12 +34,12 @@ public class ResetPasswordResult  implements java.io.Serializable {
      * 
      * @param password
      */
-    public void setPassword(String password) {
+    public void setPassword(java.lang.String password) {
         this.password = password;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ResetPasswordResult)) return false;
         ResetPasswordResult other = (ResetPasswordResult) obj;
         if (obj == null) return false;
@@ -100,8 +96,8 @@ public class ResetPasswordResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -112,8 +108,8 @@ public class ResetPasswordResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

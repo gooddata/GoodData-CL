@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * GetDeletedResult.java
  *
@@ -12,22 +8,22 @@
 package com.sforce.soap.partner;
 
 public class GetDeletedResult  implements java.io.Serializable {
-    private DeletedRecord[] deletedRecords;
+    private com.sforce.soap.partner.DeletedRecord[] deletedRecords;
 
     private java.util.Calendar earliestDateAvailable;
 
     private java.util.Calendar latestDateCovered;
 
-    private String sforceReserved;
+    private java.lang.String sforceReserved;
 
     public GetDeletedResult() {
     }
 
     public GetDeletedResult(
-           DeletedRecord[] deletedRecords,
+           com.sforce.soap.partner.DeletedRecord[] deletedRecords,
            java.util.Calendar earliestDateAvailable,
            java.util.Calendar latestDateCovered,
-           String sforceReserved) {
+           java.lang.String sforceReserved) {
            this.deletedRecords = deletedRecords;
            this.earliestDateAvailable = earliestDateAvailable;
            this.latestDateCovered = latestDateCovered;
@@ -40,7 +36,7 @@ public class GetDeletedResult  implements java.io.Serializable {
      * 
      * @return deletedRecords
      */
-    public DeletedRecord[] getDeletedRecords() {
+    public com.sforce.soap.partner.DeletedRecord[] getDeletedRecords() {
         return deletedRecords;
     }
 
@@ -50,15 +46,15 @@ public class GetDeletedResult  implements java.io.Serializable {
      * 
      * @param deletedRecords
      */
-    public void setDeletedRecords(DeletedRecord[] deletedRecords) {
+    public void setDeletedRecords(com.sforce.soap.partner.DeletedRecord[] deletedRecords) {
         this.deletedRecords = deletedRecords;
     }
 
-    public DeletedRecord getDeletedRecords(int i) {
+    public com.sforce.soap.partner.DeletedRecord getDeletedRecords(int i) {
         return this.deletedRecords[i];
     }
 
-    public void setDeletedRecords(int i, DeletedRecord _value) {
+    public void setDeletedRecords(int i, com.sforce.soap.partner.DeletedRecord _value) {
         this.deletedRecords[i] = _value;
     }
 
@@ -108,7 +104,7 @@ public class GetDeletedResult  implements java.io.Serializable {
      * 
      * @return sforceReserved
      */
-    public String getSforceReserved() {
+    public java.lang.String getSforceReserved() {
         return sforceReserved;
     }
 
@@ -118,12 +114,12 @@ public class GetDeletedResult  implements java.io.Serializable {
      * 
      * @param sforceReserved
      */
-    public void setSforceReserved(String sforceReserved) {
+    public void setSforceReserved(java.lang.String sforceReserved) {
         this.sforceReserved = sforceReserved;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GetDeletedResult)) return false;
         GetDeletedResult other = (GetDeletedResult) obj;
         if (obj == null) return false;
@@ -161,7 +157,7 @@ public class GetDeletedResult  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getDeletedRecords());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getDeletedRecords(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getDeletedRecords(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -227,8 +223,8 @@ public class GetDeletedResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -239,8 +235,8 @@ public class GetDeletedResult  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

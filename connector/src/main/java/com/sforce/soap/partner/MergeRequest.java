@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * MergeRequest.java
  *
@@ -14,14 +10,14 @@ package com.sforce.soap.partner;
 public class MergeRequest  implements java.io.Serializable {
     private com.sforce.soap.partner.sobject.SObject masterRecord;
 
-    private String[] recordToMergeIds;
+    private java.lang.String[] recordToMergeIds;
 
     public MergeRequest() {
     }
 
     public MergeRequest(
            com.sforce.soap.partner.sobject.SObject masterRecord,
-           String[] recordToMergeIds) {
+           java.lang.String[] recordToMergeIds) {
            this.masterRecord = masterRecord;
            this.recordToMergeIds = recordToMergeIds;
     }
@@ -52,7 +48,7 @@ public class MergeRequest  implements java.io.Serializable {
      * 
      * @return recordToMergeIds
      */
-    public String[] getRecordToMergeIds() {
+    public java.lang.String[] getRecordToMergeIds() {
         return recordToMergeIds;
     }
 
@@ -62,20 +58,20 @@ public class MergeRequest  implements java.io.Serializable {
      * 
      * @param recordToMergeIds
      */
-    public void setRecordToMergeIds(String[] recordToMergeIds) {
+    public void setRecordToMergeIds(java.lang.String[] recordToMergeIds) {
         this.recordToMergeIds = recordToMergeIds;
     }
 
-    public String getRecordToMergeIds(int i) {
+    public java.lang.String getRecordToMergeIds(int i) {
         return this.recordToMergeIds[i];
     }
 
-    public void setRecordToMergeIds(int i, String _value) {
+    public void setRecordToMergeIds(int i, java.lang.String _value) {
         this.recordToMergeIds[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MergeRequest)) return false;
         MergeRequest other = (MergeRequest) obj;
         if (obj == null) return false;
@@ -110,7 +106,7 @@ public class MergeRequest  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getRecordToMergeIds());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getRecordToMergeIds(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getRecordToMergeIds(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -153,8 +149,8 @@ public class MergeRequest  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -165,8 +161,8 @@ public class MergeRequest  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(

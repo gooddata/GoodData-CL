@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * SforceServiceLocator.java
  *
@@ -11,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class SforceServiceLocator extends org.apache.axis.client.Service implements SforceService {
+public class SforceServiceLocator extends org.apache.axis.client.Service implements com.sforce.soap.partner.SforceService {
 
 /**
  * Sforce SOAP API
@@ -25,25 +21,25 @@ public class SforceServiceLocator extends org.apache.axis.client.Service impleme
         super(config);
     }
 
-    public SforceServiceLocator(String wsdlLoc, javax.xml.namespace.QName sName) throws javax.xml.rpc.ServiceException {
+    public SforceServiceLocator(java.lang.String wsdlLoc, javax.xml.namespace.QName sName) throws javax.xml.rpc.ServiceException {
         super(wsdlLoc, sName);
     }
 
     // Use to get a proxy class for Soap
-    private String Soap_address = "https://www.salesforce.com/services/Soap/u/16.0";
+    private java.lang.String Soap_address = "https://login.salesforce.com/services/Soap/u/22.0";
 
-    public String getSoapAddress() {
+    public java.lang.String getSoapAddress() {
         return Soap_address;
     }
 
     // The WSDD service name defaults to the port name.
-    private String SoapWSDDServiceName = "Soap";
+    private java.lang.String SoapWSDDServiceName = "Soap";
 
-    public String getSoapWSDDServiceName() {
+    public java.lang.String getSoapWSDDServiceName() {
         return SoapWSDDServiceName;
     }
 
-    public void setSoapWSDDServiceName(String name) {
+    public void setSoapWSDDServiceName(java.lang.String name) {
         SoapWSDDServiceName = name;
     }
 
@@ -69,7 +65,7 @@ public class SforceServiceLocator extends org.apache.axis.client.Service impleme
         }
     }
 
-    public void setSoapEndpointAddress(String address) {
+    public void setSoapEndpointAddress(java.lang.String address) {
         Soap_address = address;
     }
 
@@ -86,7 +82,7 @@ public class SforceServiceLocator extends org.apache.axis.client.Service impleme
                 return _stub;
             }
         }
-        catch (Throwable t) {
+        catch (java.lang.Throwable t) {
             throw new javax.xml.rpc.ServiceException(t);
         }
         throw new javax.xml.rpc.ServiceException("There is no stub implementation for the interface:  " + (serviceEndpointInterface == null ? "null" : serviceEndpointInterface.getName()));
@@ -101,7 +97,7 @@ public class SforceServiceLocator extends org.apache.axis.client.Service impleme
         if (portName == null) {
             return getPort(serviceEndpointInterface);
         }
-        String inputPortName = portName.getLocalPart();
+        java.lang.String inputPortName = portName.getLocalPart();
         if ("Soap".equals(inputPortName)) {
             return getSoap();
         }
@@ -129,7 +125,7 @@ public class SforceServiceLocator extends org.apache.axis.client.Service impleme
     /**
     * Set the endpoint address for the specified port name.
     */
-    public void setEndpointAddress(String portName, String address) throws javax.xml.rpc.ServiceException {
+    public void setEndpointAddress(java.lang.String portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
         
 if ("Soap".equals(portName)) {
             setSoapEndpointAddress(address);
@@ -143,7 +139,7 @@ if ("Soap".equals(portName)) {
     /**
     * Set the endpoint address for the specified port name.
     */
-    public void setEndpointAddress(javax.xml.namespace.QName portName, String address) throws javax.xml.rpc.ServiceException {
+    public void setEndpointAddress(javax.xml.namespace.QName portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
         setEndpointAddress(portName.getLocalPart(), address);
     }
 

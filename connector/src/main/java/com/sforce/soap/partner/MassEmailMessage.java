@@ -1,7 +1,3 @@
-/*
- * .
- */
-
 /**
  * MassEmailMessage.java
  *
@@ -11,30 +7,30 @@
 
 package com.sforce.soap.partner;
 
-public class MassEmailMessage  extends Email  implements java.io.Serializable {
-    private String description;
+public class MassEmailMessage  extends com.sforce.soap.partner.Email  implements java.io.Serializable {
+    private java.lang.String description;
 
-    private String[] targetObjectIds;
+    private java.lang.String[] targetObjectIds;
 
-    private String templateId;
+    private java.lang.String templateId;
 
-    private String[] whatIds;
+    private java.lang.String[] whatIds;
 
     public MassEmailMessage() {
     }
 
     public MassEmailMessage(
-           Boolean bccSender,
-           EmailPriority emailPriority,
-           String replyTo,
-           Boolean saveAsActivity,
-           String senderDisplayName,
-           String subject,
-           Boolean useSignature,
-           String description,
-           String[] targetObjectIds,
-           String templateId,
-           String[] whatIds) {
+           java.lang.Boolean bccSender,
+           com.sforce.soap.partner.EmailPriority emailPriority,
+           java.lang.String replyTo,
+           java.lang.Boolean saveAsActivity,
+           java.lang.String senderDisplayName,
+           java.lang.String subject,
+           java.lang.Boolean useSignature,
+           java.lang.String description,
+           java.lang.String[] targetObjectIds,
+           java.lang.String templateId,
+           java.lang.String[] whatIds) {
         super(
             bccSender,
             emailPriority,
@@ -55,7 +51,7 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * 
      * @return description
      */
-    public String getDescription() {
+    public java.lang.String getDescription() {
         return description;
     }
 
@@ -65,7 +61,7 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * 
      * @param description
      */
-    public void setDescription(String description) {
+    public void setDescription(java.lang.String description) {
         this.description = description;
     }
 
@@ -75,7 +71,7 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * 
      * @return targetObjectIds
      */
-    public String[] getTargetObjectIds() {
+    public java.lang.String[] getTargetObjectIds() {
         return targetObjectIds;
     }
 
@@ -85,15 +81,15 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * 
      * @param targetObjectIds
      */
-    public void setTargetObjectIds(String[] targetObjectIds) {
+    public void setTargetObjectIds(java.lang.String[] targetObjectIds) {
         this.targetObjectIds = targetObjectIds;
     }
 
-    public String getTargetObjectIds(int i) {
+    public java.lang.String getTargetObjectIds(int i) {
         return this.targetObjectIds[i];
     }
 
-    public void setTargetObjectIds(int i, String _value) {
+    public void setTargetObjectIds(int i, java.lang.String _value) {
         this.targetObjectIds[i] = _value;
     }
 
@@ -103,7 +99,7 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * 
      * @return templateId
      */
-    public String getTemplateId() {
+    public java.lang.String getTemplateId() {
         return templateId;
     }
 
@@ -113,7 +109,7 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * 
      * @param templateId
      */
-    public void setTemplateId(String templateId) {
+    public void setTemplateId(java.lang.String templateId) {
         this.templateId = templateId;
     }
 
@@ -123,7 +119,7 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * 
      * @return whatIds
      */
-    public String[] getWhatIds() {
+    public java.lang.String[] getWhatIds() {
         return whatIds;
     }
 
@@ -133,20 +129,20 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * 
      * @param whatIds
      */
-    public void setWhatIds(String[] whatIds) {
+    public void setWhatIds(java.lang.String[] whatIds) {
         this.whatIds = whatIds;
     }
 
-    public String getWhatIds(int i) {
+    public java.lang.String getWhatIds(int i) {
         return this.whatIds[i];
     }
 
-    public void setWhatIds(int i, String _value) {
+    public void setWhatIds(int i, java.lang.String _value) {
         this.whatIds[i] = _value;
     }
 
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
+    private java.lang.Object __equalsCalc = null;
+    public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MassEmailMessage)) return false;
         MassEmailMessage other = (MassEmailMessage) obj;
         if (obj == null) return false;
@@ -187,7 +183,7 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getTargetObjectIds());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getTargetObjectIds(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getTargetObjectIds(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -201,7 +197,7 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getWhatIds());
                  i++) {
-                Object obj = java.lang.reflect.Array.get(getWhatIds(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getWhatIds(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -257,8 +253,8 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanSerializer(
@@ -269,8 +265,8 @@ public class MassEmailMessage  extends Email  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
+           java.lang.String mechType, 
+           java.lang.Class _javaType,  
            javax.xml.namespace.QName _xmlType) {
         return 
           new  org.apache.axis.encoding.ser.BeanDeserializer(
