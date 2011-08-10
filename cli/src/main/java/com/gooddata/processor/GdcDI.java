@@ -453,12 +453,12 @@ public class GdcDI implements Executor {
 
     private static boolean checkJavaVersion() {
         String version = System.getProperty("java.version");
-        if(version.startsWith("1.6") || version.startsWith("1.5"))
+        if(version.startsWith("1.8") || version.startsWith("1.7") || version.startsWith("1.6") || version.startsWith("1.5"))
             return true;
         l.error("You're running Java "+version+". Please use Java 1.5 or higher for running this tool. " +
-                "Please refer to http://java.sun.com/javase/downloads/index.jsp for the Java 6 installation.");
+                "Please refer to http://java.sun.com/javase/downloads/index.jsp for a more recent Java version.");
         throw new InternalErrorException("You're running Java "+version+". Please use use Java 1.5 or higher for running this tool. " +
-                "Please refer to http://java.sun.com/javase/downloads/index.jsp for the Java 6 installation.");
+                "Please refer to http://java.sun.com/javase/downloads/index.jsp for a more recent Java version.");
     }
 
     /**
