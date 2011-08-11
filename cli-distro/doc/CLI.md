@@ -87,13 +87,17 @@ Project Management Commands:
 - usersFile - (optional) writes the user's URI to the specified file
 - append - (optional) should the users file be appended (default is false)
 
-`GetProjectUsers(usersFile="...", field = "...");` - get list of users from the current project
+`GetProjectUsers(usersFile="...", field = "...", activeOnly=<true|false>);` - get list of users from the current project
 - usersFile - writes the user's URI to the specified file
 - field - uri | email - writes either user uri or e-mail to the usersFile
+- activeOnly - (optional) lists only active users (not disabled) the false is default
 
 `AddUsersToProject(usersFile="...", role="...")` - adds users in the usersFile to the open project in a specific role
-- usersFile - (optional) writes the user's URI to the specified file
+- usersFile - the list of user URIs in a file
 - role  - (optional) initial user's role: admin|editor|dashboard only
+
+`DisableUsersInProject(usersFile="...")` - disables users in the usersFile in the open project
+- usersFile - the list of user URIs in a file
 
 `ExportProject(tokenFile="...", exportUsers="...", exportData="...", authorizedUsers="...");` - exports an existing project to temporary storage and returns the import token
 - tokenFile - a file where the import token will be stored

@@ -1485,19 +1485,19 @@ public class GdcRESTApiWrapper {
             }
             this.setLogin(v);
             v = c.getString("firstname");
-            if(v != null && v.trim().length()<=0) {
+            if(v != null && v.trim().length()>0) {
                 this.setFirstName(v);
             }
             v = c.getString("lastname");
-            if(v != null && v.trim().length()<=0) {
+            if(v != null && v.trim().length()>0) {
                 this.setLastName(v);
             }
             v = c.getString("phonenumber");
-            if(v != null && v.trim().length()<=0) {
+            if(v != null && v.trim().length()>0) {
                 this.setPhoneNumber(v);
             }
             v = c.getString("status");
-            if(v != null && v.trim().length()<=0) {
+            if(v != null && v.trim().length()>0) {
                 this.setStatus(v);
             }
             JSONObject l = u.getJSONObject("links");
@@ -1782,11 +1782,72 @@ public class GdcRESTApiWrapper {
     }
 
     /**
+     * Disables a user in project
+     *
+     * @param projectId project ID
+     * @param uris user URIs
+     * @throws GdcRestApiException
+     */
+    public void disableUsersInProject(String projectId, List<String> uris)
+            throws GdcRestApiException {
+
+            l.debug("Disabling users "+uris+" in project "+projectId);
+            String projectsUrl = getProjectUrl(projectId);
+
+            PostMethod req = createPostMethod(projectsUrl+PROJECT_USERS_SUFFIX);
+            JSONObject param = getDisableUsersInProjectStructure(uris);
+            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                    param.toString().getBytes()));
+            req.setRequestEntity(request);
+            String result = null;
+            try {
+                String response = executeMethodOk(req);
+                JSONObject responseObject = JSONObject.fromObject(response);
+                JSONObject projectUsersUpdateResult = responseObject.getJSONObject("projectUsersUpdateResult");
+                JSONArray failed = projectUsersUpdateResult.getJSONArray("failed");
+                if(!failed.isEmpty()) {
+                    String errMsg = "Following users can't be disabled in the project:";
+                    for(Object uri : failed.toArray()) {
+                        errMsg += " "+uris.toString();
+                    }
+                    l.debug(errMsg);
+                    throw new GdcRestApiException(errMsg);
+                }
+                //JSONArray successful = projectUsersUpdateResult.getJSONArray("successful");
+            } catch (HttpMethodException ex) {
+                l.debug("Error disabling users "+uris+" in project",ex);
+                throw new GdcRestApiException("Error disabling users "+uris+" in project ",ex);
+            } finally {
+                req.releaseConnection();
+            }
+    }
+
+    private JSONObject getDisableUsersInProjectStructure(List<String> uris) {
+        JSONObject param = new JSONObject();
+        JSONArray users = new JSONArray();
+        for(String uri : uris) {
+            JSONObject user = new JSONObject();
+            JSONObject content = new JSONObject();
+            content.put("status","DISABLED");
+            user.put("content", content);
+            JSONObject links = new JSONObject();
+            links.put("self", uri);
+            user.put("links", links);
+            JSONObject item = new JSONObject();
+            item.put("user",user);
+            users.add(item);
+        }
+        param.put("users", users);
+        return param;
+    }
+
+    /**
      * Returns the selected project's users
      * @param pid  project ID
+     * @param activeUsersOnly lists only active users
      * @return array of the project's users
      */
-    public ArrayList<GdcUser> getProjectUsers(String pid) {
+    public ArrayList<GdcUser> getProjectUsers(String pid, boolean activeUsersOnly) {
         ArrayList<GdcUser> ret = new ArrayList<GdcUser>();
         l.debug("Executing getProjectUsers for project id="+pid);
         HttpMethod req = createGetMethod(getProjectUrl(pid) + PROJECT_USERS_SUFFIX);
@@ -1804,7 +1865,10 @@ public class GdcRESTApiWrapper {
             }
             for(Object o : users) {
                 JSONObject user = (JSONObject)o;
-                ret.add(new GdcUser(user));
+                GdcUser g = new GdcUser(user);
+                if((activeUsersOnly && "ENABLED".equalsIgnoreCase(g.getStatus())) || (!activeUsersOnly)) {
+                    ret.add(g);
+                }
             }
             return ret;
         }
@@ -3269,7 +3333,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.38-BETA");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.39-BETA");
         return request;
     }
 

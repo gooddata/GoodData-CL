@@ -329,7 +329,7 @@ public class GdcDI implements Executor {
 
         if(cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.38-BETA" +
+            l.info("GoodData CL version 1.2.39-BETA" +
                     ((BUILD_NUMBER.length()>0) ? ", build "+BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -578,6 +578,9 @@ public class GdcDI implements Executor {
             else if(c.match("AddUsersToProject")) {
                 addUsersToProject(c, cli, ctx);
             }
+            else if(c.match("DisableUsersInProject")) {
+                disableUsersInProject(c, cli, ctx);
+            }
             else if(c.match("GetProjectUsers")) {
                 getProjectUsers(c, cli, ctx);
             }
@@ -777,6 +780,31 @@ public class GdcDI implements Executor {
         l.info("Users "+uris+"' successfully added to project "+pid);
     }
 
+
+    /**
+     * Adds a new user to project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void disableUsersInProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        l.info("Disabling users in project.");
+
+        String pid = ctx.getProjectIdMandatory();
+        String usersFile = c.getParamMandatory("usersFile");
+        List<String> uris = new ArrayList<String>();
+        BufferedReader r = FileUtil.createBufferedUtf8Reader(usersFile);
+        String uri = r.readLine();
+        while (uri != null && uri.trim().length()>0) {
+            uris.add(uri.trim());
+            uri = r.readLine();
+        }
+        ctx.getRestApi(p).disableUsersInProject(pid, uris);
+        l.info("Users "+uris+"' successfully disabled in project "+pid);
+    }
+
+
     /**
      * Adds a new user to project
      * @param c command
@@ -786,11 +814,14 @@ public class GdcDI implements Executor {
      */
     private void getProjectUsers(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String pid = ctx.getProjectIdMandatory();
-        l.info("Getting users from project"+pid);
+        l.info("Getting users from project "+pid);
         String usersFile = c.getParamMandatory("usersFile");
         String field = c.getParamMandatory("field");
+        String activeOnlys = c.getParam("activeOnly");
+        final boolean activeOnly = (activeOnlys != null && "true".equalsIgnoreCase(activeOnlys));
+
         if("email".equalsIgnoreCase(field) || "uri".equalsIgnoreCase(field)) {
-            List<GdcRESTApiWrapper.GdcUser> users = ctx.getRestApi(p).getProjectUsers(pid);
+            List<GdcRESTApiWrapper.GdcUser> users = ctx.getRestApi(p).getProjectUsers(pid,activeOnly);
             for(GdcRESTApiWrapper.GdcUser user : users) {
                 if("email".equalsIgnoreCase(field)) {
                     FileUtil.writeStringToFile(user.getLogin()+"\n", usersFile, true);

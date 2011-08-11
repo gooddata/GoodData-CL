@@ -10,3 +10,7 @@ CreateUser(domain="GoodData", username="jane.doe.3@gooddata.com", password="secr
 CreateProject(name="Users Test");
 
 AddUsersToProject(usersFile="examples/create_user/users.txt", role="DASHBOARD ONLY");
+GetProjectUsers(usersFile="examples/create_user/users.1.txt", field = "email", activeOnly="false");
+DisableUsersInProject(usersFile="examples/create_user/users.txt");
+GetProjectUsers(usersFile="examples/create_user/users.2.txt", field = "email", activeOnly="false");
+GetProjectUsers(usersFile="examples/create_user/users.3.txt", field = "email", activeOnly="true");
