@@ -23,11 +23,11 @@
 
 package org.snaplogic.snap.gooddata;
 
-import com.gooddata.exception.GdcLoginException;
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import com.gooddata.exception.HttpMethodException;
 import org.snaplogic.cc.*;
 import org.snaplogic.cc.prop.SimpleProp;
 import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
@@ -192,11 +192,11 @@ public class GoodDataConnection extends ComponentAPI {
 
     }
 
-    public static GdcRESTApiWrapper login(ResDef goodDataCon) throws GdcLoginException {
+    public static GdcRESTApiWrapper login(ResDef goodDataCon) throws HttpMethodException {
         return login(goodDataCon, null);
     }
 
-    public static GdcRESTApiWrapper login(ResDef goodDataCon, ComponentAPI comp) throws GdcLoginException {
+    public static GdcRESTApiWrapper login(ResDef goodDataCon, ComponentAPI comp) throws HttpMethodException {
         if (!goodDataCon.getComponentName().equals(GoodDataConnection.class.getName())) {
             throw new SnapComponentException("Incorrect ResDef for this operation: " + goodDataCon.getComponentName());
         }
@@ -211,7 +211,7 @@ public class GoodDataConnection extends ComponentAPI {
         return restApi;
     }
     
-    public static GdcDataTransferAPI getFtpWrapper(ResDef goodDataCon, ComponentAPI comp) throws GdcLoginException {
+    public static GdcDataTransferAPI getFtpWrapper(ResDef goodDataCon, ComponentAPI comp) throws HttpMethodException {
         if (!goodDataCon.getComponentName().equals(GoodDataConnection.class.getName())) {
             throw new SnapComponentException("Incorrect ResDef for this operation: " + goodDataCon.getComponentName());
         }

@@ -24,10 +24,10 @@
 package com.gooddata.processor;
 
 import com.gooddata.connector.Connector;
-import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.InvalidArgumentException;
 import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.exception.HttpMethodException;
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
@@ -94,7 +94,7 @@ public class ProcessingContext {
     }
 
 
-    public GdcRESTApiWrapper getRestApi(CliParams cliParams) throws GdcLoginException {
+    public GdcRESTApiWrapper getRestApi(CliParams cliParams) throws HttpMethodException {
     	if (_restApi == null) {
             NamePasswordConfiguration httpConfig = cliParams.getHttpConfig();
             checkConfig(httpConfig);

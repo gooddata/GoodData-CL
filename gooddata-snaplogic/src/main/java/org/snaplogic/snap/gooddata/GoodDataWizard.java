@@ -37,8 +37,8 @@ import org.snaplogic.util.ConvertUtils;
 
 import com.gooddata.connector.CsvConnector;
 import com.gooddata.connector.DateDimensionConnector;
-import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.GdcRestApiException;
+import com.gooddata.exception.HttpMethodException;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.modeling.model.SourceColumn;
@@ -441,7 +441,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		GdcRESTApiWrapper restApi;
 		try {
 			restApi = GoodDataConnection.login(conResDef, this);
-		} catch (GdcLoginException gdcle) {
+		} catch (HttpMethodException gdcle) {
 			elog(gdcle);
 			if (err == null) {
 				throw new SnapComponentException(gdcle);
@@ -741,7 +741,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			GdcRESTApiWrapper restApi;
 			try {
 				restApi = GoodDataConnection.login(connResDef, this);
-			} catch (GdcLoginException gdcle) {
+			} catch (HttpMethodException gdcle) {
 				elog(gdcle);
 				throw new SnapComponentException(gdcle);
 			}

@@ -139,9 +139,9 @@ public class GdcRESTApiWrapper {
      * GDC login - obtain GDC SSToken
      *
      * @return the new SS token
-     * @throws GdcLoginException
+     * @throws HttpMethodException
      */
-    public String login() throws GdcLoginException {
+    public String login() throws HttpMethodException {
         l.debug("Logging into GoodData.");
         JSONObject loginStructure = getLoginStructure();
         PostMethod loginPost = createPostMethod(getServerUrl() + LOGIN_URI);
@@ -165,9 +165,6 @@ public class GdcRESTApiWrapper {
                 throw new GdcRestApiException("Empty account profile.");
             }
             return ssToken;
-        } catch (HttpMethodException ex) {
-            l.debug("Error logging into GoodData.", ex);
-            throw new GdcLoginException("Login to GDC failed.", ex);
         } finally {
             loginPost.releaseConnection();
         }
@@ -193,16 +190,13 @@ public class GdcRESTApiWrapper {
     /**
      * Sets the SS token
      *
-     * @throws GdcLoginException
+     * @throws HttpMethodException
      */
-    private void setTokenCookie() throws GdcLoginException {
+    private void setTokenCookie() throws HttpMethodException {
         HttpMethod secutityTokenGet = createGetMethod(getServerUrl() + TOKEN_URI);
 
         try {
             executeMethodOk(secutityTokenGet);
-        } catch (HttpMethodException ex) {
-            l.debug("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
-            throw new GdcLoginException("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
         } finally {
             secutityTokenGet.releaseConnection();
         }
