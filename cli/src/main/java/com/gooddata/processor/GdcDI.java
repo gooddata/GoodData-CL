@@ -251,8 +251,8 @@ public class GdcDI implements Executor {
             finishedSucessfuly = false;
         }
         catch (HttpMethodException e) {
-            l.error("Error executing GoodData REST API: " + e.getMessage());
-            l.debug(e);
+            l.error(e.getMessage());
+            l.debug("Error executing GoodData REST API: " + e);
             Throwable c = e.getCause();
             while(c!=null) {
                 l.debug("Caused by: ",c);
