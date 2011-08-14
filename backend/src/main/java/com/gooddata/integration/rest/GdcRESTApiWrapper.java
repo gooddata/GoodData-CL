@@ -1968,19 +1968,30 @@ public class GdcRESTApiWrapper {
     private String executeMethodOk(HttpMethod method, boolean reloginOn401) throws HttpMethodException {
         try {
             client.executeMethod(method);
-            if (method.getStatusCode() == HttpStatus.SC_OK) {
+
+            /* HttpClient is rather unsupportive when it comes to robust interpreting
+             * of response classes; which is mandated by RFC and extensively used in
+             * GoodData API. Let us grok the classes ourselves. */
+
+            /* 2xx success class */
+            if (method.getStatusCode() == HttpStatus.SC_CREATED) {
                 return method.getResponseBodyAsString();
+            } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
+                throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
             } else if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
                 return "";
+            } else if (method.getStatusCode() >= HttpStatus.SC_OK
+                       && method.getStatusCode() < HttpStatus.SC_BAD_REQUEST) {
+                return method.getResponseBodyAsString();
+
+            /* 4xx user errors and
+             * 5xx backend trouble */
             } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reloginOn401) {
                 // refresh the temporary token
                 setTokenCookie();
                 return executeMethodOk(method, false);
-            } else if (method.getStatusCode() == HttpStatus.SC_CREATED) {
-                return method.getResponseBodyAsString();
-            } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
-                throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
-            } else {
+            } else if (method.getStatusCode() >= HttpStatus.SC_BAD_REQUEST
+                       && method.getStatusCode() < 600) {
                 String msg = method.getStatusCode() + " " + method.getStatusText();
                 String body = method.getResponseBodyAsString();
                 if (body != null) {
@@ -1994,7 +2005,14 @@ public class GdcRESTApiWrapper {
                 }
                 l.debug("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
                 throw new HttpMethodException("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
+
+            /* 1xx informational responses class and
+             * 3xx redirects should not get past the client library internals. */
+            } else {
+                throw new HttpMethodException("Unsupported HTTP status received from remote: " +
+                    method.getStatusCode());
             }
+
         } catch (HttpException e) {
             l.debug("Error invoking GoodData REST API.",e);
             throw new HttpMethodException("Error invoking GoodData REST API.",e);
