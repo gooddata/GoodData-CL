@@ -1992,19 +1992,7 @@ public class GdcRESTApiWrapper {
                 return executeMethodOk(method, false);
             } else if (method.getStatusCode() >= HttpStatus.SC_BAD_REQUEST
                        && method.getStatusCode() < 600) {
-                String msg = method.getStatusCode() + " " + method.getStatusText();
-                String body = method.getResponseBodyAsString();
-                if (body != null) {
-                    msg += ": ";
-                    try {
-                        JSONObject parsedBody = JSONObject.fromObject(body);
-                        msg += parsedBody.toString();
-                    } catch (JSONException jsone) {
-                        msg += body;
-                    }
-                }
-                l.debug("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
-                throw new HttpMethodException("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
+                throw new HttpMethodException(method);
 
             /* 1xx informational responses class and
              * 3xx redirects should not get past the client library internals. */

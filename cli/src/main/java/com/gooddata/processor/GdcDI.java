@@ -251,13 +251,22 @@ public class GdcDI implements Executor {
             finishedSucessfuly = false;
         }
         catch (HttpMethodException e) {
-            l.error(e.getMessage());
             l.debug("Error executing GoodData REST API: " + e);
             Throwable c = e.getCause();
             while(c!=null) {
                 l.debug("Caused by: ",c);
                 c = c.getCause();
             }
+
+            String msg = e.getMessage();
+            String requestId = e.getRequestId();
+            if (requestId != null) {
+                msg += "\n\n" +
+                    "If you believe this is not your fault, good people from support\n" +
+                    "portal (http://support.gooddata.com) may help you.\n\n" +
+                    "Show them this error ID: " + requestId;
+            }
+            l.error(msg);
             finishedSucessfuly = false;
         }
         catch (GdcRestApiException e) {
