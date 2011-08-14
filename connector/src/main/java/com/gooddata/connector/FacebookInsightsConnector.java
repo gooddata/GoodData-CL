@@ -135,7 +135,7 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
             } else {
                 String msg = method.getStatusCode() + " " + method.getStatusText();
                 l.debug("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
-                throw new HttpMethodException("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
+                throw new HttpMethodException(msg);
             }
         } catch (HttpException e) {
             l.debug("Error invoking Facebook REST API.",e);

@@ -28,11 +28,19 @@
 
 package com.gooddata.exception;
 
+import org.apache.commons.httpclient.*;
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import java.util.Formatter;
+
 /**
  * @author jiri.zaloudek
  */
 public class HttpMethodException extends GdcRestApiException {
 
+    private HttpMethod guiltyMethod = null;
 
     /**
      * Constructs an instance of <code>HttpMethodException</code> with the specified detail message.
@@ -41,6 +49,73 @@ public class HttpMethodException extends GdcRestApiException {
      */
     public HttpMethodException(String msg) {
         super(msg);
+    }
+
+    /**
+     * Returns an error message for <code>HttpMethodException</code>, attempting to
+     * use GoodData error message or HTTP status line for an exception that was constructed
+     * from a response to HTTP method call.
+     */
+    public String getMessage() {
+        if (guiltyMethod == null)
+            return super.getMessage();
+
+        String msg = guiltyMethod.getStatusCode() + " " + guiltyMethod.getStatusText();
+        String body = null;
+        try {
+            body = guiltyMethod.getResponseBodyAsString();
+        } catch (java.io.IOException ioexception) {
+            /* No body? No problem, msg is already set fine. */
+        }
+        if (body != null) {
+            try {
+                JSONObject error = JSONObject.fromObject(body);
+                /* Error structure sometimes lacks the tag... */
+                if (error.has("error"))
+                    error = error.getJSONObject("error");
+                msg = new Formatter().format(error.getString ("message"),
+                    error.getJSONArray ("parameters")).toString();
+            } catch (JSONException jsone) {
+                /* Do not worry about the non-standard or broken
+                 * error JSON. The msg is already meaningful enough.*/
+            }
+        }
+        return msg;
+    }
+
+    /**
+     * Returns the request id for <code>HttpMethodException</code> that was constructed
+     * from a response to HTTP method call.
+     */
+    public String getRequestId() {
+        try {
+            return guiltyMethod.getResponseHeader("X-GDC-Request").getValue();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Constructs an instance of <code>HttpMethodException</code> for a response to HTTP method call,
+     * interpreting GoodData error structures.
+     *
+     * @param method the call
+     * @param throwable original exception
+     */
+    public HttpMethodException(HttpMethod method, Throwable throwable) {
+        super(throwable);
+	guiltyMethod = method;
+    }
+
+    /**
+     * Constructs an instance of <code>HttpMethodException</code> for a response to HTTP method call,
+     * interpreting GoodData error structures.
+     *
+     * @param method the call
+     */
+    public HttpMethodException(HttpMethod method) {
+        super((String)null);
+	guiltyMethod = method;
     }
 
     public HttpMethodException(String msg, Throwable e) {

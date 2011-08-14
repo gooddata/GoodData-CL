@@ -144,15 +144,6 @@ public class GdcNotification {
             }
             l.debug("Error communicating with SalesForce.",e);
         }
-        catch (GdcLoginException e) {
-            l.error("Error logging to GoodData. Please check your GoodData username and password: "+e.getMessage());
-            Throwable c = e.getCause();
-            while(c!=null) {
-                l.error("Caused by: "+c.getMessage());
-                c = c.getCause();
-            }
-            l.debug("Error logging to GoodData. Please check your GoodData username and password.",e);
-        }
         catch (IOException e) {
             l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist. More info: '"+e.getMessage()+"'");
             Throwable c = e.getCause();

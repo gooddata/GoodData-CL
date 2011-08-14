@@ -23,11 +23,11 @@
 
 package org.snaplogic.snap.gooddata;
 
-import com.gooddata.exception.GdcLoginException;
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
+import com.gooddata.exception.HttpMethodException;
 import org.snaplogic.cc.ComponentAPI;
 import org.snaplogic.cc.InputView;
 import org.snaplogic.cc.OutputView;
@@ -74,7 +74,7 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
 
             GdcRESTApiWrapper restApi = GoodDataConnection.login(conResDef, this);
             return restApi;
-        } catch (GdcLoginException gdcle) {
+        } catch (HttpMethodException gdcle) {
             elog(gdcle);
             if (err == null) {
                 throw new SnapComponentException(gdcle);
@@ -105,7 +105,7 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
 
             GdcDataTransferAPI ftpApi = GoodDataConnection.getFtpWrapper(conResDef, this);
             return ftpApi;
-        } catch (GdcLoginException gdcle) {
+        } catch (HttpMethodException gdcle) {
             elog(gdcle);
             if (err == null) {
                 throw new SnapComponentException(gdcle);

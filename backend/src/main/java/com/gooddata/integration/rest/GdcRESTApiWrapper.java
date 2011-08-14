@@ -139,9 +139,9 @@ public class GdcRESTApiWrapper {
      * GDC login - obtain GDC SSToken
      *
      * @return the new SS token
-     * @throws GdcLoginException
+     * @throws HttpMethodException
      */
-    public String login() throws GdcLoginException {
+    public String login() throws HttpMethodException {
         l.debug("Logging into GoodData.");
         JSONObject loginStructure = getLoginStructure();
         PostMethod loginPost = createPostMethod(getServerUrl() + LOGIN_URI);
@@ -165,9 +165,6 @@ public class GdcRESTApiWrapper {
                 throw new GdcRestApiException("Empty account profile.");
             }
             return ssToken;
-        } catch (HttpMethodException ex) {
-            l.debug("Error logging into GoodData.", ex);
-            throw new GdcLoginException("Login to GDC failed.", ex);
         } finally {
             loginPost.releaseConnection();
         }
@@ -193,16 +190,13 @@ public class GdcRESTApiWrapper {
     /**
      * Sets the SS token
      *
-     * @throws GdcLoginException
+     * @throws HttpMethodException
      */
-    private void setTokenCookie() throws GdcLoginException {
+    private void setTokenCookie() throws HttpMethodException {
         HttpMethod secutityTokenGet = createGetMethod(getServerUrl() + TOKEN_URI);
 
         try {
             executeMethodOk(secutityTokenGet);
-        } catch (HttpMethodException ex) {
-            l.debug("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
-            throw new GdcLoginException("Cannot login to:" + getServerUrl() + TOKEN_URI + ".",ex);
         } finally {
             secutityTokenGet.releaseConnection();
         }
@@ -1964,6 +1958,10 @@ public class GdcRESTApiWrapper {
         return executeMethodOk(method, true);
     }
 
+    private String executeMethodOk(HttpMethod method, boolean reloginOn401) throws HttpMethodException {
+        return executeMethodOk(method, reloginOn401, 16);
+    }
+
     /**
      * Executes HttpMethod and test if the response if 200(OK)
      *
@@ -1971,36 +1969,54 @@ public class GdcRESTApiWrapper {
      * @return response body as String
      * @throws HttpMethodException
      */
-    private String executeMethodOk(HttpMethod method, boolean reloginOn401) throws HttpMethodException {
+    private String executeMethodOk(HttpMethod method, boolean reloginOn401, int retries) throws HttpMethodException {
         try {
             client.executeMethod(method);
-            if (method.getStatusCode() == HttpStatus.SC_OK) {
-                return method.getResponseBodyAsString();
-            } else if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
-                return "";
-            } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reloginOn401) {
-                // refresh the temporary token
-                setTokenCookie();
-                return executeMethodOk(method, false);
-            } else if (method.getStatusCode() == HttpStatus.SC_CREATED) {
+
+            /* HttpClient is rather unsupportive when it comes to robust interpreting
+             * of response classes; which is mandated by RFC and extensively used in
+             * GoodData API. Let us grok the classes ourselves. */
+
+            /* 2xx success class */
+            if (method.getStatusCode() == HttpStatus.SC_CREATED) {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
                 throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
-            } else {
-                String msg = method.getStatusCode() + " " + method.getStatusText();
-                String body = method.getResponseBodyAsString();
-                if (body != null) {
-                    msg += ": ";
-                    try {
-                        JSONObject parsedBody = JSONObject.fromObject(body);
-                        msg += parsedBody.toString();
-                    } catch (JSONException jsone) {
-                        msg += body;
-                    }
+            } else if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+                return "";
+            } else if (method.getStatusCode() >= HttpStatus.SC_OK
+                       && method.getStatusCode() < HttpStatus.SC_BAD_REQUEST) {
+                return method.getResponseBodyAsString();
+
+            /* 4xx user errors and
+             * 5xx backend trouble */
+            } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reloginOn401) {
+                // refresh the temporary token
+                setTokenCookie();
+                return executeMethodOk(method, false, retries);
+            } else if (method.getStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE && retries-- > 0
+                       && method.getResponseHeader("Retry-After") != null) {
+                /* This is recommended by RFC 2616 and should probably be dealt with by the
+                 * client library. May god have mercy with it. */
+                int timeout = Integer.parseInt(method.getResponseHeader ("Retry-After").getValue());
+                l.debug("Remote asked us to retry after " + timeout + " seconds, sleeping.");
+                l.debug(retries + " more retries");
+                try {
+                    Thread.currentThread().sleep(1000 * timeout);
+                } catch (java.lang.InterruptedException e) {
                 }
-                l.debug("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
-                throw new HttpMethodException("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
+                return executeMethodOk(method, false, retries);
+            } else if (method.getStatusCode() >= HttpStatus.SC_BAD_REQUEST
+                       && method.getStatusCode() < 600) {
+                throw new HttpMethodException(method);
+
+            /* 1xx informational responses class and
+             * 3xx redirects should not get past the client library internals. */
+            } else {
+                throw new HttpMethodException("Unsupported HTTP status received from remote: " +
+                    method.getStatusCode());
             }
+
         } catch (HttpException e) {
             l.debug("Error invoking GoodData REST API.",e);
             throw new HttpMethodException("Error invoking GoodData REST API.",e);

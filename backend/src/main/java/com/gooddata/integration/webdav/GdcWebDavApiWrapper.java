@@ -170,7 +170,7 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
                     }
                 }
                 l.debug("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
-                throw new HttpMethodException("Exception executing " + method.getName() + " on " + method.getPath() + ": " + msg);
+                throw new HttpMethodException(msg);
             }
         } catch (HttpException e) {
             l.debug("Error invoking GoodData WebDav API.",e);

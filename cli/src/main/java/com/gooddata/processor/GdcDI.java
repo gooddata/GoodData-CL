@@ -52,7 +52,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.gooddata.exception.GdcException;
-import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.GdcRestApiException;
 import com.gooddata.exception.HttpMethodException;
 import com.gooddata.exception.InternalErrorException;
@@ -221,16 +220,6 @@ public class GdcDI implements Executor {
             }
             finishedSucessfuly = false;
         }
-        catch (GdcLoginException e) {
-            l.error("Error logging to GoodData. Please check your GoodData username and password: " + e.getMessage());
-            l.debug(e);
-            Throwable c = e.getCause();
-            while(c!=null) {
-                l.debug("Caused by: ",c);
-                c = c.getCause();
-            }
-            finishedSucessfuly = false;
-        }        
         catch (IOException e) {
             l.error("Encountered an IO problem. Please check that all files that you use in your command line arguments and commands exist." + e.getMessage());
             l.debug(e);
@@ -262,13 +251,22 @@ public class GdcDI implements Executor {
             finishedSucessfuly = false;
         }
         catch (HttpMethodException e) {
-            l.error("Error executing GoodData REST API: " + e.getMessage());
-            l.debug(e);
+            l.debug("Error executing GoodData REST API: " + e);
             Throwable c = e.getCause();
             while(c!=null) {
                 l.debug("Caused by: ",c);
                 c = c.getCause();
             }
+
+            String msg = e.getMessage();
+            String requestId = e.getRequestId();
+            if (requestId != null) {
+                msg += "\n\n" +
+                    "If you believe this is not your fault, good people from support\n" +
+                    "portal (http://support.gooddata.com) may help you.\n\n" +
+                    "Show them this error ID: " + requestId;
+            }
+            l.error(msg);
             finishedSucessfuly = false;
         }
         catch (GdcRestApiException e) {
