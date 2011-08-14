@@ -1958,6 +1958,10 @@ public class GdcRESTApiWrapper {
         return executeMethodOk(method, true);
     }
 
+    private String executeMethodOk(HttpMethod method, boolean reloginOn401) throws HttpMethodException {
+        return executeMethodOk(method, reloginOn401, 16);
+    }
+
     /**
      * Executes HttpMethod and test if the response if 200(OK)
      *
@@ -1965,7 +1969,7 @@ public class GdcRESTApiWrapper {
      * @return response body as String
      * @throws HttpMethodException
      */
-    private String executeMethodOk(HttpMethod method, boolean reloginOn401) throws HttpMethodException {
+    private String executeMethodOk(HttpMethod method, boolean reloginOn401, int retries) throws HttpMethodException {
         try {
             client.executeMethod(method);
 
@@ -1989,7 +1993,19 @@ public class GdcRESTApiWrapper {
             } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reloginOn401) {
                 // refresh the temporary token
                 setTokenCookie();
-                return executeMethodOk(method, false);
+                return executeMethodOk(method, false, retries);
+            } else if (method.getStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE && retries-- > 0
+                       && method.getResponseHeader("Retry-After") != null) {
+                /* This is recommended by RFC 2616 and should probably be dealt with by the
+                 * client library. May god have mercy with it. */
+                int timeout = Integer.parseInt(method.getResponseHeader ("Retry-After").getValue());
+                l.debug("Remote asked us to retry after " + timeout + " seconds, sleeping.");
+                l.debug(retries + " more retries");
+                try {
+                    Thread.currentThread().sleep(1000 * timeout);
+                } catch (java.lang.InterruptedException e) {
+                }
+                return executeMethodOk(method, false, retries);
             } else if (method.getStatusCode() >= HttpStatus.SC_BAD_REQUEST
                        && method.getStatusCode() < 600) {
                 throw new HttpMethodException(method);
