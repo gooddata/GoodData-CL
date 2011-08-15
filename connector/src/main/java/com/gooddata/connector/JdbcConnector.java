@@ -233,7 +233,6 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             }
         }
         getConnectorBackend().extract(dataFile, false,',');
-        FileUtil.recursiveDelete(dataFile);
     }
 
     /**

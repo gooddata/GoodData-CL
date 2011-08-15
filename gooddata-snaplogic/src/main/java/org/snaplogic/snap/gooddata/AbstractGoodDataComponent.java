@@ -24,6 +24,7 @@
 package org.snaplogic.snap.gooddata;
 
 import com.gooddata.exception.GdcLoginException;
+import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
@@ -63,7 +64,7 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
         return login(null);
     }
     
-    protected GdcFTPApiWrapper ftpLogin() {
+    protected GdcDataTransferAPI ftpLogin() {
         return ftpLogin(null);
     }
 
@@ -98,11 +99,11 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
 		return conResDef;
 	}
     
-    protected GdcFTPApiWrapper ftpLogin(ComponentResourceErr err) {
+    protected GdcDataTransferAPI ftpLogin(ComponentResourceErr err) {
         ResDef conResDef = getConnectionReference(err);
         try {
 
-            GdcFTPApiWrapper ftpApi = GoodDataConnection.getFtpWrapper(conResDef, this);
+            GdcDataTransferAPI ftpApi = GoodDataConnection.getFtpWrapper(conResDef, this);
             return ftpApi;
         } catch (GdcLoginException gdcle) {
             elog(gdcle);

@@ -24,6 +24,7 @@
 package org.snaplogic.snap.gooddata;
 
 import com.gooddata.exception.GdcLoginException;
+import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
@@ -210,13 +211,13 @@ public class GoodDataConnection extends ComponentAPI {
         return restApi;
     }
     
-    public static GdcFTPApiWrapper getFtpWrapper(ResDef goodDataCon, ComponentAPI comp) throws GdcLoginException {
+    public static GdcDataTransferAPI getFtpWrapper(ResDef goodDataCon, ComponentAPI comp) throws GdcLoginException {
         if (!goodDataCon.getComponentName().equals(GoodDataConnection.class.getName())) {
             throw new SnapComponentException("Incorrect ResDef for this operation: " + goodDataCon.getComponentName());
         }
 
         NamePasswordConfiguration config = getFtpConfiguration(goodDataCon);
-        GdcFTPApiWrapper restApi = new GdcFTPApiWrapper(config);
+        GdcDataTransferAPI restApi = new GdcFTPApiWrapper(config);
         return restApi;
     }
     

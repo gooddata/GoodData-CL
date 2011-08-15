@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import org.snaplogic.cc.Capabilities;
 import org.snaplogic.cc.Capability;
 import org.snaplogic.cc.InputView;
@@ -455,7 +456,7 @@ public class GoodDataPut extends AbstractGoodDataComponent {
 
 		info("Staged CSVs will be uploaded to GoodData. Logging in...");
 		GdcRESTApiWrapper restApi = login();
-		GdcFTPApiWrapper ftpApi = ftpLogin();
+		GdcDataTransferAPI ftpApi = ftpLogin();
 
 		String projectLabel = (String) getPropertyValue(PROP_PROJECT_NAME);
 		String dliName = (String) getPropertyValue(PROP_DLI);

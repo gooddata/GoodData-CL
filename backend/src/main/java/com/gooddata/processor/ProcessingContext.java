@@ -29,9 +29,11 @@ import com.gooddata.exception.GdcLoginException;
 import com.gooddata.exception.InvalidArgumentException;
 import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import com.gooddata.integration.webdav.GdcWebDavApiWrapper;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
@@ -48,9 +50,8 @@ public class ProcessingContext {
     private String projectId;
     private Connector connector;
     private GdcRESTApiWrapper _restApi = null;
-    private GdcFTPApiWrapper _ftpApi = null;
+    private GdcDataTransferAPI _ftpApi = null;
     private ConnectorBackend backend = null;
-
 
     public String getProjectId() throws InvalidParameterException {
         return projectId;
@@ -113,12 +114,14 @@ public class ProcessingContext {
     	return _restApi;
     }
 
-    public GdcFTPApiWrapper getFtpApi(CliParams cliParams) {
+    public GdcDataTransferAPI getFtpApi(CliParams cliParams) {
     	if (_ftpApi == null) {
             NamePasswordConfiguration ftpConfig = cliParams.getFtpConfig();
+            //TODO: Webdav vs. FTP 
             checkConfig(ftpConfig);
 	        l.debug("Using the GoodData FTP host '" + ftpConfig.getGdcHost() + "'.");
 	        _ftpApi = new GdcFTPApiWrapper(ftpConfig);
+            //_ftpApi = new GdcWebDavApiWrapper(ftpConfig);
     	}
     	return _ftpApi;
     }
