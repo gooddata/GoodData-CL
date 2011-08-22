@@ -33,7 +33,7 @@ import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 
 
-public class CsvConnnectorTest extends TestCase {
+public class CsvConnectorTest extends TestCase {
 
 	public void testGuessSourceSchema() throws IOException {
 		

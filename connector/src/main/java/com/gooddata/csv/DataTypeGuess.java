@@ -31,15 +31,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.gooddata.Constants;
-import com.gooddata.exception.InvalidParameterException;
-import com.gooddata.util.CSVReader;
-
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.util.FileUtil;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import com.gooddata.Constants;
+import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.util.CSVReader;
+import com.gooddata.util.FileUtil;
 
 /**
  * GoodData CSV data type guessing
@@ -50,21 +50,21 @@ import org.joda.time.format.DateTimeFormatter;
 public class DataTypeGuess {
 
     private static final String[] DATE_FORMATS = {"yyyy-MM-dd", "MM/dd/yyyy","M/d/yyyy","MM-dd-yyyy",
-            "yyyy-M-d","M-d-yyyy"};
+        "yyyy-M-d","M-d-yyyy"};
     private static DateTimeFormatter[] KNOWN_FORMATS;
 
-	private final boolean hasHeader;
-	private String defaultLdmType = null;
-	
-	public DataTypeGuess(boolean hasHeader) {
-		this.hasHeader = hasHeader;
+    private final boolean hasHeader;
+    private String defaultLdmType = null;
+
+    public DataTypeGuess(boolean hasHeader) {
+        this.hasHeader = hasHeader;
         KNOWN_FORMATS = new DateTimeFormatter[DATE_FORMATS.length];
         for(int i=0; i<DATE_FORMATS.length; i++) {
             KNOWN_FORMATS[i] = DateTimeFormat.forPattern(DATE_FORMATS[i]);
         }
-	}
-	
-	/**
+    }
+
+    /**
      * Tests if the String is integer
      * @param t the tested String
      * @return true if the String is integer, false otherwise
@@ -85,14 +85,14 @@ public class DataTypeGuess {
      * @return true if the String is decimal, false otherwise
      */
     public static boolean isDecimal(String t) {
-    	for (String c : Constants.DISCARD_CHARS) {
-    		t = t.replace(c, "");
-    	}
+        for (String c : Constants.DISCARD_CHARS) {
+            t = t.replace(c, "");
+        }
         try {
             /*
             if(isInteger(t))
                 return false;
-            */
+             */
             Double.parseDouble(t);
             return true;
         }
@@ -115,12 +115,12 @@ public class DataTypeGuess {
                     return DATE_FORMATS[i];
             }
             catch(IllegalArgumentException e) {
-                // do nothing    
+                // do nothing
             }
         }
         return null;
     }
-    
+
     /**
      * Guesses the CSV schema
      * @param separator field separator
@@ -128,19 +128,19 @@ public class DataTypeGuess {
      * @throws IOException in case of IO issue
      */
     public SourceColumn[] guessCsvSchema(URL url, char separator) throws IOException {
-    	return guessCsvSchema(url.openStream(), separator);
+        return guessCsvSchema(url.openStream(), separator);
     }
 
     /**
      * Guesses the CSV schema
      * @param is CSV stream
-     * @param separator field separator 
+     * @param separator field separator
      * @return the String[] with the CSV column types
      * @throws IOException in case of IO issue
      */
     public SourceColumn[] guessCsvSchema(InputStream is, char separator) throws IOException {
-    	CSVReader cr = FileUtil.createUtf8CsvReader(is, separator);
-    	return guessCsvSchema(cr);
+        CSVReader cr = FileUtil.createUtf8CsvReader(is, separator);
+        return guessCsvSchema(cr);
     }
 
     /**
@@ -150,17 +150,29 @@ public class DataTypeGuess {
      * @throws IOException in case of IO issue
      */
     public SourceColumn[] guessCsvSchema(CSVReader cr) throws IOException {
-        String[] header = null;
+        return guessCsvSchema(cr, -1);
+    }
+    /**
+     * Guesses the CSV schema
+     * @param cr CSV reader
+     * @return the String[] with the CSV column types
+     * @throws IOException in case of IO issue
+     */
+    public SourceColumn[] guessCsvSchema(CSVReader cr, int columns) throws IOException {
 
         if(hasHeader) {
-            header = cr.readNext();
+            columns = cr.readNext().length;
+        }
+        if (columns==-1)
+        {
+            throw new UnsupportedOperationException("You have to specify number of columns if the CSV does not have a header.");
         }
 
         List<Set<String>> excludedColumnTypes = new ArrayList<Set<String>>();
-        String[] dateFormats = new String[header.length];
+        String[] dateFormats = new String[columns];
 
         if (defaultLdmType == null) {
-	        String[] row = cr.readNext();
+            String[] row = cr.readNext();
             if(row != null) {
                 for(int i=0; i < row.length; i++) {
                     HashSet<String> allTypes = new HashSet<String>();
@@ -170,8 +182,7 @@ public class DataTypeGuess {
                 while(row != null && countdown-- >0) {
                     for(int i=0; i< row.length; i++) {
                         if(i >= excludedColumnTypes.size())
-                            throw new InvalidParameterException("The CSV file contains rows with different number of columns." +
-                                    " Quitting.");
+                            throw new InvalidParameterException("The CSV file contains rows with different number of columns on row "+cr.getRow());
                         Set<String> types = excludedColumnTypes.get(i);
                         String value = row[i];
                         String dateFormat = getDateFormat(value);
@@ -188,14 +199,13 @@ public class DataTypeGuess {
                 }
             }
         }
-        
-        final int columns = (header == null) ? excludedColumnTypes.size() : header.length;
+
         SourceColumn[] ret = new SourceColumn[columns];
         for(int i=0; i < columns; i++) {
             final String ldmType;
             if (defaultLdmType != null)
-            	ldmType = defaultLdmType;
-        	else {
+                ldmType = defaultLdmType;
+            else {
                 if(i >= excludedColumnTypes.size()) {
                     ldmType = SourceColumn.LDM_TYPE_ATTRIBUTE;
                 }
@@ -208,11 +218,11 @@ public class DataTypeGuess {
                     else
                         ldmType = SourceColumn.LDM_TYPE_ATTRIBUTE;
                 }
-        	}
+            }
 
             ret[i] = new SourceColumn(null, ldmType, null);
             if (SourceColumn.LDM_TYPE_DATE.equals(ldmType)) {
-            	ret[i].setFormat(dateFormats[i]);
+                ret[i].setFormat(dateFormats[i]);
             }
         }
         return ret;
@@ -224,19 +234,19 @@ public class DataTypeGuess {
      * 
      * @return
      */
-	public String getDefaultLdmType() {
-		return defaultLdmType;
-	}
+    public String getDefaultLdmType() {
+        return defaultLdmType;
+    }
 
-	/**
-	 * sets the default LDM type to be associated with detected fields rather
+    /**
+     * sets the default LDM type to be associated with detected fields rather
      * than by guessing
      * 
-	 * @param defaultLdmType
-	 */
-	public void setDefaultLdmType(String defaultLdmType) {
-		this.defaultLdmType = defaultLdmType;
-	}
+     * @param defaultLdmType
+     */
+    public void setDefaultLdmType(String defaultLdmType) {
+        this.defaultLdmType = defaultLdmType;
+    }
 
 
 }

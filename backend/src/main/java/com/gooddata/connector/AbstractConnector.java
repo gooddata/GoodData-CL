@@ -29,19 +29,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.gooddata.Constants;
-import com.gooddata.exception.GdcIntegrationErrorException;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.SLI;
-import com.gooddata.integration.rest.GdcRESTApiWrapper;
-import com.gooddata.transform.Transformer;
-import com.gooddata.util.CSVReader;
-import com.gooddata.util.CSVWriter;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
+import com.gooddata.Constants;
+import com.gooddata.exception.GdcIntegrationErrorException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
+import com.gooddata.integration.model.Column;
+import com.gooddata.integration.model.SLI;
+import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.modeling.generator.MaqlGenerator;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
@@ -49,8 +46,10 @@ import com.gooddata.naming.N;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.transform.Transformer;
+import com.gooddata.util.CSVReader;
+import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
-import com.gooddata.util.StringUtil;
 
 /**
  * GoodData abstract connector implements functionality that can be reused in several connectors.
@@ -97,7 +96,7 @@ public abstract class AbstractConnector implements Connector {
 
 
 
-/**
+    /**
      * {@inheritDoc}
      */
     public void extract(String dir) throws IOException {
@@ -129,35 +128,35 @@ public abstract class AbstractConnector implements Connector {
         String[] row = cr.readNext();
         int rowCnt = 0;
         while (row != null) {
-                rowCnt++;
-                if(row.length == 1 && row[0].length() == 0) {
-                    row = cr.readNext();
-                    continue;
-                }
-                if(transform) {
-                    try {
-                        row = t.transformRow(row, dateLength);
-                    }
-                    catch (InvalidParameterException e) {
-                        throw new InvalidParameterException(e.getMessage()+" Error occured at row "+rowCnt);
-                    }
-                }
-                cw.writeNext(row);
-                cw.flush();
+            rowCnt++;
+            if(row.length == 1 && row[0].length() == 0) {
                 row = cr.readNext();
+                continue;
+            }
+            if(transform) {
+                try {
+                    row = t.transformRow(row, dateLength);
+                }
+                catch (InvalidParameterException e) {
+                    throw new InvalidParameterException(e.getMessage()+" Error occured at row "+rowCnt);
+                }
+            }
+            cw.writeNext(row);
+            cw.flush();
+            row = cr.readNext();
         }
         cw.close();
         cr.close();
         return rowCnt;
     }
 
-/**
+    /**
      * Extract rows
      * @param file name of the target file
      * @param transform perform transformations
      * @throws IOException
      */
-     public abstract void extract(String file, final boolean transform) throws IOException;
+    public abstract void extract(String file, final boolean transform) throws IOException;
 
     /**
      * {@inheritDoc}
@@ -218,8 +217,8 @@ public abstract class AbstractConnector implements Connector {
     }
 
     public String generateMaqlCreate() {
-    	MaqlGenerator mg = new MaqlGenerator(schema);
-    	return mg.generateMaqlCreate();
+        MaqlGenerator mg = new MaqlGenerator(schema);
+        return mg.generateMaqlCreate();
     }
 
     /**
@@ -273,7 +272,7 @@ public abstract class AbstractConnector implements Connector {
         l.debug("Executing maql generation.");
         String maql = cc.generateMaqlCreate();
         l.debug("Finished maql generation maql:\n"+maql);
-               
+
         FileUtil.writeStringToFile(maql, maqlFile);
         l.info("MAQL script successfully generated into "+maqlFile);
     }
@@ -293,8 +292,8 @@ public abstract class AbstractConnector implements Connector {
         final boolean ifExists = (ifExistsStr != null && "true".equalsIgnoreCase(ifExistsStr));
         final File mf = FileUtil.getFile(maqlFile, ifExists);
         if (mf != null) {
-	        final String maql = FileUtil.readStringFromFile(maqlFile);
-	        ctx.getRestApi(p).executeMAQL(pid, maql);
+            final String maql = FileUtil.readStringFromFile(maqlFile);
+            ctx.getRestApi(p).executeMAQL(pid, maql);
         }
         l.debug("Finished MAQL execution.");
         l.info("MAQL script "+maqlFile+" successfully executed.");
@@ -312,7 +311,7 @@ public abstract class AbstractConnector implements Connector {
         l.debug("Transferring data.");
         Connector cc = ctx.getConnectorMandatory();
         String pid = ctx.getProjectIdMandatory();
-        
+
         boolean waitForFinish = true;
         if(c.checkParam("waitForFinish")) {
             String w = c.getParam( "waitForFinish");
@@ -350,9 +349,9 @@ public abstract class AbstractConnector implements Connector {
                 Column c = new Column(sc.getName());
                 c.setMode(Column.LM_FULL);
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
-                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
-                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
-                   sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
+                        sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
+                        sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
+                        sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
                     c.setReferenceKey(1);
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE))
                     c.setPopulates(new String[] {"label." + schemaName + "." + scn});
@@ -366,9 +365,10 @@ public abstract class AbstractConnector implements Connector {
                     }
                     else
                         c.setPopulates(new String[] {"label." + sc.getSchemaReference() +
-                            "." + sc.getReference()});
+                                "." + sc.getReference()});
                 }
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL))
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL) ||
+                        sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_HYPERLINK))
                     c.setPopulates(new String[] {"label." + ssn + "." + sc.getReference() +
                             "." + scn});
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
@@ -397,7 +397,7 @@ public abstract class AbstractConnector implements Connector {
                         }
                     }
                     else {
-                        c.setPopulates(new String[] {"label." + ssn + "." + scn});   
+                        c.setPopulates(new String[] {"label." + ssn + "." + scn});
                     }
 
                 }
@@ -424,8 +424,8 @@ public abstract class AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
-    	throws IOException, InterruptedException
-    {
+            throws IOException, InterruptedException
+            {
         // connector's schema name
         String ssn = cc.getSchema().getName();
         l.debug("Extracting data.");
@@ -434,9 +434,9 @@ public abstract class AbstractConnector implements Connector {
         String archiveName = tmpDir.getName();
         MDC.put("GdcDataPackageDir",archiveName);
         String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
-            archiveName + ".zip";
+                archiveName + ".zip";
 
-        // get information about the data loading package      
+        // get information about the data loading package
         SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
         List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
         List<Column> columns = populateColumnsFromSchema(cc.getSchema());
@@ -454,7 +454,7 @@ public abstract class AbstractConnector implements Connector {
 
         // extract the data to the CSV that is going to be transferred to the server
         cc.extract(tmpDir.getAbsolutePath());
-        
+
         cc.deploy(sli, columns, tmpDir.getAbsolutePath(), archivePath);
         // transfer the data package to the GoodData server
         ctx.getFtpApi(p).transferDir(archivePath);
@@ -469,7 +469,7 @@ public abstract class AbstractConnector implements Connector {
         FileUtil.recursiveDelete(tmpZipDir);
         MDC.remove("GdcDataPackageDir");
         l.debug("Data extract finished.");
-    }
+            }
 
     /**
      * Sets the incremental loading status for a part
@@ -535,7 +535,7 @@ public abstract class AbstractConnector implements Connector {
 
 
     /**
-     * Generate the MAQL for new columns 
+     * Generate the MAQL for new columns
      * @param c command
      * @param p cli parameters
      * @param ctx current context
@@ -543,8 +543,8 @@ public abstract class AbstractConnector implements Connector {
      */
     private void generateUpdateMaql(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         l.debug("Updating MAQL.");
-    	//final String configFile = c.getParamMandatory( "configFile");
-    	//final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
+        //final String configFile = c.getParamMandatory( "configFile");
+        //final SourceSchema schema = SourceSchema.createSchema(new File(configFile));
         final Connector cc = ctx.getConnectorMandatory();
         final SourceSchema schema = cc.getSchema();
 
@@ -598,7 +598,7 @@ public abstract class AbstractConnector implements Connector {
     public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
-   
+
 
     /**
      * Sets the project id from context
@@ -615,8 +615,8 @@ public abstract class AbstractConnector implements Connector {
      * Class wrapping local changes to a server-side model
      */
     private static class Changes {
-    	private List<SourceColumn> newColumns = new ArrayList<SourceColumn>();
-    	private List<SourceColumn> deletedColumns = new ArrayList<SourceColumn>();
+        private List<SourceColumn> newColumns = new ArrayList<SourceColumn>();
+        private List<SourceColumn> deletedColumns = new ArrayList<SourceColumn>();
     }
 
 }
