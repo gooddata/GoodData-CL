@@ -38,10 +38,20 @@ import com.gooddata.Constants;
  */
 public class SLI {
 
-    private String id;
-    private String name;
-    private String link;
+    private final String id;
+    private final String name;
+    private final String link;
     private String format;
+
+    /**
+     * Constructs the new SLI
+     */
+    public SLI(String id, String name, String link) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.link = link;
+    }
 
     /**
      * Constructs the new SLI
@@ -49,10 +59,9 @@ public class SLI {
      * @param dli the JSON object from the GoodData REST API
      */
     public SLI(JSONObject dli) {
-        super();
-        name = dli.getString("title");
-        link = dli.getString("link");
-        id = dli.getString("identifier");
+        this(dli.getString("identifier"),
+                dli.getString("title"),
+                dli.getString("link"));
     }
 
     /**

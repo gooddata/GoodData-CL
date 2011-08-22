@@ -130,31 +130,40 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         }
     }
 
-
     /**
-     * {@inheritDoc}
+     * Generate manifest file for date dimension in provided directory
+     * @param dir
+     * @throws IOException
      */
-    public void deploy(String dir, String archiveName)
-            throws IOException {
+    public void deploy(String dir) throws IOException {
         l.debug("Extracting time dimension manifest "+name);
-        String fn = dir + System.getProperty("file.separator") +
-                GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
+        String fn = dir + System.getProperty("file.separator") + GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
 
-        if(name == null || name.trim().length()<=0)
+        if(name == null || name.trim().length()<=0) {
             name = "";
+        }
+
         String idp = StringUtil.toIdentifier(name);
-        String script = "";
+        StringBuffer script = new StringBuffer();
         BufferedReader is = new BufferedReader(new InputStreamReader(
                 DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/upload_info.json")));
         String line = is.readLine();
         while (line != null) {
-            script += line.replace("%id%", idp) + "\n";
+            script.append(line.replace("%id%", idp) + "\n");
             line = is.readLine();
         }
-        FileUtil.writeStringToFile(script, fn);
+        FileUtil.writeStringToFile(script.toString(), fn);
         l.debug("Manifest file written to file '"+fn+"'. Content: "+script);
+    }
+
+    /**
+     * Generate manifest file for date dimension in provided directory
+     * and compress it to archiveName zip archive
+     */
+    public void deploy(String dir, String archiveName) throws IOException {
+        deploy(dir);
         FileUtil.compressDir(dir, archiveName);
-        l.debug("Extracted time dimension manifest "+name);
+        l.debug("Time dimension temp dir compressed: "+name);
     }
 
     /**
@@ -258,5 +267,11 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         this.type = type;
     }
 
+    public boolean isIncludeTime() {
+        return includeTime;
+    }
 
+    public void setIncludeTime(boolean includeTime) {
+        this.includeTime = includeTime;
+    }
 }

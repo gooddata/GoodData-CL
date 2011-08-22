@@ -41,6 +41,7 @@ public class SourceColumn {
     public final static String LDM_TYPE_DATE = "DATE";
     public static final String LDM_TYPE_CONNECTION_POINT = "CONNECTION_POINT";
     public static final String LDM_TYPE_REFERENCE = "REFERENCE";
+    public static final String LDM_TYPE_HYPERLINK = "HYPERLINK";
 
     public static final String LDM_TYPE_IGNORE = "IGNORE";
 
@@ -166,13 +167,13 @@ public class SourceColumn {
      * LABEL's or REFERENCE's primary source column
      */ /**
      * LABEL's or REFERENCE's primary source column getter.
-     * 
+     *
      * @return LABEL's or REFERENCE's primary source column, <tt>null</tt> for other LDM types regardless
      *      of earlier invocations of {@link #setReference(String)}
      */
     public String getReference() {
         if (SourceColumn.LDM_TYPE_REFERENCE.equals(getLdmType()) || SourceColumn.LDM_TYPE_LABEL.equals(getLdmType()) ||
-                SourceColumn.LDM_TYPE_DATE.equals(getLdmType()) ){
+                SourceColumn.LDM_TYPE_DATE.equals(getLdmType()) || SourceColumn.LDM_TYPE_HYPERLINK.equals(getLdmType()) ){
             return reference;
         }
         return null;

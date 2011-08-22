@@ -263,6 +263,7 @@ public class MaqlGenerator {
             if (folder != null && folder.length() > 0) {
                 if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL) ||
+                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_HYPERLINK) ||
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
@@ -348,6 +349,8 @@ public class MaqlGenerator {
                 }
             } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_LABEL)) {
                 labels.add(new Label(column));
+            } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_HYPERLINK)) {
+                labels.add(new Hyperlink(column));
             } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_REFERENCE)) {
                 references.add(new Reference(column));
             } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_IGNORE)) {
@@ -587,7 +590,7 @@ public class MaqlGenerator {
                     throw new IllegalArgumentException("Label " + columnName + " points to non-existing attribute " + scnPk);
                 }
                 String script = "# Drop labels from attributes.\n";
-                final String labelId = "label." + schemaName + "." + scnPk + "." + columnName;
+                final String labelId = getLabelId();
                 script += "ALTER ATTRIBUTE  {" + attr.identifier + "} DROP LABELS {" + labelId + "};\n";
                 return script;
             }
@@ -598,8 +601,28 @@ public class MaqlGenerator {
                     throw new IllegalArgumentException("Label " + columnName + " points to non-existing attribute " + scnPk);
                 }
                 // TODO why is this different than this.identifier?
-                final String labelId = "label." + schemaName + "." + scnPk + "." + columnName;
+                final String labelId = getLabelId();
                 return "ALTER ATTRIBUTE  {" + attr.identifier + "} DEFAULT LABEL {" + labelId + "};\n";
+            }
+
+            protected String getLabelId() {
+                final String labelId = "label." + schemaName + "." + scnPk + "." + columnName;
+                return labelId;
+            }
+        }
+
+        class Hyperlink extends Label {
+            Hyperlink(SourceColumn column) {
+                super(column);
+            }
+
+            @Override
+            public String generateMaqlDdlAdd() {
+                String script = super.generateMaqlDdlAdd();
+                attr = attributes.get(scnPk);
+                script += "# Add hyperlink mark to label\n";
+                script += "ALTER ATTRIBUTE {" + attr.identifier + "} ALTER LABELS {" + getLabelId() + "} HYPERLINK;\n";
+                return script;
             }
         }
 

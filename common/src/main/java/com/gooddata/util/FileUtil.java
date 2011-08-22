@@ -122,8 +122,21 @@ public class FileUtil {
      * @throws IOException if there is an error creating the temporary directory
      */
     public static File createTempDir() throws IOException {
-        l.debug("Creating a new tmp directory.");
-        final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
+        return createTempDir(System.getProperty("java.io.tmpdir"));
+    }
+
+    /**
+     * Create a new temporary directory. Use something like
+     * {@link #recursiveDelete(File)} to clean this directory up since it isn't
+     * deleted automatically
+     *
+     * @param root directory where new directory will be created
+     * @return the new directory
+     * @throws IOException if there is an error creating the temporary directory
+     */
+    public static File createTempDir(String baseDir) throws IOException {
+        l.debug("Creating a new tmp directory in " + baseDir);
+        final File sysTempDir = new File(baseDir);
         File newTempDir;
         final int maxAttempts = 9;
         int attemptCount = 0;
@@ -306,14 +319,37 @@ public class FileUtil {
 
     /**
      * Retrieves CSV headers from an URL
-     * 
+     *
+     * @param url CSV url
+     * @return the headers as String[]
+     * @throws IOException in case of IO issues
+     */
+    public static String[] getCsvHeader(URL url, CsvConfiguration csvConfiguration) throws IOException {
+        BufferedReader reader = null;
+        try
+        {
+            reader = createBufferedUtf8Reader(url);
+            CSVReader csvIn = new CSVReader(reader, csvConfiguration);
+            return csvIn.readNext();
+        }
+        finally
+        {
+            if (reader!=null)
+            {
+                reader.close();
+            }
+        }
+    }
+
+    /**
+     * Retrieves CSV headers from an URL
+     *
      * @param url CSV url
      * @return the headers as String[]
      * @throws IOException in case of IO issues
      */
     public static String[] getCsvHeader(URL url, char separator) throws IOException {
-        CSVReader csvIn = new CSVReader(createBufferedUtf8Reader(url), separator);
-        return csvIn.readNext();
+        return getCsvHeader(url, new CsvConfiguration(true, separator));
     }
 
     /**

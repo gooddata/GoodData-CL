@@ -150,14 +150,26 @@ public class DataTypeGuess {
      * @throws IOException in case of IO issue
      */
     public SourceColumn[] guessCsvSchema(CSVReader cr) throws IOException {
-        String[] header = null;
+        return guessCsvSchema(cr, -1);
+    }
+    /**
+     * Guesses the CSV schema
+     * @param cr CSV reader
+     * @return the String[] with the CSV column types
+     * @throws IOException in case of IO issue
+     */
+    public SourceColumn[] guessCsvSchema(CSVReader cr, int columns) throws IOException {
 
         if(hasHeader) {
-            header = cr.readNext();
+            columns = cr.readNext().length;
+        }
+        if (columns==-1)
+        {
+            throw new UnsupportedOperationException("You have to specify number of columns if the CSV does not have a header.");
         }
 
         List<Set<String>> excludedColumnTypes = new ArrayList<Set<String>>();
-        String[] dateFormats = new String[header.length];
+        String[] dateFormats = new String[columns];
 
         if (defaultLdmType == null) {
             String[] row = cr.readNext();
@@ -170,8 +182,7 @@ public class DataTypeGuess {
                 while(row != null && countdown-- >0) {
                     for(int i=0; i< row.length; i++) {
                         if(i >= excludedColumnTypes.size())
-                            throw new InvalidParameterException("The CSV file contains rows with different number of columns." +
-                                    " Quitting.");
+                            throw new InvalidParameterException("The CSV file contains rows with different number of columns on row "+cr.getRow());
                         Set<String> types = excludedColumnTypes.get(i);
                         String value = row[i];
                         String dateFormat = getDateFormat(value);
@@ -189,7 +200,6 @@ public class DataTypeGuess {
             }
         }
 
-        final int columns = (header == null) ? excludedColumnTypes.size() : header.length;
         SourceColumn[] ret = new SourceColumn[columns];
         for(int i=0; i < columns; i++) {
             final String ldmType;

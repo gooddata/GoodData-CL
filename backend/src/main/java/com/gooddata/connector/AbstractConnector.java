@@ -367,7 +367,8 @@ public abstract class AbstractConnector implements Connector {
                         c.setPopulates(new String[] {"label." + sc.getSchemaReference() +
                                 "." + sc.getReference()});
                 }
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL))
+                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL) ||
+                        sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_HYPERLINK))
                     c.setPopulates(new String[] {"label." + ssn + "." + sc.getReference() +
                             "." + scn});
                 if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {

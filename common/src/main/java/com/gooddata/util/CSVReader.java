@@ -23,6 +23,7 @@
 
 package com.gooddata.util;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
@@ -32,45 +33,45 @@ import java.util.List;
 
 /**
  * A simple CSV reader written from the scratch to replace Bytecode's CSV reader
- * 
+ *
  * @author Pavel Kolesnikov
- * 
+ *
  */
 public class CSVReader implements Closeable {
 
-    private static char DEFAULT_SEPARATOR = ',';
-    private static char DEFAULT_QUOTE_CHARACTER = '"';
-    private static char DEFAULT_ESCAPE_CHARACTER = '"';
+    public static char DEFAULT_SEPARATOR = ',';
+    public static char DEFAULT_QUOTE_CHARACTER = '"';
+    public static char DEFAULT_ESCAPE_CHARACTER = '"';
 
     private static int CHUNK_SIZE = 4096;
 
-    private Reader r;
+    private final Reader r;
 
     // configuration
-    private char separator;
-    private char quote;
-    private char escape;
+    private final char separator;
+    private final char quote;
+    private final char escape;
     private boolean hasCommentSupport = false;
     private char commentChar;
 
     // status variables
-    private List<String> openRecord = new ArrayList<String>();
-    private StringBuffer openField  = new StringBuffer();
+    private final List<String> openRecord = new ArrayList<String>();
+    private final StringBuffer openField  = new StringBuffer();
     private char lastChar = 0;
     private boolean quotedField = false;
     private int quotedFieldStartRow = 0;
     private int quotedFieldStartCol = 0;
     private boolean wasEscapeOrNotOpeningQuote = false;
     private boolean commentedLine = false;
-    private LinkedList<String[]> recordsQueue = new LinkedList<String[]>();
-    private boolean eof = false;
+    private final LinkedList<String[]> recordsQueue = new LinkedList<String[]>();
+    private final boolean eof = false;
 
     private int row = 1;
     private int col = 0;
 
     /**
      * Constructs CSVReader using a comma for the separator.
-     * 
+     *
      * @param reader
      *            the reader to an underlying CSV source.
      */
@@ -80,7 +81,7 @@ public class CSVReader implements Closeable {
 
     /**
      * Constructs CSVReader with supplied separator.
-     * 
+     *
      * @param reader
      *            the reader to an underlying CSV source.
      * @param separator
@@ -92,7 +93,7 @@ public class CSVReader implements Closeable {
 
     /**
      * Constructs CSVReader with supplied separator and quote char.
-     * 
+     *
      * @param reader
      *            the reader to an underlying CSV source.
      * @param separator
@@ -124,13 +125,17 @@ public class CSVReader implements Closeable {
         this.escape = escape;
     }
 
+    public CSVReader(BufferedReader reader, CsvConfiguration csvConfig) {
+        this(reader, csvConfig.getSeparator(), csvConfig.getQuotechar(), csvConfig.getEscape());
+    }
+
     /**
      * Reads the entire file into a List with each element being a String[] of
      * tokens.
-     * 
+     *
      * @return a List of String[], with each String[] representing a line of the
      *         file.
-     * 
+     *
      * @throws IOException
      *             if bad things happen during the read
      */
@@ -146,10 +151,10 @@ public class CSVReader implements Closeable {
 
     /**
      * Reads the next line from the buffer and converts to a string array.
-     * 
+     *
      * @return a string array with each comma-separated element as a separate
      *         entry.
-     * 
+     *
      * @throws IOException
      *             if bad things happen during the read
      */
@@ -323,7 +328,7 @@ public class CSVReader implements Closeable {
 
     /**
      * Closes the underlying reader.
-     * 
+     *
      * @throws IOException if the close fails
      */
     public void close() throws IOException{
@@ -337,5 +342,9 @@ public class CSVReader implements Closeable {
     public void setCommentChar(char c) {
         hasCommentSupport = true;
         commentChar = c;
+    }
+
+    public int getRow() {
+        return row;
     }
 }

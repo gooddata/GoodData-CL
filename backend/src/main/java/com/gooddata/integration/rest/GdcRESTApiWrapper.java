@@ -499,6 +499,20 @@ public class GdcRESTApiWrapper {
     public SLI getSLIById(String id, String projectId) throws GdcProjectAccessException, HttpMethodException {
         l.debug("Get SLI by id="+id+" project id="+projectId);
         List<SLI> slis = getSLIs(projectId);
+        return getSLIById(id, slis, projectId);
+    }
+
+    /**
+     * Finds a project SLI in list of SLI
+     *
+     * @param id the SLI id
+     * @param list of SLI (related to one project)
+     * @param projectId the project id
+     * @return the SLI
+     * @throws GdcProjectAccessException if the SLI doesn't exist
+     */
+    public static SLI getSLIById(String id, List<SLI> slis, String projectId) throws GdcProjectAccessException {
+        l.debug("Get SLI by id="+id+" project id="+projectId);
         for (SLI sli : slis) {
             if (id.equals(sli.getId())) {
                 l.debug("Got SLI by id="+id+" project id="+projectId);
@@ -508,7 +522,6 @@ public class GdcRESTApiWrapper {
         l.debug("The SLI id=" + id+ " doesn't exist in the project id="+projectId);
         throw new GdcProjectAccessException("The SLI id=" + id+ " doesn't exist in the project id="+projectId);
     }
-
 
     public String getToken() {
         return ssToken;

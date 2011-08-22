@@ -23,6 +23,7 @@
 
 package com.gooddata.connector;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -46,6 +47,7 @@ import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
+import com.gooddata.util.CsvConfiguration;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.NameTransformer;
 import com.gooddata.util.StringUtil;
@@ -87,6 +89,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void extract(String file, final boolean transform) throws IOException {
         CSVReader cr = FileUtil.createUtf8CsvReader(this.getDataFile(), this.getSeparator());
         CSVWriter cw = FileUtil.createUtf8CsvWriter(new File(file));
@@ -159,70 +162,95 @@ public class CsvConnector extends AbstractConnector implements Connector {
         return guessSourceSchema(configStream, dataUrl, defaultLdmType, new String[]{}, folder, separator);
     }
 
-    static SourceSchema guessSourceSchema (InputStream configStream, URL dataUrl, String defaultLdmType, String[] factsNames, String folder, char separator) throws IOException {        String name = URLDecoder.decode(FileUtil.getFileName(dataUrl).split("\\.")[0], "utf-8").trim();
-    String[] headers = FileUtil.getCsvHeader(dataUrl, separator);
-    int i = 0;
-    final Set<String> factsSet = new HashSet<String>();
-    for (final String fn : factsNames) {
-        factsSet.add(fn);
+    public static SourceSchema guessSourceSchema (InputStream configStream, URL dataUrl, String defaultLdmType, String[] factsNames, String folder, char separator) throws IOException {
+        String name = URLDecoder.decode(FileUtil.getFileName(dataUrl).split("\\.")[0], "utf-8").trim();
+        final SourceSchema srcSchm;
+        if (configStream != null) {
+            srcSchm = SourceSchema.createSchema(configStream);
+        } else {
+            int idmax = Constants.MAX_SCHEMA_NAME_LENGTH - 3;
+            if (name.length() > idmax)
+                name = name.substring(0, idmax);
+            srcSchm = SourceSchema.createSchema(name);
+        }
+        return guessSourceSchema(dataUrl, defaultLdmType, factsNames, folder,  srcSchm, new CsvConfiguration(true, separator));
     }
-    final SourceSchema srcSchm;
-    if (configStream != null) {
-        srcSchm = SourceSchema.createSchema(configStream);
-    } else {
-        int idmax = Constants.MAX_SCHEMA_NAME_LENGTH - 3;
-        if (name.length() > idmax)
-            name = name.substring(0, idmax);
-        srcSchm = SourceSchema.createSchema(name);
-    }
-    final int knownColumns = srcSchm.getColumns().size();
-    Set<String> srcColumnNames = getColumnNames(srcSchm.getColumns());
-    NameTransformer idGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
-        public String transform(String str) {
-            String idorig = StringUtil.toIdentifier(str);
-            int idmax = Constants.MAX_TABLE_NAME_LENGTH - srcSchm.getName().length() - 3; // good enough for 999 long names
-            if (idorig.length() <= idmax)
-                return idorig;
-            if(idmax < 8)
-                throw new InvalidParameterException("The schema name '"+srcSchm+"' is too long. Please use a name " +
-                        "up to 32 characters.");
-            return idorig.substring(0, idmax);
 
-        }
-    }, srcColumnNames);
-    if (knownColumns < headers.length) {
-        DataTypeGuess guesser = new DataTypeGuess(true);
-        guesser.setDefaultLdmType(defaultLdmType);
-        SourceColumn[] guessed = guesser.guessCsvSchema(dataUrl, separator);
-        if (guessed.length != headers.length) {
-            throw new AssertionError("The size of data file header is different than the number of guessed fields");
-        }
-        for(int j = knownColumns; j < headers.length; j++) {
-            final String header = headers[j];
-            final SourceColumn sc;
-            final String identifier = idGen.transform(header);
-            final String title = StringUtil.toTitle(header);
-            if(identifier == null || identifier.length() <= 0) {
-                throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
-            }
-            if(title == null || title.length() <= 0) {
-                throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
-            }
-            if (factsSet.contains(header)) {
-                sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_FACT, title, folder);
-            } else if (defaultLdmType != null) {
-                sc = new SourceColumn(identifier, defaultLdmType, title, folder);
-            } else {
-                sc = guessed[j];
-                sc.setName(identifier);
-                sc.setTitle(title);
-                sc.setFolder(folder);
-            }
-            srcSchm.addColumn(sc);
-            i++;
-        }
+    public static SourceSchema guessSourceSchema(URL dataUrl, String defaultLdmType, String[] factsNames, String folder,  final SourceSchema srcSchm, CsvConfiguration csvConfig) throws IOException {
+        return guessSourceSchema(dataUrl, defaultLdmType, factsNames, folder, srcSchm, FileUtil.getCsvHeader(dataUrl, csvConfig), csvConfig);
     }
-    return srcSchm;
+
+    public static SourceSchema guessSourceSchema(URL dataUrl, String defaultLdmType, String[] factsNames, String folder,  final SourceSchema srcSchm, String[] headers, CsvConfiguration csvConfig) throws IOException {
+        if (headers==null)
+        {
+            throw new IllegalArgumentException("No headers found. Is the input a CSV file?");
+        }
+        final Set<String> factsSet = new HashSet<String>();
+        for (final String fn : factsNames) {
+            factsSet.add(fn);
+        }
+        final int knownColumns = srcSchm.getColumns().size();
+        Set<String> srcColumnNames = getColumnNames(srcSchm.getColumns());
+        NameTransformer idGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
+            public String transform(String str) {
+                String idorig = StringUtil.toIdentifier(str);
+                int idmax = Constants.MAX_TABLE_NAME_LENGTH - srcSchm.getName().length() - 3; // good enough for 999 long names
+                if (idorig.length() <= idmax)
+                    return idorig;
+                if(idmax < 8)
+                    throw new InvalidParameterException("The schema name '"+srcSchm+"' is too long. Please use a name " +
+                            "up to 32 characters.");
+                return idorig.substring(0, idmax);
+
+            }
+        }, srcColumnNames);
+        if (knownColumns < headers.length) {
+            DataTypeGuess guesser = new DataTypeGuess(csvConfig.hasHeader());
+            guesser.setDefaultLdmType(defaultLdmType);
+            SourceColumn[] guessed = guessCsvSchema(dataUrl, headers, guesser, csvConfig);
+            if (guessed.length != headers.length) {
+                throw new AssertionError("The size of data file header is different than the number of guessed fields");
+            }
+            for(int j = knownColumns; j < headers.length; j++) {
+                final String header = headers[j];
+                final SourceColumn sc;
+                final String identifier = idGen.transform(header);
+                final String title = StringUtil.toTitle(header);
+                if(identifier == null || identifier.length() <= 0) {
+                    throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
+                }
+                if(title == null || title.length() <= 0) {
+                    throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
+                }
+                if (factsSet.contains(header)) {
+                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_FACT, title, folder);
+                } else if (defaultLdmType != null) {
+                    sc = new SourceColumn(identifier, defaultLdmType, title, folder);
+                } else {
+                    sc = guessed[j];
+                    sc.setName(identifier);
+                    sc.setTitle(title);
+                    sc.setFolder(folder);
+                }
+                srcSchm.addColumn(sc);
+            }
+        }
+        return srcSchm;
+    }
+
+    private static SourceColumn[] guessCsvSchema(URL dataUrl, String[] headers,  DataTypeGuess guesser, CsvConfiguration csvConfig) throws IOException {
+        BufferedReader reader = null;
+        try {
+            reader = FileUtil.createBufferedUtf8Reader(dataUrl);
+            return guesser.guessCsvSchema(new CSVReader(reader, csvConfig), headers.length);
+        }
+        finally
+        {
+            if (reader!=null)
+            {
+                reader.close();
+            }
+        }
     }
 
     /**
@@ -244,6 +272,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
             if(c.match("GenerateCsvConfig")) {
