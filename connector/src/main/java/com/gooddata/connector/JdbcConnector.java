@@ -443,6 +443,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         String url = c.getParamMandatory("url");
         String q = c.getParam("query");
         String qf = c.getParam("queryFile");
+        c.paramsProcessed();
+
         if(q != null && qf != null) {
             l.error("Only one of the query and queryFile parameters can be specified with the UseJdbc command.");
             throw new InvalidParameterException("Only one of the query and queryFile parameters can be specified with the UseJdbc command.");
@@ -491,6 +493,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         String drv = c.getParamMandatory("driver");
         String url = c.getParamMandatory("url");
         String query = c.getParamMandatory("query");
+        c.paramsProcessed();
+
         loadDriver(drv);
         File cf = new File(configFile);
         JdbcConnector.saveConfigTemplate(name, cf.getAbsolutePath(), usr, psw, drv, url, query);

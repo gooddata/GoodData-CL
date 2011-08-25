@@ -206,6 +206,8 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
         String e = c.getParamMandatory("entity");
         String f = c.getParamMandatory("fields");
         String host = c.getParamMandatory("host");
+        c.paramsProcessed();
+
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         setUsername(usr);
