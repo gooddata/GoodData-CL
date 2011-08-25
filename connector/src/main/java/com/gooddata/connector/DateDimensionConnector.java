@@ -228,6 +228,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         if(c.checkParam("type")) {
             type = c.getParam( "type");
         }
+        c.paramsProcessed();
 
         // sets the current connector
         ctx.setConnector(this);

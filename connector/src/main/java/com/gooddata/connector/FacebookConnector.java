@@ -240,6 +240,8 @@ public class FacebookConnector extends AbstractConnector implements Connector {
         String configFile = c.getParamMandatory("configFile");
         String query = c.getParamMandatory("query");
         String auth = c.getParamMandatory("authToken");
+        c.paramsProcessed();
+
         File conf = FileUtil.getFile(configFile);
 
         initSchema(conf.getAbsolutePath());
@@ -263,6 +265,8 @@ public class FacebookConnector extends AbstractConnector implements Connector {
         String configFile = c.getParamMandatory("configFile");
         String query = c.getParamMandatory("query");
     	String folder = c.getParam( "folder");
+        c.paramsProcessed();
+
         FacebookConnector.saveConfigTemplate(name, configFile, query, folder);
         l.info("Facebook Connector configuration successfully generated. See config file: "+configFile);
     }

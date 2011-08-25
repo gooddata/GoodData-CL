@@ -580,6 +580,8 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         String t = c.getParam("token");
         String host = c.getParam("host");
         String partnerId = c.getParam("partnerId");
+        c.paramsProcessed();
+
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         setSfdcUsername(usr);
@@ -615,6 +617,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             host = sfdcHostname;
         }
         String partnerId = c.getParam("partnerId");
+        c.paramsProcessed();
 
         SfdcConnector.saveConfigTemplate(name, configFile, host, usr, psw, token, partnerId, query);
         l.info("SFDC Connector configuration successfully generated. See config file: "+configFile);
