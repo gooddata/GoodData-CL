@@ -546,6 +546,8 @@ public class GdcDI implements Executor {
             }
             else if(c.match("OpenProject")) {
                 ctx.setProjectId(c.getParamMandatory("id"));
+                c.paramsProcessed();
+
                 l.debug("Opened project id="+ctx.getProjectId());
                 l.info("Opened project id="+ctx.getProjectId());
             }
@@ -638,6 +640,8 @@ public class GdcDI implements Executor {
             l.debug("Executing MAQL DML.");
             String pid = ctx.getProjectIdMandatory();
             final String cmd = c.getParamMandatory("maql");
+            c.paramsProcessed();
+
             String taskUri = ctx.getRestApi(p).executeDML(pid, cmd);
             if(taskUri != null && taskUri.length() > 0) {
                 l.debug("Checking MAQL DML execution status.");
@@ -682,6 +686,8 @@ public class GdcDI implements Executor {
             final boolean exportData = (ed != null && "true".equalsIgnoreCase(ed));
             final String fileName = c.getParamMandatory("tokenFile");
             String au = c.getParam("authorizedUsers");
+            c.paramsProcessed();
+
             String[] authorizedUsers = null;
             if(au != null && au.length() > 0) {
                 authorizedUsers = au.split(",");
@@ -746,6 +752,8 @@ public class GdcDI implements Executor {
         user.setSsoProvider(c.getParam("ssoProvider"));
         String usersFile = c.getParam("usersFile");
         String appnd = c.getParam("append");
+        c.paramsProcessed();
+
         final boolean append = (appnd != null && "true".equalsIgnoreCase(appnd));
         String r = ctx.getRestApi(p).createUser(domain, user);
         if(r!=null && r.length()>0 && usersFile != null && usersFile.length() > 0) {
@@ -774,6 +782,8 @@ public class GdcDI implements Executor {
             uri = r.readLine();
         }
         String role = c.getParam("role");
+        c.paramsProcessed();
+
         ctx.getRestApi(p).addUsersToProject(pid, uris, role);
         l.info("Users "+uris+"' successfully added to project "+pid);
     }
@@ -791,6 +801,8 @@ public class GdcDI implements Executor {
 
         String pid = ctx.getProjectIdMandatory();
         String usersFile = c.getParamMandatory("usersFile");
+        c.paramsProcessed();
+
         List<String> uris = new ArrayList<String>();
         BufferedReader r = FileUtil.createBufferedUtf8Reader(usersFile);
         String uri = r.readLine();
@@ -816,6 +828,8 @@ public class GdcDI implements Executor {
         String usersFile = c.getParamMandatory("usersFile");
         String field = c.getParamMandatory("field");
         String activeOnlys = c.getParam("activeOnly");
+        c.paramsProcessed();
+
         final boolean activeOnly = (activeOnlys != null && "true".equalsIgnoreCase(activeOnlys));
 
         if("email".equalsIgnoreCase(field) || "uri".equalsIgnoreCase(field)) {
@@ -847,6 +861,8 @@ public class GdcDI implements Executor {
             l.info("Importing project.");
             String pid = ctx.getProjectIdMandatory();
             final String tokenFile = c.getParamMandatory("tokenFile");
+            c.paramsProcessed();
+
             String token = FileUtil.readStringFromFile(tokenFile).trim();
             String taskUri  = ctx.getRestApi(p).importProject(pid, token);
             if(taskUri != null && taskUri.length() > 0) {
@@ -887,6 +903,8 @@ public class GdcDI implements Executor {
             String name = c.getParamMandatory("name");
             String desc = c.getParam("desc");
             String pTempUri = c.getParam("templateUri");
+            c.paramsProcessed();
+
             if(desc == null || desc.length() <= 0)
                 desc = name;
             ctx.setProjectId(ctx.getRestApi(p).createProject(StringUtil.toTitle(name), StringUtil.toTitle(desc), pTempUri));
@@ -916,6 +934,8 @@ public class GdcDI implements Executor {
             String drv = c.getParamMandatory("driver");
             String url = c.getParamMandatory("url");
             String fl = c.getParamMandatory("dir");
+            c.paramsProcessed();
+
             File dir = new File(fl);
             if(!dir.exists() || !dir.isDirectory()) {
                 throw new InvalidParameterException("The dir parameter in the ExportJdbcToCsv command must be an existing directory.");
@@ -957,6 +977,8 @@ public class GdcDI implements Executor {
         if (id == null) {
         	id = c.getParamMandatory("id");
         }
+        c.paramsProcessed();
+
         ctx.getRestApi(p).dropProject(id);
         l.info("Project id = '"+id+"' dropped.");
     }
@@ -972,6 +994,8 @@ public class GdcDI implements Executor {
         String email = c.getParamMandatory("email");
         String msg = c.getParam("msg");
         String role = c.getParam("role");        
+        c.paramsProcessed();
+
         ctx.getRestApi(p).inviteUser(pid, email, (msg != null)?(msg):(""), role);
         l.info("Successfully invited user "+email+" to the project "+pid);
     }
@@ -986,6 +1010,8 @@ public class GdcDI implements Executor {
         String pid = ctx.getProjectIdMandatory();
         l.info("Migrating project "+pid);
         String configFiles = c.getParamMandatory("configFiles");
+        c.paramsProcessed();
+
         if(configFiles != null && configFiles.length() >0) {
             String[] schemas = configFiles.split(",");
             if(schemas != null && schemas.length >0) {
@@ -1044,6 +1070,8 @@ public class GdcDI implements Executor {
         String pid = ctx.getProjectIdMandatory();
         String ids = c.getParamMandatory("id");
         String fl = c.getParamMandatory("file");
+        c.paramsProcessed();
+
         int id;
         try {
             id = Integer.parseInt(ids);
@@ -1065,6 +1093,8 @@ public class GdcDI implements Executor {
     private void retrieveAllObjects(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String pid = ctx.getProjectIdMandatory();
         String fl = c.getParamMandatory("dir");
+        c.paramsProcessed();
+
         File dir = new File(fl);
         if(!dir.exists() || !dir.isDirectory()) {
             throw new InvalidParameterException("The dir parameter in the RetrieveAllObjects command must be an existing directory.");
@@ -1084,6 +1114,8 @@ public class GdcDI implements Executor {
         String pid = ctx.getProjectIdMandatory();
         String fl = c.getParamMandatory("dir");
         String overwriteStr = c.getParam("overwrite");
+        c.paramsProcessed();
+
         final boolean overwrite = (overwriteStr != null && "true".equalsIgnoreCase(overwriteStr));
         File dir = new File(fl);
         if(!dir.exists() || !dir.isDirectory()) {
@@ -1107,6 +1139,8 @@ public class GdcDI implements Executor {
         String pid = ctx.getProjectIdMandatory();
         String fl = c.getParamMandatory("file");
         String ids = c.getParam("id");
+        c.paramsProcessed();
+
         if(ids != null && ids.length() > 0) {
             int id;
             try {
@@ -1134,6 +1168,8 @@ public class GdcDI implements Executor {
     private void dropMdObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String pid = ctx.getProjectIdMandatory();
         String ids = c.getParamMandatory("id");
+        c.paramsProcessed();
+
         int id;
         try {
             id = Integer.parseInt(ids);
@@ -1154,6 +1190,8 @@ public class GdcDI implements Executor {
     private void getReports(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String pid = ctx.getProjectIdMandatory();
         String fileName = c.getParamMandatory("fileName");
+        c.paramsProcessed();
+
         List<String> uris = ctx.getRestApi(p).enumerateReports(pid);
         String result = "";
         for(String uri : uris) {
@@ -1175,6 +1213,8 @@ public class GdcDI implements Executor {
     private void executeReports(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
         String pid = ctx.getProjectIdMandatory();
         String fileName = c.getParamMandatory("fileName");
+        c.paramsProcessed();
+
         String result = FileUtil.readStringFromFile(fileName).trim();
         if(result != null && result.length()>0) {
             String[] uris = result.split("\n");
@@ -1206,6 +1246,8 @@ public class GdcDI implements Executor {
      */
     private void storeProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String fileName = c.getParamMandatory("fileName");
+        c.paramsProcessed();
+
         String pid = ctx.getProjectIdMandatory();
         FileUtil.writeStringToFile(pid, fileName);
         l.debug("Stored project id="+pid+" to "+fileName);
@@ -1221,6 +1263,8 @@ public class GdcDI implements Executor {
      */
     private void retrieveProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String fileName = c.getParamMandatory("fileName");
+        c.paramsProcessed();
+
         ctx.setProjectId(FileUtil.readStringFromFile(fileName).trim());
         l.debug("Retrieved project id="+ctx.getProjectId()+" from "+fileName);
         l.info("Retrieved project id="+ctx.getProjectId()+" from "+fileName);        
@@ -1235,6 +1279,8 @@ public class GdcDI implements Executor {
      */
     private void lock(Command c, CliParams p, ProcessingContext ctx) throws IOException {
     	final String path = c.getParamMandatory( "path");
+        c.paramsProcessed();
+
     	final File lock = new File(path);
     	if (!lock.createNewFile()) {
     		if (System.currentTimeMillis() - lock.lastModified() > LOCK_EXPIRATION_TIME) {

@@ -160,6 +160,8 @@ public class PtConnector extends AbstractConnector implements Connector {
         if(sliColumns.size() > columns.size())
             throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");
         String incremental = c.getParam("incremental");
+        c.paramsProcessed();
+
         if(incremental != null && incremental.length() > 0 &&
                 incremental.equalsIgnoreCase("true")) {
             l.debug("Using incremental mode.");
@@ -259,6 +261,7 @@ public class PtConnector extends AbstractConnector implements Connector {
         String lc = c.getParamMandatory("labelConfigFile");
         String lsc = c.getParamMandatory("labelToStoryConfigFile");
         String sc = c.getParamMandatory("storyConfigFile");
+        c.paramsProcessed();
 
         File lcf = new File(lc);
         File lscf = new File(lsc);
