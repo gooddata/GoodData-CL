@@ -55,18 +55,15 @@ Project Management Commands:
 
 `DeleteProject(id="...");` - drop the project on the server
 - id - *(optional)* project id, if not specified, the command tries to drop the current project
--
 
 `OpenProject(id="...");` - open an existing project for data modeling and data upload.
 - id - identifier of an existing project (takes the form of an MD5 hash)
 
 `RememberProject(fileName="...");` - saves the current project identifier into the specified file
 - fileName - file to save the project identifier
--
 
 `UseProject(fileName="...");` - loads the current project identifier from the specified file
 - fileName - file to load the project identifier from
--
 
 `InviteUser(email="...", msg="...", role="...");` - invites a new user to the project (must call `CreateProject` or `OpenProject` before)
 - email - the invited user's e-mail
@@ -118,7 +115,6 @@ Metadata Management Commands:
 
 `RetrieveAllObjects(dir="...");` - retrieves all metadata objects (reports, dashboards, metrics) from the current project and stores it in a directory
 - dir - directory where the objects content (JSON) are going to be stored
--
 
 `StoreAllObjects(dir="...", overwrite="...");` - copies all metadata (reports, dashboards, metrics) objects from the directory to the current project
 - dir       - directory where the copied objects content (JSON) are stored
@@ -134,15 +130,16 @@ Metadata Management Commands:
 
 `DropMetadataObject(id="...");` - drops the object with specified id from the project's metadata
 - id - valid object id (integer number)
--
 
 `Lock(path="...");` - prevents concurrent run of multiple instances sharing the same lock file. Lock files older than 1 hour are discarded.
 - path - path to a lock file
--
 
 `MigrateDatasets(configFiles="...");` - migrates the project's datasets from CL 1.1.x to CL 1.2.x
 - configFiles - the comma separated list of ALL project's dataset's XML configuration files
--
+
+`GenerateManifests(configFiles="...", dir="...");` - Generates the SLI manifests for specified XML config files
+- configFiles - the comma separated list of project's dataset's XML configuration files
+- dir - the target dir where the JSON SLI manifests are going to be stored
 
 
 Logical Model Management Commands:
@@ -156,11 +153,10 @@ Logical Model Management Commands:
 
 `GenerateMaql(maqlFile="...");` - generate MAQL DDL script describing data model from the local config file
 - maqlFile - path to MAQL file (will be overwritten)
--
+
 
 `GenerateUpdateMaql(maqlFile="...");` - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project
 - maqlFile - path to MAQL file (will be overwritten)
--
 
 `ExecuteMaql(maqlFile="...", ifExists="...");` - run MAQL DDL script on server to generate data model
 - maqlFile - path to the MAQL file (relative to PWD)

@@ -609,6 +609,9 @@ public class GdcDI implements Executor {
             else if(c.match("MigrateDatasets")) {
                 migrateDatasets(c, cli, ctx);
             }
+            else if(c.match("GenerateManifests")) {
+                generateManifests(c, cli, ctx);
+            }
             else {
                 l.debug("No match command "+c.getCommand());
                 return false;
@@ -1033,6 +1036,66 @@ public class GdcDI implements Executor {
             throw new InvalidParameterException("The configFiles parameter must contain a comma separated list of schema configuration files!");
         }
     }
+
+    /**
+     * Generate manifests for specified datasets
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     */
+    private void generateManifests(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
+        l.info("Generating manifests");
+        String configFiles = c.getParamMandatory("configFiles");
+        String dir = c.getParamMandatory("dir");
+        if(dir != null && dir.length()>0) {
+            File targetDir = new File(dir);
+            if(targetDir.exists() && targetDir.isDirectory()) {
+                if(configFiles != null && configFiles.length() >0) {
+                    String[] schemas = configFiles.split(",");
+                    if(schemas != null && schemas.length >0) {
+                        for(String schema : schemas) {
+                            File sf = new File(schema);
+                            if(sf.exists()) {
+                                SourceSchema srcSchema = SourceSchema.createSchema(sf);
+                                String ssn = srcSchema.getName();
+                                List<Column> columns = AbstractConnector.populateColumnsFromSchema(srcSchema);
+                                SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
+                                String manifest = sli.getSLIManifest(columns);
+                                FileUtil.writeStringToFile(manifest,targetDir.getAbsolutePath()+
+                                        System.getProperty("file.separator")+ssn+".json");
+                            }
+                            else {
+                                l.debug("The configFile "+schema+" doesn't exists!");
+                                l.error("The configFile "+schema+" doesn't exists!");
+                                throw new InvalidParameterException("The configFile "+schema+" doesn't exists!");
+                            }
+                        }
+                    }
+                    else {
+                        l.debug("The configFiles parameter must contain a comma separated list of schema configuration files!");
+                        l.error("The configFiles parameter must contain a comma separated list of schema configuration files!");
+                        throw new InvalidParameterException("The configFiles parameter must contain a comma separated list of schema configuration files!");
+                    }
+                }
+                else {
+                    l.debug("The configFiles parameter must contain a comma separated list of schema configuration files!");
+                    l.error("The configFiles parameter must contain a comma separated list of schema configuration files!");
+                    throw new InvalidParameterException("The configFiles parameter must contain a comma separated list of schema configuration files!");
+                }
+            }
+            else {
+                l.debug("The `dir` parameter must point to a valid directory.");
+                l.error("The `dir` parameter must point to a valid directory.");
+                throw new InvalidParameterException("The `dir` parameter must point to a valid directory.");
+            }
+        }
+        else {
+            l.debug("Please specify a valid `dir` parameter for the GenerateManifests command.");
+            l.error("Please specify a valid `dir` parameter for the GenerateManifests command.");
+            throw new InvalidParameterException("Please specify a valid `dir` parameter for the GenerateManifests command.");
+        }
+    }
+
 
     /**
      * Retrieves a MD object
