@@ -1044,7 +1044,8 @@ public class GdcDI implements Executor {
      * @param ctx current context
      */
     private void generateManifests(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
-        l.info("Generating manifests");
+        String pid = ctx.getProjectIdMandatory();
+        l.info("Generating manifests for project "+pid);
         String configFiles = c.getParamMandatory("configFiles");
         String dir = c.getParamMandatory("dir");
         if(dir != null && dir.length()>0) {
