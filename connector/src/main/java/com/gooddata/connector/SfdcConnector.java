@@ -353,7 +353,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         }
         try {
             SforceServiceLocator loc = new SforceServiceLocator();
-            loc.setSoapEndpointAddress(loc.getSoapAddress().replaceAll("www.salesforce.com", host));
+            loc.setSoapEndpointAddress(loc.getSoapAddress().replaceAll("www.salesforce.com", host).replaceAll("login.salesforce.com", host));
             binding = (SoapBindingStub) loc.getSoap();
             l.debug("Connecting to SFDC.");
             // Time out after a minute
