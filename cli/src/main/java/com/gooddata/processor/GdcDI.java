@@ -328,7 +328,7 @@ public class GdcDI implements Executor {
 
         if(cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.39-BETA" +
+            l.info("GoodData CL version 1.2.40-BETA" +
                     ((BUILD_NUMBER.length()>0) ? ", build "+BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -849,10 +849,9 @@ public class GdcDI implements Executor {
             Currently not supported
             final String ov = c.getParam("overwrite");
             final boolean overwrite = (ov != null && "true".equalsIgnoreCase(ov));
-            final String ul = c.getParam("updateLDM");
-            final boolean updateLDM = (ov != null && "true".equalsIgnoreCase(ov));
             */
-            final boolean updateLDM = true;
+            final String ul = c.getParam("updateLDM");
+            final boolean updateLDM = (ul != null && "true".equalsIgnoreCase(ul));
             final boolean overwrite = true;
             String taskUri  = ctx.getRestApi(p).importMD(pid, token, overwrite, updateLDM);
             if(taskUri != null && taskUri.length() > 0) {

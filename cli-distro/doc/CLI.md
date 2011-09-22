@@ -73,6 +73,7 @@ Metadata Management Commands:
 
 `ImportMetadataObjects(tokenFile="...", overwrite="<true|false>", updateLDM="<true|false>");` - imports metadata objects from the token, the attributes and facts must be created via ExecuteMaql
 - tokenFile - a file with a valid import token
+- updateLDM - if true the attributes and facts names and descriptions are updated
 
 `RetrieveMetadataObject(id="...", file="...");` - retrieves a metadata object and stores it in a file
 - id   - valid object id (integer number)
