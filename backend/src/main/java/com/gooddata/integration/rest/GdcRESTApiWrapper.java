@@ -64,7 +64,6 @@ public class GdcRESTApiWrapper {
      * GDC URIs
      */
     private static final String MD_URI = "/gdc/md/";
-    private static final String QUERY_URI = "/query/";
     private static final String LOGIN_URI = "/gdc/account/login";
     private static final String DOMAIN_URI = "/gdc/account/domains";
     private static final String DOMAIN_USERS_SUFFIX = "/users";
@@ -80,29 +79,14 @@ public class GdcRESTApiWrapper {
     public static final String DML_EXEC_URI = "/dml/manage";
     public static final String PROJECT_EXPORT_URI = "/maintenance/export";
     public static final String PROJECT_IMPORT_URI = "/maintenance/import";
+    public static final String PROJECT_PARTIAL_EXPORT_URI = "/maintenance/partialmdexport";
+    public static final String PROJECT_PARTIAL_IMPORT_URI = "/maintenance/partialmdimport";
     public static final String REPORT_QUERY = "/query/reports";
     public static final String ATTR_QUERY = "/query/attributes";
     public static final String EXECUTOR = "/gdc/xtab2/executor3";
     public static final String INVITATION_URI = "/invitations";
     public static final String ETL_MODE_URI = "/etl/mode";
     public static final String OBJ_URI = "/obj";
-    public static final String VARIABLES_SEARCH_URI = "/variables/search";
-    public static final String VARIABLES_CREATE_URI = "/variables/item";
-
-    public static final String OBJ_TYPE_FILTER = "filtres";
-    public static final String OBJ_TYPE_METRIC = "metrics";
-    public static final String OBJ_TYPE_REPORT = "reports";
-    public static final String OBJ_TYPE_REPORT_DEFINITION = "reportdefinition";
-    public static final String OBJ_TYPE_FACT = "facts";
-    public static final String OBJ_TYPE_FOLDER = "folders";
-    public static final String OBJ_TYPE_ATTRIBUTE = "attributes";
-    public static final String OBJ_TYPE_DIMENSION = "dimensions";
-    public static final String OBJ_TYPE_DATASET = "datasets";
-    public static final String OBJ_TYPE_VARIABLE = "prompts";
-    public static final String OBJ_TYPE_DASHBOARD = "projectdashboards";
-    public static final String OBJ_TYPE_DOMAIN = "domains";
-
-    public static final String ETL_MODE_SLI = "SLI";
     public static final String ETL_MODE_DLI = "DLI";
     public static final String ETL_MODE_VOID = "VOID";
 
@@ -1884,7 +1868,7 @@ public class GdcRESTApiWrapper {
             throws GdcRestApiException {
         l.debug("Importing project projectId="+projectId+" token:"+token);
         PostMethod req = createPostMethod(getProjectMdUrl(projectId) + PROJECT_IMPORT_URI);
-        JSONObject param = getProjectImportStructure(token);
+        JSONObject param = getImportProjectStructure(token);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 param.toString().getBytes()));
         req.setRequestEntity(request);
@@ -1902,12 +1886,131 @@ public class GdcRESTApiWrapper {
         }
     }
 
-    private JSONObject getProjectImportStructure(String token) {
+    private JSONObject getImportProjectStructure(String token) {
         JSONObject param = new JSONObject();
         JSONObject importProject = new JSONObject();
         importProject.put("token", token);
         param.put("importProject", importProject);
         return param;
+    }
+
+
+
+    /**
+     * Imports a MD object to the project
+     *
+     * @param projectId the project's ID
+     * @param token export token
+     * @param overwrite overwrite existing objects
+     * @param updateLDM update LDM names, descriptions and tags
+     * @return result the taskUri
+     * @throws GdcRestApiException
+     */
+    public String importMD(String projectId, String token, boolean overwrite, boolean updateLDM)
+            throws GdcRestApiException {
+        l.debug("Importing metadata objects for projectId="+projectId+" token:"+token);
+        PostMethod req = createPostMethod(getProjectMdUrl(projectId) + PROJECT_PARTIAL_IMPORT_URI);
+        JSONObject param = getMDImportStructure(token, overwrite, updateLDM);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                param.toString().getBytes()));
+        req.setRequestEntity(request);
+        String result = null;
+        try {
+            String response = executeMethodOk(req);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            result = responseObject.getString("uri");
+            return result;
+        } catch (HttpMethodException ex) {
+            l.debug("Error importing metadata objects for projectId="+projectId+" token:"+token,ex);
+            throw new GdcRestApiException("Error importing metadata objects for projectId="+projectId+" token:"+token,ex);
+        } finally {
+            req.releaseConnection();
+        }
+    }
+
+    private JSONObject getMDImportStructure(String token, boolean overwrite, boolean updateLDM) {
+        JSONObject param = new JSONObject();
+        JSONObject importMD = new JSONObject();
+        importMD.put("token", token);
+        importMD.put("overwriteNewer", (overwrite)?(1):(0));
+        importMD.put("updateLDMObjects", (updateLDM)?(1):(0));
+        param.put("partialMDImport", importMD);
+        return param;
+    }
+
+    /**
+     * Exports selected MD object with dependencies from the project
+     *
+     * @param projectId the project's ID
+     * @param ids - list of the exported MD objects IDs
+     * @return result the taskUri and the export token
+     * @throws GdcRestApiException
+     */
+    public ProjectExportResult exportMD(String projectId, List<Integer> ids)
+            throws GdcRestApiException {
+        l.debug("Exporting metadata objects with IDs "+ids+" from project "+projectId);
+        PostMethod req = createPostMethod(getProjectMdUrl(projectId) + PROJECT_PARTIAL_EXPORT_URI);
+        JSONObject param = getMDExportStructure(projectId, ids);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                param.toString().getBytes()));
+        req.setRequestEntity(request);
+        ProjectExportResult result = null;
+        try {
+            String response = executeMethodOk(req);
+            result = new ProjectExportResult();
+            JSONObject responseObject = JSONObject.fromObject(response);
+            JSONObject exportArtifact = responseObject.getJSONObject("partialMDArtifact");
+            JSONObject status = exportArtifact.getJSONObject("status");
+            result.setTaskUri(status.getString("uri"));
+            result.setExportToken(exportArtifact.getString("token"));
+            return result;
+        } catch (HttpMethodException ex) {
+            l.debug("Error exporting metadata objects with IDs "+ids+" from project "+projectId,ex);
+            throw new GdcRestApiException("Error exporting metadata objects with IDs "+ids+" from project "+projectId,ex);
+        } finally {
+            req.releaseConnection();
+        }
+    }
+
+    private JSONObject getMDExportStructure(String projectId, List<Integer> ids) {
+        JSONObject param = new JSONObject();
+        String puri = "/gdc/md/"+projectId;
+        JSONObject partialMDExport = new JSONObject();
+        JSONArray uris = new JSONArray();
+        for(Integer id : ids) {
+            uris.add(puri+"/obj/"+id);
+        }
+        partialMDExport.put("uris", uris);
+        param.put("partialMDExport", partialMDExport);
+        return param;
+    }
+
+    /**
+     * Checks if the migration is finished
+     *
+     * @param link the link returned from the start loading
+     * @return the loading status
+     */
+    public String getMigrationStatus(String link) throws HttpMethodException {
+        l.debug("Getting project migration status uri="+link);
+        HttpMethod ptm = createGetMethod(getServerUrl() + link);
+        try {
+            String response = executeMethodOk(ptm);
+            JSONObject task = JSONObject.fromObject(response);
+            JSONObject state = task.getJSONObject("taskState");
+            if(state != null && !state.isNullObject() && !state.isEmpty()) {
+                String status = state.getString("status");
+                l.debug("Migration status="+status);
+                return status;
+            }
+            else {
+                l.debug("No taskState structure in the migration status!");
+                throw new GdcRestApiException("No taskState structure in the migration status!");
+            }
+        }
+        finally {
+            ptm.releaseConnection();
+        }
     }
 
     /**
@@ -2375,133 +2478,6 @@ public class GdcRESTApiWrapper {
     }
 
     /**
-     * Returns the JSON list of all project's prompt responses
-     * @param projectId project ID
-     * @return the JSON object with all variables
-     */
-    public JSONObject getProjectVariables(String projectId) {
-        l.debug("Executing getProjectVariables on project id="+projectId);
-        PostMethod p = createPostMethod(getProjectMdUrl(projectId) + VARIABLES_SEARCH_URI);
-        JSONObject is = getVariableSearchStructure();
-        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                is.toString().getBytes()));
-        p.setRequestEntity(request);
-
-        try {
-            String resp = executeMethodOk(p);
-            JSONObject parsedResp = JSONObject.fromObject(resp);
-            return parsedResp;
-        } catch (HttpMethodException ex) {
-            l.debug("Failed executing getProjectVariables on project id="+projectId);
-            throw new GdcRestApiException("Failed executing getProjectVariables on project id="+projectId, ex);
-        } finally {
-            p.releaseConnection();
-        }
-    }
-
-
-    /**
-     * Stores the variable ina project
-     * @param projectId - project ID
-     * @param variable - variable JSON structure
-     * @return the newly created variable
-     */
-    public JSONObject createVariable(String projectId, JSONObject variable) {
-        l.debug("Executing createVariable on project id="+projectId+ "variable='"+variable.toString(2)+"'");
-        PostMethod req = createPostMethod(getProjectMdUrl(projectId) + VARIABLES_CREATE_URI);
-        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                variable.toString().getBytes()));
-        req.setRequestEntity(request);
-        try {
-            String resp = executeMethodOk(req);
-            JSONObject parsedResp = JSONObject.fromObject(resp);
-            return parsedResp;
-        } catch (HttpMethodException ex) {
-            l.debug("Failed executing createVariable on project id="+projectId+ "content='"+variable.toString()+"'");
-            throw new GdcRestApiException("Failed executing createVariable on project id="+projectId+ "content='"+variable.toString()+"'",ex);
-        } finally {
-            req.releaseConnection();
-        }
-
-    }
-
-    /**
-     * Stores the variable in a project
-     * @param uri - variable uri
-     * @param variable - variable JSON structure
-     * @return the newly created variable
-     */
-    public JSONObject modifyVariable(String uri, JSONObject variable) {
-        l.debug("Executing modifyVariable uri="+uri+ "variable='"+variable.toString(2)+"'");
-        PostMethod req = createPostMethod(getServerUrl() + uri);
-        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                variable.toString().getBytes()));
-        req.setRequestEntity(request);
-        try {
-            String resp = executeMethodOk(req);
-            JSONObject parsedResp = JSONObject.fromObject(resp);
-            return parsedResp;
-        } catch (HttpMethodException ex) {
-            l.debug("Failed executing modifyVariable uri="+uri+ "content='"+variable.toString()+"'");
-            throw new GdcRestApiException("Failed executing modifyVariable uri="+uri+ "content='"+variable.toString()+"'",ex);
-        } finally {
-            req.releaseConnection();
-        }
-
-    }
-
-    /**
-     * Returns the default variable search structure
-     * @return the default variable search structure
-     */
-    private JSONObject getVariableSearchStructure() {
-        JSONObject srch = new JSONObject();
-        JSONObject variableSearch = new JSONObject();
-        variableSearch.put("variables", new JSONArray());
-        variableSearch.put("context", new JSONArray());
-        srch.put("variablesSearch", variableSearch);
-        return srch;
-    }
-
-    /**
-     * List the metadata server objects by their type
-     * @param projectId project ID
-     * @param objectType object type
-     * @return the list of object URIs
-     */
-    public List<String> listMetadataObjects(String projectId, String objectType) {
-        ArrayList<String> ret = new ArrayList<String>();
-        l.debug("Executing listMetadataObjects type="+objectType+" in project id="+projectId);
-        HttpMethod req = createGetMethod(getProjectMdUrl(projectId) + QUERY_URI+objectType);
-        try {
-            String resp = executeMethodOk(req);
-            JSONObject parsedResp = JSONObject.fromObject(resp);
-            if(parsedResp == null || parsedResp.isNullObject() || parsedResp.isEmpty()) {
-                l.debug("Can't listMetadataObjects type="+objectType+" in project id="+projectId+". Invalid response.");
-                throw new GdcRestApiException("Can't listMetadataObjects type="+objectType+" in project id="+projectId+". Invalid response.");
-            }
-            JSONObject query = parsedResp.getJSONObject("query");
-            if(query == null || query.isNullObject() || query.isEmpty()) {
-                l.debug("Can't listMetadataObjects type="+objectType+" in project id="+projectId+". No query key in the response.");
-                throw new GdcRestApiException("Can't listMetadataObjects type="+objectType+" in project id="+projectId+". No query key in the response.");
-            }
-            JSONArray entries = query.getJSONArray("entries");
-            if(entries == null) {
-                l.debug("Can't listMetadataObjects type="+objectType+" in project id="+projectId+". No entries key in the response.");
-                throw new GdcRestApiException("Can't listMetadataObjects type="+objectType+" in project id="+projectId+". No entries key in the response.");
-            }
-            for(Object o : entries) {
-                JSONObject obj = (JSONObject)o;
-                ret.add(obj.getString("link"));
-            }
-            return ret;
-        }
-        finally {
-            req.releaseConnection();
-        }
-    }
-
-    /**
      * Returns the dependent objects
      * @param uri the uri of the top-level object
      * @return list of dependent objects
@@ -2577,555 +2553,6 @@ public class GdcRESTApiWrapper {
         finally {
             req.releaseConnection();
         }
-    }
-
-    private HashSet ignoredTypes = new HashSet<String>(Arrays.asList(new String[] {"column","table","tableDataLoad","dimension","reportResult","reportResult2","dataLoadingColumn","comment"}));
-
-    /**
-     * Exports a MD object to disk with all dependencies
-     * @param uris the object uris
-     * @param dir the target directory
-     */
-    public void exportMetadataObjectWithDependencies(String[] uris, String dir) throws IOException {
-        l.debug("Executing exportMetadataObjectWithDependencies uris="+uris+" dir="+dir);
-        Map<String,MetadataObject> m = getMetadataObjectWithDependencies(uris);
-        for(String identifier : m.keySet()) {
-            MetadataObject o = m.get(identifier);
-            String t = o.getType();
-            String uri = o.getUri();
-            String id = uri.substring(uri.lastIndexOf("/")+1);
-            String name = t+"."+identifier+"."+id+".gmd";
-            name = name.replace("..",".");
-            FileUtil.writeJSONToFile(o, dir+"/"+name);
-        }
-        if(uris.length > 0) {
-            String pid = getProjectIdFromObjectUri(uris[0]);
-            JSONObject o = getProjectVariables(pid);
-            String name = "variables."+pid+".gvr";
-            FileUtil.writeJSONToFile(o, dir+"/"+name);
-        }
-    }
-
-    /**
-     * Gets a MD object to and all its dependencies
-     * @param uris the object uris
-     * @return map of <identifier, object>
-     */
-    public Map<String,MetadataObject> getMetadataObjectWithDependencies(String[] uris) throws IOException {
-        l.debug("Executing getMetadataObjectWithDependencies uris="+uris);
-        Map<String,MetadataObject> m = new HashMap<String,MetadataObject>();
-        Set<String> exported = new HashSet();
-        for(String uri : uris) {
-            l.debug("Exporting dependencies of uri="+uri);
-            MetadataObject o = getMetadataObject(uri);
-            o.stripKeysForRead();
-            String identifier = o.getIdentifier();
-            m.put(identifier, o);
-            List<JSONObject> dependencies = using(uri);
-            l.debug("There are "+dependencies.size() +" using dependencies.");
-            for(JSONObject d : dependencies) {
-                String tp = d.getString("category");
-                if(!ignoredTypes.contains(tp)) {
-                    String link = d.getString("link");
-                    l.debug("Exporting uri="+link);
-                    if(!exported.contains(link)) {
-                        MetadataObject od = getMetadataObject(link);
-                        String dif = od.getIdentifier();
-                        od.stripKeysForRead();
-                        m.put(dif, od);
-                        exported.add(link);
-                        l.debug("Exported uri="+link);
-                    }
-                    else {
-                        l.debug("Cache hit for uri="+link);
-                    }
-                }
-            }
-            dependencies = usedBy(uri);
-            l.debug("There are "+dependencies.size() +" usedBy dependencies.");
-            for(JSONObject d : dependencies) {
-                String tp = d.getString("category");
-                if(!ignoredTypes.contains(tp)) {
-                    String link = d.getString("link");
-                    l.debug("Exporting uri="+link);
-                    if(!exported.contains(link)) {
-                        MetadataObject od = getMetadataObject(link);
-                        String dif = od.getIdentifier();
-                        od.stripKeysForRead();
-                        m.put(dif, od);
-                        exported.add(link);
-                        l.debug("Exported uri="+link);
-                    }
-                    else {
-                        l.debug("Cache hit for uri="+link);
-                    }
-                }
-            }
-            
-
-        }
-        return m;
-    }
-
-    /**
-     * Stores all MD objects to dir
-     * @param pid project ID
-     * @param dir directory
-     * @throws IOException
-     */
-    public void storeMetadataObjects(String pid, String dir) throws IOException {
-        List<String> uris = new ArrayList<String>();
-        List<String> links = listMetadataObjects(pid, OBJ_TYPE_DASHBOARD);
-        for(String link : links) {
-            uris.add(link);
-        }
-        links = listMetadataObjects(pid, OBJ_TYPE_DOMAIN);
-        for(String link : links) {
-            uris.add(link);
-        }
-        links = listMetadataObjects(pid, OBJ_TYPE_REPORT);
-        for(String link : links) {
-            uris.add(link);
-        }
-        links = listMetadataObjects(pid, OBJ_TYPE_METRIC);
-        for(String link : links) {
-            uris.add(link);
-        }
-        links = listMetadataObjects(pid, OBJ_TYPE_VARIABLE);
-        for(String link : links) {
-            uris.add(link);
-        }
-        links = listMetadataObjects(pid, OBJ_TYPE_DATASET);
-        for(String link : links) {
-            uris.add(link);
-        }
-        links = listMetadataObjects(pid, OBJ_TYPE_FOLDER);
-        for(String link : links) {
-            uris.add(link);
-        }
-        links = listMetadataObjects(pid, OBJ_TYPE_ATTRIBUTE);
-        for(String link : links) {
-            uris.add(link);
-        }
-        links = listMetadataObjects(pid, OBJ_TYPE_FACT);
-        for(String link : links) {
-            uris.add(link);
-        }
-        exportMetadataObjectWithDependencies(uris.toArray(new String[] {}), dir);
-    }
-
-    /**
-     * Loads indexes for the metadata object copy/refresh
-     * @param dir
-     * @param identifiers
-     * @param ids
-     * @throws IOException
-     */
-    protected void loadMdIndexes(String dir, Map identifiers, Map ids) throws IOException {
-        File d = new File(dir);
-        FileFilter fileFilter = new FileFilter() {
-            public boolean accept(File file) {
-                return file.getName().endsWith(".gmd");
-            }
-        };
-        File[] mdObjects = d.listFiles(fileFilter);
-        for(File of : mdObjects) {
-            MetadataObject o = new MetadataObject(FileUtil.readJSONFromFile(of.getAbsolutePath()));
-            String identifier = o.getIdentifier();
-            String id = o.getUri();
-            identifiers.put(identifier, o);
-            ids.put(id, o);
-        }
-    }
-
-    /**
-     * Loads indexes for the metadata object copy/refresh
-     * @param dir
-     * @return List of variables
-     * @throws IOException
-     */
-    protected List<JSONObject> loadVariables(String dir) throws IOException {
-        List<JSONObject> vars = new ArrayList<JSONObject>();
-        File d = new File(dir);
-        FileFilter fileFilter = new FileFilter() {
-            public boolean accept(File file) {
-                return file.getName().endsWith(".gvr");
-            }
-        };
-        File[] mdObjects = d.listFiles(fileFilter);
-        for(File of : mdObjects) {
-            JSONObject variables = JSONObject.fromObject(FileUtil.readJSONFromFile(of.getAbsolutePath()));
-            vars.addAll(parseVariables(variables));
-        }
-        return vars;
-    }
-
-    private List<JSONObject> parseVariables(JSONObject o) throws IOException {
-        List<JSONObject> vars = new ArrayList<JSONObject>();
-        JSONArray variables = o.getJSONArray("variables");
-        Iterator i = variables.iterator();
-        while(i.hasNext()) {
-            vars.add((JSONObject)i.next());
-        }
-        return vars;
-    }
-
-    /**
-     * Stores all metadata objects from a specified directory and adjusts the IDs by identifiers
-     * Always creates new objects
-     * @param srcDir source objects input directory
-     * @param dstDir destination objects input directory
-     * @throws IOException
-     */
-    public void listMissingMdObjects(String srcDir, String dstDir, String diffDir, String usedDiff) throws IOException {
-        final Map<String,MetadataObject> storedObjectsByIdentifier = new HashMap<String,MetadataObject>();
-        final Map<String,MetadataObject> storedObjectsById = new HashMap<String,MetadataObject>();
-        final Map<String,MetadataObject> sourceObjectsByIdentifier = new HashMap<String,MetadataObject>();
-        final Map<String,MetadataObject> sourceObjectsById = new HashMap<String,MetadataObject>();
-
-        final Map<String,MetadataObject> diffByIdentifier = new HashMap<String,MetadataObject>();
-        final Map<String,MetadataObject> diffById = new HashMap<String,MetadataObject>();
-
-        loadMdIndexes(srcDir, sourceObjectsByIdentifier, sourceObjectsById);
-        loadMdIndexes(dstDir, storedObjectsByIdentifier, storedObjectsById);
-        loadMdIndexes(diffDir, diffByIdentifier, diffById);
-
-        Set<String> src = sourceObjectsByIdentifier.keySet();
-        Set<String> dst = storedObjectsByIdentifier.keySet();
-
-        /*
-        src.removeAll(dst);
-
-
-        for(String ident : src) {
-            MetadataObject o = sourceObjectsByIdentifier.get(ident);
-            JSONObject meta = o.getMeta();
-            String uri = o.getUri();
-            String[] c =  uri.split("/");
-            String id = c[c.length - 1];
-            String type = meta.getString("category");
-            if(type.equalsIgnoreCase("attribute") ||
-                    type.equalsIgnoreCase("attributeDisplayForm") ||
-                    type.equalsIgnoreCase("fact") ) {
-                FileUtil.writeJSONToFile(o, diffDir+"/"+type+"."+ident+"."+id+".gmd");    
-            }
-        }
-        */
-        
-        Set<String> used = new HashSet<String>();
-        for(String ident : src) {
-            MetadataObject o = sourceObjectsByIdentifier.get(ident);
-            String type = o.getType();
-            if(!type.equalsIgnoreCase("dataSet")) {
-                if(!diffByIdentifier.containsKey(ident)) {
-                    List<String> ids = o.getDependentObjectUris();
-                    for(String id : ids) {
-                        MetadataObject dob = sourceObjectsById.get(id);
-                        if(dob != null) {
-                            String doi = dob.getIdentifier();
-                            if(diffByIdentifier.containsKey(doi)) {
-                                used.add(doi);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        for(String ident : used) {
-            MetadataObject o = sourceObjectsByIdentifier.get(ident);
-            JSONObject meta = o.getMeta();
-            String uri = o.getUri();
-            String[] c =  uri.split("/");
-            String id = c[c.length - 1];
-            String type = meta.getString("category");
-            FileUtil.writeJSONToFile(o, usedDiff+"/"+type+"."+ident+"."+id+".gmd");    
-        }
-
-
-    }
-
-    /**
-     * Stores all metadata objects from a specified directory and adjusts the IDs by identifiers
-     * Always creates new objects
-     * @param srcDir source objects input directory
-     * @param dstDir destination objects input directory
-     * @throws IOException
-     */
-    public void copyMetadataObjects(final String pid, String srcDir, String dstDir, final boolean overwriteExisting) throws IOException {
-        final Map<String,MetadataObject> storedObjectsByIdentifier = new HashMap<String,MetadataObject>();
-        final Map<String,MetadataObject> storedObjectsById = new HashMap<String,MetadataObject>();
-        final Map<String,MetadataObject> sourceObjectsByIdentifier = new HashMap<String,MetadataObject>();
-        final Map<String,MetadataObject> sourceObjectsById = new HashMap<String,MetadataObject>();
-        final Map<String,MetadataObject> processedObjectsByIdentifier = (overwriteExisting)?(new HashMap<String,MetadataObject>()):(storedObjectsByIdentifier);
-
-        loadMdIndexes(srcDir, sourceObjectsByIdentifier, sourceObjectsById);
-        loadMdIndexes(dstDir, storedObjectsByIdentifier, storedObjectsById);
-
-        class Store {
-            public String storeObjectWithDependencies(MetadataObject o) {
-                l.debug("Executing storeObjectWithDependencies "+o.toString());
-                MetadataObject r = null;
-                String identifier = o.getIdentifier();
-                String tp = o.getType();
-                if(!processedObjectsByIdentifier.containsKey(identifier)) {
-                    l.debug("Storing object identifier="+identifier+" type="+tp);
-                    if(!tp.equalsIgnoreCase("attributeDisplayForm") && !tp.equalsIgnoreCase("attribute") &&
-                            !tp.equalsIgnoreCase("fact") && !tp.equalsIgnoreCase("dataSet")) {
-                        List<String> ids = o.getDependentObjectUris();
-                        String content = o.toString();
-                        for(String id : ids) {
-                            l.debug("storeObjectWithDependencies resolving dependent ID id="+id);
-                            MetadataObject src = sourceObjectsById.get(id);
-                            if(src != null) {
-                                l.debug("storeObjectWithDependencies found id="+id+" in source objects src="+src.toString());
-                                String srcUri = id;
-                                String newUri = storeObjectWithDependencies(src);
-                                content = content.replaceAll("([\\\"\\[])"+srcUri+"([\\\"\\]/])", "$1"+newUri+"$2");
-                            }
-                            else {
-                                l.info("Can't find object uri="+id+" in the source!");
-                            }
-                        }
-                        MetadataObject newObject = new MetadataObject(JSONObject.fromObject(content));
-                        newObject.stripKeysForCreate();
-                        if(storedObjectsByIdentifier.containsKey(identifier)) {
-                            JSONObject m = newObject.getMeta();
-                            MetadataObject eob = storedObjectsByIdentifier.get(identifier);
-                            String uri = eob.getUri();
-                            m.put("uri", uri);
-                            if(overwriteExisting) {
-                                modifyMetadataObject(uri, newObject);
-                            }
-                            r = newObject;
-                        }
-                        else {
-                            r = new MetadataObject(createMetadataObject(pid, newObject));
-                            String uri = r.getUri();
-                            JSONObject m = r.getMeta();
-                            m.put("identifier", identifier);
-                            modifyMetadataObject(uri, r);
-                        }
-                        storedObjectsByIdentifier.put(identifier,r);
-                        processedObjectsByIdentifier.put(identifier,r);
-                        String id = r.getUri();
-                        storedObjectsById.put(id,r);
-                    }
-                    else {
-                        r = storedObjectsByIdentifier.get(identifier);
-                        if(r == null) {
-                            l.info("Missing LDM object in the target model identifier="+identifier+" type="+tp);
-                            l.debug("Missing LDM object in the target model identifier="+identifier+" type="+tp);
-                            throw new GdcRestApiException("Missing LDM object in the target model identifier="+identifier+
-                                    " type="+tp);
-                        }
-                        if(overwriteExisting) {
-                            JSONObject srcMeta = o.getMeta();
-                            JSONObject newMeta = r.getMeta();
-                            String[] copyTags = {"title","summary","tags"};
-                            for(String tag : copyTags) {
-                                newMeta.put(tag,srcMeta.getString(tag));
-                            }
-                            if(tp.equalsIgnoreCase("attribute")) {
-                                JSONObject srcContent = o.getContent();
-                                JSONObject newContent = r.getContent();
-                                if(srcContent.containsKey("drillDownStepAttributeDF")) {
-                                    String duri = srcContent.getString("drillDownStepAttributeDF");
-                                    if(duri != null && duri.length() >0) {
-                                        MetadataObject drillDownDF = sourceObjectsById.get(duri);
-                                        if(drillDownDF != null) {
-                                            String drillDownDFIdentifier = drillDownDF.getIdentifier();
-                                            MetadataObject newDrillDownDF = storedObjectsByIdentifier.get(drillDownDFIdentifier);
-                                            if(newDrillDownDF != null) {
-                                                newContent.put("drillDownStepAttributeDF",newDrillDownDF.getUri());
-                                            }
-                                            else {
-                                                l.info("The destination project doesn't contain the label with identifier "+
-                                                        drillDownDFIdentifier + " that is used in the drill down for attribute with identifier "+
-                                                        identifier);
-                                            }
-                                        }
-                                        else {
-                                            l.info("The source project doesn't contain the drill down label with used in " +
-                                                    "the attribute with identifier "+ identifier);
-                                        }
-                                    }
-                                }
-                            }
-                            modifyMetadataObject(r.getUri(), r);
-                            storedObjectsByIdentifier.put(identifier,r);
-                            processedObjectsByIdentifier.put(identifier,r);
-                        }
-                    }
-                }
-                else {
-                    r = storedObjectsByIdentifier.get(identifier);
-                }
-                String ruri = r.getUri();
-                l.debug("Executed storeObjectWithDependencies uri="+ruri);
-                return r.getUri();
-            }
-
-            private String oldUriToNewUri(String oldUri) {
-                MetadataObject oldObj = sourceObjectsById.get(oldUri);
-                if(oldObj != null) {
-                    String identifier = oldObj.getIdentifier();
-                    if(identifier != null && identifier.length()>0) {
-                        MetadataObject newObj = storedObjectsByIdentifier.get(identifier);
-                        if(newObj != null) {
-                            String newUri = newObj.getUri();
-                            if(newUri != null && newUri.length() >0) {
-                                return newUri;
-                            }
-                            else {
-                                l.debug("The object with identifier="+identifier+" doesn't have any uri.");
-                                throw new GdcRestApiException("The object with identifier="+identifier+" doesn't have any uri.");
-                            }
-                        }
-                         else {
-                            l.debug("Can't find the object with identifier="+identifier+" in the project metadata.");
-                            throw new GdcRestApiException("Can't find the object with identifier="+identifier+" in the project metadata.");
-                        }
-                    }
-                    else {
-                        l.debug("The object with uri="+oldUri+" doesn't have any identifier.");
-                        throw new GdcRestApiException("The object with uri="+oldUri+" doesn't have any identifier.");
-                    }
-                }
-                else {
-                    l.debug("Can't find the object with uri="+oldUri+" in the source metadata.");
-                    throw new GdcRestApiException("Can't find the object with uri="+oldUri+" in the source metadata.");
-                }
-            }
-
-
-           /**
-             * Extracts the dependent objects uris from the content
-             * @return list of depenedent object uris
-             */
-            public List<String> getVariableDependentObjectUris(JSONObject variable) {
-                List<String> uris = new ArrayList<String>();
-                String uri = variable.getString("uri");
-                String content = variable.toString();
-                Pattern p = Pattern.compile("[\\\"\\[]/gdc/md/[^/]*?/obj/[0-9]+?[\\\"\\]/]");
-                Matcher m = p.matcher(content);
-                while(m.find()) {
-                    String u = m.group();
-                    u = u.substring(1,u.length() - 1);
-                    if(!u.equalsIgnoreCase(uri) && !uris.contains(u))
-                        uris.add(u);
-                }
-                return uris;
-            }
-
-            public void storeVariables(List<JSONObject> vars, List<JSONObject> oldVars) {
-
-                HashMap<String, JSONObject> oldVariablesByPromptIdentifier = new HashMap<String, JSONObject>();
-                for(JSONObject v : oldVars) {
-                    String oldPromptUri = v.getString("prompt");
-                    if(oldPromptUri != null && oldPromptUri.length()>0) {
-                        MetadataObject oldPrompt = storedObjectsById.get(oldPromptUri);
-                        if(oldPrompt != null && !oldPrompt.isEmpty() && !oldPrompt.isNullObject()) {
-                            String oldIdentifier = oldPrompt.getIdentifier();
-                            if(oldIdentifier != null && oldIdentifier.length()>0) {
-                                oldVariablesByPromptIdentifier.put(oldIdentifier, v);
-                            }
-                            else {
-                                l.debug("Source prompt with no identifier:"+oldPrompt.toString(2));
-                                throw new GdcRestApiException("Source prompt with no identifier:"+oldPrompt.toString(2));
-                            }
-                        }
-                        else {
-                            l.debug("No source prompt for source variable:"+v.toString(2));
-                            throw new GdcRestApiException("No source prompt for source variable:"+v.toString(2));
-                        }
-                    }
-                    else {
-                        l.debug("Source project variable with no prompt specification:"+v.toString(2));
-                        throw new GdcRestApiException("Source project variable with no prompt specification:"+v.toString(2));
-                    }
-                }
-                for(JSONObject v : vars) {
-                    String newPromptUri = v.getString("prompt");
-                    String level = v.getString("level");
-                    if(level != null && "project".equalsIgnoreCase(level)) {
-                        if(newPromptUri != null && newPromptUri.length()>0) {
-                            MetadataObject newPrompt = sourceObjectsById.get(newPromptUri);
-                            if(newPrompt != null && !newPrompt.isEmpty() && !newPrompt.isNullObject()) {
-                                String newIdentifier = newPrompt.getIdentifier();
-                                if(newIdentifier != null && newIdentifier.length()>0) {
-                                    List<String> ids = getVariableDependentObjectUris(v);
-                                    v.discard("uri");
-                                    v.discard("related");
-                                    String content = v.toString();
-                                    for(String id : ids) {
-                                        MetadataObject src = sourceObjectsById.get(id);
-                                        if(src != null) {
-                                            String newUri = oldUriToNewUri(id);
-                                            content = content.replaceAll("([\\\"\\[])"+id+"([\\\"\\]/])", "$1"+newUri+"$2");
-
-                                        }
-                                        else {
-                                            l.info("Can't find object uri="+id+" in the source!");
-                                        }
-                                    }
-                                    JSONObject variableContent = JSONObject.fromObject(content);
-                                    variableContent.put("related","/gdc/projects/"+pid);
-                                    JSONObject variable = new JSONObject();
-                                    variable.put("variable",variableContent);
-
-                                    if(oldVariablesByPromptIdentifier.containsKey(newIdentifier)) {
-                                        if(overwriteExisting) {
-                                            JSONObject oldVariable = oldVariablesByPromptIdentifier.get(newIdentifier);
-                                            String uri = oldVariable.getString("uri");
-                                            if(uri != null && uri.length()>0) {
-                                                modifyVariable(uri, variable);
-                                            }
-                                            else {
-                                                l.debug("Source project variable with no uri:"+v.toString(2));
-                                                throw new GdcRestApiException("Source project variable with no uri:"+v.toString(2));
-                                            }
-                                        }
-                                    }
-                                    else {
-                                        createVariable(pid, variable);
-                                    }
-
-                                }
-                                else {
-                                    l.debug("Destination prompt with no identifier:"+newPrompt.toString(2));
-                                    throw new GdcRestApiException("Destination prompt with no identifier:"+newPrompt.toString(2));
-                                }
-                            }
-                            else {
-                                l.debug("No destination prompt for source variable:"+v.toString(2));
-                                throw new GdcRestApiException("No destination prompt for source variable:"+v.toString(2));
-                            }
-                        }
-                        else {
-                            l.debug("Destination project variable with no prompt specification:"+v.toString(2));
-                            throw new GdcRestApiException("Destination project variable with no prompt specification:"+v.toString(2));
-                        }
-                    }
-
-                }
-            }
-
-        }
-
-
-        Store storage = new Store();
-
-        for(MetadataObject obj : sourceObjectsByIdentifier.values()) {
-            storage.storeObjectWithDependencies(obj);
-        }
-
-        List<JSONObject> newVariables = loadVariables(srcDir);
-        List<JSONObject> oldVariables = parseVariables(getProjectVariables(pid));
-        if(newVariables != null && newVariables.size()>0) {
-            storage.storeVariables(newVariables, oldVariables);
-        }
-
     }
 
     /**
@@ -3278,21 +2705,21 @@ public class GdcRESTApiWrapper {
      * @param link the link returned from the start loading
      * @return the loading status
      */
-    public String getMigrationStatus(String link) throws HttpMethodException {
-        l.debug("Getting project migration status uri="+link);
+    public String getTaskManStatus(String link) throws HttpMethodException {
+        l.debug("Getting TaskMan status uri="+link);
         HttpMethod ptm = createGetMethod(getServerUrl() + link);
         try {
             String response = executeMethodOk(ptm);
             JSONObject task = JSONObject.fromObject(response);
-            JSONObject state = task.getJSONObject("taskState");
+            JSONObject state = task.getJSONObject("wTaskStatus");
             if(state != null && !state.isNullObject() && !state.isEmpty()) {
                 String status = state.getString("status");
-                l.debug("Migration status="+status);
+                l.debug("TaskMan status="+status);
                 return status;
             }
             else {
-                l.debug("No taskState structure in the migration status!");
-                throw new GdcRestApiException("No taskState structure in the migration status!");
+                l.debug("No wTaskStatus structure in the migration status!");
+                throw new GdcRestApiException("No wTaskStatus structure in the migration status!");
             }
         }
         finally {

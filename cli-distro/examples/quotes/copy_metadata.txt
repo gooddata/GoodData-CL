@@ -1,0 +1,42 @@
+# A simple example that creates a new project and copies metadata objects (reports, dashboards) from the Quotes example
+# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+
+# Create a new project
+CreateProject(name="Quotes New");
+
+# Store the project ID to file for possible other scripts
+RememberProject(fileName="examples/quotes/pid-new");
+
+# Loads time dimension to the project
+UseDateDimension(name="Quote");
+
+# Generate the MAQL script describing the data model for the date dimension
+GenerateMaql(maqlFile="examples/quotes/quote_date.maql");
+
+# Execute the date dimension MAQL script
+ExecuteMaql(maqlFile="examples/quotes/quote_date.maql");
+
+# load the stock quotes data file
+# the data file config has been generated
+UseCsv(csvDataFile="examples/quotes/quotes.csv",hasHeader="true",configFile="examples/quotes/quotes.config.xml");
+
+# generate the stock quotes MAQL
+GenerateMaql(maqlFile="examples/quotes/quotes.maql");
+
+# execute the stock quotes MAQL
+ExecuteMaql(maqlFile="examples/quotes/quotes.maql");
+
+# transfer the stock quotes data
+TransferData();
+
+# Use the quotes project that has been created already
+UseProject(fileName="examples/quotes/pid");
+
+# Export the project dashboard. You need to create some dashboard first and specify its ID  
+ExportMetadataObjects(tokenFile="examples/quotes/importMDToken.txt", objectIDs="%DASHBOARD_ID%");
+
+# Use the new quotes project
+UseProject(fileName="examples/quotes/pid-new");
+
+# Import the project metadata, data, and users to the new project.
+ImportMetadataObjects(tokenFile="examples/quotes/importMDToken.txt");

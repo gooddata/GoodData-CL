@@ -27,6 +27,7 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListResourceBundle;
 import java.util.Properties;
 
 import com.gooddata.connector.*;
@@ -597,11 +598,11 @@ public class GdcDI implements Executor {
             else if(c.match("RetrieveMetadataObject")) {
                 getMdObject(c, cli, ctx);
             }
-            else if(c.match("RetrieveAllObjects")) {
-                retrieveAllObjects(c, cli, ctx);
+            else if(c.match("ExportMetadataObjects")) {
+                exportMDObject(c, cli, ctx);
             }
-            else if(c.match("CopyObjects") || c.match("StoreAllObjects")) {
-                copyObjects(c, cli, ctx);
+            else if(c.match("ImportMetadataObjects")) {
+                importMDObject(c, cli, ctx);
             }
             else if(c.match("ExportJdbcToCsv")) {
                 exportJdbcToCsv(c, cli, ctx);
@@ -707,8 +708,8 @@ public class GdcDI implements Executor {
                     FileUtil.writeStringToFile(token, fileName);
                 }
                 else {
-                    l.error("Error exporting projectL. Check debug log for more details.");
-                    throw new GdcRestApiException("Error exporting projectL. Check debug log for more details.");
+                    l.error("Error exporting project. Check debug log for more details.");
+                    throw new GdcRestApiException("Error exporting project. Check debug log for more details.");
                 }
             }
             else {
@@ -717,12 +718,171 @@ public class GdcDI implements Executor {
 
             }
             l.debug("Finished project export.");
-            l.info("Project "+pid+"' successfully executed. Import token is "+token);
+            l.info("Project "+pid+" successfully exported. Import token is "+token);
         }
         catch (InterruptedException e) {
             throw new InternalErrorException(e);
         }
     }
+
+    /**
+     * Imports project
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void importProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        try {
+            l.info("Importing project.");
+            String pid = ctx.getProjectIdMandatory();
+            final String tokenFile = c.getParamMandatory("tokenFile");
+            String token = FileUtil.readStringFromFile(tokenFile).trim();
+            String taskUri  = ctx.getRestApi(p).importProject(pid, token);
+            if(taskUri != null && taskUri.length() > 0) {
+                l.debug("Checking project import status.");
+                String status = "";
+                while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
+                    status = ctx.getRestApi(p).getMigrationStatus(taskUri);
+                    l.debug("Project import status = "+status);
+                    Thread.sleep(500);
+                }
+                l.info("Project import finished with status "+status);
+                if("ERROR".equalsIgnoreCase(status)) {
+                    l.error("Error importing project. Check debug log for more details.");
+                    throw new GdcRestApiException("Error importing project. Check debug log for more details.");
+                }
+            }
+            else {
+                l.error("Project import hasn't returned any task URI.");
+                throw new InternalErrorException("Project import hasn't returned any task URI.");
+
+            }
+            l.debug("Finished project import.");
+            l.info("Project "+pid+" successfully imported.");
+        }
+        catch (InterruptedException e) {
+            throw new InternalErrorException(e);
+        }
+    }
+
+
+    /**
+     * Exports MD objects
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void exportMDObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        try {
+            l.info("Exporting metadata objects.");
+            String token;
+            String pid = ctx.getProjectIdMandatory();
+            final String fileName = c.getParamMandatory("tokenFile");
+            final String idscs = c.getParamMandatory("objectIDs");
+            if(idscs != null && idscs.length() >0) {
+                String[] idss = idscs.split(",");
+                List<Integer> ids = new ArrayList<Integer>();
+                for(String id : idss) {
+                    try {
+                        ids.add(Integer.parseInt(id));
+                    }
+                    catch (NumberFormatException e) {
+                        l.debug("Invalid metadata object ID "+id,e);
+                        l.error("Invalid metadata object ID "+id);
+                        throw new InvalidParameterException("Invalid metadata object ID "+id,e);
+                    }
+                }
+                GdcRESTApiWrapper.ProjectExportResult r = ctx.getRestApi(p).exportMD(pid,ids);
+                String taskUri = r.getTaskUri();
+                token = r.getExportToken();
+                if(taskUri != null && taskUri.length() > 0) {
+                    l.debug("Checking MD export status.");
+                    String status = "";
+                    while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
+                        status = ctx.getRestApi(p).getTaskManStatus(taskUri);
+                        l.debug("MD export status = "+status);
+                        Thread.sleep(500);
+                    }
+                    l.info("MD export finished with status "+status);
+                    if("OK".equalsIgnoreCase(status) || "WARNING".equalsIgnoreCase(status)) {
+                        FileUtil.writeStringToFile(token, fileName);
+                    }
+                    else {
+                        l.error("Error exporting metadata. Check debug log for more details.");
+                        throw new GdcRestApiException("Error exporting metadata. Check debug log for more details.");
+                    }
+                }
+                else {
+                    l.error("MD export hasn't returned any task URI.");
+                    throw new InternalErrorException("MD export hasn't returned any task URI.");
+                }
+            }
+            else {
+                l.debug("The objectIDs parameter must contain a comma separated list of metadata object IDs!");
+                l.error("The objectIDs parameter must contain a comma separated list of metadata object IDs!");
+                throw new InvalidParameterException("The objectIDs parameter must contain a comma separated list of metadata object IDs!");
+            }
+            l.debug("Finished MD export.");
+            l.info("Project "+pid+" metadata successfully exported. Import token is "+token);
+        }
+        catch (InterruptedException e) {
+            throw new InternalErrorException(e);
+        }
+    }
+
+    /**
+     * Imports MD objects
+     * @param c command
+     * @param p cli parameters
+     * @param ctx current context
+     * @throws IOException IO issues
+     */
+    private void importMDObject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
+        try {
+            l.info("Importing metadata objects.");
+            String pid = ctx.getProjectIdMandatory();
+            final String tokenFile = c.getParamMandatory("tokenFile");
+            String token = FileUtil.readStringFromFile(tokenFile).trim();
+            /*
+            Currently not supported
+            final String ov = c.getParam("overwrite");
+            final boolean overwrite = (ov != null && "true".equalsIgnoreCase(ov));
+            final String ul = c.getParam("updateLDM");
+            final boolean updateLDM = (ov != null && "true".equalsIgnoreCase(ov));
+            */
+            final boolean updateLDM = true;
+            final boolean overwrite = true;
+            String taskUri  = ctx.getRestApi(p).importMD(pid, token, overwrite, updateLDM);
+            if(taskUri != null && taskUri.length() > 0) {
+                l.debug("Checking MD import status.");
+                String status = "";
+                while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
+                    status = ctx.getRestApi(p).getTaskManStatus(taskUri);
+                    l.debug("MD import status = "+status);
+                    Thread.sleep(500);
+                }
+                l.info("MD import finished with status "+status);
+                if("ERROR".equalsIgnoreCase(status)) {
+                    l.error("Error importing MD. Check debug log for more details.");
+                    throw new GdcRestApiException("Error importing MD. Check debug log for more details.");
+                }
+            }
+            else {
+                l.error("MD import hasn't returned any task URI.");
+                throw new InternalErrorException("MD import hasn't returned any task URI.");
+
+            }
+            l.debug("Finished metadata import.");
+            l.info("Project "+pid+" metadata successfully imported.");
+        }
+        catch (InterruptedException e) {
+            throw new InternalErrorException(e);
+        }
+    }
+
+
 
     /**
      * Creates a new user
@@ -835,47 +995,6 @@ public class GdcDI implements Executor {
         }
         else {
             l.error("Invalid field parameter. Only values 'email' and 'uri' are currently supported.");
-        }
-    }
-
-    /**
-     * Imports project
-     * @param c command
-     * @param p cli parameters
-     * @param ctx current context
-     * @throws IOException IO issues
-     */
-    private void importProject(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-        try {
-            l.info("Importing project.");
-            String pid = ctx.getProjectIdMandatory();
-            final String tokenFile = c.getParamMandatory("tokenFile");
-            String token = FileUtil.readStringFromFile(tokenFile).trim();
-            String taskUri  = ctx.getRestApi(p).importProject(pid, token);
-            if(taskUri != null && taskUri.length() > 0) {
-                l.debug("Checking project import status.");
-                String status = "";
-                while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
-                    status = ctx.getRestApi(p).getMigrationStatus(taskUri);
-                    l.debug("Project import status = "+status);
-                    Thread.sleep(500);
-                }
-                l.info("Project import finished with status "+status);
-                if("ERROR".equalsIgnoreCase(status)) {
-                    l.error("Error importing project. Check debug log for more details.");
-                    throw new GdcRestApiException("Error importing project. Check debug log for more details.");
-                }
-            }
-            else {
-                l.error("Project import hasn't returned any task URI.");
-                throw new InternalErrorException("Project import hasn't returned any task URI.");
-
-            }
-            l.debug("Finished project import.");
-            l.info("Project "+pid+"' successfully imported.");
-        }
-        catch (InterruptedException e) {
-            throw new InternalErrorException(e);
         }
     }
 
@@ -1118,47 +1237,6 @@ public class GdcDI implements Executor {
         MetadataObject ret = ctx.getRestApi(p).getMetadataObject(pid,id);
         FileUtil.writeJSONToFile(ret, fl);
         l.info("Retrieved metadata object "+id+" from the project "+pid+" and stored it in file "+fl);
-    }
-
-    /**
-     * Retrieves all MD objects from a project to a directory
-     * @param c command
-     * @param p cli parameters
-     * @param ctx current context
-     */
-    private void retrieveAllObjects(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-        String pid = ctx.getProjectIdMandatory();
-        String fl = c.getParamMandatory("dir");
-        File dir = new File(fl);
-        if(!dir.exists() || !dir.isDirectory()) {
-            throw new InvalidParameterException("The dir parameter in the RetrieveAllObjects command must be an existing directory.");
-        }
-        l.info("Retrieving all objects from the project "+pid+" to "+dir);
-        ctx.getRestApi(p).storeMetadataObjects(pid, fl);
-        l.info("All objects from the project "+pid+" successfully retrieved to "+dir);
-    }
-
-    /**
-     * Copies MD objects from a source directory to the current project
-     * @param c command
-     * @param p cli parameters
-     * @param ctx current context
-     */
-    private void copyObjects(Command c, CliParams p, ProcessingContext ctx) throws IOException {
-        String pid = ctx.getProjectIdMandatory();
-        String fl = c.getParamMandatory("dir");
-        String overwriteStr = c.getParam("overwrite");
-        final boolean overwrite = (overwriteStr != null && "true".equalsIgnoreCase(overwriteStr));
-        File dir = new File(fl);
-        if(!dir.exists() || !dir.isDirectory()) {
-            throw new InvalidParameterException("The dir parameter in the StoreAllObjects command must be an existing directory.");
-        }
-        l.info("Copying all objects from the dir "+dir+" to project "+pid);
-        File tmpDir = FileUtil.createTempDir();
-        ctx.getRestApi(p).storeMetadataObjects(pid, tmpDir.getAbsolutePath());
-        ctx.getRestApi(p).copyMetadataObjects(pid, fl, tmpDir.getAbsolutePath(), overwrite);
-        FileUtil.recursiveDelete(tmpDir);
-        l.info("All objects from the dir "+dir+" successfully copied to project "+pid);
     }
 
     /**
