@@ -23,7 +23,20 @@
 
 package com.gooddata.util;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.net.URL;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -85,10 +98,10 @@ public class FileUtil {
      * @throws IOException
      */
     public static void copy(InputStream is, OutputStream os) throws IOException {
-    	if (is == null || os == null) {
-    		throw new IllegalArgumentException("both input and output streams must be non-null");
-    	}
-    	try {
+        if (is == null || os == null) {
+            throw new IllegalArgumentException("both input and output streams must be non-null");
+        }
+        try {
             byte[] buf = new byte[1024];
             int i = 0;
             while ((i = is.read(buf)) != -1) {
@@ -99,7 +112,7 @@ public class FileUtil {
             os.close();
         }
     }
-    
+
     /**
      * Create a new temporary directory. Use something like
      * {@link #recursiveDelete(File)} to clean this directory up since it isn't
@@ -213,7 +226,7 @@ public class FileUtil {
     }
 
     /**
-     * Reads the entire file and returns its content as a single {@link String} 
+     * Reads the entire file and returns its content as a single {@link String}
      *
      * @param fileName the file
      * @return the file content as String
@@ -251,18 +264,18 @@ public class FileUtil {
     }
 
     /**
-     * Reads the entire {@link InputStream} and returns its content as a single {@link String} 
+     * Reads the entire {@link InputStream} and returns its content as a single {@link String}
      *
      * @param is the file
      * @return the file content as String
      * @throws IOException
      */
     public static String readStringFromStream(InputStream is) throws IOException {
-    	return readStringFromBufferedReader(createBufferedUtf8Reader(is));
+        return readStringFromBufferedReader(createBufferedUtf8Reader(is));
     }
-    
+
     /**
-     * Reads all content from the given {@link Reader} and returns it as a single {@link String} 
+     * Reads all content from the given {@link Reader} and returns it as a single {@link String}
      *
      * @param br the file
      * @return the file content as String
@@ -287,10 +300,10 @@ public class FileUtil {
      */
     public static String readStringFromClasspath(String path, Class c) throws IOException {
         final InputStream is = c.getResourceAsStream(path);
-    	return readStringFromBufferedReader(createBufferedUtf8Reader(is));
+        return readStringFromBufferedReader(createBufferedUtf8Reader(is));
     }
 
-    
+
     /**
      * Retrieves CSV headers from an URL
      * 
@@ -299,12 +312,12 @@ public class FileUtil {
      * @throws IOException in case of IO issues
      */
     public static String[] getCsvHeader(URL url, char separator) throws IOException {
-        CSVReader csvIn = new CSVReader(createBufferedUtf8Reader(url), separator);        
+        CSVReader csvIn = new CSVReader(createBufferedUtf8Reader(url), separator);
         return csvIn.readNext();
     }
 
     /**
-     * Constructs a new File and optionally checks if it exists 
+     * Constructs a new File and optionally checks if it exists
      * @param fileName file name
      * @param ignoreMissingFile flag that ignores the fact that the file doesn't exists
      * @return the File
@@ -313,10 +326,10 @@ public class FileUtil {
     public static File getFile(String fileName, boolean ignoreMissingFile) throws IOException {
         File f = new File(fileName);
         if(!f.exists()) {
-        	if (!ignoreMissingFile)
-        		throw new IOException("File '" + fileName + "' doesn't exist.");
-        	else
-        		return null;
+            if (!ignoreMissingFile)
+                throw new IOException("File '" + fileName + "' doesn't exist.");
+            else
+                return null;
         }
         return f;
     }
@@ -330,193 +343,193 @@ public class FileUtil {
     public static File getFile(String fileName) throws IOException {
         return getFile(fileName, false);
     }
-	
-	/**
-	 * returns the last element of the URL's path
-	 * @param url to parse
-	 * @return the last element of the URL's path
-	 */
-	public static String getFileName(URL url) {
-		String[] pathElements = url.getPath().split("/");
-		return pathElements[pathElements.length - 1];
-	}
-	
-	/**
-	 * Opens a file given by a path and returns its {@link BufferedReader} using the
-	 * UTF-8 encoding
-	 * 
-	 * @param path path to a file to be read
-	 * @return UTF8 BufferedReader of the file <tt>path</tt>
-	 * @throws IOException
-	 */
-	public static BufferedReader createBufferedUtf8Reader(String path) throws IOException {
-		return createBufferedUtf8Reader(new File(path));
-	}
-	
-	/**
-	 * Opens a file given by a path and returns its {@link BufferedWriter} using the
-	 * UTF-8 encoding
-	 * 
-	 * @param path path to a file to write to
-	 * @return UTF8 BufferedWriter of the file <tt>path</tt>
-	 * @throws IOException
-	 */
-	public static BufferedWriter createBufferedUtf8Writer(String path) throws IOException {
-		return createBufferedUtf8Writer(new File(path));
-	}
 
     /**
-	 * Opens a file given by a path and returns its {@link BufferedWriter} using the
-	 * UTF-8 encoding
-	 *
-	 * @param path path to a file to write to
+     * returns the last element of the URL's path
+     * @param url to parse
+     * @return the last element of the URL's path
+     */
+    public static String getFileName(URL url) {
+        String[] pathElements = url.getPath().split("/");
+        return pathElements[pathElements.length - 1];
+    }
+
+    /**
+     * Opens a file given by a path and returns its {@link BufferedReader} using the
+     * UTF-8 encoding
+     * 
+     * @param path path to a file to be read
+     * @return UTF8 BufferedReader of the file <tt>path</tt>
+     * @throws IOException
+     */
+    public static BufferedReader createBufferedUtf8Reader(String path) throws IOException {
+        return createBufferedUtf8Reader(new File(path));
+    }
+
+    /**
+     * Opens a file given by a path and returns its {@link BufferedWriter} using the
+     * UTF-8 encoding
+     * 
+     * @param path path to a file to write to
+     * @return UTF8 BufferedWriter of the file <tt>path</tt>
+     * @throws IOException
+     */
+    public static BufferedWriter createBufferedUtf8Writer(String path) throws IOException {
+        return createBufferedUtf8Writer(new File(path));
+    }
+
+    /**
+     * Opens a file given by a path and returns its {@link BufferedWriter} using the
+     * UTF-8 encoding
+     *
+     * @param path path to a file to write to
      * @param append should be the content appended?
-	 * @return UTF8 BufferedWriter of the file <tt>path</tt>
-	 * @throws IOException
-	 */
-	public static BufferedWriter createBufferedUtf8Writer(String path, boolean append) throws IOException {
-		return new BufferedWriter(new FileWriter(path, append));
-	}
-	
-	/**
-	 * Opens a file given by a path and returns its {@link BufferedReader} using the
-	 * UTF-8 encoding
-	 * 
-	 * @param file file to be read
-	 * @return UTF8 BufferedReader of the <tt>file</tt>
-	 * @throws IOException
-	 */
-	public static BufferedReader createBufferedUtf8Reader(File file) throws IOException {
-		return createBufferedUtf8Reader(new FileInputStream(file));
-	}
-	
-	/**
-	 * Opens a file given by a path and returns its {@link BufferedWriter} using the
-	 * UTF-8 encoding
-	 * 
-	 * @param file file to write to
-	 * @return UTF8 BufferedWriter of the <tt>file</tt>
-	 * @throws IOException
-	 */
-	public static BufferedWriter createBufferedUtf8Writer(File file) throws IOException {
-		return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf8"));
-	}
-
-	/**
-	 * Opens a URL and returns its {@link BufferedReader} using the UTF-8 encoding
-	 * 
-	 * @param url to be read
-	 * @return UTF8 BufferedReader of the <tt>url</tt>
-	 * @throws IOException
-	 */
-	public static BufferedReader createBufferedUtf8Reader(URL url) throws IOException {
-		return createBufferedUtf8Reader(url.openStream());
-	}
-	
-	/**
-	 * Creates a {@link BufferedReader} on the top of the given {@link InputStream} using the
-	 * UTF-8 encoding
-	 * 
-	 * @param is file to be read
-	 * @return UTF8 BufferedReader of the <tt>file</tt>
-	 * @throws IOException
-	 */
-	public static BufferedReader createBufferedUtf8Reader(InputStream is) throws IOException {
-		return new BufferedReader(new InputStreamReader(is, "utf8"));
-	}
-	
-	/**
-	 * Creates a UTF-8 {@link CSVReader} of the resource on classpath represented by
-	 * given <tt>path</tt>. Calls {@link Class#getResourceAsStream(String)} internally to create
-	 * the underlying {@link InputStream}.
-	 * 
-	 * @param path
-	 * @return
-	 * @throws IOException
-	 */
-	public static CSVReader getResourceAsCsvReader(String path) throws IOException {
-		InputStream is = FileUtil.class.getResource(path).openStream();
-		return createUtf8CsvReader(is);    	
-	}
-	
-	/**
-	 * Creates a UTF-8 {@link CSVReader} of the given <tt>file</tt>.
-	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 */
-	public static CSVReader createUtf8CsvReader(File file) throws IOException {
-		return createUtf8CsvReader(new FileInputStream(file));
-	}
+     * @return UTF8 BufferedWriter of the file <tt>path</tt>
+     * @throws IOException
+     */
+    public static BufferedWriter createBufferedUtf8Writer(String path, boolean append) throws IOException {
+        return new BufferedWriter(new FileWriter(path, append));
+    }
 
     /**
-	 * Creates a UTF-8 {@link CSVReader} of the given <tt>file</tt>.
-	 *
-	 * @param file
+     * Opens a file given by a path and returns its {@link BufferedReader} using the
+     * UTF-8 encoding
+     * 
+     * @param file file to be read
+     * @return UTF8 BufferedReader of the <tt>file</tt>
+     * @throws IOException
+     */
+    public static BufferedReader createBufferedUtf8Reader(File file) throws IOException {
+        return createBufferedUtf8Reader(new FileInputStream(file));
+    }
+
+    /**
+     * Opens a file given by a path and returns its {@link BufferedWriter} using the
+     * UTF-8 encoding
+     * 
+     * @param file file to write to
+     * @return UTF8 BufferedWriter of the <tt>file</tt>
+     * @throws IOException
+     */
+    public static BufferedWriter createBufferedUtf8Writer(File file) throws IOException {
+        return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf8"));
+    }
+
+    /**
+     * Opens a URL and returns its {@link BufferedReader} using the UTF-8 encoding
+     * 
+     * @param url to be read
+     * @return UTF8 BufferedReader of the <tt>url</tt>
+     * @throws IOException
+     */
+    public static BufferedReader createBufferedUtf8Reader(URL url) throws IOException {
+        return createBufferedUtf8Reader(url.openStream());
+    }
+
+    /**
+     * Creates a {@link BufferedReader} on the top of the given {@link InputStream} using the
+     * UTF-8 encoding
+     * 
+     * @param is file to be read
+     * @return UTF8 BufferedReader of the <tt>file</tt>
+     * @throws IOException
+     */
+    public static BufferedReader createBufferedUtf8Reader(InputStream is) throws IOException {
+        return new BufferedReader(new InputStreamReader(is, "utf8"));
+    }
+
+    /**
+     * Creates a UTF-8 {@link CSVReader} of the resource on classpath represented by
+     * given <tt>path</tt>. Calls {@link Class#getResourceAsStream(String)} internally to create
+     * the underlying {@link InputStream}.
+     * 
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    public static CSVReader getResourceAsCsvReader(String path) throws IOException {
+        InputStream is = FileUtil.class.getResource(path).openStream();
+        return createUtf8CsvReader(is);
+    }
+
+    /**
+     * Creates a UTF-8 {@link CSVReader} of the given <tt>file</tt>.
+     * 
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static CSVReader createUtf8CsvReader(File file) throws IOException {
+        return createUtf8CsvReader(new FileInputStream(file));
+    }
+
+    /**
+     * Creates a UTF-8 {@link CSVReader} of the given <tt>file</tt>.
+     *
+     * @param file
      * @param separator field separator
-	 * @return
-	 * @throws IOException
-	 */
-	public static CSVReader createUtf8CsvReader(File file, char separator) throws IOException {
-		return createUtf8CsvReader(new FileInputStream(file), separator);
-	}
+     * @return
+     * @throws IOException
+     */
+    public static CSVReader createUtf8CsvReader(File file, char separator) throws IOException {
+        return createUtf8CsvReader(new FileInputStream(file), separator);
+    }
 
     /**
-	 * Creates a UTF-8 {@link CSVReader} of the given <tt>inputStream</tt>.
-	 *
-	 * @param inputStream
+     * Creates a UTF-8 {@link CSVReader} of the given <tt>inputStream</tt>.
+     *
+     * @param inputStream
      * @param separator field separator
-	 * @return
-	 * @throws IOException
-	 */
-	public static CSVReader createUtf8CsvReader(InputStream inputStream, char separator) throws IOException {
-		return new CSVReader(new InputStreamReader(inputStream, "utf8"), separator);
-	}
+     * @return
+     * @throws IOException
+     */
+    public static CSVReader createUtf8CsvReader(InputStream inputStream, char separator) throws IOException {
+        return new CSVReader(new InputStreamReader(inputStream, "utf8"), separator);
+    }
 
-	/**
-	 * Creates a UTF-8 {@link CSVReader} of the given <tt>inputStream</tt>.
-	 * 
-	 * @param inputStream
-	 * @return
-	 * @throws IOException
-	 */
-	public static CSVReader createUtf8CsvReader(InputStream inputStream) throws IOException {
-		return new CSVReader(new InputStreamReader(inputStream, "utf8"));
-	}
-	
-	/**
-	 * Creates a UTF-8 {@link CSVWriter} of the given <tt>file</tt>.
-	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 */
-	public static CSVWriter createUtf8CsvWriter(File file) throws IOException {
-		return createUtf8CsvWriter(new FileOutputStream(file));
-	}
-	
-	/**
-	 * Creates a UTF-8 {@link CSVWriter} of the given <tt>outputStream</tt>.
-	 * 
-	 * @param outputStream
-	 * @return
-	 * @throws IOException
-	 */
-	public static CSVWriter createUtf8CsvWriter(OutputStream outputStream) throws IOException {
-		return new CSVWriter(new OutputStreamWriter(outputStream, "utf8"));
-	}
+    /**
+     * Creates a UTF-8 {@link CSVReader} of the given <tt>inputStream</tt>.
+     * 
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
+    public static CSVReader createUtf8CsvReader(InputStream inputStream) throws IOException {
+        return new CSVReader(new InputStreamReader(inputStream, "utf8"));
+    }
+
+    /**
+     * Creates a UTF-8 {@link CSVWriter} of the given <tt>file</tt>.
+     * 
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static CSVWriter createUtf8CsvWriter(File file) throws IOException {
+        return createUtf8CsvWriter(new FileOutputStream(file));
+    }
+
+    /**
+     * Creates a UTF-8 {@link CSVWriter} of the given <tt>outputStream</tt>.
+     * 
+     * @param outputStream
+     * @return
+     * @throws IOException
+     */
+    public static CSVWriter createUtf8CsvWriter(OutputStream outputStream) throws IOException {
+        return new CSVWriter(new OutputStreamWriter(outputStream, "utf8"));
+    }
 
 
     /**
-	 * Creates a UTF-8 {@link CSVWriter} of the given <tt>file</tt>.
-	 *
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 */
-	public static CSVWriter createUtf8CsvEscapingWriter(File file) throws IOException {
-		return new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), "utf8"),',','"','"');
-	}
+     * Creates a UTF-8 {@link CSVWriter} of the given <tt>file</tt>.
+     *
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static CSVWriter createUtf8CsvEscapingWriter(File file) throws IOException {
+        return new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), "utf8"),',','"','"');
+    }
 
 }

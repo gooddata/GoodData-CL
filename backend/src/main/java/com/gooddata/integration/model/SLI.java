@@ -23,12 +23,12 @@
 
 package com.gooddata.integration.model;
 
-import com.gooddata.Constants;
-import com.gooddata.util.StringUtil;
+import java.util.List;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import java.util.List;
+import com.gooddata.Constants;
 
 /**
  * GoodData Data Loading Interface (SLI)
@@ -89,7 +89,7 @@ public class SLI {
     public void setFormat(String format) {
         this.format = format;
     }
-    
+
 
 
     /**
@@ -119,7 +119,7 @@ public class SLI {
             int referenceKey = column.getReferenceKey();
             if(referenceKey > 0)
                 oPart.put("referenceKey", referenceKey);
-            
+
             oParts.add(oPart);
         }
         oDataSetManifest.put("parts", oParts);

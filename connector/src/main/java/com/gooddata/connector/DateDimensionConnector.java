@@ -23,22 +23,24 @@
 
 package com.gooddata.connector;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+
 import com.gooddata.exception.InternalErrorException;
-import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-
-import java.io.*;
-import java.util.List;
 
 /**
  * GoodData Google Analytics Connector
@@ -98,7 +100,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
      * {@inheritDoc}
      */
     public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
-    	throws IOException, InterruptedException {
+            throws IOException, InterruptedException {
         if(includeTime) {
             l.debug("Extracting data.");
             File tmpDir = FileUtil.createTempDir();
@@ -106,7 +108,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
             String archiveName = tmpDir.getName();
             MDC.put("GdcDataPackageDir",archiveName);
             String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
-                archiveName + ".zip";
+                    archiveName + ".zip";
 
             // extract the data to the CSV that is going to be transferred to the server
             this.extract(tmpDir.getAbsolutePath());
@@ -234,19 +236,19 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         l.info("Time Dimension Connector successfully loaded (name: " + ct + ").");
     }
 
-	/**
-	 * @return the date dimension name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return the date dimension name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @param name the date dimension name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @param name the date dimension name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getType() {
         return type;

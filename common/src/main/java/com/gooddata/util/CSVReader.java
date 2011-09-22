@@ -37,15 +37,15 @@ import java.util.List;
  * 
  */
 public class CSVReader implements Closeable {
-	
-	private static char DEFAULT_SEPARATOR = ',';
-	private static char DEFAULT_QUOTE_CHARACTER = '"';
-	private static char DEFAULT_ESCAPE_CHARACTER = '"';
-	
-	private static int CHUNK_SIZE = 4096;
+
+    private static char DEFAULT_SEPARATOR = ',';
+    private static char DEFAULT_QUOTE_CHARACTER = '"';
+    private static char DEFAULT_ESCAPE_CHARACTER = '"';
+
+    private static int CHUNK_SIZE = 4096;
 
     private Reader r;
-    
+
     // configuration
     private char separator;
     private char quote;
@@ -56,7 +56,7 @@ public class CSVReader implements Closeable {
     // status variables
     private List<String> openRecord = new ArrayList<String>();
     private StringBuffer openField  = new StringBuffer();
-    private char lastChar = 0; 
+    private char lastChar = 0;
     private boolean quotedField = false;
     private int quotedFieldStartRow = 0;
     private int quotedFieldStartCol = 0;
@@ -64,7 +64,7 @@ public class CSVReader implements Closeable {
     private boolean commentedLine = false;
     private LinkedList<String[]> recordsQueue = new LinkedList<String[]>();
     private boolean eof = false;
-    
+
     private int row = 1;
     private int col = 0;
 
@@ -104,7 +104,7 @@ public class CSVReader implements Closeable {
         this(r, separator, quotechar, DEFAULT_ESCAPE_CHARACTER);
     }
 
-   /**
+    /**
      * Constructs CSVReader with supplied separator and quote char.
      *
      * @param reader
@@ -122,9 +122,9 @@ public class CSVReader implements Closeable {
         this.separator = separator;
         this.quote = quotechar;
         this.escape = escape;
-	}
+    }
 
-	/**
+    /**
      * Reads the entire file into a List with each element being a String[] of
      * tokens.
      * 
@@ -154,188 +154,188 @@ public class CSVReader implements Closeable {
      *             if bad things happen during the read
      */
     public String[] readNext() throws IOException {
-    	while (recordsQueue.isEmpty() && !eof) {
-	    	char[] data = new char[CHUNK_SIZE];
-	    	int size = r.read(data);
-	    	if (size == -1) {
-	    		break;
-	    	}
-	    	processChunk(data, size);
-    	}
-    	if (recordsQueue.isEmpty()) {
-    		if (wasEscapeOrNotOpeningQuote) {
-    			handlePreviousEscapeOrQuote(null);
-    		}
-    		if (quotedField) {
-    			throw new IllegalStateException("Missing quote character to close the quote char at ["
-    					+ quotedFieldStartRow + "," + quotedFieldStartCol + "]");
-    		}
-    		if (openRecord.isEmpty()) {
-    			return null;
-    		} else {
-    			if (openField.length() > 0) {
-    				openRecord.add(openField.toString());
-    				openField.delete(0, openField.length());
-    			}
-    			String[] result = openRecord.toArray(new String[]{});
-    			openRecord.clear();
-    			return result;
-    		}
-    	}
-    	return recordsQueue.removeFirst();
+        while (recordsQueue.isEmpty() && !eof) {
+            char[] data = new char[CHUNK_SIZE];
+            int size = r.read(data);
+            if (size == -1) {
+                break;
+            }
+            processChunk(data, size);
+        }
+        if (recordsQueue.isEmpty()) {
+            if (wasEscapeOrNotOpeningQuote) {
+                handlePreviousEscapeOrQuote(null);
+            }
+            if (quotedField) {
+                throw new IllegalStateException("Missing quote character to close the quote char at ["
+                        + quotedFieldStartRow + "," + quotedFieldStartCol + "]");
+            }
+            if (openRecord.isEmpty()) {
+                return null;
+            } else {
+                if (openField.length() > 0) {
+                    openRecord.add(openField.toString());
+                    openField.delete(0, openField.length());
+                }
+                String[] result = openRecord.toArray(new String[]{});
+                openRecord.clear();
+                return result;
+            }
+        }
+        return recordsQueue.removeFirst();
     }
-    
+
     private void processChunk(final char[] data, final int size) {
-    	for (int i = 0; i < size; i++) {
-    		col++;
-    		final char c = data[i];
-    		if (wasEscapeOrNotOpeningQuote) {
-    			handlePreviousEscapeOrQuote(c);
-    		} else if (c == escape || c == quote) {
-    			handleEscapeOrQuote(c);
-    		} else if (c == separator) {
-    			handleSeparator(c);
-    		} else if (c == '\n' || c == '\r') {
-    			handleCrOrLf(c);
-    		} else if (hasCommentSupport && (c == commentChar)) {
-    			handleComment(c);
-    		} else {
-    			if (commentedLine) 
-    				break;
-    			addCharacter(c);
-    		}
-    		lastChar = c;
-    	}	
+        for (int i = 0; i < size; i++) {
+            col++;
+            final char c = data[i];
+            if (wasEscapeOrNotOpeningQuote) {
+                handlePreviousEscapeOrQuote(c);
+            } else if (c == escape || c == quote) {
+                handleEscapeOrQuote(c);
+            } else if (c == separator) {
+                handleSeparator(c);
+            } else if (c == '\n' || c == '\r') {
+                handleCrOrLf(c);
+            } else if (hasCommentSupport && (c == commentChar)) {
+                handleComment(c);
+            } else {
+                if (commentedLine)
+                    break;
+                addCharacter(c);
+            }
+            lastChar = c;
+        }
     }
-    
+
     private void handleCrOrLf(final char c) {
         if (!quotedField && (lastChar == '\r')) {
-        	return;
+            return;
         }
         handleEndOfLine(c);
     }
-    
+
     private void handleComment(final char c) {
-    	if (commentedLine)
-			return;
-    	if (openRecord.isEmpty() && (openField.length() == 0) && !quotedField) {
-    		commentedLine = true;
-    	} else {
-    		addCharacter(c);
-    	}
+        if (commentedLine)
+            return;
+        if (openRecord.isEmpty() && (openField.length() == 0) && !quotedField) {
+            commentedLine = true;
+        } else {
+            addCharacter(c);
+        }
     }
-    
+
     private void handleEndOfLine(final char c) {
-    	if (commentedLine) {
-    		commentedLine = false;
-    	} else if (quotedField) {
-    		addCharacter(c);
-    	} else {
-    		addField();
-    		addRecord();
-    	}
-    	row++;
-    	col = 0;
+        if (commentedLine) {
+            commentedLine = false;
+        } else if (quotedField) {
+            addCharacter(c);
+        } else {
+            addField();
+            addRecord();
+        }
+        row++;
+        col = 0;
     }
-    
+
     private void addRecord() {
-    	recordsQueue.add(openRecord.toArray(new String[]{}));
-    	openRecord.clear();
-    	openField.delete(0, openField.length());
-    	quotedField = false;
+        recordsQueue.add(openRecord.toArray(new String[]{}));
+        openRecord.clear();
+        openField.delete(0, openField.length());
+        quotedField = false;
     }
-    
+
     private void handleSeparator(final char c) {
-    	if (commentedLine)
-    		return;
-    	if (quotedField) {
-    		this.addCharacter(c);
-    	} else {
-    		this.addField();
-    	}
+        if (commentedLine)
+            return;
+        if (quotedField) {
+            this.addCharacter(c);
+        } else {
+            this.addField();
+        }
     }
-    
+
     private void handlePreviousEscapeOrQuote(Character c) {
-    	boolean wasEscape = false;
-    	if (lastChar == escape && c != null) {
-			if (isEscapableCharacter(c)) {
-				addCharacter(c);
-				wasEscape = true;
-			}
-    	}
-    	
-		if (!wasEscape && (lastChar == quote)) {
-			if (quotedField) { // closing quote should be followed by separator
-				if (c == null || c == '\r' || c == '\n') {
-					quotedField = false;
-					if (c != null) {
-						handleCrOrLf(c);
-					} // c == null is handled after the main loop
-				} else if (c == separator) {
-					quotedField = false;
-					handleSeparator(c);
-				} else {
-					throw new IllegalStateException(
-							"separator expected after a closing quote; found " + c + getPositionString());
-				}
-			} else if (openField.length() == 0) {
-				startQuotedField();
-			} else {
-				throw new IllegalStateException("odd quote character at " + getPositionString());
-			}
-		}
-		
-		wasEscapeOrNotOpeningQuote = false;
+        boolean wasEscape = false;
+        if (lastChar == escape && c != null) {
+            if (isEscapableCharacter(c)) {
+                addCharacter(c);
+                wasEscape = true;
+            }
+        }
+
+        if (!wasEscape && (lastChar == quote)) {
+            if (quotedField) { // closing quote should be followed by separator
+                if (c == null || c == '\r' || c == '\n') {
+                    quotedField = false;
+                    if (c != null) {
+                        handleCrOrLf(c);
+                    } // c == null is handled after the main loop
+                } else if (c == separator) {
+                    quotedField = false;
+                    handleSeparator(c);
+                } else {
+                    throw new IllegalStateException(
+                            "separator expected after a closing quote; found " + c + getPositionString());
+                }
+            } else if (openField.length() == 0) {
+                startQuotedField();
+            } else {
+                throw new IllegalStateException("odd quote character at " + getPositionString());
+            }
+        }
+
+        wasEscapeOrNotOpeningQuote = false;
     }
-    	
+
     private void handleEscapeOrQuote(char c) {
-    	if (commentedLine)
-			return;
-    	
-    	// handle start of a new quoted field
-    	if (openField.length() == 0 && !quotedField) {
-    		startQuotedField();
-    		wasEscapeOrNotOpeningQuote = false;
-    	} else {
-    		wasEscapeOrNotOpeningQuote = true;
-    	}
-	}
+        if (commentedLine)
+            return;
+
+        // handle start of a new quoted field
+        if (openField.length() == 0 && !quotedField) {
+            startQuotedField();
+            wasEscapeOrNotOpeningQuote = false;
+        } else {
+            wasEscapeOrNotOpeningQuote = true;
+        }
+    }
 
     private void addField() {
-    	openRecord.add(openField.toString());
-    	openField.delete(0, openField.length());
-    	quotedField = false;
+        openRecord.add(openField.toString());
+        openField.delete(0, openField.length());
+        quotedField = false;
     }
-    
+
     private void addCharacter(final char c) {
-    	openField.append(c);
+        openField.append(c);
     }
-    
+
     private boolean isEscapableCharacter(final char c) {
-    	return (c == escape || c == quote);
+        return (c == escape || c == quote);
     }
-    
+
     private void startQuotedField() {
-    	quotedField = true;
-    	quotedFieldStartRow = row;
-    	quotedFieldStartCol = col;
+        quotedField = true;
+        quotedFieldStartRow = row;
+        quotedFieldStartCol = col;
     }
-    
+
     /**
      * Closes the underlying reader.
      * 
      * @throws IOException if the close fails
      */
     public void close() throws IOException{
-    	r.close();
+        r.close();
     }
-    
+
     private String getPositionString() {
-    	return " [" + row + "," + col + "]";
+        return " [" + row + "," + col + "]";
     }
-    
+
     public void setCommentChar(char c) {
-    	hasCommentSupport = true;
-    	commentChar = c;
+        hasCommentSupport = true;
+        commentChar = c;
     }
 }

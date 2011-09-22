@@ -23,23 +23,32 @@
 
 package com.gooddata.connector;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import com.gooddata.Constants;
-import com.gooddata.exception.InvalidParameterException;
-import com.gooddata.util.*;
 import org.apache.log4j.Logger;
 
+import com.gooddata.Constants;
 import com.gooddata.csv.DataTypeGuess;
+import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.util.CSVReader;
+import com.gooddata.util.CSVWriter;
+import com.gooddata.util.FileUtil;
+import com.gooddata.util.NameTransformer;
+import com.gooddata.util.StringUtil;
 
 /**
  * GoodData CSV Connector
@@ -72,7 +81,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @return new CSV Connector
      */
     public static CsvConnector createConnector() {
-        return new CsvConnector();    
+        return new CsvConnector();
     }
 
     /**
@@ -125,9 +134,9 @@ public class CsvConnector extends AbstractConnector implements Connector {
      * @throws IOException in case of IO issues
      */
     static SourceSchema guessSourceSchema (String configFileName, String dataFileName, String defaultLdmType, String folder, char separator) throws IOException {
-    	File configFile = new File(configFileName);
-    	InputStream configStream = configFile.exists() ? new FileInputStream(configFile) : null;
-    	return guessSourceSchema(configStream, new File(dataFileName).toURI().toURL(), defaultLdmType, folder, separator);
+        File configFile = new File(configFileName);
+        InputStream configStream = configFile.exists() ? new FileInputStream(configFile) : null;
+        return guessSourceSchema(configStream, new File(dataFileName).toURI().toURL(), defaultLdmType, folder, separator);
     }
 
     /**
@@ -151,69 +160,69 @@ public class CsvConnector extends AbstractConnector implements Connector {
     }
 
     static SourceSchema guessSourceSchema (InputStream configStream, URL dataUrl, String defaultLdmType, String[] factsNames, String folder, char separator) throws IOException {        String name = URLDecoder.decode(FileUtil.getFileName(dataUrl).split("\\.")[0], "utf-8").trim();
-        String[] headers = FileUtil.getCsvHeader(dataUrl, separator);
-        int i = 0;
-        final Set<String> factsSet = new HashSet<String>();
-        for (final String fn : factsNames) {
-            factsSet.add(fn);
+    String[] headers = FileUtil.getCsvHeader(dataUrl, separator);
+    int i = 0;
+    final Set<String> factsSet = new HashSet<String>();
+    for (final String fn : factsNames) {
+        factsSet.add(fn);
+    }
+    final SourceSchema srcSchm;
+    if (configStream != null) {
+        srcSchm = SourceSchema.createSchema(configStream);
+    } else {
+        int idmax = Constants.MAX_SCHEMA_NAME_LENGTH - 3;
+        if (name.length() > idmax)
+            name = name.substring(0, idmax);
+        srcSchm = SourceSchema.createSchema(name);
+    }
+    final int knownColumns = srcSchm.getColumns().size();
+    Set<String> srcColumnNames = getColumnNames(srcSchm.getColumns());
+    NameTransformer idGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
+        public String transform(String str) {
+            String idorig = StringUtil.toIdentifier(str);
+            int idmax = Constants.MAX_TABLE_NAME_LENGTH - srcSchm.getName().length() - 3; // good enough for 999 long names
+            if (idorig.length() <= idmax)
+                return idorig;
+            if(idmax < 8)
+                throw new InvalidParameterException("The schema name '"+srcSchm+"' is too long. Please use a name " +
+                        "up to 32 characters.");
+            return idorig.substring(0, idmax);
+
         }
-        final SourceSchema srcSchm;
-        if (configStream != null) {
-        	srcSchm = SourceSchema.createSchema(configStream);
-        } else {
-            int idmax = Constants.MAX_SCHEMA_NAME_LENGTH - 3;
-            if (name.length() > idmax)
-                name = name.substring(0, idmax);
-        	srcSchm = SourceSchema.createSchema(name);
+    }, srcColumnNames);
+    if (knownColumns < headers.length) {
+        DataTypeGuess guesser = new DataTypeGuess(true);
+        guesser.setDefaultLdmType(defaultLdmType);
+        SourceColumn[] guessed = guesser.guessCsvSchema(dataUrl, separator);
+        if (guessed.length != headers.length) {
+            throw new AssertionError("The size of data file header is different than the number of guessed fields");
         }
-        final int knownColumns = srcSchm.getColumns().size();
-        Set<String> srcColumnNames = getColumnNames(srcSchm.getColumns());
-        NameTransformer idGen = new NameTransformer(new NameTransformer.NameTransformerCallback() {
-        	public String transform(String str) {
-        		String idorig = StringUtil.toIdentifier(str);
-        		int idmax = Constants.MAX_TABLE_NAME_LENGTH - srcSchm.getName().length() - 3; // good enough for 999 long names
-        		if (idorig.length() <= idmax)
-        			return idorig;
-                if(idmax < 8)
-                    throw new InvalidParameterException("The schema name '"+srcSchm+"' is too long. Please use a name " +
-                            "up to 32 characters.");
-        		return idorig.substring(0, idmax);
-        		
-        	}
-        }, srcColumnNames);
-        if (knownColumns < headers.length) {
-        	DataTypeGuess guesser = new DataTypeGuess(true);
-        	guesser.setDefaultLdmType(defaultLdmType);
-        	SourceColumn[] guessed = guesser.guessCsvSchema(dataUrl, separator);
-        	if (guessed.length != headers.length) {
-        		throw new AssertionError("The size of data file header is different than the number of guessed fields");
-        	}
-	        for(int j = knownColumns; j < headers.length; j++) {
-	        	final String header = headers[j];
-	            final SourceColumn sc;
-	            final String identifier = idGen.transform(header);
-	            final String title = StringUtil.toTitle(header);
-                if(identifier == null || identifier.length() <= 0) {
-                    throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
-                }
-                if(title == null || title.length() <= 0) {
-                    throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
-                }
-                if (factsSet.contains(header)) {
-                    sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_FACT, title, folder);
-                } else if (defaultLdmType != null) {
-	            	sc = new SourceColumn(identifier, defaultLdmType, title, folder);
-	            } else {
-		            sc = guessed[j];
-		            sc.setName(identifier);
-		            sc.setTitle(title);
-		            sc.setFolder(folder);
-	            }
-	            srcSchm.addColumn(sc);
-	            i++;
-	        }
-        } 
-        return srcSchm;
+        for(int j = knownColumns; j < headers.length; j++) {
+            final String header = headers[j];
+            final SourceColumn sc;
+            final String identifier = idGen.transform(header);
+            final String title = StringUtil.toTitle(header);
+            if(identifier == null || identifier.length() <= 0) {
+                throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
+            }
+            if(title == null || title.length() <= 0) {
+                throw new InvalidParameterException("The CSV header can't contain empty names or names with all non-latin characters.");
+            }
+            if (factsSet.contains(header)) {
+                sc = new SourceColumn(identifier, SourceColumn.LDM_TYPE_FACT, title, folder);
+            } else if (defaultLdmType != null) {
+                sc = new SourceColumn(identifier, defaultLdmType, title, folder);
+            } else {
+                sc = guessed[j];
+                sc.setName(identifier);
+                sc.setTitle(title);
+                sc.setFolder(folder);
+            }
+            srcSchm.addColumn(sc);
+            i++;
+        }
+    }
+    return srcSchm;
     }
 
     /**
@@ -242,7 +251,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
             }
             else if(c.match("LoadCsv") || c.match("UseCsv")) {
                 loadCsv(c, cli, ctx);
-            }           
+            }
             else
                 return super.processCommand(c, cli, ctx);
         }
@@ -298,8 +307,8 @@ public class CsvConnector extends AbstractConnector implements Connector {
         String configFile = c.getParamMandatory("configFile");
         String csvHeaderFile = c.getParamMandatory("csvHeaderFile");
         String defaultLdmType = c.getParam( "defaultLdmType");
-    	String folder = c.getParam( "folder");
-    	String[] factNames = splitParam(c, "facts");
+        String folder = c.getParam( "folder");
+        String[] factNames = splitParam(c, "facts");
         if (folder == null) {
             // let's try a deprecated variant
             folder = c.getParam("defaultFolder");
@@ -315,19 +324,19 @@ public class CsvConnector extends AbstractConnector implements Connector {
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, factNames, folder, spr);
         l.info("CSV Connector configuration successfully generated. See config file: "+configFile);
     }
-    
+
     /**
      * Extracts column names from the list
      * @param columns
      * @return
      */
     private static Set<String> getColumnNames(List<SourceColumn> columns) {
-    	Set<String> result = new HashSet<String>();
-		for (final SourceColumn col : columns) {
-			result.add(col.getName());
-		}
-		return result;
-	}
+        Set<String> result = new HashSet<String>();
+        for (final SourceColumn col : columns) {
+            result.add(col.getName());
+        }
+        return result;
+    }
 
     public char getSeparator() {
         return separator;
