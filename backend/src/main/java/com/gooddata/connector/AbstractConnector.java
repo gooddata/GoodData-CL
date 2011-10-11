@@ -178,10 +178,10 @@ public abstract class AbstractConnector implements Connector {
      */
     protected void initSchema(String configFileName) throws IOException {
         schema = SourceSchema.createSchema(new File(configFileName));
-        expandDates(getSchema());
+        AbstractConnector.expandDates(getSchema());
     }
 
-    protected void expandDates(SourceSchema s) {
+    public static void expandDates(SourceSchema s) {
         List<SourceColumn> dates = s.getDates();
         if(dates != null && dates.size()>0) {
             for(SourceColumn d : dates) {
