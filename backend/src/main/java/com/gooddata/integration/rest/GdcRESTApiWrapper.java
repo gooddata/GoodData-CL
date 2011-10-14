@@ -2722,6 +2722,15 @@ public class GdcRESTApiWrapper {
                 throw new GdcRestApiException("No wTaskStatus structure in the migration status!");
             }
         }
+        catch (HttpMethodNotFinishedYetException e) {
+            l.debug("getTaskManStatus: Waiting for status");
+            try {
+                Thread.sleep(500);
+            }
+            catch (InterruptedException ex) {
+                // do nothing
+            }
+        }
         finally {
             ptm.releaseConnection();
         }
