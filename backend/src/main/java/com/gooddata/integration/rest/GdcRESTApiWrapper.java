@@ -2709,7 +2709,19 @@ public class GdcRESTApiWrapper {
         l.debug("Getting TaskMan status uri="+link);
         HttpMethod ptm = createGetMethod(getServerUrl() + link);
         try {
-            String response = executeMethodOk(ptm);
+            String response = "";
+            try {
+                response = executeMethodOk(ptm);
+            }
+            catch (HttpMethodNotFinishedYetException e) {
+                l.debug("getTaskManStatus: Waiting for status");
+                try {
+                    Thread.sleep(500);
+                }
+                catch (InterruptedException ex) {
+                    // do nothing
+                }
+            }
             JSONObject task = JSONObject.fromObject(response);
             JSONObject state = task.getJSONObject("wTaskStatus");
             if(state != null && !state.isNullObject() && !state.isEmpty()) {
@@ -2720,15 +2732,6 @@ public class GdcRESTApiWrapper {
             else {
                 l.debug("No wTaskStatus structure in the migration status!");
                 throw new GdcRestApiException("No wTaskStatus structure in the migration status!");
-            }
-        }
-        catch (HttpMethodNotFinishedYetException e) {
-            l.debug("getTaskManStatus: Waiting for status");
-            try {
-                Thread.sleep(500);
-            }
-            catch (InterruptedException ex) {
-                // do nothing
             }
         }
         finally {
