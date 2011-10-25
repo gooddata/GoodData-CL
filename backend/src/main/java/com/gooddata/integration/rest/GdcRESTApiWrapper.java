@@ -2710,16 +2710,20 @@ public class GdcRESTApiWrapper {
         HttpMethod ptm = createGetMethod(getServerUrl() + link);
         try {
             String response = "";
-            try {
-                response = executeMethodOk(ptm);
-            }
-            catch (HttpMethodNotFinishedYetException e) {
-                l.debug("getTaskManStatus: Waiting for status");
+            boolean isFinished = false;
+            while(!isFinished) {
                 try {
-                    Thread.sleep(500);
+                    response = executeMethodOk(ptm);
+                    isFinished = true;
                 }
-                catch (InterruptedException ex) {
-                    // do nothing
+                catch (HttpMethodNotFinishedYetException e) {
+                    l.debug("getTaskManStatus: Waiting for status");
+                    try {
+                        Thread.sleep(500);
+                    }
+                    catch (InterruptedException ex) {
+                        // do nothing
+                    }
                 }
             }
             JSONObject task = JSONObject.fromObject(response);
@@ -2788,7 +2792,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.41-BETA");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.42-BETA");
         return request;
     }
 
