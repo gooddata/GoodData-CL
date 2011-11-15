@@ -23,12 +23,12 @@
 
 package com.gooddata.integration.model;
 
-import com.gooddata.Constants;
-import com.gooddata.util.StringUtil;
+import java.util.List;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import java.util.List;
+import com.gooddata.Constants;
 
 /**
  * GoodData Data Loading Interface (SLI)
@@ -38,10 +38,20 @@ import java.util.List;
  */
 public class SLI {
 
-    private String id;
-    private String name;
-    private String link;
+    private final String id;
+    private final String name;
+    private final String link;
     private String format;
+
+    /**
+     * Constructs the new SLI
+     */
+    public SLI(String id, String name, String link) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.link = link;
+    }
 
     /**
      * Constructs the new SLI
@@ -49,10 +59,9 @@ public class SLI {
      * @param dli the JSON object from the GoodData REST API
      */
     public SLI(JSONObject dli) {
-        super();
-        name = dli.getString("title");
-        link = dli.getString("link");
-        id = dli.getString("identifier");
+        this(dli.getString("identifier"),
+                dli.getString("title"),
+                dli.getString("link"));
     }
 
     /**
@@ -89,7 +98,7 @@ public class SLI {
     public void setFormat(String format) {
         this.format = format;
     }
-    
+
 
 
     /**
@@ -119,7 +128,7 @@ public class SLI {
             int referenceKey = column.getReferenceKey();
             if(referenceKey > 0)
                 oPart.put("referenceKey", referenceKey);
-            
+
             oParts.add(oPart);
         }
         oDataSetManifest.put("parts", oParts);

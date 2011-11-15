@@ -23,32 +23,48 @@
 
 package com.gooddata.integration.rest;
 
-import com.gooddata.exception.*;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.Project;
-import com.gooddata.integration.model.SLI;
-import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.util.FileUtil;
-import com.gooddata.util.NetUtil;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
-import org.apache.commons.httpclient.*;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.gooddata.exception.GdcProjectAccessException;
+import com.gooddata.exception.GdcRestApiException;
+import com.gooddata.exception.HttpMethodException;
+import com.gooddata.exception.HttpMethodNotFinishedYetException;
+import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.integration.model.Column;
+import com.gooddata.integration.model.Project;
+import com.gooddata.integration.model.SLI;
+import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import com.gooddata.util.FileUtil;
+import com.gooddata.util.NetUtil;
 
 /**
  * The GoodData REST API Java wrapper.
@@ -198,7 +214,7 @@ public class GdcRESTApiWrapper {
     public Project getProjectByName(String name) throws HttpMethodException, GdcProjectAccessException {
         l.debug("Getting project by name="+name);
         for (Iterator<JSONObject> linksIter = getProjectsLinks(); linksIter.hasNext();) {
-            JSONObject link = (JSONObject) linksIter.next();
+            JSONObject link = linksIter.next();
             String cat = link.getString("category");
             if (!"project".equalsIgnoreCase(cat)) {
                 continue;
@@ -225,7 +241,7 @@ public class GdcRESTApiWrapper {
     public Project getProjectById(String id) throws HttpMethodException, GdcProjectAccessException {
         l.debug("Getting project by id="+id);
         for (Iterator<JSONObject> linksIter = getProjectsLinks(); linksIter.hasNext();) {
-            JSONObject link = (JSONObject) linksIter.next();
+            JSONObject link = linksIter.next();
             String cat = link.getString("category");
             if (!"project".equalsIgnoreCase(cat)) {
                 continue;
@@ -329,7 +345,7 @@ public class GdcRESTApiWrapper {
         return list;
     }
 
-    
+
 
     /**
      * Retrieves the SLI columns
@@ -366,7 +382,7 @@ public class GdcRESTApiWrapper {
         return list;
     }
 
- /**
+    /**
      * Retrieves the SLI column data type
      *
      * @param projectId projectId
@@ -460,6 +476,20 @@ public class GdcRESTApiWrapper {
     public SLI getSLIById(String id, String projectId) throws GdcProjectAccessException, HttpMethodException {
         l.debug("Get SLI by id="+id+" project id="+projectId);
         List<SLI> slis = getSLIs(projectId);
+        return getSLIById(id, slis, projectId);
+    }
+
+    /**
+     * Finds a project SLI in list of SLI
+     *
+     * @param id the SLI id
+     * @param list of SLI (related to one project)
+     * @param projectId the project id
+     * @return the SLI
+     * @throws GdcProjectAccessException if the SLI doesn't exist
+     */
+    public static SLI getSLIById(String id, List<SLI> slis, String projectId) throws GdcProjectAccessException {
+        l.debug("Get SLI by id="+id+" project id="+projectId);
         for (SLI sli : slis) {
             if (id.equals(sli.getId())) {
                 l.debug("Got SLI by id="+id+" project id="+projectId);
@@ -469,7 +499,6 @@ public class GdcRESTApiWrapper {
         l.debug("The SLI id=" + id+ " doesn't exist in the project id="+projectId);
         throw new GdcProjectAccessException("The SLI id=" + id+ " doesn't exist in the project id="+projectId);
     }
-
 
     public String getToken() {
         return ssToken;
@@ -874,7 +903,7 @@ public class GdcRESTApiWrapper {
         JSONObject content = new JSONObject();
         content.put("grid", grid);
         content.put("filters",new JSONArray());
-        content.put("format","grid"); 
+        content.put("format","grid");
 
         reportDefinition.put("content", content);
 
@@ -1212,7 +1241,7 @@ public class GdcRESTApiWrapper {
         throw new GdcRestApiException("Error creating project.");
     }
 
-/**
+    /**
      * Returns the create project JSON structure
      *
      * @param name project name
@@ -1386,7 +1415,7 @@ public class GdcRESTApiWrapper {
     public ProjectExportResult exportProject(String projectId, boolean exportUsers, boolean exportData, String[] authorizedUsers)
             throws GdcRestApiException {
         l.debug("Exporting project projectId="+projectId+" users:"+exportUsers+" data:"+exportData+" authorized users:"+
-        authorizedUsers);
+                authorizedUsers);
         PostMethod req = createPostMethod(getProjectMdUrl(projectId) + PROJECT_EXPORT_URI);
         JSONObject param = getProjectExportStructure(exportUsers, exportData, authorizedUsers);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
@@ -1695,42 +1724,42 @@ public class GdcRESTApiWrapper {
     public void addUsersToProject(String projectId, List<String> uris, String role)
             throws GdcRestApiException {
 
-            l.debug("Adding users "+uris+" to project "+projectId);
-            String projectsUrl = getProjectUrl(projectId);
+        l.debug("Adding users "+uris+" to project "+projectId);
+        String projectsUrl = getProjectUrl(projectId);
 
-            String roleUri = null;
-            if(role != null && role.length() > 0) {
-                Integer roleId = ROLES.get(role.toUpperCase());
-                if(roleId == null)
-                    throw new InvalidParameterException("The role '"+role+"' is not recognized by the GoodData platform.");
-                roleUri = PROJECTS_URI+"/"+projectId+PROJECT_ROLES_SUFFIX+"/"+roleId.toString();
-            }
-            PostMethod req = createPostMethod(projectsUrl+PROJECT_USERS_SUFFIX);
-            JSONObject param = getAddUsersToProjectStructure(uris, roleUri);
-            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                    param.toString().getBytes()));
-            req.setRequestEntity(request);
-            String result = null;
-            try {
-                String response = executeMethodOk(req);
-                JSONObject responseObject = JSONObject.fromObject(response);
-                JSONObject projectUsersUpdateResult = responseObject.getJSONObject("projectUsersUpdateResult");
-                JSONArray failed = projectUsersUpdateResult.getJSONArray("failed");
-                if(!failed.isEmpty()) {
-                    String errMsg = "Following users can't be added to the project:";
-                    for(Object uri : failed.toArray()) {
-                        errMsg += " "+uris.toString();
-                    }
-                    l.debug(errMsg);
-                    throw new GdcRestApiException(errMsg);
+        String roleUri = null;
+        if(role != null && role.length() > 0) {
+            Integer roleId = ROLES.get(role.toUpperCase());
+            if(roleId == null)
+                throw new InvalidParameterException("The role '"+role+"' is not recognized by the GoodData platform.");
+            roleUri = PROJECTS_URI+"/"+projectId+PROJECT_ROLES_SUFFIX+"/"+roleId.toString();
+        }
+        PostMethod req = createPostMethod(projectsUrl+PROJECT_USERS_SUFFIX);
+        JSONObject param = getAddUsersToProjectStructure(uris, roleUri);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                param.toString().getBytes()));
+        req.setRequestEntity(request);
+        String result = null;
+        try {
+            String response = executeMethodOk(req);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            JSONObject projectUsersUpdateResult = responseObject.getJSONObject("projectUsersUpdateResult");
+            JSONArray failed = projectUsersUpdateResult.getJSONArray("failed");
+            if(!failed.isEmpty()) {
+                String errMsg = "Following users can't be added to the project:";
+                for(Object uri : failed.toArray()) {
+                    errMsg += " "+uris.toString();
                 }
-                //JSONArray successful = projectUsersUpdateResult.getJSONArray("successful");
-            } catch (HttpMethodException ex) {
-                l.debug("Error adding users "+uris+" to project",ex);
-                throw new GdcRestApiException("Error adding users "+uris+" to project ",ex);
-            } finally {
-                req.releaseConnection();
+                l.debug(errMsg);
+                throw new GdcRestApiException(errMsg);
             }
+            //JSONArray successful = projectUsersUpdateResult.getJSONArray("successful");
+        } catch (HttpMethodException ex) {
+            l.debug("Error adding users "+uris+" to project",ex);
+            throw new GdcRestApiException("Error adding users "+uris+" to project ",ex);
+        } finally {
+            req.releaseConnection();
+        }
     }
 
     private JSONObject getAddUsersToProjectStructure(List<String> uris, String roleUri) {
@@ -1769,35 +1798,35 @@ public class GdcRESTApiWrapper {
     public void disableUsersInProject(String projectId, List<String> uris)
             throws GdcRestApiException {
 
-            l.debug("Disabling users "+uris+" in project "+projectId);
-            String projectsUrl = getProjectUrl(projectId);
+        l.debug("Disabling users "+uris+" in project "+projectId);
+        String projectsUrl = getProjectUrl(projectId);
 
-            PostMethod req = createPostMethod(projectsUrl+PROJECT_USERS_SUFFIX);
-            JSONObject param = getDisableUsersInProjectStructure(uris);
-            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                    param.toString().getBytes()));
-            req.setRequestEntity(request);
-            String result = null;
-            try {
-                String response = executeMethodOk(req);
-                JSONObject responseObject = JSONObject.fromObject(response);
-                JSONObject projectUsersUpdateResult = responseObject.getJSONObject("projectUsersUpdateResult");
-                JSONArray failed = projectUsersUpdateResult.getJSONArray("failed");
-                if(!failed.isEmpty()) {
-                    String errMsg = "Following users can't be disabled in the project:";
-                    for(Object uri : failed.toArray()) {
-                        errMsg += " "+uris.toString();
-                    }
-                    l.debug(errMsg);
-                    throw new GdcRestApiException(errMsg);
+        PostMethod req = createPostMethod(projectsUrl+PROJECT_USERS_SUFFIX);
+        JSONObject param = getDisableUsersInProjectStructure(uris);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                param.toString().getBytes()));
+        req.setRequestEntity(request);
+        String result = null;
+        try {
+            String response = executeMethodOk(req);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            JSONObject projectUsersUpdateResult = responseObject.getJSONObject("projectUsersUpdateResult");
+            JSONArray failed = projectUsersUpdateResult.getJSONArray("failed");
+            if(!failed.isEmpty()) {
+                String errMsg = "Following users can't be disabled in the project:";
+                for(Object uri : failed.toArray()) {
+                    errMsg += " "+uris.toString();
                 }
-                //JSONArray successful = projectUsersUpdateResult.getJSONArray("successful");
-            } catch (HttpMethodException ex) {
-                l.debug("Error disabling users "+uris+" in project",ex);
-                throw new GdcRestApiException("Error disabling users "+uris+" in project ",ex);
-            } finally {
-                req.releaseConnection();
+                l.debug(errMsg);
+                throw new GdcRestApiException(errMsg);
             }
+            //JSONArray successful = projectUsersUpdateResult.getJSONArray("successful");
+        } catch (HttpMethodException ex) {
+            l.debug("Error disabling users "+uris+" in project",ex);
+            throw new GdcRestApiException("Error disabling users "+uris+" in project ",ex);
+        } finally {
+            req.releaseConnection();
+        }
     }
 
     private JSONObject getDisableUsersInProjectStructure(List<String> uris) {
@@ -2441,7 +2470,7 @@ public class GdcRESTApiWrapper {
         }
         return o;
     }
-    
+
     /**
      * Retrieves a metadata object definition
      * @param projectId project id (hash)
@@ -2792,7 +2821,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.42-BETA");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.43-BETA");
         return request;
     }
 

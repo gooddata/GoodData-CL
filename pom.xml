@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (c) 2009, GoodData Corporation. All rights reserved.
-  ~ 
+  ~
   ~ Redistribution and use in source and binary forms, with or without modification, are permitted provided
   ~ that the following conditions are met:
   ~
@@ -22,13 +22,12 @@
   ~ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.gooddata.cl</groupId>
     <artifactId>gooddata-cl</artifactId>
-    <version>1.2.42-BETA</version>
+    <version>1.2.43-BETA</version>
     <name>gooddata-cl</name>
     <description>GoodData CL command line tool and Java API framework.</description>
     <url>http://developer.gooddata.com</url>
@@ -75,42 +74,42 @@
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-cli</artifactId>
-                <version>1.2.42-BETA</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-web</artifactId>
-                <version>1.2.42-BETA</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-backend</artifactId>
-                <version>1.2.42-BETA</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-connector</artifactId>
-                <version>1.2.42-BETA</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-snaplogic</artifactId>
-                <version>1.2.42-BETA</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-common</artifactId>
-                <version>1.2.42-BETA</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-cl-snaplogic-lib</artifactId>
-                <version>1.2.42-BETA</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.gooddata.cl</groupId>
                 <artifactId>gooddata-sfdc-lib</artifactId>
-                <version>1.2.42-BETA</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.snaplogic</groupId>
@@ -135,7 +134,7 @@
             <dependency>
                 <artifactId>gooddata-notification</artifactId>
                 <groupId>com.gooddata.cl</groupId>
-                <version>1.2.42-BETA</version>
+                <version>${project.version}</version>
             </dependency>
 
 
@@ -454,5 +453,16 @@
         <url>scm:git:git@github.com:gooddata/GoodData-CL.git</url>
         <developerConnection>scm:git:git@github.com:gooddata/GoodData-CL.git</developerConnection>
     </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>gooddata</id>
+            <url>https://maven.gooddata.com/nexus/content/repositories/gooddata/</url>
+        </repository>
+        <snapshotRepository>
+            <id>gooddata-snapshots</id>
+            <url>https://maven.gooddata.com/nexus/content/repositories/gooddata-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

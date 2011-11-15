@@ -23,22 +23,24 @@
 
 package com.gooddata.connector;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+
 import com.gooddata.exception.InternalErrorException;
-import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
-import com.gooddata.integration.model.Column;
-import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-
-import java.io.*;
-import java.util.List;
 
 /**
  * GoodData Google Analytics Connector
@@ -98,7 +100,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
      * {@inheritDoc}
      */
     public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
-    	throws IOException, InterruptedException {
+            throws IOException, InterruptedException {
         if(includeTime) {
             l.debug("Extracting data.");
             File tmpDir = FileUtil.createTempDir();
@@ -106,7 +108,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
             String archiveName = tmpDir.getName();
             MDC.put("GdcDataPackageDir",archiveName);
             String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
-                archiveName + ".zip";
+                    archiveName + ".zip";
 
             // extract the data to the CSV that is going to be transferred to the server
             this.extract(tmpDir.getAbsolutePath());
@@ -128,31 +130,40 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         }
     }
 
-
     /**
-     * {@inheritDoc}
+     * Generate manifest file for date dimension in provided directory
+     * @param dir
+     * @throws IOException
      */
-    public void deploy(String dir, String archiveName)
-            throws IOException {
+    public void deploy(String dir) throws IOException {
         l.debug("Extracting time dimension manifest "+name);
-        String fn = dir + System.getProperty("file.separator") +
-                GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
+        String fn = dir + System.getProperty("file.separator") + GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
 
-        if(name == null || name.trim().length()<=0)
+        if(name == null || name.trim().length()<=0) {
             name = "";
+        }
+
         String idp = StringUtil.toIdentifier(name);
-        String script = "";
+        StringBuffer script = new StringBuffer();
         BufferedReader is = new BufferedReader(new InputStreamReader(
                 DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/upload_info.json")));
         String line = is.readLine();
         while (line != null) {
-            script += line.replace("%id%", idp) + "\n";
+            script.append(line.replace("%id%", idp) + "\n");
             line = is.readLine();
         }
-        FileUtil.writeStringToFile(script, fn);
+        FileUtil.writeStringToFile(script.toString(), fn);
         l.debug("Manifest file written to file '"+fn+"'. Content: "+script);
+    }
+
+    /**
+     * Generate manifest file for date dimension in provided directory
+     * and compress it to archiveName zip archive
+     */
+    public void deploy(String dir, String archiveName) throws IOException {
+        deploy(dir);
         FileUtil.compressDir(dir, archiveName);
-        l.debug("Extracted time dimension manifest "+name);
+        l.debug("Time dimension temp dir compressed: "+name);
     }
 
     /**
@@ -234,19 +245,19 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         l.info("Time Dimension Connector successfully loaded (name: " + ct + ").");
     }
 
-	/**
-	 * @return the date dimension name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return the date dimension name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @param name the date dimension name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @param name the date dimension name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getType() {
         return type;
@@ -256,5 +267,11 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
         this.type = type;
     }
 
+    public boolean isIncludeTime() {
+        return includeTime;
+    }
 
+    public void setIncludeTime(boolean includeTime) {
+        this.includeTime = includeTime;
+    }
 }
