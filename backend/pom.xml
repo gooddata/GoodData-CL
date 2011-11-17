@@ -81,7 +81,7 @@
             <classifier>jdk15</classifier>
         </dependency>
         <dependency>
-            <groupId>xstream</groupId>
+            <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
         </dependency>
         <dependency>

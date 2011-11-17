@@ -626,7 +626,7 @@ public class GdcDI implements Executor {
             l.debug("Processing command "+c.getCommand()+" failed",e);
             throw new ProcessingException(e);
         }
-        l.debug("Processed command "+c.getCommand());
+        l.debug("Command processing "+c.getCommand()+" finished.");
         return true;
     }
 
