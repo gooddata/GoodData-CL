@@ -23,11 +23,7 @@
 
 package com.gooddata.integration.rest;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,6 +35,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sun.tools.internal.ws.wsdl.document.Input;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -100,6 +97,7 @@ public class GdcRESTApiWrapper {
     public static final String REPORT_QUERY = "/query/reports";
     public static final String ATTR_QUERY = "/query/attributes";
     public static final String EXECUTOR = "/gdc/xtab2/executor3";
+    public static final String EXPORT_EXECUTOR = "/gdc/exporter/executor";
     public static final String INVITATION_URI = "/invitations";
     public static final String ETL_MODE_URI = "/etl/mode";
     public static final String OBJ_URI = "/obj";
@@ -483,7 +481,7 @@ public class GdcRESTApiWrapper {
      * Finds a project SLI in list of SLI
      *
      * @param id the SLI id
-     * @param list of SLI (related to one project)
+     * @param slis of SLI (related to one project)
      * @param projectId the project id
      * @return the SLI
      * @throws GdcProjectAccessException if the SLI doesn't exist
@@ -1138,6 +1136,141 @@ public class GdcRESTApiWrapper {
         } finally {
             execPost.releaseConnection();
         }
+    }
+
+     /**
+     * Report to execute
+     * @param reportUri report definition to execute
+     */
+    public String executeReport(String reportUri) {
+        l.debug("Executing report uri="+reportUri);
+        PostMethod execPost = createPostMethod(getServerUrl() + EXECUTOR);
+        JSONObject execDef = new JSONObject();
+        execDef.put("report",reportUri);
+        JSONObject exec = new JSONObject();
+        exec.put("report_req", execDef);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(exec.toString().getBytes()));
+        execPost.setRequestEntity(request);
+        String taskLink = null;
+        try {
+            String task = executeMethodOk(execPost);
+            if(task != null && task.length()>0) {
+                JSONObject tr = JSONObject.fromObject(task);
+                if(tr.isNullObject()) {
+                    l.debug("Executing report uri="+reportUri + " failed. Returned invalid result="+tr);
+                    throw new GdcRestApiException("Executing report uri="+reportUri + " failed. " +
+                            "Returned invalid result result="+tr);
+                }
+                JSONObject reportResult = tr.getJSONObject("reportResult2");
+                if(reportResult.isNullObject()) {
+                    l.debug("Executing report uri="+reportUri + " failed. Returned invalid result="+tr);
+                    throw new GdcRestApiException("Executing report uri="+reportUri + " failed. " +
+                            "Returned invalid result result="+tr);
+                }
+                JSONObject meta = reportResult.getJSONObject("meta");
+                if(meta.isNullObject()) {
+                    l.debug("Executing report uri="+reportUri + " failed. Returned invalid result="+tr);
+                    throw new GdcRestApiException("Executing report uri="+reportUri + " failed. " +
+                            "Returned invalid result="+tr);
+                }
+                return meta.getString("uri");
+            }
+            else {
+                l.debug("Executing report uri="+reportUri + " failed. Returned invalid task link uri="+task);
+                throw new GdcRestApiException("Executing report uri="+reportUri +
+                        " failed. Returned invalid task link uri="+task);
+            }
+        } catch (HttpMethodException ex) {
+            l.debug("Executing report uri="+reportUri + " failed.", ex);
+            throw new GdcRestApiException("Executing report uri="+reportUri + " failed.");
+        } finally {
+            execPost.releaseConnection();
+        }
+    }
+
+    /**
+     * Export a report result
+     * @param resultUri report result to export
+     * @param format export format (pdf | xls | png | csv)
+     */
+    public byte[] exportReportResult(String resultUri, String format) {
+        l.debug("Exporting report result uri="+resultUri);
+        PostMethod execPost = createPostMethod(getServerUrl() + EXPORT_EXECUTOR);
+        JSONObject execDef = new JSONObject();
+        execDef.put("report",resultUri);
+        execDef.put("format", format);
+        JSONObject exec = new JSONObject();
+        exec.put("result_req", execDef);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(exec.toString().getBytes()));
+        execPost.setRequestEntity(request);
+        String taskLink = null;
+        try {
+            String task = executeMethodOk(execPost);
+            if(task != null && task.length()>0) {
+                JSONObject tr = JSONObject.fromObject(task);
+                if(tr.isNullObject()) {
+                    l.debug("Exporting report result uri="+resultUri + " failed. Returned invalid result="+tr);
+                    throw new GdcRestApiException("Exporting report result uri="+resultUri + " failed. " +
+                            "Returned invalid result="+tr);
+                }
+                String uri = tr.getString("uri");
+                if(uri != null && uri.length() > 0) {
+                    return getReportResult(uri);
+                }
+                else {
+                    l.debug("Exporting report result uri="+resultUri + " failed. Returned invalid result="+tr);
+                    throw new GdcRestApiException("Exporting report result uri="+resultUri + " failed. " +
+                            "Returned invalid result="+tr);
+                }
+            }
+            else {
+                l.debug("Exporting report result uri="+resultUri + " failed. Returned invalid task link uri="+task);
+                throw new GdcRestApiException("Exporting report result uri="+resultUri +
+                        " failed. Returned invalid task link uri="+task);
+            }
+        } catch (HttpMethodException ex) {
+            l.debug("Exporting report result uri=" + resultUri + " failed.", ex);
+            throw new GdcRestApiException("Exporting report result uri="+resultUri + " failed.");
+        } finally {
+            execPost.releaseConnection();
+        }
+    }
+
+    /**
+     * Retrieves the report export result
+     * @param uri the export result
+     * @return attribute object
+     */
+    public byte[] getReportResult (String uri) {
+        l.debug("Retrieving export result uri="+uri);
+        byte[] buf = null;
+        String qUri = getServerUrl() + uri;
+        boolean finished = false;
+        do {
+            HttpMethod qGet = createGetMethod(qUri);
+            try {
+                executeMethodOkOnly(qGet);
+                finished = true;
+                buf = qGet.getResponseBody();
+            }
+            catch (HttpMethodNotFinishedYetException e) {
+                l.debug("Waiting for exporter to finish.");
+                try {
+                    Thread.currentThread().sleep(1000);
+                }
+                catch (InterruptedException ex) {
+                    // do nothing
+                }
+            }
+            catch (IOException e) {
+                l.debug("Network error during the report result export.",e);
+                throw new GdcRestApiException("Network error during the report result export.",e);
+            }
+            finally {
+                qGet.releaseConnection();
+            }
+        } while (! finished);
+        return buf;
     }
 
     /**
@@ -2102,6 +2235,32 @@ public class GdcRESTApiWrapper {
      * @throws HttpMethodException
      */
     private String executeMethodOk(HttpMethod method, boolean reloginOn401, int retries) throws HttpMethodException {
+        try  {
+            executeMethodOkOnly(method, reloginOn401,retries);
+            return method.getResponseBodyAsString();
+        }
+        catch (IOException e) {
+            l.debug("Error invoking GoodData REST API.",e);
+            throw new HttpMethodException("Error invoking GoodData REST API.",e);
+        }
+    }
+
+    private void executeMethodOkOnly(HttpMethod method) throws HttpMethodException {
+        executeMethodOkOnly(method, true);
+    }
+
+     private void executeMethodOkOnly(HttpMethod method, boolean reloginOn401) throws HttpMethodException {
+        executeMethodOk(method, reloginOn401, 16);
+    }
+
+    /**
+     * Executes HttpMethod and test if the response if 200(OK)
+     *
+     * @param method the HTTP method
+     * @return response as Stream
+     * @throws HttpMethodException
+     */
+    private  void executeMethodOkOnly(HttpMethod method, boolean reloginOn401, int retries) throws HttpMethodException, IOException {
         try {
             client.executeMethod(method);
 
@@ -2111,21 +2270,22 @@ public class GdcRESTApiWrapper {
 
             /* 2xx success class */
             if (method.getStatusCode() == HttpStatus.SC_CREATED) {
-                return method.getResponseBodyAsString();
+                return;
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
                 throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
             } else if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
-                return "";
+                return;
             } else if (method.getStatusCode() >= HttpStatus.SC_OK
                        && method.getStatusCode() < HttpStatus.SC_BAD_REQUEST) {
-                return method.getResponseBodyAsString();
+                return ;
 
             /* 4xx user errors and
              * 5xx backend trouble */
             } else if (method.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && reloginOn401) {
                 // refresh the temporary token
                 setTokenCookie();
-                return executeMethodOk(method, false, retries);
+                executeMethodOkOnly(method, false, retries);
+                return;
             } else if (method.getStatusCode() == HttpStatus.SC_SERVICE_UNAVAILABLE && retries-- > 0
                        && method.getResponseHeader("Retry-After") != null) {
                 /* This is recommended by RFC 2616 and should probably be dealt with by the
@@ -2137,7 +2297,8 @@ public class GdcRESTApiWrapper {
                     Thread.currentThread().sleep(1000 * timeout);
                 } catch (java.lang.InterruptedException e) {
                 }
-                return executeMethodOk(method, false, retries);
+                executeMethodOkOnly(method, false, retries);
+                return;
             } else if (method.getStatusCode() >= HttpStatus.SC_BAD_REQUEST
                        && method.getStatusCode() < 600) {
                 throw new HttpMethodException(method);
@@ -2152,11 +2313,9 @@ public class GdcRESTApiWrapper {
         } catch (HttpException e) {
             l.debug("Error invoking GoodData REST API.",e);
             throw new HttpMethodException("Error invoking GoodData REST API.",e);
-        } catch (IOException e) {
-            l.debug("Error invoking GoodData REST API.",e);
-            throw new HttpMethodException("Error invoking GoodData REST API.",e);
         }
     }
+
 
     /**
      * Returns the data interfaces URI
