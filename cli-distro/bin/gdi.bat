@@ -44,7 +44,7 @@ goto end
 
 :error
 @REM error sink
-exit 1
+exit /B 1
 
 :end
 @REM end of the script
