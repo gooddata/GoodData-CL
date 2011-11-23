@@ -69,7 +69,7 @@ public class DateUtil {
             dt = new DateTime(l*1000);
         }
         catch (NumberFormatException e) {
-            dt = base;
+            return "";
         }
         return baseFmt.print(dt);
     }
@@ -81,7 +81,7 @@ public class DateUtil {
             dt = new DateTime(l*1000);
         }
         catch (NumberFormatException e) {
-            dt = base;
+            return "";
         }
         return baseFmt.print(dt);
     }
