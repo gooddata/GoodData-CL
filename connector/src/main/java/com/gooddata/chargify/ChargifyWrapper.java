@@ -244,7 +244,7 @@ public class ChargifyWrapper {
     private static <T extends HttpMethod> T configureHttpMethod(T request) {
         request.setRequestHeader("Content-Type", "text/xml");
         request.setRequestHeader("Accept", "text/xml");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.44-BETA");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.45");
         return request;
     }
 

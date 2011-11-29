@@ -377,7 +377,7 @@ public class GdcNotification {
         }
 
         if(cp.containsKey(CLI_PARAM_VERSION[0])) {
-            l.info("GoodData Notification Tool version 1.2.44-BETA" +
+            l.info("GoodData Notification Tool version 1.2.45" +
                     ((BUILD_NUMBER.length()>0) ? ", build "+BUILD_NUMBER : "."));
             System.exit(0);
 
