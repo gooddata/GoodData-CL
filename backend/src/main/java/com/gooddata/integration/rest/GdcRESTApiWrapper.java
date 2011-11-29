@@ -136,10 +136,9 @@ public class GdcRESTApiWrapper {
     /**
      * GDC login - obtain GDC SSToken
      *
-     * @return the new SS token
      * @throws HttpMethodException
      */
-    public String login() throws HttpMethodException {
+    public void login() throws HttpMethodException {
         l.debug("Logging into GoodData.");
         JSONObject loginStructure = getLoginStructure();
         PostMethod loginPost = createPostMethod(getServerUrl() + LOGIN_URI);
@@ -162,7 +161,6 @@ public class GdcRESTApiWrapper {
                 l.debug("Empty account profile.");
                 throw new GdcRestApiException("Empty account profile.");
             }
-            return ssToken;
         } finally {
             loginPost.releaseConnection();
         }
