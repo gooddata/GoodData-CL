@@ -147,7 +147,6 @@ public class GdcRESTApiWrapper {
         try {
             String resp = executeMethodOk(loginPost, false); // do not re-login on SC_UNAUTHORIZED
 
-            setTokenCookie();
             l.debug("Successfully logged into GoodData.");
             JSONObject rsp = JSONObject.fromObject(resp);
             JSONObject userLogin =  rsp.getJSONObject("userLogin");
@@ -184,7 +183,7 @@ public class GdcRESTApiWrapper {
     }
 
     /**
-     * Sets the SS token
+     * Refresh the temporary token
      *
      * @throws HttpMethodException
      */
