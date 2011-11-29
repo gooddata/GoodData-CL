@@ -109,6 +109,7 @@ public class GdcRESTApiWrapper {
     protected HttpClient client;
     protected NamePasswordConfiguration config;
     private String ssToken;
+    private JSONObject userLogin = null;
     private JSONObject profile;
 
     private static HashMap<String,Integer> ROLES = new HashMap<String,Integer>();
@@ -139,6 +140,7 @@ public class GdcRESTApiWrapper {
      * @throws HttpMethodException
      */
     public void login() throws HttpMethodException {
+        logout();
         l.debug("Logging into GoodData.");
         JSONObject loginStructure = getLoginStructure();
         PostMethod loginPost = createPostMethod(getServerUrl() + LOGIN_URI);
@@ -149,7 +151,7 @@ public class GdcRESTApiWrapper {
 
             l.debug("Successfully logged into GoodData.");
             JSONObject rsp = JSONObject.fromObject(resp);
-            JSONObject userLogin =  rsp.getJSONObject("userLogin");
+            userLogin =  rsp.getJSONObject("userLogin");
             String profileUri = userLogin.getString("profile");
             if(profileUri != null && profileUri.length()>0) {
                 GetMethod gm = createGetMethod(getServerUrl() + profileUri);
@@ -183,7 +185,7 @@ public class GdcRESTApiWrapper {
     }
 
     /**
-     * Refresh the temporary token
+     * Sets the SS token
      *
      * @throws HttpMethodException
      */
@@ -194,6 +196,27 @@ public class GdcRESTApiWrapper {
             executeMethodOk(secutityTokenGet);
         } finally {
             secutityTokenGet.releaseConnection();
+        }
+    }
+
+
+    /**
+     * GDC logout - remove active session, if any exists
+     *
+     * @throws HttpMethodException
+     */
+    public void logout() throws HttpMethodException {
+        if (userLogin == null)
+            return;
+        l.debug("Logging out.");
+        DeleteMethod logoutDelete = createDeleteMethod(getServerUrl() + userLogin.getString("state"));
+        try {
+            String resp = executeMethodOk(logoutDelete, false); // do not re-login on SC_UNAUTHORIZED
+            userLogin = null;
+            profile = null;
+            l.debug("Successfully logged out.");
+        } finally {
+            logoutDelete.releaseConnection();
         }
     }
 
@@ -2979,6 +3002,14 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Accept-Charset", "utf-u");
         request.setRequestHeader("User-Agent", "GoodData CL/1.2.44-BETA");
         return request;
+    }
+
+    protected void finalize() throws Throwable {
+        try {
+            logout();
+        } finally {
+            super.finalize();
+        }
     }
 
 }

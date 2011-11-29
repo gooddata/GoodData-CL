@@ -87,6 +87,7 @@ public class TestGdcRestApiWrapper extends TestCase {
                     }
 
                 }
+                rest.logout();
             }
         }
         catch(Exception e) {

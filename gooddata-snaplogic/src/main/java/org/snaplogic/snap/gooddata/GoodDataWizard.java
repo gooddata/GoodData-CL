@@ -438,27 +438,32 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			conResDef = getResourceObject(enrichWithServerUrl(gdConnUri), null);
 		}
 
-		GdcRESTApiWrapper restApi;
+		GdcRESTApiWrapper restApi = null;
 		try {
-			restApi = GoodDataConnection.login(conResDef, this);
-		} catch (HttpMethodException gdcle) {
-			elog(gdcle);
-			if (err == null) {
-				throw new SnapComponentException(gdcle);
+			try {
+				restApi = GoodDataConnection.login(conResDef, this);
+			} catch (HttpMethodException gdcle) {
+				elog(gdcle);
+				if (err == null) {
+					throw new SnapComponentException(gdcle);
+				}
+				err.getResourceRefErr(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF).setMessage(
+						"Could not validate connection reference (wrong username/password?): %s", new Object[] { gdcle });
+				return;
 			}
-			err.getResourceRefErr(AbstractGoodDataComponent.GOODDATA_CONNECTION_REF).setMessage(
-					"Could not validate connection reference (wrong username/password?): %s", new Object[] { gdcle });
-			return;
+
+			HashMap<String, Project> projectList = GoodDataApiHelper.getProjectList(restApi);
+			Set<String> projectSet = projectList.keySet();
+			projectArrayList.addAll(projectSet);
+
+			projNameLovConstraint.put(PropertyConstraint.Type.LOV, projectArrayList.toArray(new String[0]));
+			setPropertyDef(GoodDataPut.PROP_PROJECT_NAME, projNameProp);
+
+			setPropertyValue(GoodDataPut.PROP_PROJECT_NAME, projectArrayList.get(0));
+		} finally {
+			if (restApi != null)
+				restApi.logout();
 		}
-
-		HashMap<String, Project> projectList = GoodDataApiHelper.getProjectList(restApi);
-		Set<String> projectSet = projectList.keySet();
-		projectArrayList.addAll(projectSet);
-
-		projNameLovConstraint.put(PropertyConstraint.Type.LOV, projectArrayList.toArray(new String[0]));
-		setPropertyDef(GoodDataPut.PROP_PROJECT_NAME, projNameProp);
-
-		setPropertyValue(GoodDataPut.PROP_PROJECT_NAME, projectArrayList.get(0));
 	}
 
 	/*
@@ -717,6 +722,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 
 	@Override
 	public void execute(Map<String, InputView> inputViews, Map<String, OutputView> outputViews) {
+		GdcRESTApiWrapper restApi = null;
 		try {
 			ExtendedSnapi snapi = ExtendedSnapi.getExtendedSnapi();
 			String gdUriPrefix = getStringPropertyValue(PROP_GD_URI_PREFIX);
@@ -738,7 +744,6 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 			}
 
 			// Login to GoodData
-			GdcRESTApiWrapper restApi;
 			try {
 				restApi = GoodDataConnection.login(connResDef, this);
 			} catch (HttpMethodException gdcle) {
@@ -915,6 +920,9 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
 		} catch (GdcRestApiException gde) {
 			elog(gde);
 			throw new SnapComponentException(gde);
+		} finally {
+			if (restApi != null)
+				restApi.logout();
 		}
 		// This part is pending the fix of
 		// https://www.snaplogic.org/trac/ticket/2571
