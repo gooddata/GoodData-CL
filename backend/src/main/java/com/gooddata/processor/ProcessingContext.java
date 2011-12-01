@@ -109,8 +109,7 @@ public class ProcessingContext {
     	if (_ftpApi == null) {
             NamePasswordConfiguration ftpConfig = cliParams.getFtpConfig();
             checkConfig(ftpConfig);
-	        l.debug("Using the GoodData FTP host '" + ftpConfig.getGdcHost() + "'.");
-	        //_ftpApi = new GdcFTPApiWrapper(ftpConfig);
+	        l.debug("Using the GoodData data stage host '" + ftpConfig.getGdcHost() + "'.");
             _ftpApi = new GdcWebDavApiWrapper(ftpConfig);
     	}
     	return _ftpApi;
