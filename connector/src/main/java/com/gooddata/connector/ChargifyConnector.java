@@ -167,6 +167,8 @@ public class ChargifyConnector extends AbstractConnector implements Connector {
         String e = c.getParamMandatory("entity");
         String f = c.getParamMandatory("fields");
         String domain = c.getParamMandatory("domain");
+        c.paramsProcessed();
+
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         setEntity(e);

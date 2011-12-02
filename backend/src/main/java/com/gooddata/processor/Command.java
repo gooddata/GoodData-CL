@@ -138,7 +138,7 @@ public class Command {
      * @throws InvalidParameterException if the parameter doesn't exist
      */
     public String getParamMandatory( String p) throws InvalidParameterException {
-        String v = (String)this.getParameters().get(p);
+        String v = (String)this.getParameters().remove(p);
         if(v == null || v.length() == 0) {
             throw new InvalidParameterException(this.getCommand() + ": Command parameter '"+p+"' is required.");
         }
@@ -151,7 +151,7 @@ public class Command {
      * @return parameter value
      */
     public String getParam(String p) {
-        return (String)this.getParameters().get(p);
+        return (String)this.getParameters().remove(p);
     }
 
     /**
@@ -162,6 +162,18 @@ public class Command {
     public boolean checkParam(String p) {
         String v = (String)this.getParameters().get(p);
         return (v != null && v.length() > 0);
+    }
+
+    /**
+     * Checks if there are no extra parameters present
+     * Should be called once all valid parameters are processed
+     * @throws InvalidParameterException if there are unprocessed parameters
+     */
+    public void paramsProcessed() {
+        if (!this.getParameters().isEmpty()) {
+            throw new InvalidParameterException(this.getCommand() + ": Extra parameters: "
+                + this.getParameters().toString());
+        }
     }
 
 }

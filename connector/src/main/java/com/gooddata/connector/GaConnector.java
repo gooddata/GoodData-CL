@@ -303,6 +303,8 @@ public class GaConnector extends AbstractConnector implements Connector {
         gq.setEndDate(c.getParamMandatory("endDate"));
         if(c.checkParam("filters"))
             gq.setFilters(c.getParam("filters"));
+        c.paramsProcessed();
+
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
@@ -321,6 +323,8 @@ public class GaConnector extends AbstractConnector implements Connector {
         String name = c.getParamMandatory("name");
         String dimensions = c.getParamMandatory("dimensions");
         String metrics = c.getParamMandatory("metrics");
+        c.paramsProcessed();
+
         GaQuery gq;
         try {
             gq = new GaQuery();
