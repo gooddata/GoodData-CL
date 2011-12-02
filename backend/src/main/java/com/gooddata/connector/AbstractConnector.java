@@ -268,6 +268,7 @@ public abstract class AbstractConnector implements Connector {
     private void generateMAQL(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         Connector cc = ctx.getConnectorMandatory();
         String maqlFile = c.getParamMandatory("maqlFile");
+        c.paramsProcessed();
 
         l.debug("Executing maql generation.");
         String maql = cc.generateMaqlCreate();
@@ -289,6 +290,8 @@ public abstract class AbstractConnector implements Connector {
         String pid = ctx.getProjectIdMandatory();
         final String maqlFile = c.getParamMandatory("maqlFile");
         final String ifExistsStr = c.getParam("ifExists");
+        c.paramsProcessed();
+
         final boolean ifExists = (ifExistsStr != null && "true".equalsIgnoreCase(ifExistsStr));
         final File mf = FileUtil.getFile(maqlFile, ifExists);
         if (mf != null) {
@@ -318,6 +321,7 @@ public abstract class AbstractConnector implements Connector {
             if(w != null && w.equalsIgnoreCase("false"))
                 waitForFinish = false;
         }
+
         cc.extractAndTransfer(c, pid, cc, waitForFinish, p, ctx);
         l.debug("Data transfer finished.");
         l.info("Data transfer finished.");
@@ -335,6 +339,8 @@ public abstract class AbstractConnector implements Connector {
         l.debug("Dumping data.");
         Connector cc = ctx.getConnectorMandatory();
         String csvFile = c.getParamMandatory("csvFile");
+        c.paramsProcessed();
+
         cc.dump(csvFile);
         l.info("Data dump finished. Data dumped into the file '"+csvFile+"'");
     }
@@ -446,6 +452,8 @@ public abstract class AbstractConnector implements Connector {
 
 
         String incremental = c.getParam("incremental");
+        c.paramsProcessed();
+
         if(incremental != null && incremental.length() > 0 &&
                 incremental.equalsIgnoreCase("true")) {
             l.debug("Using incremental mode.");
@@ -552,6 +560,8 @@ public abstract class AbstractConnector implements Connector {
 
             final String pid = ctx.getProjectIdMandatory();
             final String maqlFile = c.getParamMandatory( "maqlFile");
+            c.paramsProcessed();
+
             final String dataset = schema.getDatasetName();
 
             final GdcRESTApiWrapper gd = ctx.getRestApi(p);

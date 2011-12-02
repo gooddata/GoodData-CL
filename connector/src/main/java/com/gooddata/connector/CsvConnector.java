@@ -316,6 +316,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
         if(hasHeaderStr != null) {
             setHasHeader("true".equalsIgnoreCase(hasHeaderStr));
         }
+        c.paramsProcessed();
 
         initSchema(conf.getAbsolutePath());
         setDataFile(new File(csvf.getAbsolutePath()));
@@ -349,6 +350,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
                 throw new InvalidParameterException("The CSV separator be non-empty, one character only.");
             spr = sep.charAt(0);
         }
+        c.paramsProcessed();
 
         CsvConnector.saveConfigTemplate(configFile, csvHeaderFile, defaultLdmType, factNames, folder, spr);
         l.info("CSV Connector configuration successfully generated. See config file: "+configFile);
@@ -385,6 +387,7 @@ public class CsvConnector extends AbstractConnector implements Connector {
 
     private static String[] splitParam(Command c, String name) {
         String v = c.getParam(name);
+
         if (v == null) {
             return new String[]{};
         }

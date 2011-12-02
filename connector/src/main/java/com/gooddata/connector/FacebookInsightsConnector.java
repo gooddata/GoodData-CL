@@ -378,6 +378,8 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
         setStartDate(defFmt.parseDateTime(c.getParamMandatory("startDate")));
         setEndDate(defFmt.parseDateTime(c.getParamMandatory("endDate")));
         String auth = c.getParamMandatory("authToken");
+        c.paramsProcessed();
+
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         setOauthToken(auth);
@@ -398,6 +400,8 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
         String name = c.getParamMandatory("name");
         String configFile = c.getParamMandatory("configFile");
     	String folder = c.getParam( "folder");
+        c.paramsProcessed();
+
         FacebookInsightsConnector.saveConfigTemplate(name, configFile, folder);
         l.info("Facebook Insights Connector configuration successfully generated. See config file: "+configFile);
     }
