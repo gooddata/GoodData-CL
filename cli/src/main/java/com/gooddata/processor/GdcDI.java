@@ -305,6 +305,9 @@ public class GdcDI implements Executor {
             }
             finishedSucessfuly = false;
         }
+        finally {
+            context.getRestApi(cliParams).logout();
+        }
     }
 
     /**
@@ -398,7 +401,7 @@ public class GdcDI implements Executor {
 
     /**
      * Executes the commands in String
-     * @param commandsStr commansd string
+     * @param commandsStr commands string
      */
     public void execute(final String commandsStr) {
         List<Command> cmds = new ArrayList<Command>();

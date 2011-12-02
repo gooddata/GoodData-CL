@@ -251,6 +251,7 @@ public class GdcNotification {
 
         MessageFilter dupFilter = DuplicateMessageFilter.createFilter();
 
+        GdcRESTApiWrapper rest = null;
         try {
             for(NotificationMessage m : c.getMessages()) {
                 String dupFilterKind = m.getDupFilterKind();
@@ -261,7 +262,7 @@ public class GdcNotification {
                         continue;
                     }
                 }
-                GdcRESTApiWrapper rest = new GdcRESTApiWrapper(cliParams.getHttpConfig());
+                rest = new GdcRESTApiWrapper(cliParams.getHttpConfig());
                 rest.login();
                 Expression e = null;
                 JexlEngine jexl = new JexlEngine();
@@ -321,9 +322,13 @@ public class GdcNotification {
                 }
             }
             dupFilter.save();
+            rest.logout();
         }
         catch (Exception e) {
             throw new IOException(e);
+        } finally {
+                if (rest != null)
+                        rest.logout();
         }
     }
 
