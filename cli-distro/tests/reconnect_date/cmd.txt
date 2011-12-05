@@ -31,7 +31,7 @@ TransferData();
 
 # load the stock quotes data file
 # the data file config has been generated
-UseCsv(csvDataFile="tests/reconnect_date/data.csv",header="true",configFile="tests/reconnect_date/config.xml");
+UseCsv(csvDataFile="tests/reconnect_date/data.csv",hasHeader="true",configFile="tests/reconnect_date/config.xml");
 
 # generate the stock quotes MAQL
 GenerateMaql(maqlFile="tests/reconnect_date/create.maql");
@@ -40,7 +40,7 @@ GenerateMaql(maqlFile="tests/reconnect_date/create.maql");
 ExecuteMaql(maqlFile="tests/reconnect_date/create.maql");
 
 # Reconnect date field to the second date dimension
-UseCsv(csvDataFile="tests/reconnect_date/data.csv",header="true",configFile="tests/reconnect_date/config2.xml");
+UseCsv(csvDataFile="tests/reconnect_date/data.csv",hasHeader="true",configFile="tests/reconnect_date/config2.xml");
 GenerateUpdateMaql(maqlFile="tests/reconnect_date/reconnect_date.maql");
 ExecuteMaql(maqlFile="tests/reconnect_date/reconnect_date.maql");
 

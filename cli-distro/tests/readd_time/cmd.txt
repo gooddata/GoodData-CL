@@ -9,16 +9,16 @@ ExecuteMaql(maqlFile="tests/readd_time/date.maql");
 TransferData();
 
 #4 - Create data model
-UseCsv(csvDataFile="tests/readd_time/data.csv", header="true", configFile="tests/readd_time/data.xml");
+UseCsv(csvDataFile="tests/readd_time/data.csv", hasHeader="true", configFile="tests/readd_time/data.xml");
 GenerateMaql(maqlFile="tests/readd_time/create.maql");
 ExecuteMaql(maqlFile="tests/readd_time/create.maql");
 
 #5 - Drop time part
-UseCsv(csvDataFile="tests/readd_time/data.csv", header="true", configFile="tests/readd_time/data_notime.xml");
+UseCsv(csvDataFile="tests/readd_time/data.csv", hasHeader="true", configFile="tests/readd_time/data_notime.xml");
 GenerateUpdateMaql(maqlFile="tests/readd_time/drop.maql");
 ExecuteMaql(maqlFile="tests/readd_time/drop.maql");
 
 #6 - Re-add time part
-UseCsv(csvDataFile="tests/readd_time/data.csv", header="true", configFile="tests/readd_time/data.xml");
+UseCsv(csvDataFile="tests/readd_time/data.csv", hasHeader="true", configFile="tests/readd_time/data.xml");
 GenerateUpdateMaql(maqlFile="tests/readd_time/readd.maql");
 ExecuteMaql(maqlFile="tests/readd_time/readd.maql");

@@ -18,7 +18,7 @@ ExecuteMaql(maqlFile="tests/empty_dates/date.maql");
 
 # load the stock quotes data file
 # the data file config has been generated
-UseCsv(csvDataFile="tests/empty_dates/data.csv",header="true",configFile="tests/empty_dates/config.xml");
+UseCsv(csvDataFile="tests/empty_dates/data.csv",hasHeader="true",configFile="tests/empty_dates/config.xml");
 
 # generate the stock quotes MAQL
 GenerateMaql(maqlFile="tests/empty_dates/empty_dates.maql");

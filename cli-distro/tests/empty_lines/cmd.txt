@@ -1,6 +1,6 @@
 CreateProject(name="empty_lines");
 RememberProject(fileName="tests/empty_lines/pid");
-UseCsv(csvDataFile="tests/empty_lines/data.csv",header="true",configFile="tests/empty_lines/config.xml");
+UseCsv(csvDataFile="tests/empty_lines/data.csv",hasHeader="true",configFile="tests/empty_lines/config.xml");
 GenerateMaql(maqlFile="tests/empty_lines/test.maql");
 ExecuteMaql(maqlFile="tests/empty_lines/test.maql");
 TransferData(incremental="false");

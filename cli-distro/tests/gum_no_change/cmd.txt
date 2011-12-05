@@ -11,10 +11,10 @@ ExecuteMaql(maqlFile="tests/gum_no_change/date.maql");
 TransferData();
 
 #4 - CREATE DATA MODEL
-LoadCsv(csvDataFile="tests/gum_no_change/data1.csv", header="true", configFile="tests/gum_no_change/data.xml");
+LoadCsv(csvDataFile="tests/gum_no_change/data1.csv", hasHeader="true", configFile="tests/gum_no_change/data.xml");
 GenerateMaql(maqlFile="tests/gum_no_change/create.maql");
 ExecuteMaql(maqlFile="tests/gum_no_change/create.maql");
 
 #5 - GENERATE ALTER MAQL SCRIPT
-LoadCsv(csvDataFile="tests/gum_no_change/data2.csv", header="true", configFile="tests/gum_no_change/data_resort.xml");
+LoadCsv(csvDataFile="tests/gum_no_change/data2.csv", hasHeader="true", configFile="tests/gum_no_change/data_resort.xml");
 GenerateUpdateMaql(maqlFile="tests/gum_no_change/alter.maql");

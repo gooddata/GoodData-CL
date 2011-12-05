@@ -1,19 +1,19 @@
 CreateProject(name="GUM: CP and Labels");
 RememberProject(fileName="tests/gum_cp_label/pid");
 
-UseCsv(csvDataFile="tests/gum_cp_label/data.csv",header="true",configFile="tests/gum_cp_label/config.xml");
+UseCsv(csvDataFile="tests/gum_cp_label/data.csv",hasHeader="true",configFile="tests/gum_cp_label/config.xml");
 GenerateMaql(maqlFile="tests/gum_cp_label/test.maql");
 ExecuteMaql(maqlFile="tests/gum_cp_label/test.maql");
 TransferData(incremental="false");
 
 # Add a new label
-UseCsv(csvDataFile="tests/gum_cp_label/data.new.csv",header="true",configFile="tests/gum_cp_label/config.new.xml");
+UseCsv(csvDataFile="tests/gum_cp_label/data.new.csv",hasHeader="true",configFile="tests/gum_cp_label/config.new.xml");
 GenerateUpdateMaql(maqlFile="tests/gum_cp_label/test.new.maql");
 ExecuteMaql(maqlFile="tests/gum_cp_label/test.new.maql");
 TransferData(incremental="false");
 
 # Drop the newly added label
-UseCsv(csvDataFile="tests/gum_cp_label/data.csv",header="true",configFile="tests/gum_cp_label/config.xml");
+UseCsv(csvDataFile="tests/gum_cp_label/data.csv",hasHeader="true",configFile="tests/gum_cp_label/config.xml");
 GenerateUpdateMaql(maqlFile="tests/gum_cp_label/test.revert.maql");
 ExecuteMaql(maqlFile="tests/gum_cp_label/test.revert.maql");
 TransferData(incremental="false");

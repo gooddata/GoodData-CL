@@ -18,7 +18,7 @@ ExecuteMaql(maqlFile="tests/escapes/date.maql");
 
 # load the stock quotes data file
 # the data file config has been generated
-UseCsv(csvDataFile="tests/escapes/data.csv",header="true",configFile="tests/escapes/config.xml", separator="|");
+UseCsv(csvDataFile="tests/escapes/data.csv",hasHeader="true",configFile="tests/escapes/config.xml", separator="|");
 
 # generate the stock quotes MAQL
 GenerateMaql(maqlFile="tests/escapes/escapes.maql");

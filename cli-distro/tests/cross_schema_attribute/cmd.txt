@@ -17,7 +17,7 @@ GenerateMaql(maqlFile="tests/cross_schema_attribute/date.maql");
 ExecuteMaql(maqlFile="tests/cross_schema_attribute/date.maql");
 
 # Initialize the CSV connector
-UseCsv(csvDataFile="tests/cross_schema_attribute/events1.csv",header="true",configFile="tests/cross_schema_attribute/config1.xml");
+UseCsv(csvDataFile="tests/cross_schema_attribute/events1.csv",hasHeader="true",configFile="tests/cross_schema_attribute/config1.xml");
 
 # generate the MAQL DDL script
 GenerateMaql(maqlFile="tests/cross_schema_attribute/create1.maql");
@@ -26,7 +26,7 @@ GenerateMaql(maqlFile="tests/cross_schema_attribute/create1.maql");
 ExecuteMaql(maqlFile="tests/cross_schema_attribute/create1.maql");
 
 # Initialize the CSV connector
-UseCsv(csvDataFile="tests/cross_schema_attribute/events2.csv",header="true",configFile="tests/cross_schema_attribute/config2.xml");
+UseCsv(csvDataFile="tests/cross_schema_attribute/events2.csv",hasHeader="true",configFile="tests/cross_schema_attribute/config2.xml");
 
 # generate the MAQL DDL script
 GenerateMaql(maqlFile="tests/cross_schema_attribute/create2.maql");
@@ -36,18 +36,18 @@ ExecuteMaql(maqlFile="tests/cross_schema_attribute/create2.maql");
 
 # Load data into both data sets
 TransferData();
-UseCsv(csvDataFile="tests/cross_schema_attribute/events1.csv",header="true",configFile="tests/cross_schema_attribute/config1.xml");
+UseCsv(csvDataFile="tests/cross_schema_attribute/events1.csv",hasHeader="true",configFile="tests/cross_schema_attribute/config1.xml");
 TransferData();
 
 # Disconnect Events 2 from the Event 1's attribute
-UseCsv(csvDataFile="tests/cross_schema_attribute/events2_no_color.csv",header="true",configFile="tests/cross_schema_attribute/config2_no_color.xml");
+UseCsv(csvDataFile="tests/cross_schema_attribute/events2_no_color.csv",hasHeader="true",configFile="tests/cross_schema_attribute/config2_no_color.xml");
 GenerateUpdateMaql(maqlFile="tests/cross_schema_attribute/events2_no_color.maql");
 ExecuteMaql(maqlFile="tests/cross_schema_attribute/events2_no_color.maql");
 TransferData();
 
 # Re-connect Events 2 to the Event 1's attribute
 
-UseCsv(csvDataFile="tests/cross_schema_attribute/events2.csv",header="true",configFile="tests/cross_schema_attribute/config2.xml");
+UseCsv(csvDataFile="tests/cross_schema_attribute/events2.csv",hasHeader="true",configFile="tests/cross_schema_attribute/config2.xml");
 GenerateUpdateMaql(maqlFile="tests/cross_schema_attribute/events2re.maql");
 ExecuteMaql(maqlFile="tests/cross_schema_attribute/events2re.maql");
 TransferData();

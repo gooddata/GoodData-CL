@@ -1,7 +1,7 @@
 CreateProject(name="23$#@nami ng&^%?");
 RememberProject(fileName="tests/naming/pid");
 GenerateCsvConfig(csvHeaderFile="tests/naming/data.csv", configFile="tests/naming/config.xml", folder="67643nm%^*&@08");
-UseCsv(csvDataFile="tests/naming/data.csv",header="true",configFile="tests/naming/config.xml");
+UseCsv(csvDataFile="tests/naming/data.csv",hasHeader="true",configFile="tests/naming/config.xml");
 GenerateMaql(maqlFile="tests/naming/naming.maql");
 ExecuteMaql(maqlFile="tests/naming/naming.maql");
 TransferData();
