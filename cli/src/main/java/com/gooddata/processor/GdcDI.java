@@ -306,7 +306,8 @@ public class GdcDI implements Executor {
             finishedSucessfuly = false;
         }
         finally {
-            context.getRestApi(cliParams).logout();
+            if(cliParams != null)
+                context.getRestApi(cliParams).logout();
         }
     }
 
