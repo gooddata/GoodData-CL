@@ -72,8 +72,10 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_EXECUTE = {"execute", "e"};
     public static String[] CLI_PARAM_VERSION = {"version", "V"};
     public static String[] CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY = {"default-date-fk", "D"};
-    public static String[] CLI_PARAM_HTTP_PROXY_HOST = {"proxyhost", "O"};
-    public static String[] CLI_PARAM_HTTP_PROXY_PORT = {"proxyport", "P"};
+    public static String[] CLI_PARAM_HTTP_PROXY_HOST = {"proxyhost", "K"};
+    public static String[] CLI_PARAM_HTTP_PROXY_PORT = {"proxyport", "L"};
+    public static String[] CLI_PARAM_HTTP_PROXY_USERNAME = {"proxyusername", "U"};
+    public static String[] CLI_PARAM_HTTP_PROXY_PASSWORD = {"proxypassword", "P"};
     public static String CLI_PARAM_SCRIPT = "script";
 
     private static String DEFAULT_PROPERTIES = "gdi.properties";
@@ -86,6 +88,8 @@ public class GdcDI implements Executor {
             new Option(CLI_PARAM_PASSWORD[1], CLI_PARAM_PASSWORD[0], true, "GoodData password"),
             new Option(CLI_PARAM_HTTP_PROXY_HOST[1], CLI_PARAM_HTTP_PROXY_HOST[0], true, "HTTP proxy hostname."),
             new Option(CLI_PARAM_HTTP_PROXY_PORT[1], CLI_PARAM_HTTP_PROXY_PORT[0], true, "HTTP proxy port."),
+            new Option(CLI_PARAM_HTTP_PROXY_USERNAME[1], CLI_PARAM_HTTP_PROXY_USERNAME[0], true, "HTTP proxy username."),
+            new Option(CLI_PARAM_HTTP_PROXY_PASSWORD[1], CLI_PARAM_HTTP_PROXY_PASSWORD[0], true, "HTTP proxy password."),
             new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host"),
             new Option(CLI_PARAM_FTP_HOST[1], CLI_PARAM_FTP_HOST[0], true, "GoodData data stage host"),
             new Option(CLI_PARAM_PROJECT[1], CLI_PARAM_PROJECT[0], true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)"),
@@ -305,10 +309,18 @@ public class GdcDI implements Executor {
         if(cp.containsKey(CLI_PARAM_HTTP_PROXY_PORT[0])) {
             System.setProperty("http.proxyPort", cp.get(CLI_PARAM_HTTP_PROXY_PORT[0]));
         }
+        if(cp.containsKey(CLI_PARAM_HTTP_PROXY_USERNAME[0])) {
+            System.setProperty("http.proxyUser", cp.get(CLI_PARAM_HTTP_PROXY_USERNAME[0]));
+            System.setProperty("http.proxyUserName", cp.get(CLI_PARAM_HTTP_PROXY_USERNAME[0]));
+            System.setProperty("http.proxyUsername", cp.get(CLI_PARAM_HTTP_PROXY_USERNAME[0]));
+        }
+        if(cp.containsKey(CLI_PARAM_HTTP_PROXY_PASSWORD[0])) {
+            System.setProperty("http.proxyPassword", cp.get(CLI_PARAM_HTTP_PROXY_PASSWORD[0]));
+        }
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.45" +
+            l.info("GoodData CL version 1.2.46" +
                     ((BUILD_NUMBER.length() > 0) ? ", build " + BUILD_NUMBER : "."));
             System.exit(0);
 
