@@ -38,9 +38,9 @@ public class GdcException extends RuntimeException {
     public GdcException(Throwable cause) {
         super(cause);
     }
-    
+
     public GdcException(String msg, Throwable cause) {
-    	super(msg, cause);
+        super(msg, cause);
     }
 
 }

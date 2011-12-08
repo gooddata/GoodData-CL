@@ -1,72 +1,73 @@
 <!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
 
 <schema>
-  <name>Opportunity</name>
-  <columns>
-      <column>
-        <name>id</name>
-        <title>Opportunity</title>
-        <ldmType>CONNECTION_POINT</ldmType>
-        <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>sfdcid</name>
-        <title>Opportunity Id</title>
-          <ldmType>ATTRIBUTE</ldmType>
-          <reference>id</reference>
-          <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>name</name>
-        <title>Opportunity Name</title>
-          <ldmType>LABEL</ldmType>
-          <reference>sfdcid</reference>
-          <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>url</name>
-        <title>Opportunity URL</title>
-          <ldmType>LABEL</ldmType>
-          <reference>sfdcid</reference>
-          <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>leadsource</name>
-        <title>Opportunity Lead Source</title>
-          <ldmType>ATTRIBUTE</ldmType>
-          <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>type</name>
-        <title>Opportunity Type</title>
-          <ldmType>ATTRIBUTE</ldmType>
-          <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>stage</name>
-        <title>Opportunity Type</title>
-          <ldmType>IGNORE</ldmType>
-      </column>
-      <column>
-        <name>status</name>
-        <title>Opportunity Status</title>
-          <ldmType>ATTRIBUTE</ldmType>
-          <folder>Opportunity</folder>
-          <transformation><![CDATA[ (stage.indexOf("Closed")>=0)?((stage.indexOf("Won")>=0)?("Won"):("Lost")):("Open")]]></transformation>
-      </column>
-      <column>
-        <name>isclosed</name>
-        <title>Opportunity Is Closed</title>
-          <ldmType>ATTRIBUTE</ldmType>
-		  <transformation><![CDATA[(stage.indexOf("Closed")>=0)?("true"):("false")]]></transformation>
-          <folder>Opportunity</folder>
-      </column>
-      <column>
-        <name>iswon</name>
-        <title>Opportunity Is Won</title>
-          <ldmType>ATTRIBUTE</ldmType>
-          <folder>Opportunity</folder>
-		  <transformation><![CDATA[(stage.indexOf("Won")>=0)?("true"):("false")]]></transformation>
-      </column>
-  </columns>
+    <name>Opportunity</name>
+    <columns>
+        <column>
+            <name>id</name>
+            <title>Opportunity</title>
+            <ldmType>CONNECTION_POINT</ldmType>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>sfdcid</name>
+            <title>Opportunity Id</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <reference>id</reference>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>name</name>
+            <title>Opportunity Name</title>
+            <ldmType>LABEL</ldmType>
+            <reference>sfdcid</reference>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>url</name>
+            <title>Opportunity URL</title>
+            <ldmType>LABEL</ldmType>
+            <reference>sfdcid</reference>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>leadsource</name>
+            <title>Opportunity Lead Source</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>type</name>
+            <title>Opportunity Type</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>stage</name>
+            <title>Opportunity Type</title>
+            <ldmType>IGNORE</ldmType>
+        </column>
+        <column>
+            <name>status</name>
+            <title>Opportunity Status</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Opportunity</folder>
+            <transformation>
+                <![CDATA[ (stage.indexOf("Closed")>=0)?((stage.indexOf("Won")>=0)?("Won"):("Lost")):("Open")]]></transformation>
+        </column>
+        <column>
+            <name>isclosed</name>
+            <title>Opportunity Is Closed</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <transformation><![CDATA[(stage.indexOf("Closed")>=0)?("true"):("false")]]></transformation>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>iswon</name>
+            <title>Opportunity Is Won</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Opportunity</folder>
+            <transformation><![CDATA[(stage.indexOf("Won")>=0)?("true"):("false")]]></transformation>
+        </column>
+    </columns>
 </schema>

@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
+public class DescribeSoftphoneLayoutResult implements java.io.Serializable {
     private com.sforce.soap.partner.DescribeSoftphoneLayoutCallType[] callTypes;
 
     private java.lang.String id;
@@ -18,18 +18,18 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
     }
 
     public DescribeSoftphoneLayoutResult(
-           com.sforce.soap.partner.DescribeSoftphoneLayoutCallType[] callTypes,
-           java.lang.String id,
-           java.lang.String name) {
-           this.callTypes = callTypes;
-           this.id = id;
-           this.name = name;
+            com.sforce.soap.partner.DescribeSoftphoneLayoutCallType[] callTypes,
+            java.lang.String id,
+            java.lang.String name) {
+        this.callTypes = callTypes;
+        this.id = id;
+        this.name = name;
     }
 
 
     /**
      * Gets the callTypes value for this DescribeSoftphoneLayoutResult.
-     * 
+     *
      * @return callTypes
      */
     public com.sforce.soap.partner.DescribeSoftphoneLayoutCallType[] getCallTypes() {
@@ -39,7 +39,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
 
     /**
      * Sets the callTypes value for this DescribeSoftphoneLayoutResult.
-     * 
+     *
      * @param callTypes
      */
     public void setCallTypes(com.sforce.soap.partner.DescribeSoftphoneLayoutCallType[] callTypes) {
@@ -57,7 +57,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
 
     /**
      * Gets the id value for this DescribeSoftphoneLayoutResult.
-     * 
+     *
      * @return id
      */
     public java.lang.String getId() {
@@ -67,7 +67,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
 
     /**
      * Sets the id value for this DescribeSoftphoneLayoutResult.
-     * 
+     *
      * @param id
      */
     public void setId(java.lang.String id) {
@@ -77,7 +77,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
 
     /**
      * Gets the name value for this DescribeSoftphoneLayoutResult.
-     * 
+     *
      * @return name
      */
     public java.lang.String getName() {
@@ -87,7 +87,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
 
     /**
      * Sets the name value for this DescribeSoftphoneLayoutResult.
-     * 
+     *
      * @param name
      */
     public void setName(java.lang.String name) {
@@ -95,6 +95,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeSoftphoneLayoutResult)) return false;
         DescribeSoftphoneLayoutResult other = (DescribeSoftphoneLayoutResult) obj;
@@ -105,21 +106,22 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.callTypes==null && other.getCallTypes()==null) || 
-             (this.callTypes!=null &&
-              java.util.Arrays.equals(this.callTypes, other.getCallTypes()))) &&
-            ((this.id==null && other.getId()==null) || 
-             (this.id!=null &&
-              this.id.equals(other.getId()))) &&
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName())));
+        _equals = true &&
+                ((this.callTypes == null && other.getCallTypes() == null) ||
+                        (this.callTypes != null &&
+                                java.util.Arrays.equals(this.callTypes, other.getCallTypes()))) &&
+                ((this.id == null && other.getId() == null) ||
+                        (this.id != null &&
+                                this.id.equals(other.getId()))) &&
+                ((this.name == null && other.getName() == null) ||
+                        (this.name != null &&
+                                this.name.equals(other.getName())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -127,12 +129,12 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getCallTypes() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getCallTypes());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getCallTypes());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getCallTypes(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -149,7 +151,7 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeSoftphoneLayoutResult.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeSoftphoneLayoutResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeSoftphoneLayoutResult"));
@@ -185,24 +187,24 @@ public class DescribeSoftphoneLayoutResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

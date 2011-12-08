@@ -30,9 +30,10 @@ public interface SecureVault {
 
     /**
      * Retrieves password for a username
+     *
      * @param username
      * @return
      */
     public String getPassword(String username);
-    
+
 }

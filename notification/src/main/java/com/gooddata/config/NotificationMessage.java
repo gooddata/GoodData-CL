@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * Notification message
+ *
  * @author zd@gooddata.com
  * @version 1.0
  */
@@ -48,10 +49,11 @@ public class NotificationMessage {
 
     /**
      * Constructor
+     *
      * @param condition the expression that uses the metric aliases. must resolve to boolean
-     * @param metrics metrics
-     * @param message the message (can use the %metric-alias% substitution fields)
-     * @param uri the target uri (e.g. mailto://zd@goodata.com)
+     * @param metrics   metrics
+     * @param message   the message (can use the %metric-alias% substitution fields)
+     * @param uri       the target uri (e.g. mailto://zd@goodata.com)
      */
     public NotificationMessage(String condition, List<Metric> metrics, String message, String uri) {
         setCondition(condition);

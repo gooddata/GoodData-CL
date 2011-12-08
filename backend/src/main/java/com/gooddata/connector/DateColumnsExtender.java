@@ -27,7 +27,6 @@ import com.gooddata.Constants;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;
-import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -55,18 +54,18 @@ public class DateColumnsExtender {
         dateColumnFormats = new ArrayList<DateTimeFormatter>();
         identityColumn = schema.getIdentityColumn();
         dates = schema.getDates();
-        for(int i= 0; i < dates.size(); i++)  {
+        for (int i = 0; i < dates.size(); i++) {
             SourceColumn c = dates.get(i);
             dateColumnIndexes.add(schema.getColumnIndex(c));
             String fmt = c.getFormat();
-            if(fmt == null || fmt.length() <= 0) {
-                if(c.isDatetime())
+            if (fmt == null || fmt.length() <= 0) {
+                if (c.isDatetime())
                     fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
                 else
                     fmt = Constants.DEFAULT_DATE_FMT_STRING;
             }
             // in case of UNIX TIME we don't format but create the date from the UNIX time number
-            if(Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
+            if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
                 fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
             }
             dateColumnFormats.add(DateTimeFormat.forPattern(fmt));
@@ -75,6 +74,7 @@ public class DateColumnsExtender {
 
     /**
      * Extends the CSV header
+     *
      * @param header existing header
      * @return the extended header
      */
@@ -82,15 +82,15 @@ public class DateColumnsExtender {
         // Add column headers for the extra date columns
 
         List<String> rowExt = new ArrayList<String>();
-        for(int i= 0; i < dates.size(); i++)  {
+        for (int i = 0; i < dates.size(); i++) {
             SourceColumn c = dates.get(i);
             rowExt.add(c.getName() + N.DT_SLI_SFX);
-            if(c.isDatetime()) {
+            if (c.isDatetime()) {
                 rowExt.add(c.getName() + N.TM_SLI_SFX);
-                rowExt.add(N.TM_PFX+c.getName()+"_"+N.ID);
+                rowExt.add(N.TM_PFX + c.getName() + "_" + N.ID);
             }
         }
-        if(rowExt.size() > 0)
+        if (rowExt.size() > 0)
             return mergeArrays(header, rowExt.toArray(new String[]{}));
         else
             return header;
@@ -102,47 +102,46 @@ public class DateColumnsExtender {
 
     /**
      * Extends the CSV row
+     *
      * @param row existing row
      * @return the extended row
      */
     public String[] extendRow(String[] row) {
         List<String> rowExt = new ArrayList<String>();
-        for(int i = 0; i < dateColumnIndexes.size(); i++) {
+        for (int i = 0; i < dateColumnIndexes.size(); i++) {
             SourceColumn c = dates.get(i);
             int idx = dateColumnIndexes.get(i);
-            int adjustedDataIndex = ((identityColumn >=0) && (idx >= identityColumn)) ? (idx-1) : (idx);
+            int adjustedDataIndex = ((identityColumn >= 0) && (idx >= identityColumn)) ? (idx - 1) : (idx);
             String dateValue = row[idx];
-            if(dateValue != null && dateValue.trim().length()>0) {
+            if (dateValue != null && dateValue.trim().length() > 0) {
                 try {
                     DateTimeFormatter formatter = dateColumnFormats.get(i);
                     DateTime dt = formatter.parseDateTime(dateValue);
                     Days ds = Days.daysBetween(base, dt);
                     rowExt.add(Integer.toString(ds.getDays() + 1));
-                    if(c.isDatetime()) {
-                        int  ts = dt.getSecondOfDay();
+                    if (c.isDatetime()) {
+                        int ts = dt.getSecondOfDay();
                         rowExt.add(Integer.toString(ts));
                         String scs = Integer.toString(ts);
-                        rowExt.add((scs.length()>1)?(scs):("0"+scs));
+                        rowExt.add((scs.length() > 1) ? (scs) : ("0" + scs));
                     }
-                }
-                catch (IllegalArgumentException e) {
-                    l.debug("Can't parse date "+dateValue);
+                } catch (IllegalArgumentException e) {
+                    l.debug("Can't parse date " + dateValue);
                     rowExt.add("");
-                    if(c.isDatetime()) {
+                    if (c.isDatetime()) {
                         rowExt.add("");
                         rowExt.add("00");
                     }
                 }
-            }
-            else {
+            } else {
                 rowExt.add("");
-                if(c.isDatetime()) {
+                if (c.isDatetime()) {
                     rowExt.add("");
                     rowExt.add("00");
                 }
             }
         }
-        if(rowExt.size() > 0)
+        if (rowExt.size() > 0)
             return mergeArrays(row, rowExt.toArray(new String[]{}));
         else
             return row;

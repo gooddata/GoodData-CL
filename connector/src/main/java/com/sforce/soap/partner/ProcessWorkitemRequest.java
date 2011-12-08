@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequest  implements java.io.Serializable {
+public class ProcessWorkitemRequest extends com.sforce.soap.partner.ProcessRequest implements java.io.Serializable {
     private java.lang.String action;
 
     private java.lang.String workitemId;
@@ -16,13 +16,13 @@ public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequ
     }
 
     public ProcessWorkitemRequest(
-           java.lang.String comments,
-           java.lang.String[] nextApproverIds,
-           java.lang.String action,
-           java.lang.String workitemId) {
+            java.lang.String comments,
+            java.lang.String[] nextApproverIds,
+            java.lang.String action,
+            java.lang.String workitemId) {
         super(
-            comments,
-            nextApproverIds);
+                comments,
+                nextApproverIds);
         this.action = action;
         this.workitemId = workitemId;
     }
@@ -30,7 +30,7 @@ public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequ
 
     /**
      * Gets the action value for this ProcessWorkitemRequest.
-     * 
+     *
      * @return action
      */
     public java.lang.String getAction() {
@@ -40,7 +40,7 @@ public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequ
 
     /**
      * Sets the action value for this ProcessWorkitemRequest.
-     * 
+     *
      * @param action
      */
     public void setAction(java.lang.String action) {
@@ -50,7 +50,7 @@ public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequ
 
     /**
      * Gets the workitemId value for this ProcessWorkitemRequest.
-     * 
+     *
      * @return workitemId
      */
     public java.lang.String getWorkitemId() {
@@ -60,7 +60,7 @@ public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequ
 
     /**
      * Sets the workitemId value for this ProcessWorkitemRequest.
-     * 
+     *
      * @param workitemId
      */
     public void setWorkitemId(java.lang.String workitemId) {
@@ -68,6 +68,7 @@ public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequ
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ProcessWorkitemRequest)) return false;
         ProcessWorkitemRequest other = (ProcessWorkitemRequest) obj;
@@ -78,18 +79,19 @@ public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequ
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            ((this.action==null && other.getAction()==null) || 
-             (this.action!=null &&
-              this.action.equals(other.getAction()))) &&
-            ((this.workitemId==null && other.getWorkitemId()==null) || 
-             (this.workitemId!=null &&
-              this.workitemId.equals(other.getWorkitemId())));
+        _equals = super.equals(obj) &&
+                ((this.action == null && other.getAction() == null) ||
+                        (this.action != null &&
+                                this.action.equals(other.getAction()))) &&
+                ((this.workitemId == null && other.getWorkitemId() == null) ||
+                        (this.workitemId != null &&
+                                this.workitemId.equals(other.getWorkitemId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -108,7 +110,7 @@ public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequ
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(ProcessWorkitemRequest.class, true);
+            new org.apache.axis.description.TypeDesc(ProcessWorkitemRequest.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "ProcessWorkitemRequest"));
@@ -137,24 +139,24 @@ public class ProcessWorkitemRequest  extends com.sforce.soap.partner.ProcessRequ
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

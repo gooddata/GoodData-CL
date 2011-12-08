@@ -23,29 +23,15 @@
 
 package com.gooddata.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+import org.apache.log4j.Logger;
+
+import java.io.*;
 import java.net.URL;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
-
-import org.apache.log4j.Logger;
 
 /**
  * File utils
@@ -67,7 +53,7 @@ public class FileUtil {
      * @throws IOException
      */
     public static void compressDir(String dirPath, String archiveName) throws IOException {
-        l.debug("Compressing "+dirPath + " -> "+archiveName);
+        l.debug("Compressing " + dirPath + " -> " + archiveName);
         File d = new File(dirPath);
         if (d.isDirectory()) {
             File[] files = d.listFiles();
@@ -87,12 +73,13 @@ public class FileUtil {
             File file = new File(archiveName);
         } else
             throw new IOException("The referenced directory isn't directory!");
-        l.debug("Compressed "+dirPath + " -> "+archiveName);
+        l.debug("Compressed " + dirPath + " -> " + archiveName);
 
     }
 
     /**
      * writes the data from the input stream to the provided output stream
+     *
      * @param is
      * @param os
      * @throws IOException
@@ -153,7 +140,7 @@ public class FileUtil {
         } while (newTempDir.exists());
 
         if (newTempDir.mkdirs()) {
-            l.debug("Created new tmp directory="+newTempDir.getAbsolutePath());
+            l.debug("Created new tmp directory=" + newTempDir.getAbsolutePath());
             return newTempDir;
         } else {
             throw new IOException(
@@ -185,7 +172,7 @@ public class FileUtil {
             String fileName = UUID.randomUUID().toString() + ".csv";
             newTempFile = new File(sysTempDir, fileName);
         } while (newTempFile.exists());
-        l.debug("Created new tmp file="+newTempFile.getAbsolutePath());
+        l.debug("Created new tmp file=" + newTempFile.getAbsolutePath());
         return newTempFile;
     }
 
@@ -196,7 +183,7 @@ public class FileUtil {
      * @return true if all files are successfully deleted
      */
     public static boolean recursiveDelete(File fileOrDir) {
-        l.debug("Deleting "+fileOrDir+" recursively.");
+        l.debug("Deleting " + fileOrDir + " recursively.");
         if (fileOrDir.isDirectory()) {
             // recursively delete contents
             for (File innerFile : fileOrDir.listFiles()) {
@@ -205,7 +192,7 @@ public class FileUtil {
                 }
             }
         }
-        l.debug("Deleted"+fileOrDir+" recursively.");
+        l.debug("Deleted" + fileOrDir + " recursively.");
         return fileOrDir.delete();
     }
 
@@ -228,7 +215,7 @@ public class FileUtil {
      *
      * @param content  the content
      * @param fileName the file
-     * @param append should be the content appended?
+     * @param append   should be the content appended?
      * @throws IOException
      */
     public static void writeStringToFile(String content, String fileName, boolean append) throws IOException {
@@ -296,8 +283,8 @@ public class FileUtil {
      */
     private static String readStringFromBufferedReader(BufferedReader br) throws IOException {
         StringBuffer sbr = new StringBuffer();
-        for(String ln = br.readLine(); ln != null; ln = br.readLine())
-            sbr.append(ln+"\n");
+        for (String ln = br.readLine(); ln != null; ln = br.readLine())
+            sbr.append(ln + "\n");
         br.close();
         return sbr.toString();
     }
@@ -307,7 +294,7 @@ public class FileUtil {
      * Reads the entire {@link InputStream} and returns its content as a single {@link String}
      *
      * @param path the loacation of the file on the CLASSPATH (e.g. /com/gooddata/processor/COMMANDS.txt)
-     * @param c Class for determining the Java classloader
+     * @param c    Class for determining the Java classloader
      * @return the file content as String
      * @throws IOException
      */
@@ -326,16 +313,12 @@ public class FileUtil {
      */
     public static String[] getCsvHeader(URL url, CsvConfiguration csvConfiguration) throws IOException {
         BufferedReader reader = null;
-        try
-        {
+        try {
             reader = createBufferedUtf8Reader(url);
             CSVReader csvIn = new CSVReader(reader, csvConfiguration);
             return csvIn.readNext();
-        }
-        finally
-        {
-            if (reader!=null)
-            {
+        } finally {
+            if (reader != null) {
                 reader.close();
             }
         }
@@ -354,14 +337,15 @@ public class FileUtil {
 
     /**
      * Constructs a new File and optionally checks if it exists
-     * @param fileName file name
+     *
+     * @param fileName          file name
      * @param ignoreMissingFile flag that ignores the fact that the file doesn't exists
      * @return the File
      * @throws IOException if the file doesn't exists and the ignoreMissingFile is false
      */
     public static File getFile(String fileName, boolean ignoreMissingFile) throws IOException {
         File f = new File(fileName);
-        if(!f.exists()) {
+        if (!f.exists()) {
             if (!ignoreMissingFile)
                 throw new IOException("File '" + fileName + "' doesn't exist.");
             else
@@ -372,6 +356,7 @@ public class FileUtil {
 
     /**
      * Constructs a new File and checks if it exists
+     *
      * @param fileName file name
      * @return the File
      * @throws IOException if the file doesn't exists
@@ -382,6 +367,7 @@ public class FileUtil {
 
     /**
      * returns the last element of the URL's path
+     *
      * @param url to parse
      * @return the last element of the URL's path
      */
@@ -393,7 +379,7 @@ public class FileUtil {
     /**
      * Opens a file given by a path and returns its {@link BufferedReader} using the
      * UTF-8 encoding
-     * 
+     *
      * @param path path to a file to be read
      * @return UTF8 BufferedReader of the file <tt>path</tt>
      * @throws IOException
@@ -405,7 +391,7 @@ public class FileUtil {
     /**
      * Opens a file given by a path and returns its {@link BufferedWriter} using the
      * UTF-8 encoding
-     * 
+     *
      * @param path path to a file to write to
      * @return UTF8 BufferedWriter of the file <tt>path</tt>
      * @throws IOException
@@ -418,7 +404,7 @@ public class FileUtil {
      * Opens a file given by a path and returns its {@link BufferedWriter} using the
      * UTF-8 encoding
      *
-     * @param path path to a file to write to
+     * @param path   path to a file to write to
      * @param append should be the content appended?
      * @return UTF8 BufferedWriter of the file <tt>path</tt>
      * @throws IOException
@@ -430,7 +416,7 @@ public class FileUtil {
     /**
      * Opens a file given by a path and returns its {@link BufferedReader} using the
      * UTF-8 encoding
-     * 
+     *
      * @param file file to be read
      * @return UTF8 BufferedReader of the <tt>file</tt>
      * @throws IOException
@@ -442,7 +428,7 @@ public class FileUtil {
     /**
      * Opens a file given by a path and returns its {@link BufferedWriter} using the
      * UTF-8 encoding
-     * 
+     *
      * @param file file to write to
      * @return UTF8 BufferedWriter of the <tt>file</tt>
      * @throws IOException
@@ -453,7 +439,7 @@ public class FileUtil {
 
     /**
      * Opens a URL and returns its {@link BufferedReader} using the UTF-8 encoding
-     * 
+     *
      * @param url to be read
      * @return UTF8 BufferedReader of the <tt>url</tt>
      * @throws IOException
@@ -465,7 +451,7 @@ public class FileUtil {
     /**
      * Creates a {@link BufferedReader} on the top of the given {@link InputStream} using the
      * UTF-8 encoding
-     * 
+     *
      * @param is file to be read
      * @return UTF8 BufferedReader of the <tt>file</tt>
      * @throws IOException
@@ -478,7 +464,7 @@ public class FileUtil {
      * Creates a UTF-8 {@link CSVReader} of the resource on classpath represented by
      * given <tt>path</tt>. Calls {@link Class#getResourceAsStream(String)} internally to create
      * the underlying {@link InputStream}.
-     * 
+     *
      * @param path
      * @return
      * @throws IOException
@@ -490,7 +476,7 @@ public class FileUtil {
 
     /**
      * Creates a UTF-8 {@link CSVReader} of the given <tt>file</tt>.
-     * 
+     *
      * @param file
      * @return
      * @throws IOException
@@ -515,7 +501,7 @@ public class FileUtil {
      * Creates a UTF-8 {@link CSVReader} of the given <tt>inputStream</tt>.
      *
      * @param inputStream
-     * @param separator field separator
+     * @param separator   field separator
      * @return
      * @throws IOException
      */
@@ -525,7 +511,7 @@ public class FileUtil {
 
     /**
      * Creates a UTF-8 {@link CSVReader} of the given <tt>inputStream</tt>.
-     * 
+     *
      * @param inputStream
      * @return
      * @throws IOException
@@ -536,7 +522,7 @@ public class FileUtil {
 
     /**
      * Creates a UTF-8 {@link CSVWriter} of the given <tt>file</tt>.
-     * 
+     *
      * @param file
      * @return
      * @throws IOException
@@ -547,7 +533,7 @@ public class FileUtil {
 
     /**
      * Creates a UTF-8 {@link CSVWriter} of the given <tt>outputStream</tt>.
-     * 
+     *
      * @param outputStream
      * @return
      * @throws IOException
@@ -565,7 +551,7 @@ public class FileUtil {
      * @throws IOException
      */
     public static CSVWriter createUtf8CsvEscapingWriter(File file) throws IOException {
-        return new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), "utf8"),',','"','"');
+        return new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), "utf8"), ',', '"', '"');
     }
 
 }

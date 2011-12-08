@@ -32,13 +32,12 @@ import com.sforce.ws.ConnectorConfig;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
  * SalesForce Chatter com.gooddata.transport
+ *
  * @author zd@gooddata.com
  * @version 1.0
  */
@@ -50,7 +49,7 @@ public class SfdcChatterTransport implements NotificationTransport {
 
     private String username;
     private String password;
-    
+
     private PartnerConnection connection;
 
     public String getUsername() {
@@ -69,16 +68,17 @@ public class SfdcChatterTransport implements NotificationTransport {
         this.password = password;
     }
 
-    private static Map<String, NotificationTransport> transports = new HashMap<String,NotificationTransport>();
+    private static Map<String, NotificationTransport> transports = new HashMap<String, NotificationTransport>();
 
     /**
      * Creates a new Sfdc Chatter transport
+     *
      * @param usr - username
      * @param psw - password
      * @return
      */
     public synchronized static NotificationTransport createTransport(String usr, String psw) {
-        if(transports.containsKey(usr))
+        if (transports.containsKey(usr))
             return transports.get(usr);
         else {
             NotificationTransport t = new SfdcChatterTransport(usr, psw);
@@ -89,13 +89,14 @@ public class SfdcChatterTransport implements NotificationTransport {
 
     /**
      * Creates a new Sfdc Chatter transport
+     *
      * @param usr - username
      * @param psw - password
      * @param tkn - token
      * @return
      */
     public synchronized static NotificationTransport createTransport(String usr, String psw, String tkn) {
-        return createTransport(usr, psw+tkn);
+        return createTransport(usr, psw + tkn);
     }
 
     /**
@@ -127,10 +128,10 @@ public class SfdcChatterTransport implements NotificationTransport {
         try {
             user.setId(connection.getUserInfo().getUserId());
             user.setField("CurrentStatus", message);
-            SaveResult[] results = connection.update(new SObject[] { user });
+            SaveResult[] results = connection.update(new SObject[]{user});
             if (!results[0].isSuccess()) {
-                l.error("Error updating user status: "+ results[0].getErrors()[0].getMessage());
-                throw new SfdcException("Error updating user status: "+ results[0].getErrors()[0].getMessage());
+                l.error("Error updating user status: " + results[0].getErrors()[0].getMessage());
+                throw new SfdcException("Error updating user status: " + results[0].getErrors()[0].getMessage());
             }
         } catch (ConnectionException e) {
             l.debug("Error sending the SFDC chatter message.", e);

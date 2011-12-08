@@ -27,55 +27,53 @@ import static java.lang.String.format;
 /**
  * Indicates that the Legacy REST Facebook endpoint returned JSON which
  * indicates an error condition.
- * <p>
+ * <p/>
  * This exception may also be thrown when executing certain operations against
  * the Graph API, e.g. FQL queries.
- * <p>
+ * <p/>
  * Example:
  * <code>{"error_code": 2, "error_msg": "The service is not available at this time.", ...}</code>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  */
 public class FacebookResponseStatusException extends FacebookException {
-  /**
-   * The Facebook API error code.
-   */
-  private Integer errorCode;
+    /**
+     * The Facebook API error code.
+     */
+    private Integer errorCode;
 
-  /**
-   * The Facebook API error message.
-   */
-  private String errorMessage;
+    /**
+     * The Facebook API error message.
+     */
+    private String errorMessage;
 
-  /**
-   * Creates an exception with the given message and error code.
-   * 
-   * @param errorCode
-   *          Value of the Facebook response attribute {@code error_code}.
-   * @param errorMessage
-   *          Value of the Facebook response attribute {@code error_msg}.
-   */
-  public FacebookResponseStatusException(Integer errorCode, String errorMessage) {
-    super(format("Received Facebook error response (code %d): %s", errorCode, errorMessage));
-    this.errorCode = errorCode;
-    this.errorMessage = errorMessage;
-  }
+    /**
+     * Creates an exception with the given message and error code.
+     *
+     * @param errorCode    Value of the Facebook response attribute {@code error_code}.
+     * @param errorMessage Value of the Facebook response attribute {@code error_msg}.
+     */
+    public FacebookResponseStatusException(Integer errorCode, String errorMessage) {
+        super(format("Received Facebook error response (code %d): %s", errorCode, errorMessage));
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
 
-  /**
-   * Gets the Facebook API error code.
-   * 
-   * @return The Facebook API error code.
-   */
-  public Integer getErrorCode() {
-    return errorCode;
-  }
+    /**
+     * Gets the Facebook API error code.
+     *
+     * @return The Facebook API error code.
+     */
+    public Integer getErrorCode() {
+        return errorCode;
+    }
 
-  /**
-   * Gets the Facebook API error message.
-   * 
-   * @return The Facebook API error message.
-   */
-  public String getErrorMessage() {
-    return errorMessage;
-  }
+    /**
+     * Gets the Facebook API error message.
+     *
+     * @return The Facebook API error message.
+     */
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 }

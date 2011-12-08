@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
+public class DescribeSoftphoneLayoutSection implements java.io.Serializable {
     private java.lang.String entityApiName;
 
     private com.sforce.soap.partner.DescribeSoftphoneLayoutItem[] items;
@@ -16,16 +16,16 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
     }
 
     public DescribeSoftphoneLayoutSection(
-           java.lang.String entityApiName,
-           com.sforce.soap.partner.DescribeSoftphoneLayoutItem[] items) {
-           this.entityApiName = entityApiName;
-           this.items = items;
+            java.lang.String entityApiName,
+            com.sforce.soap.partner.DescribeSoftphoneLayoutItem[] items) {
+        this.entityApiName = entityApiName;
+        this.items = items;
     }
 
 
     /**
      * Gets the entityApiName value for this DescribeSoftphoneLayoutSection.
-     * 
+     *
      * @return entityApiName
      */
     public java.lang.String getEntityApiName() {
@@ -35,7 +35,7 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
 
     /**
      * Sets the entityApiName value for this DescribeSoftphoneLayoutSection.
-     * 
+     *
      * @param entityApiName
      */
     public void setEntityApiName(java.lang.String entityApiName) {
@@ -45,7 +45,7 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
 
     /**
      * Gets the items value for this DescribeSoftphoneLayoutSection.
-     * 
+     *
      * @return items
      */
     public com.sforce.soap.partner.DescribeSoftphoneLayoutItem[] getItems() {
@@ -55,7 +55,7 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
 
     /**
      * Sets the items value for this DescribeSoftphoneLayoutSection.
-     * 
+     *
      * @param items
      */
     public void setItems(com.sforce.soap.partner.DescribeSoftphoneLayoutItem[] items) {
@@ -71,6 +71,7 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeSoftphoneLayoutSection)) return false;
         DescribeSoftphoneLayoutSection other = (DescribeSoftphoneLayoutSection) obj;
@@ -81,18 +82,19 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.entityApiName==null && other.getEntityApiName()==null) || 
-             (this.entityApiName!=null &&
-              this.entityApiName.equals(other.getEntityApiName()))) &&
-            ((this.items==null && other.getItems()==null) || 
-             (this.items!=null &&
-              java.util.Arrays.equals(this.items, other.getItems())));
+        _equals = true &&
+                ((this.entityApiName == null && other.getEntityApiName() == null) ||
+                        (this.entityApiName != null &&
+                                this.entityApiName.equals(other.getEntityApiName()))) &&
+                ((this.items == null && other.getItems() == null) ||
+                        (this.items != null &&
+                                java.util.Arrays.equals(this.items, other.getItems())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -103,12 +105,12 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
             _hashCode += getEntityApiName().hashCode();
         }
         if (getItems() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getItems());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getItems());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getItems(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -119,7 +121,7 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeSoftphoneLayoutSection.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeSoftphoneLayoutSection.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeSoftphoneLayoutSection"));
@@ -149,24 +151,24 @@ public class DescribeSoftphoneLayoutSection  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

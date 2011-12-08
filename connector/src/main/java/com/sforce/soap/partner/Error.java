@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class Error  implements java.io.Serializable {
+public class Error implements java.io.Serializable {
     private java.lang.String[] fields;
 
     private java.lang.String message;
@@ -18,18 +18,18 @@ public class Error  implements java.io.Serializable {
     }
 
     public Error(
-           java.lang.String[] fields,
-           java.lang.String message,
-           com.sforce.soap.partner.StatusCode statusCode) {
-           this.fields = fields;
-           this.message = message;
-           this.statusCode = statusCode;
+            java.lang.String[] fields,
+            java.lang.String message,
+            com.sforce.soap.partner.StatusCode statusCode) {
+        this.fields = fields;
+        this.message = message;
+        this.statusCode = statusCode;
     }
 
 
     /**
      * Gets the fields value for this Error.
-     * 
+     *
      * @return fields
      */
     public java.lang.String[] getFields() {
@@ -39,7 +39,7 @@ public class Error  implements java.io.Serializable {
 
     /**
      * Sets the fields value for this Error.
-     * 
+     *
      * @param fields
      */
     public void setFields(java.lang.String[] fields) {
@@ -57,7 +57,7 @@ public class Error  implements java.io.Serializable {
 
     /**
      * Gets the message value for this Error.
-     * 
+     *
      * @return message
      */
     public java.lang.String getMessage() {
@@ -67,7 +67,7 @@ public class Error  implements java.io.Serializable {
 
     /**
      * Sets the message value for this Error.
-     * 
+     *
      * @param message
      */
     public void setMessage(java.lang.String message) {
@@ -77,7 +77,7 @@ public class Error  implements java.io.Serializable {
 
     /**
      * Gets the statusCode value for this Error.
-     * 
+     *
      * @return statusCode
      */
     public com.sforce.soap.partner.StatusCode getStatusCode() {
@@ -87,7 +87,7 @@ public class Error  implements java.io.Serializable {
 
     /**
      * Sets the statusCode value for this Error.
-     * 
+     *
      * @param statusCode
      */
     public void setStatusCode(com.sforce.soap.partner.StatusCode statusCode) {
@@ -95,6 +95,7 @@ public class Error  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Error)) return false;
         Error other = (Error) obj;
@@ -105,21 +106,22 @@ public class Error  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.fields==null && other.getFields()==null) || 
-             (this.fields!=null &&
-              java.util.Arrays.equals(this.fields, other.getFields()))) &&
-            ((this.message==null && other.getMessage()==null) || 
-             (this.message!=null &&
-              this.message.equals(other.getMessage()))) &&
-            ((this.statusCode==null && other.getStatusCode()==null) || 
-             (this.statusCode!=null &&
-              this.statusCode.equals(other.getStatusCode())));
+        _equals = true &&
+                ((this.fields == null && other.getFields() == null) ||
+                        (this.fields != null &&
+                                java.util.Arrays.equals(this.fields, other.getFields()))) &&
+                ((this.message == null && other.getMessage() == null) ||
+                        (this.message != null &&
+                                this.message.equals(other.getMessage()))) &&
+                ((this.statusCode == null && other.getStatusCode() == null) ||
+                        (this.statusCode != null &&
+                                this.statusCode.equals(other.getStatusCode())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -127,12 +129,12 @@ public class Error  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getFields() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getFields());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getFields());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getFields(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -149,7 +151,7 @@ public class Error  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(Error.class, true);
+            new org.apache.axis.description.TypeDesc(Error.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "Error"));
@@ -186,24 +188,24 @@ public class Error  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

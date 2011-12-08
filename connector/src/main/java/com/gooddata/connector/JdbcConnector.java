@@ -23,38 +23,31 @@
 
 package com.gooddata.connector;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.*;
-
 import com.gooddata.Constants;
-import com.gooddata.exception.InvalidParameterException;
-import com.gooddata.transform.Transformer;
-import org.apache.log4j.Logger;
-
-import com.gooddata.util.CSVWriter;
-
 import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.transform.Transformer;
+import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.JdbcUtil;
-import com.gooddata.util.StringUtil;
 import com.gooddata.util.JdbcUtil.ResultSetHandler;
+import com.gooddata.util.StringUtil;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * GoodData JDBC Connector
@@ -76,6 +69,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * Creates a new JDBC connector
+     *
      * @return a new instance of the JdbcConnector
      */
     public static JdbcConnector createConnector() {
@@ -84,21 +78,22 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * Saves a template of the config file
-     * @param name new schema name
+     *
+     * @param name           new schema name
      * @param configFileName config file name
-     * @param jdbcUsr JDBC username
-     * @param jdbcPsw JDBC password
-     * @param jdbcDriver JDBC driver class name
-     * @param jdbcUrl JDBC url
-     * @param query JDBC query
-     * @throws IOException if there is a problem with writing the config file
+     * @param jdbcUsr        JDBC username
+     * @param jdbcPsw        JDBC password
+     * @param jdbcDriver     JDBC driver class name
+     * @param jdbcUrl        JDBC url
+     * @param query          JDBC query
+     * @throws IOException  if there is a problem with writing the config file
      * @throws SQLException if there is a problem with the db
      */
     public static void saveConfigTemplate(String name, String configFileName, String jdbcUsr, String jdbcPsw,
-                                  String jdbcDriver, String jdbcUrl,String query)
+                                          String jdbcDriver, String jdbcUrl, String query)
             throws IOException, SQLException {
         l.debug("Saving JDBC config template.");
-        l.debug("Loading JDBC driver "+jdbcDriver);
+        l.debug("Loading JDBC driver " + jdbcDriver);
         try {
             Class.forName(jdbcDriver).newInstance();
         } catch (InstantiationException e) {
@@ -108,7 +103,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         } catch (ClassNotFoundException e) {
             l.error("Can't load JDBC driver.", e);
         }
-        l.debug("JDBC driver "+jdbcDriver+" loaded.");
+        l.debug("JDBC driver " + jdbcDriver + " loaded.");
         final SourceSchema s = SourceSchema.createSchema(name);
         Connection con = null;
         try {
@@ -117,18 +112,18 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 public void handle(ResultSet rs) throws SQLException {
                     ResultSetMetaData rsm = rs.getMetaData();
                     int cnt = rsm.getColumnCount();
-                    l.debug("GenerateJdbcConfig: The dataset column count="+cnt);
-                    for(int i=1; i <= cnt; i++) {
+                    l.debug("GenerateJdbcConfig: The dataset column count=" + cnt);
+                    for (int i = 1; i <= cnt; i++) {
                         String cnm = rsm.getColumnLabel(i);
-                        if(cnm == null || cnm.length() <=0)
+                        if (cnm == null || cnm.length() <= 0)
                             cnm = rsm.getColumnName(i);
                         String cdsc = cnm;
                         cnm = StringUtil.toIdentifier(cnm);
                         String type = getColumnType(rsm.getColumnType(i));
-                        l.debug("GenerateJdbcConfig: Processing column '"+cnm+"' type '"+type+"'");                        
+                        l.debug("GenerateJdbcConfig: Processing column '" + cnm + "' type '" + type + "'");
                         SourceColumn column = new SourceColumn(cnm, type, cdsc);
                         if (SourceColumn.LDM_TYPE_DATE.equals(type)) {
-                	        column.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
+                            column.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
                         }
                         s.addColumn(column);
                     }
@@ -137,13 +132,12 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             //JdbcUtil.executeQuery(con, query, rh,1, FETCH_SIZE);
             Statement st = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
             l.debug("GenerateJdbcConfig: Executing SQL statement='" + st.toString() + "'");
-    		ResultSet rs = st.executeQuery(query);
+            ResultSet rs = st.executeQuery(query);
             l.debug("GenerateJdbcConfig: Executed SQL statement='" + st.toString() + "'");
-    	    rh.handle(rs);
+            rh.handle(rs);
             s.writeConfig(new File(configFileName));
-        }
-        finally {
-            if(con != null && !con.isClosed())
+        } finally {
+            if (con != null && !con.isClosed())
                 con.close();
         }
         l.debug("Saved JDBC config template.");
@@ -151,6 +145,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * Determines the LDM type from the JDBC data type
+     *
      * @param jct jdbc data type id java.sql.Types)
      * @return the ldm data type
      */
@@ -221,7 +216,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             File dataFile = new File(file);
             final DateTimeFormatter dtf = DateTimeFormat.forPattern(Constants.DEFAULT_DATETIME_FMT_STRING);
             final List<SourceColumn> columns = schema.getColumns();
-            l.debug("Extracting JDBC data to file="+dataFile.getAbsolutePath());
+            l.debug("Extracting JDBC data to file=" + dataFile.getAbsolutePath());
             final CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
             final Transformer t = Transformer.create(schema);
             String[] header = t.getHeader(true);
@@ -249,7 +244,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                             switch (sqlType) {
                                 case Types.DATE:
                                 case Types.TIMESTAMP:
-                                    row[i - 1] = new DateTime((Date)value);
+                                    row[i - 1] = new DateTime((Date) value);
                                     break;
                                 default:
                                     row[i - 1] = value.toString();
@@ -257,12 +252,11 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                         }
                     }
                     String[] nrow = null;
-                    if(transform) {
+                    if (transform) {
                         nrow = t.transformRow(row, DATE_LENGTH_UNRESTRICTED);
-                    }
-                    else {
+                    } else {
                         nrow = new String[row.length];
-                        for(int i = 0; i<row.length; i++) {
+                        for (int i = 0; i < row.length; i++) {
                             nrow[i] = row[i].toString();
                         }
                     }
@@ -275,14 +269,12 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             ResultSetCsvWriter rw = new ResultSetCsvWriter(cw);
 
             JdbcUtil.executeQuery(con, getSqlQuery(), rw, FETCH_SIZE);
-            l.debug("Finished retrieving JDBC data. Retrieved "+rw.rowCnt+" rows.");
+            l.debug("Finished retrieving JDBC data. Retrieved " + rw.rowCnt + " rows.");
             cw.close();
-            }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             l.debug("Error retrieving data from the JDBC source.", e);
             throw new InternalErrorException("Error retrieving data from the JDBC source.", e);
-        }
-        finally {
+        } finally {
             try {
                 if (rs != null)
                     rs.close();
@@ -290,18 +282,18 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                     s.close();
                 if (con != null && !con.isClosed())
                     con.close();
-            }
-            catch (SQLException e) {
-                l.error("Error closing JDBC connection.",e);
+            } catch (SQLException e) {
+                l.error("Error closing JDBC connection.", e);
             }
         }
     }
 
     /**
      * Connects the DB
+     *
      * @param jdbcUrl JDBC url
-     * @param usr JDBC username
-     * @param psw JDBC password
+     * @param usr     JDBC username
+     * @param psw     JDBC password
      * @return JDBC connection
      * @throws SQLException in case of DB issues
      */
@@ -318,6 +310,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * JDBC username getter
+     *
      * @return JDBC username
      */
     public String getJdbcUsername() {
@@ -326,6 +319,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * JDBC username setter
+     *
      * @param jdbcUsername JDBC username
      */
     public void setJdbcUsername(String jdbcUsername) {
@@ -334,6 +328,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * JDBC password getter
+     *
      * @return JDBC password
      */
     public String getJdbcPassword() {
@@ -342,6 +337,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * JDBC password setter
+     *
      * @param jdbcPassword JDBC password
      */
     public void setJdbcPassword(String jdbcPassword) {
@@ -350,6 +346,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * JDBC query getter
+     *
      * @return JDBC query
      */
     public String getSqlQuery() {
@@ -358,6 +355,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * JDBC query setter
+     *
      * @param sqlQuery JDBC query
      */
     public void setSqlQuery(String sqlQuery) {
@@ -366,6 +364,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * JDBC url getter
+     *
      * @return JDBC url
      */
     public String getJdbcUrl() {
@@ -374,6 +373,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * JDBC url setter
+     *
      * @param jdbcUrl JDBC url
      */
     public void setJdbcUrl(String jdbcUrl) {
@@ -384,31 +384,28 @@ public class JdbcConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
-        l.debug("Processing command "+c.getCommand());
+        l.debug("Processing command " + c.getCommand());
         try {
-            if(c.match("GenerateJdbcConfig")) {
+            if (c.match("GenerateJdbcConfig")) {
                 generateJdbcConfig(c, cli, ctx);
-            }
-            else if(c.match("LoadJdbc") || c.match("UseJdbc")) {
+            } else if (c.match("LoadJdbc") || c.match("UseJdbc")) {
                 loadJdbc(c, cli, ctx);
-            }
-            else {
-                l.debug("No match passing the command "+c.getCommand()+" further.");
+            } else {
+                l.debug("No match passing the command " + c.getCommand() + " further.");
                 return super.processCommand(c, cli, ctx);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
+            throw new ProcessingException(e);
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
-        catch (IOException e) {
-            throw new ProcessingException(e);
-        }
-        l.debug("Processed command "+c.getCommand());
+        l.debug("Processed command " + c.getCommand());
         return true;
     }
 
     /**
      * Loads the JDBC driver
+     *
      * @param drv JDBC driver class
      */
     private void loadDriver(String drv) {
@@ -425,19 +422,20 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
     /**
      * Loads new JDBC data command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
-     * @throws IOException in case of IO issues
+     * @throws IOException  in case of IO issues
      * @throws SQLException in case of a DB issue
      */
     private void loadJdbc(Command c, CliParams p, ProcessingContext ctx) throws IOException, SQLException {
         String configFile = c.getParamMandatory("configFile");
         String usr = null;
-        if(c.checkParam("username"))
+        if (c.checkParam("username"))
             usr = c.getParam("username");
         String psw = null;
-        if(c.checkParam("password"))
+        if (c.checkParam("password"))
             psw = c.getParam("password");
         String drv = c.getParamMandatory("driver");
         String url = c.getParamMandatory("url");
@@ -445,22 +443,22 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         String qf = c.getParam("queryFile");
         c.paramsProcessed();
 
-        if(q != null && qf != null) {
+        if (q != null && qf != null) {
             l.error("Only one of the query and queryFile parameters can be specified with the UseJdbc command.");
             throw new InvalidParameterException("Only one of the query and queryFile parameters can be specified with the UseJdbc command.");
         }
-        if(qf != null && qf.length() >0) {
+        if (qf != null && qf.length() > 0) {
             q = FileUtil.readStringFromFile(qf);
         }
-        if(q == null || q.length() < 0) {
+        if (q == null || q.length() < 0) {
             l.error("The UseJdbc command requires either query or queryFIle parameter.");
             throw new InvalidParameterException("The UseJdbc command requires either query or queryFIle parameter.");
         }
         loadDriver(drv);
         // Fix for the MySQL driver OutOfMemory error
-        if(drv.equals("com.mysql.jdbc.Driver"))
+        if (drv.equals("com.mysql.jdbc.Driver"))
             FETCH_SIZE = Integer.MIN_VALUE;
-        
+
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         setJdbcUsername(usr);
@@ -469,26 +467,27 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         setSqlQuery(q);
         // sets the current connector
         ctx.setConnector(this);
-        setProjectId(ctx);       
+        setProjectId(ctx);
         l.info("JDBC Connector successfully loaded (query: " + StringUtil.previewString(q, 256) + ").");
     }
 
     /**
      * Generates the JDBC config command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
-     * @throws IOException in case of IO issues
-     * @throws SQLException in case of a DB issue 
+     * @throws IOException  in case of IO issues
+     * @throws SQLException in case of a DB issue
      */
     private void generateJdbcConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException, SQLException {
         String configFile = c.getParamMandatory("configFile");
         String name = c.getParamMandatory("name");
         String usr = null;
-        if(c.checkParam("username"))
+        if (c.checkParam("username"))
             usr = c.getParam("username");
         String psw = null;
-        if(c.checkParam("password"))
+        if (c.checkParam("password"))
             psw = c.getParam("password");
         String drv = c.getParamMandatory("driver");
         String url = c.getParamMandatory("url");
@@ -498,7 +497,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         loadDriver(drv);
         File cf = new File(configFile);
         JdbcConnector.saveConfigTemplate(name, cf.getAbsolutePath(), usr, psw, drv, url, query);
-        l.info("JDBC Connector configuration successfully generated. See config file: "+configFile);
+        l.info("JDBC Connector configuration successfully generated. See config file: " + configFile);
     }
 
 

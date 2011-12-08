@@ -28,33 +28,33 @@ import com.restfb.Facebook;
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/application"
  * >Application Graph API type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.6
  */
 public class Application extends CategorizedFacebookType {
-  @Facebook
-  private String description;
+    @Facebook
+    private String description;
 
-  @Facebook
-  private String link;
+    @Facebook
+    private String link;
 
-  /**
-   * The description of the application written by the 3rd party developers.
-   * 
-   * @return The description of the application written by the 3rd party
-   *         developers.
-   */
-  public String getDescription() {
-    return description;
-  }
+    /**
+     * The description of the application written by the 3rd party developers.
+     *
+     * @return The description of the application written by the 3rd party
+     *         developers.
+     */
+    public String getDescription() {
+        return description;
+    }
 
-  /**
-   * A link to application dashboard on Facebook Connections feed
-   * 
-   * @return A link to application dashboard on Facebook Connections feed.
-   */
-  public String getLink() {
-    return link;
-  }
+    /**
+     * A link to application dashboard on Facebook Connections feed
+     *
+     * @return A link to application dashboard on Facebook Connections feed.
+     */
+    public String getLink() {
+        return link;
+    }
 }

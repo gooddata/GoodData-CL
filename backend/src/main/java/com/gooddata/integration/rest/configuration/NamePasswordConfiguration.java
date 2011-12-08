@@ -28,8 +28,9 @@ import com.gooddata.processor.Defaults;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/** Credentials configuration for the GoodData REST and FTP APIs
- * 
+/**
+ * Credentials configuration for the GoodData REST and FTP APIs
+ *
  * @author Jiri Zaloudek
  * @version 1.0
  */
@@ -51,8 +52,9 @@ public class NamePasswordConfiguration {
 
     /**
      * Constructor
+     *
      * @param protocol GoodData protocol (HTTP | FTP)
-     * @param gdcHost GoodData host (e.g. secure.gooddata.com)
+     * @param gdcHost  GoodData host (e.g. secure.gooddata.com)
      * @param username GoodData username
      * @param password GoodData password
      */
@@ -66,6 +68,7 @@ public class NamePasswordConfiguration {
 
     /**
      * Returns the GoodData server URL
+     *
      * @return GoodData server URL
      */
     public String getUrl() {
@@ -79,6 +82,7 @@ public class NamePasswordConfiguration {
 
     /**
      * GoodData protocol getter
+     *
      * @return GoodData protocol
      */
     public String getProtocol() {
@@ -87,6 +91,7 @@ public class NamePasswordConfiguration {
 
     /**
      * GoodData host getter
+     *
      * @return GoodData host
      */
     public String getGdcHost() {
@@ -95,6 +100,7 @@ public class NamePasswordConfiguration {
 
     /**
      * GoodData username getter
+     *
      * @return GoodData username
      */
     public String getUsername() {
@@ -103,6 +109,7 @@ public class NamePasswordConfiguration {
 
     /**
      * GoodData password getter
+     *
      * @return GoodData password
      */
     public String getPassword() {

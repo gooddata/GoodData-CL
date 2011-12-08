@@ -22,509 +22,509 @@
 
 package com.restfb.types;
 
-import static com.restfb.util.DateUtils.toDateFromLongFormat;
-import static java.util.Collections.unmodifiableList;
+import com.restfb.Facebook;
+import com.restfb.util.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.restfb.Facebook;
-import com.restfb.util.ReflectionUtils;
+import static com.restfb.util.DateUtils.toDateFromLongFormat;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/post">Post Graph API
  * type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.5
  */
 public class Post extends NamedFacebookType {
-  @Facebook
-  private CategorizedFacebookType from;
-
-  @Facebook
-  private String message;
-
-  @Facebook
-  private String picture;
-
-  @Facebook
-  private String link;
-
-  @Facebook
-  private String caption;
-
-  @Facebook
-  private String description;
-
-  @Facebook
-  private String source;
-
-  @Facebook
-  private String icon;
-
-  @Facebook
-  private String attribution;
-
-  @Facebook
-  private Privacy privacy;
-
-  /**
-   * Duplicate mapping for "likes" since FB can return it differently in
-   * different situations.
-   */
-  @Facebook("likes")
-  private Long likesCount;
-
-  /**
-   * Duplicate mapping for "likes" since FB can return it differently in
-   * different situations.
-   */
-  @Facebook
-  private Likes likes;
-
-  @Facebook("created_time")
-  private String createdTime;
-
-  @Facebook("updated_time")
-  private String updatedTime;
-
-  @Facebook
-  private Comments comments;
-
-  @Facebook
-  private List<NamedFacebookType> to = new ArrayList<NamedFacebookType>();
-
-  @Facebook
-  private List<Action> actions = new ArrayList<Action>();
-
-  /**
-   * Represents a collection of Likes.
-   * 
-   * @author <a href="http://restfb.com">Mark Allen</a>
-   * @since 1.6
-   */
-  public static class Likes {
     @Facebook
-    private Long count;
+    private CategorizedFacebookType from;
 
     @Facebook
-    private List<NamedFacebookType> data = new ArrayList<NamedFacebookType>();
-
-    /**
-     * @see Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-      return ReflectionUtils.hashCode(this);
-    }
-
-    /**
-     * @see Object#equals(Object)
-     */
-    @Override
-    public boolean equals(Object that) {
-      return ReflectionUtils.equals(this, that);
-    }
-
-    /**
-     * @see Object#toString()
-     */
-    @Override
-    public String toString() {
-      return ReflectionUtils.toString(this);
-    }
-
-    /**
-     * The number of likes.
-     * 
-     * @return The number of likes.
-     */
-    public Long getCount() {
-      return count;
-    }
-
-    /**
-     * The likes.
-     * 
-     * @return The likes.
-     */
-    public List<NamedFacebookType> getData() {
-      return unmodifiableList(data);
-    }
-  }
-
-  /**
-   * Represents a collection of {@link com.restfb.types.Comment}s.
-   * 
-   * @author <a href="http://restfb.com">Mark Allen</a>
-   * @since 1.5.3
-   */
-  public static class Comments {
-    @Facebook
-    private Long count;
+    private String message;
 
     @Facebook
-    private List<Comment> data = new ArrayList<Comment>();
+    private String picture;
 
-    /**
-     * @see Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-      return ReflectionUtils.hashCode(this);
-    }
-
-    /**
-     * @see Object#equals(Object)
-     */
-    @Override
-    public boolean equals(Object that) {
-      return ReflectionUtils.equals(this, that);
-    }
-
-    /**
-     * @see Object#toString()
-     */
-    @Override
-    public String toString() {
-      return ReflectionUtils.toString(this);
-    }
-
-    /**
-     * The number of comments.
-     * 
-     * @return The number of comments.
-     */
-    public Long getCount() {
-      return count;
-    }
-
-    /**
-     * The comments.
-     * 
-     * @return The comments.
-     */
-    public List<Comment> getData() {
-      return unmodifiableList(data);
-    }
-  }
-
-  /**
-   * Represents the <a
-   * href="http://developers.facebook.com/docs/reference/api/post">Privacy Graph
-   * API type</a>.
-   * 
-   * @author <a href="http://restfb.com">Mark Allen</a>
-   * @since 1.5
-   */
-  public static class Privacy {
     @Facebook
-    private String value;
+    private String link;
+
+    @Facebook
+    private String caption;
 
     @Facebook
     private String description;
 
     @Facebook
-    private String friends;
+    private String source;
 
     @Facebook
-    private String networks;
+    private String icon;
 
     @Facebook
-    private String deny;
-
-    /**
-     * @see Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-      return ReflectionUtils.hashCode(this);
-    }
-
-    /**
-     * @see Object#equals(Object)
-     */
-    @Override
-    public boolean equals(Object that) {
-      return ReflectionUtils.equals(this, that);
-    }
-
-    /**
-     * @see Object#toString()
-     */
-    @Override
-    public String toString() {
-      return ReflectionUtils.toString(this);
-    }
-
-    /**
-     * The description of the privacy value.
-     * 
-     * @return The description of the privacy value.
-     */
-    public String getValue() {
-      return value;
-    }
-
-    /**
-     * The privacy description.
-     * 
-     * @return The privacy description.
-     */
-    public String getDescription() {
-      return description;
-    }
-
-    /**
-     * The privacy friends restriction.
-     * 
-     * @return The privacy friends restriction.
-     */
-    public String getFriends() {
-      return friends;
-    }
-
-    /**
-     * The privacy networks restriction.
-     * 
-     * @return The privacy networks restriction.
-     */
-    public String getNetworks() {
-      return networks;
-    }
-
-    /**
-     * The privacy "deny" restriction.
-     * 
-     * @return The privacy "deny" restriction.
-     */
-    public String getDeny() {
-      return deny;
-    }
-  }
-
-  /**
-   * Represents the <a
-   * href="http://developers.facebook.com/docs/reference/api/post">Action Graph
-   * API type</a>.
-   * 
-   * @author <a href="http://restfb.com">Mark Allen</a>
-   * @since 1.5
-   */
-  public static class Action {
-    @Facebook
-    private String name;
+    private String attribution;
 
     @Facebook
-    private String link;
+    private Privacy privacy;
 
     /**
-     * @see Object#hashCode()
+     * Duplicate mapping for "likes" since FB can return it differently in
+     * different situations.
      */
-    @Override
-    public int hashCode() {
-      return ReflectionUtils.hashCode(this);
+    @Facebook("likes")
+    private Long likesCount;
+
+    /**
+     * Duplicate mapping for "likes" since FB can return it differently in
+     * different situations.
+     */
+    @Facebook
+    private Likes likes;
+
+    @Facebook("created_time")
+    private String createdTime;
+
+    @Facebook("updated_time")
+    private String updatedTime;
+
+    @Facebook
+    private Comments comments;
+
+    @Facebook
+    private List<NamedFacebookType> to = new ArrayList<NamedFacebookType>();
+
+    @Facebook
+    private List<Action> actions = new ArrayList<Action>();
+
+    /**
+     * Represents a collection of Likes.
+     *
+     * @author <a href="http://restfb.com">Mark Allen</a>
+     * @since 1.6
+     */
+    public static class Likes {
+        @Facebook
+        private Long count;
+
+        @Facebook
+        private List<NamedFacebookType> data = new ArrayList<NamedFacebookType>();
+
+        /**
+         * @see Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            return ReflectionUtils.hashCode(this);
+        }
+
+        /**
+         * @see Object#equals(Object)
+         */
+        @Override
+        public boolean equals(Object that) {
+            return ReflectionUtils.equals(this, that);
+        }
+
+        /**
+         * @see Object#toString()
+         */
+        @Override
+        public String toString() {
+            return ReflectionUtils.toString(this);
+        }
+
+        /**
+         * The number of likes.
+         *
+         * @return The number of likes.
+         */
+        public Long getCount() {
+            return count;
+        }
+
+        /**
+         * The likes.
+         *
+         * @return The likes.
+         */
+        public List<NamedFacebookType> getData() {
+            return unmodifiableList(data);
+        }
     }
 
     /**
-     * @see Object#equals(Object)
+     * Represents a collection of {@link com.restfb.types.Comment}s.
+     *
+     * @author <a href="http://restfb.com">Mark Allen</a>
+     * @since 1.5.3
      */
-    @Override
-    public boolean equals(Object that) {
-      return ReflectionUtils.equals(this, that);
+    public static class Comments {
+        @Facebook
+        private Long count;
+
+        @Facebook
+        private List<Comment> data = new ArrayList<Comment>();
+
+        /**
+         * @see Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            return ReflectionUtils.hashCode(this);
+        }
+
+        /**
+         * @see Object#equals(Object)
+         */
+        @Override
+        public boolean equals(Object that) {
+            return ReflectionUtils.equals(this, that);
+        }
+
+        /**
+         * @see Object#toString()
+         */
+        @Override
+        public String toString() {
+            return ReflectionUtils.toString(this);
+        }
+
+        /**
+         * The number of comments.
+         *
+         * @return The number of comments.
+         */
+        public Long getCount() {
+            return count;
+        }
+
+        /**
+         * The comments.
+         *
+         * @return The comments.
+         */
+        public List<Comment> getData() {
+            return unmodifiableList(data);
+        }
     }
 
     /**
-     * @see Object#toString()
+     * Represents the <a
+     * href="http://developers.facebook.com/docs/reference/api/post">Privacy Graph
+     * API type</a>.
+     *
+     * @author <a href="http://restfb.com">Mark Allen</a>
+     * @since 1.5
      */
-    @Override
-    public String toString() {
-      return ReflectionUtils.toString(this);
+    public static class Privacy {
+        @Facebook
+        private String value;
+
+        @Facebook
+        private String description;
+
+        @Facebook
+        private String friends;
+
+        @Facebook
+        private String networks;
+
+        @Facebook
+        private String deny;
+
+        /**
+         * @see Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            return ReflectionUtils.hashCode(this);
+        }
+
+        /**
+         * @see Object#equals(Object)
+         */
+        @Override
+        public boolean equals(Object that) {
+            return ReflectionUtils.equals(this, that);
+        }
+
+        /**
+         * @see Object#toString()
+         */
+        @Override
+        public String toString() {
+            return ReflectionUtils.toString(this);
+        }
+
+        /**
+         * The description of the privacy value.
+         *
+         * @return The description of the privacy value.
+         */
+        public String getValue() {
+            return value;
+        }
+
+        /**
+         * The privacy description.
+         *
+         * @return The privacy description.
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * The privacy friends restriction.
+         *
+         * @return The privacy friends restriction.
+         */
+        public String getFriends() {
+            return friends;
+        }
+
+        /**
+         * The privacy networks restriction.
+         *
+         * @return The privacy networks restriction.
+         */
+        public String getNetworks() {
+            return networks;
+        }
+
+        /**
+         * The privacy "deny" restriction.
+         *
+         * @return The privacy "deny" restriction.
+         */
+        public String getDeny() {
+            return deny;
+        }
     }
 
     /**
-     * Gets the name of the action.
-     * 
-     * @return Gets the name of the action.
+     * Represents the <a
+     * href="http://developers.facebook.com/docs/reference/api/post">Action Graph
+     * API type</a>.
+     *
+     * @author <a href="http://restfb.com">Mark Allen</a>
+     * @since 1.5
      */
-    public String getName() {
-      return name;
+    public static class Action {
+        @Facebook
+        private String name;
+
+        @Facebook
+        private String link;
+
+        /**
+         * @see Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            return ReflectionUtils.hashCode(this);
+        }
+
+        /**
+         * @see Object#equals(Object)
+         */
+        @Override
+        public boolean equals(Object that) {
+            return ReflectionUtils.equals(this, that);
+        }
+
+        /**
+         * @see Object#toString()
+         */
+        @Override
+        public String toString() {
+            return ReflectionUtils.toString(this);
+        }
+
+        /**
+         * Gets the name of the action.
+         *
+         * @return Gets the name of the action.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * The link for the action.
+         *
+         * @return The link for the action.
+         */
+        public String getLink() {
+            return link;
+        }
     }
 
     /**
-     * The link for the action.
-     * 
-     * @return The link for the action.
+     * An object containing the ID and name of the user who posted the message.
+     *
+     * @return An object containing the ID and name of the user who posted the
+     *         message.
+     */
+    public CategorizedFacebookType getFrom() {
+        return from;
+    }
+
+    /**
+     * The message.
+     *
+     * @return The message.
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * If available, a link to the picture included with this post.
+     *
+     * @return If available, a link to the picture included with this post.
+     */
+    public String getPicture() {
+        return picture;
+    }
+
+    /**
+     * The link attached to this post.
+     *
+     * @return The link attached to this post.
      */
     public String getLink() {
-      return link;
+        return link;
     }
-  }
 
-  /**
-   * An object containing the ID and name of the user who posted the message.
-   * 
-   * @return An object containing the ID and name of the user who posted the
-   *         message.
-   */
-  public CategorizedFacebookType getFrom() {
-    return from;
-  }
+    /**
+     * The caption of the link (appears beneath the link name).
+     *
+     * @return The caption of the link (appears beneath the link name).
+     */
+    public String getCaption() {
+        return caption;
+    }
 
-  /**
-   * The message.
-   * 
-   * @return The message.
-   */
-  public String getMessage() {
-    return message;
-  }
+    /**
+     * A description of the link (appears beneath the link caption).
+     *
+     * @return A description of the link (appears beneath the link caption).
+     */
+    public String getDescription() {
+        return description;
+    }
 
-  /**
-   * If available, a link to the picture included with this post.
-   * 
-   * @return If available, a link to the picture included with this post.
-   */
-  public String getPicture() {
-    return picture;
-  }
+    /**
+     * If available, the source link attached to this post (for example, a flash
+     * or video file).
+     *
+     * @return If available, the source link attached to this post (for example, a
+     *         flash or video file).
+     */
+    public String getSource() {
+        return source;
+    }
 
-  /**
-   * The link attached to this post.
-   * 
-   * @return The link attached to this post.
-   */
-  public String getLink() {
-    return link;
-  }
+    /**
+     * A link to an icon representing the type of this post.
+     *
+     * @return A link to an icon representing the type of this post.
+     */
+    public String getIcon() {
+        return icon;
+    }
 
-  /**
-   * The caption of the link (appears beneath the link name).
-   * 
-   * @return The caption of the link (appears beneath the link name).
-   */
-  public String getCaption() {
-    return caption;
-  }
+    /**
+     * A string indicating which application was used to create this post.
+     *
+     * @return A string indicating which application was used to create this post.
+     */
+    public String getAttribution() {
+        return attribution;
+    }
 
-  /**
-   * A description of the link (appears beneath the link caption).
-   * 
-   * @return A description of the link (appears beneath the link caption).
-   */
-  public String getDescription() {
-    return description;
-  }
+    /**
+     * The privacy settings for this post.
+     *
+     * @return The privacy settings for this post.
+     */
+    public Privacy getPrivacy() {
+        return privacy;
+    }
 
-  /**
-   * If available, the source link attached to this post (for example, a flash
-   * or video file).
-   * 
-   * @return If available, the source link attached to this post (for example, a
-   *         flash or video file).
-   */
-  public String getSource() {
-    return source;
-  }
+    /**
+     * The number of likes on this post.
+     *
+     * @return The number of likes on this post.
+     */
+    public Long getLikesCount() {
+        if (getLikes() != null)
+            return getLikes().getCount();
 
-  /**
-   * A link to an icon representing the type of this post.
-   * 
-   * @return A link to an icon representing the type of this post.
-   */
-  public String getIcon() {
-    return icon;
-  }
+        return likesCount;
+    }
 
-  /**
-   * A string indicating which application was used to create this post.
-   * 
-   * @return A string indicating which application was used to create this post.
-   */
-  public String getAttribution() {
-    return attribution;
-  }
+    /**
+     * The likes on this post.
+     * <p/>
+     * Sometimes this can be {@code null} - check {@link #getLikesCount()} instead
+     * in that case.
+     *
+     * @return The likes on this post.
+     */
+    public Likes getLikes() {
+        return likes;
+    }
 
-  /**
-   * The privacy settings for this post.
-   * 
-   * @return The privacy settings for this post.
-   */
-  public Privacy getPrivacy() {
-    return privacy;
-  }
+    /**
+     * The time the post was initially published.
+     *
+     * @return The time the post was initially published.
+     */
+    public Date getCreatedTime() {
+        return toDateFromLongFormat(createdTime);
+    }
 
-  /**
-   * The number of likes on this post.
-   * 
-   * @return The number of likes on this post.
-   */
-  public Long getLikesCount() {
-    if (getLikes() != null)
-      return getLikes().getCount();
+    /**
+     * The time of the last comment on this post.
+     *
+     * @return The time of the last comment on this post.
+     */
+    public Date getUpdatedTime() {
+        return toDateFromLongFormat(updatedTime);
+    }
 
-    return likesCount;
-  }
+    /**
+     * The comments for this post.
+     *
+     * @return The comments for this post.
+     */
+    public Comments getComments() {
+        return comments;
+    }
 
-  /**
-   * The likes on this post.
-   * <p>
-   * Sometimes this can be {@code null} - check {@link #getLikesCount()} instead
-   * in that case.
-   * 
-   * @return The likes on this post.
-   */
-  public Likes getLikes() {
-    return likes;
-  }
+    /**
+     * A list of the profiles mentioned or targeted in this post.
+     *
+     * @return A list of the profiles mentioned or targeted in this post.
+     */
+    public List<NamedFacebookType> getTo() {
+        return unmodifiableList(to);
+    }
 
-  /**
-   * The time the post was initially published.
-   * 
-   * @return The time the post was initially published.
-   */
-  public Date getCreatedTime() {
-    return toDateFromLongFormat(createdTime);
-  }
-
-  /**
-   * The time of the last comment on this post.
-   * 
-   * @return The time of the last comment on this post.
-   */
-  public Date getUpdatedTime() {
-    return toDateFromLongFormat(updatedTime);
-  }
-
-  /**
-   * The comments for this post.
-   * 
-   * @return The comments for this post.
-   */
-  public Comments getComments() {
-    return comments;
-  }
-
-  /**
-   * A list of the profiles mentioned or targeted in this post.
-   * 
-   * @return A list of the profiles mentioned or targeted in this post.
-   */
-  public List<NamedFacebookType> getTo() {
-    return unmodifiableList(to);
-  }
-
-  /**
-   * A list of available action names and links (including commenting, liking,
-   * and an optional app-specified action).
-   * 
-   * @return A list of available action names and links (including commenting,
-   *         liking, and an optional app-specified action).
-   */
-  public List<Action> getActions() {
-    return unmodifiableList(actions);
-  }
+    /**
+     * A list of available action names and links (including commenting, liking,
+     * and an optional app-specified action).
+     *
+     * @return A list of available action names and links (including commenting,
+     *         liking, and an optional app-specified action).
+     */
+    public List<Action> getActions() {
+        return unmodifiableList(actions);
+    }
 }

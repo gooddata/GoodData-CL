@@ -1,65 +1,66 @@
-<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html --><schema>
-  <name>Opportunity</name>
-  <columns>
-    <column>
-      <name>id</name>
-      <title>Opportunity Id</title>
-      <ldmType>CONNECTION_POINT</ldmType>
-      <folder>Opportunity</folder>
-    </column>
-    <column>
-      <name>name</name>
-      <title>Opportunity Name</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Opportunity</folder>
-    </column>
-    <column>
-      <name>accountid</name>
-      <title>Account Id</title>
-      <ldmType>REFERENCE</ldmType>
-      <folder>Opportunity</folder>
-      <reference>id</reference>
-      <schemaReference>Account</schemaReference>
-    </column>
-    <column>
-      <name>iswon</name>
-      <title>Is Won</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Opportunity</folder>
-    </column>
-    <column>
-      <name>isclosed</name>
-      <title>Is Closed</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Opportunity</folder>
-    </column>
-    <column>
-      <name>closedate</name>
-      <title>Close Date</title>
-      <ldmType>DATE</ldmType>
-      <folder>Opportunity</folder>
-      <format>yyyy-MM-dd</format>
-      <schemaReference>closed</schemaReference>
-    </column>
-    <column>
-      <name>stagename</name>
-      <title>Stage</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Opportunity</folder>
-    </column>
-    <column>
-      <name>createddate</name>
-      <title>Created Date</title>
-      <ldmType>DATE</ldmType>
-      <folder>Opportunity</folder>
-      <format>yyyy-MM-dd</format>
-      <schemaReference>created</schemaReference>
-    </column>
-    <column>
-      <name>amount</name>
-      <title>Amount</title>
-      <ldmType>FACT</ldmType>
-      <folder>Opportunity</folder>
-    </column>
-  </columns>
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+<schema>
+    <name>Opportunity</name>
+    <columns>
+        <column>
+            <name>id</name>
+            <title>Opportunity Id</title>
+            <ldmType>CONNECTION_POINT</ldmType>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>name</name>
+            <title>Opportunity Name</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>accountid</name>
+            <title>Account Id</title>
+            <ldmType>REFERENCE</ldmType>
+            <folder>Opportunity</folder>
+            <reference>id</reference>
+            <schemaReference>Account</schemaReference>
+        </column>
+        <column>
+            <name>iswon</name>
+            <title>Is Won</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>isclosed</name>
+            <title>Is Closed</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>closedate</name>
+            <title>Close Date</title>
+            <ldmType>DATE</ldmType>
+            <folder>Opportunity</folder>
+            <format>yyyy-MM-dd</format>
+            <schemaReference>closed</schemaReference>
+        </column>
+        <column>
+            <name>stagename</name>
+            <title>Stage</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Opportunity</folder>
+        </column>
+        <column>
+            <name>createddate</name>
+            <title>Created Date</title>
+            <ldmType>DATE</ldmType>
+            <folder>Opportunity</folder>
+            <format>yyyy-MM-dd</format>
+            <schemaReference>created</schemaReference>
+        </column>
+        <column>
+            <name>amount</name>
+            <title>Amount</title>
+            <ldmType>FACT</ldmType>
+            <folder>Opportunity</folder>
+        </column>
+    </columns>
 </schema>

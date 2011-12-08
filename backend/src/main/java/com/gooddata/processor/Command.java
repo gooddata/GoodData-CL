@@ -58,9 +58,9 @@ public class Command {
 
     /**
      * Constructor
-     * 
+     *
      * @param command command name
-     * @param params parameters
+     * @param params  parameters
      */
     public Command(String command, Properties params) {
         this(command);
@@ -71,22 +71,22 @@ public class Command {
      * Constructor
      *
      * @param command command name
-     * @param params parameters
+     * @param params  parameters
      */
     public Command(String command, String params) {
         this(command);
         this.parameters = new Properties();
         try {
-            this.parameters.load(new ByteArrayInputStream(params.replace(",","\n").getBytes()));
-        }
-        catch (IOException e) {
-            l.debug("Error extracting command parameters.",e);
-            throw new InvalidCommandException("Error extracting command parameters.",e);
+            this.parameters.load(new ByteArrayInputStream(params.replace(",", "\n").getBytes()));
+        } catch (IOException e) {
+            l.debug("Error extracting command parameters.", e);
+            throw new InvalidCommandException("Error extracting command parameters.", e);
         }
     }
 
     /**
      * Command getter
+     *
      * @return command
      */
     public String getCommand() {
@@ -95,6 +95,7 @@ public class Command {
 
     /**
      * Command setter
+     *
      * @param command command
      */
     public void setCommand(String command) {
@@ -103,6 +104,7 @@ public class Command {
 
     /**
      * Paremeters getter
+     *
      * @return parameters
      */
     public Properties getParameters() {
@@ -111,19 +113,21 @@ public class Command {
 
     /**
      * Parameters setter
+     *
      * @param parameters command parameters
      */
     public void setParameters(Properties parameters) {
         this.parameters = parameters;
     }
-    
+
     @Override
     public String toString() {
-    	return new StringBuffer(command).append("(").append(parameters).append(")").toString();
+        return new StringBuffer(command).append("(").append(parameters).append(")").toString();
     }
 
     /**
      * Returns true if the command matches the command name
+     *
      * @param cms command name
      * @return returns true if the command matches the command name, false otherwise
      */
@@ -133,46 +137,50 @@ public class Command {
 
     /**
      * Returns the command's mandatory parameter value
+     *
      * @param p parameter name
      * @return the parameter value
      * @throws InvalidParameterException if the parameter doesn't exist
      */
-    public String getParamMandatory( String p) throws InvalidParameterException {
-        String v = (String)this.getParameters().remove(p);
-        if(v == null || v.length() == 0) {
-            throw new InvalidParameterException(this.getCommand() + ": Command parameter '"+p+"' is required.");
+    public String getParamMandatory(String p) throws InvalidParameterException {
+        String v = (String) this.getParameters().remove(p);
+        if (v == null || v.length() == 0) {
+            throw new InvalidParameterException(this.getCommand() + ": Command parameter '" + p + "' is required.");
         }
         return v;
     }
 
     /**
      * Returns the parameter value
+     *
      * @param p parameter name
      * @return parameter value
      */
     public String getParam(String p) {
-        return (String)this.getParameters().remove(p);
+        return (String) this.getParameters().remove(p);
     }
 
     /**
      * Checks if the parameter exists
+     *
      * @param p parameter name
      * @return true if the parameter exists, false othewrwise
      */
     public boolean checkParam(String p) {
-        String v = (String)this.getParameters().get(p);
+        String v = (String) this.getParameters().get(p);
         return (v != null && v.length() > 0);
     }
 
     /**
      * Checks if there are no extra parameters present
      * Should be called once all valid parameters are processed
+     *
      * @throws InvalidParameterException if there are unprocessed parameters
      */
     public void paramsProcessed() {
         if (!this.getParameters().isEmpty()) {
             throw new InvalidParameterException(this.getCommand() + ": Extra parameters: "
-                + this.getParameters().toString());
+                    + this.getParameters().toString());
         }
     }
 

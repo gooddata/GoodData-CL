@@ -22,115 +22,112 @@
 
 package com.restfb;
 
-import static com.restfb.util.StringUtils.isBlank;
-import static java.util.Collections.unmodifiableList;
+import com.restfb.util.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.restfb.util.ReflectionUtils;
+import static com.restfb.util.StringUtils.isBlank;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Represents a <a href="http://developers.facebook.com/docs/api">Graph API
  * Connection type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  */
 public class Connection<T> {
-  private final List<T> data;
-  private final String previousPageUrl;
-  private final String nextPageUrl;
+    private final List<T> data;
+    private final String previousPageUrl;
+    private final String nextPageUrl;
 
-  /**
-   * Creates a connection with the given data and previous/next URLs.
-   * 
-   * @param data
-   *          The connection's data.
-   * @param previousPageUrl
-   *          The URL for the previous page of data, or {@code null} if there is
-   *          none.
-   * @param nextPageUrl
-   *          The URL for the next page of data, or {@code null} if there is
-   *          none.
-   */
-  Connection(List<T> data, String previousPageUrl, String nextPageUrl) {
-    this.data = unmodifiableList(data == null ? new ArrayList<T>() : data);
-    this.previousPageUrl = previousPageUrl;
-    this.nextPageUrl = nextPageUrl;
-  }
+    /**
+     * Creates a connection with the given data and previous/next URLs.
+     *
+     * @param data            The connection's data.
+     * @param previousPageUrl The URL for the previous page of data, or {@code null} if there is
+     *                        none.
+     * @param nextPageUrl     The URL for the next page of data, or {@code null} if there is
+     *                        none.
+     */
+    Connection(List<T> data, String previousPageUrl, String nextPageUrl) {
+        this.data = unmodifiableList(data == null ? new ArrayList<T>() : data);
+        this.previousPageUrl = previousPageUrl;
+        this.nextPageUrl = nextPageUrl;
+    }
 
-  /**
-   * @see Object#toString()
-   */
-  @Override
-  public String toString() {
-    return ReflectionUtils.toString(this);
-  }
+    /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        return ReflectionUtils.toString(this);
+    }
 
-  /**
-   * @see Object#equals(Object)
-   */
-  @Override
-  public boolean equals(Object object) {
-    return ReflectionUtils.equals(this, object);
-  }
+    /**
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(Object object) {
+        return ReflectionUtils.equals(this, object);
+    }
 
-  /**
-   * @see Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    return ReflectionUtils.hashCode(this);
-  }
+    /**
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return ReflectionUtils.hashCode(this);
+    }
 
-  /**
-   * Data for this connection.
-   * 
-   * @return Data for this connection.
-   */
-  public List<T> getData() {
-    return data;
-  }
+    /**
+     * Data for this connection.
+     *
+     * @return Data for this connection.
+     */
+    public List<T> getData() {
+        return data;
+    }
 
-  /**
-   * This connection's "previous page of data" URL.
-   * 
-   * @return This connection's "previous page of data" URL, or {@code null} if
-   *         there is no previous page.
-   * @since 1.5.3
-   */
-  public String getPreviousPageUrl() {
-    return previousPageUrl;
-  }
+    /**
+     * This connection's "previous page of data" URL.
+     *
+     * @return This connection's "previous page of data" URL, or {@code null} if
+     *         there is no previous page.
+     * @since 1.5.3
+     */
+    public String getPreviousPageUrl() {
+        return previousPageUrl;
+    }
 
-  /**
-   * This connection's "next page of data" URL.
-   * 
-   * @return This connection's "next page of data" URL, or {@code null} if there
-   *         is no next page.
-   * @since 1.5.3
-   */
-  public String getNextPageUrl() {
-    return nextPageUrl;
-  }
+    /**
+     * This connection's "next page of data" URL.
+     *
+     * @return This connection's "next page of data" URL, or {@code null} if there
+     *         is no next page.
+     * @since 1.5.3
+     */
+    public String getNextPageUrl() {
+        return nextPageUrl;
+    }
 
-  /**
-   * Does this connection have a previous page of data?
-   * 
-   * @return {@code true} if there is a previous page of data for this
-   *         connection, {@code false} otherwise.
-   */
-  public boolean hasPrevious() {
-    return !isBlank(getPreviousPageUrl());
-  }
+    /**
+     * Does this connection have a previous page of data?
+     *
+     * @return {@code true} if there is a previous page of data for this
+     *         connection, {@code false} otherwise.
+     */
+    public boolean hasPrevious() {
+        return !isBlank(getPreviousPageUrl());
+    }
 
-  /**
-   * Does this connection have a next page of data?
-   * 
-   * @return {@code true} if there is a next page of data for this connection,
-   *         {@code false} otherwise.
-   */
-  public boolean hasNext() {
-    return !isBlank(getNextPageUrl());
-  }
+    /**
+     * Does this connection have a next page of data?
+     *
+     * @return {@code true} if there is a next page of data for this connection,
+     *         {@code false} otherwise.
+     */
+    public boolean hasNext() {
+        return !isBlank(getNextPageUrl());
+    }
 }

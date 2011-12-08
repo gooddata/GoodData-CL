@@ -28,19 +28,19 @@ import com.restfb.Facebook;
  * Represents the <a
  * href="http://developers.facebook.com/docs/api#impersonation">Account Graph
  * API type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  */
 public class Account extends CategorizedFacebookType {
-  @Facebook
-  private String accessToken;
+    @Facebook
+    private String accessToken;
 
-  /**
-   * An OAuth access token for this account.
-   * 
-   * @return An OAuth access token for this account.
-   */
-  public String getAccessToken() {
-    return accessToken;
-  }
+    /**
+     * An OAuth access token for this account.
+     *
+     * @return An OAuth access token for this account.
+     */
+    public String getAccessToken() {
+        return accessToken;
+    }
 }

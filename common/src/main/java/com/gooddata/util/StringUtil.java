@@ -23,16 +23,13 @@
 
 package com.gooddata.util;
 
+import com.ibm.icu.text.Transliterator;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import com.gooddata.util.CSVReader;
-
-import com.gooddata.naming.N;
-import com.ibm.icu.text.Transliterator;
 
 /**
  * GoodData String utilities
@@ -41,10 +38,11 @@ import com.ibm.icu.text.Transliterator;
  * @version 1.0
  */
 public class StringUtil {
-    
+
     /**
      * Formats a string as identifier
      * Currently only converts to the lowercase and replace spaces
+     *
      * @param s the string to convert to identifier
      * @return converted string
      */
@@ -55,21 +53,22 @@ public class StringUtil {
     /**
      * Formats a string as title
      * Currently does nothing TBD
+     *
      * @param s the string to convert to a title
      * @return converted string
      */
     public static String toTitle(String s) {
-        if(s == null)
+        if (s == null)
             return s;
         //Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
         //s = t.transliterate(s);
-        s = s.replaceAll("\"","");
+        s = s.replaceAll("\"", "");
         return s.trim();
     }
 
     private static String convertToIdentifier(String s) {
-    	if (s == null)
-    		return s;
+        if (s == null)
+            return s;
         Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
         s = t.transliterate(s);
         s = s.replaceAll("[^a-zA-Z0-9_]", "");
@@ -78,43 +77,44 @@ public class StringUtil {
         //s = s.replaceAll("[_]+", "_");
         return s.toLowerCase().trim();
     }
-    
+
     /**
      * Converts a {@link Collection} to a <tt>separator<tt> separated string
-     * 
+     *
      * @param separator
      * @param list
      * @return <tt>separator<tt> separated string version of the given list
      */
     public static String join(String separator, Collection<String> list) {
-    	return join(separator, list, null);
+        return join(separator, list, null);
     }
 
     /**
      * Converts a {@link Collection} to a <tt>separator<tt> separated string.
      * If the <tt>replacement</tt> parameter is not null, it is used to populate
      * the result string instead of list elements.
-     * 
+     *
      * @param separator
      * @param list
      * @param replacement
      * @return <tt>separator<tt> separated string version of the given list
      */
     public static String join(String separator, Collection<String> list, String replacement) {
-    	StringBuffer sb = new StringBuffer();
-    	boolean first = true;
-    	for (final String s : list) {
-    		if (first)
-    			first = false;
-    		else
-    			sb.append(separator);
-			sb.append(replacement == null ? s : replacement);
-		}
-    	return sb.toString();
+        StringBuffer sb = new StringBuffer();
+        boolean first = true;
+        for (final String s : list) {
+            if (first)
+                first = false;
+            else
+                sb.append(separator);
+            sb.append(replacement == null ? s : replacement);
+        }
+        return sb.toString();
     }
 
     /**
      * Parse CSV line
+     *
      * @param elements CSV line
      * @return alements as String[]
      */
@@ -125,19 +125,20 @@ public class StringUtil {
         CSVReader cr = new CSVReader(new StringReader(elements));
         return Arrays.asList(cr.readNext());
     }
-    
+
     /**
      * Returns first <tt>limit</tt> characters of the string with last 3 letters replaced with ellipsis
-     * <p>
-     * Example: <tt>previewString("potatoe", 6)</tt> returns "pot..." 
+     * <p/>
+     * Example: <tt>previewString("potatoe", 6)</tt> returns "pot..."
+     *
      * @param string
      * @param limit
      * @return
      */
     public static String previewString(String string, int limit) {
-    	return (string.length() > limit)
-	    	? string.substring(0, limit - 4) + "..."
-	    	: string;
+        return (string.length() > limit)
+                ? string.substring(0, limit - 4) + "..."
+                : string;
     }
 
 }

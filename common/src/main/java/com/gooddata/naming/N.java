@@ -37,15 +37,15 @@ public class N {
     public final static String NM_PFX = "nm_";
     public final static String FCT_PFX = "f_";
     public final static String DT = "dt";
-    public final static String DT_PFX = DT+"_";
+    public final static String DT_PFX = DT + "_";
     public final static String TM = "tm";
-    public final static String TM_PFX = TM+"_";
+    public final static String TM_PFX = TM + "_";
     public final static String ID = "id";
     public final static String DT_ATTR_NAME = "date";
     public final static String TM_ATTR_NAME = "attr.time.second.of.day.";
 
-    public final static String DT_SLI_SFX = "_"+DT;
-    public final static String TM_SLI_SFX = "_"+TM;
+    public final static String DT_SLI_SFX = "_" + DT;
+    public final static String TM_SLI_SFX = "_" + TM;
 
     public static final String FACTS_OF = "factsof";
 

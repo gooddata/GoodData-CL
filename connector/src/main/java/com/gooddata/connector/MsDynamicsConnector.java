@@ -25,16 +25,12 @@ package com.gooddata.connector;
 
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
-import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.msdynamics.MsDynamicsWrapper;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
-import com.gooddata.util.CSVReader;
-import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.jaxen.JaxenException;
 
@@ -42,7 +38,6 @@ import javax.xml.soap.SOAPException;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.*;
 
 /**
  * GoodData MsDynamics Connector
@@ -75,8 +70,9 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
         super();
     }
 
-   /**
+    /**
      * Creates a new MsDynamics connector
+     *
      * @return a new instance of the MsDynamics connector
      */
     public static MsDynamicsConnector createConnector() {
@@ -108,33 +104,30 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
         try {
             MsDynamicsWrapper m = new MsDynamicsWrapper(getHostname(), getOrganization(), getUsername(), getPassword());
             m.connect();
-            l.debug("Executing MS CRM query entity: "+getEntity()+" fields: "+getFields());
-            if(fields != null && fields.length() > 0) {
+            l.debug("Executing MS CRM query entity: " + getEntity() + " fields: " + getFields());
+            if (fields != null && fields.length() > 0) {
                 String[] fs = fields.split(",");
-                for(int i=0; i<fs.length; i++)
+                for (int i = 0; i < fs.length; i++)
                     fs[i] = fs[i].trim();
                 File dt = FileUtil.getTempFile();
                 m.retrieveMultiple(getEntity(), fs, dt.getAbsolutePath());
                 int rowCnt = copyAndTransform(FileUtil.createUtf8CsvReader(dt), FileUtil.createUtf8CsvWriter(new File(file)), transform, 10);
-                l.info("Finished MS CRM query execution. Retrieved "+rowCnt+" rows of data.");
-            }
-            else {
+                l.info("Finished MS CRM query execution. Retrieved " + rowCnt + " rows of data.");
+            } else {
                 throw new InvalidParameterException("The MS CRM fields parameter must contain the comma separated list " +
                         "of the entity fields.");
             }
-        }
-        catch (SOAPException e) {
+        } catch (SOAPException e) {
             throw new IOException(e);
-        }
-        catch (JaxenException e) {
+        } catch (JaxenException e) {
             throw new IOException(e);
         }
     }
 
 
-
-   /**
+    /**
      * MsDynamics username getter
+     *
      * @return MsDynamics username
      */
     public String getUsername() {
@@ -143,6 +136,7 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
 
     /**
      * MsDynamics username setter
+     *
      * @param username MsDynamics username
      */
     public void setUsername(String username) {
@@ -151,6 +145,7 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
 
     /**
      * MsDynamics password getter
+     *
      * @return MsDynamics password
      */
     public String getPassword() {
@@ -159,6 +154,7 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
 
     /**
      * MsDynamics password setter
+     *
      * @param password MsDynamics password
      */
     public void setPassword(String password) {
@@ -184,34 +180,33 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
-        l.debug("Processing command "+c.getCommand());
+        l.debug("Processing command " + c.getCommand());
         try {
-            if(c.match("LoadMsCrm") || c.match("UseMsCrm")) {
+            if (c.match("LoadMsCrm") || c.match("UseMsCrm")) {
                 loadMsDynamics(c, cli, ctx);
-            }
-            else {
-                l.debug("No match passing the command "+c.getCommand()+" further.");
+            } else {
+                l.debug("No match passing the command " + c.getCommand() + " further.");
                 return super.processCommand(c, cli, ctx);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
-        l.debug("Processed command "+c.getCommand());
+        l.debug("Processed command " + c.getCommand());
         return true;
     }
 
     /**
      * Loads MS CRM data command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws java.io.IOException in case of IO issues
      */
     private void loadMsDynamics(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
-        String usr = c.getParamMandatory( "username");
-        String psw = c.getParamMandatory( "password");
+        String usr = c.getParamMandatory("username");
+        String psw = c.getParamMandatory("password");
         String e = c.getParamMandatory("entity");
         String f = c.getParamMandatory("fields");
         String host = c.getParamMandatory("host");
@@ -228,7 +223,7 @@ public class MsDynamicsConnector extends AbstractConnector implements Connector 
         setHostname(host);
         ctx.setConnector(this);
         setProjectId(ctx);
-        l.info("MS CRM Connector successfully loaded (entity: " + e + "fields: "+StringUtil.previewString(f, 256)+").");
+        l.info("MS CRM Connector successfully loaded (entity: " + e + "fields: " + StringUtil.previewString(f, 256) + ").");
     }
 
     public String getFields() {

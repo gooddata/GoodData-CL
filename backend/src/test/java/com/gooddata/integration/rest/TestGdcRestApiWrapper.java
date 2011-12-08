@@ -75,23 +75,22 @@ public class TestGdcRestApiWrapper extends TestCase {
 
     public void testComputeMetric() throws Exception {
         try {
-            if(config != null) {
+            if (config != null) {
                 GdcRESTApiWrapper rest = new GdcRESTApiWrapper(config);
                 rest.login();
-                for(String url : checkUrls) {
-                    List<JSONObject> deps =  rest.usedBy(url);
-                    for(JSONObject d : deps) {
-                        if("report".equalsIgnoreCase(d.getString("category"))) {
-                            System.out.println(d.getString("link") + " : "+d.getString("title"));
+                for (String url : checkUrls) {
+                    List<JSONObject> deps = rest.usedBy(url);
+                    for (JSONObject d : deps) {
+                        if ("report".equalsIgnoreCase(d.getString("category"))) {
+                            System.out.println(d.getString("link") + " : " + d.getString("title"));
                         }
                     }
 
                 }
                 rest.logout();
             }
-        }
-        catch(Exception e) {
-           e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

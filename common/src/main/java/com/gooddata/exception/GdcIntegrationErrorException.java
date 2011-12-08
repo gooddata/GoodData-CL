@@ -48,6 +48,6 @@ public class GdcIntegrationErrorException extends GdcRestApiException {
     }
 
     public GdcIntegrationErrorException(String msg, Throwable cause) {
-    	super(msg, cause);
+        super(msg, cause);
     }
 }

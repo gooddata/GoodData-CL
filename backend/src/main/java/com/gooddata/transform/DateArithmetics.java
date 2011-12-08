@@ -32,9 +32,6 @@ import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 /**
  * GoodData DATE transformations
  *
@@ -52,15 +49,14 @@ public class DateArithmetics {
 
     public String computeDateFact(String dateValue, String format) {
         String ret = "";
-        if(dateValue != null && dateValue.trim().length()>0) {
+        if (dateValue != null && dateValue.trim().length() > 0) {
             try {
                 DateTimeFormatter formatter = DateUtil.getDateFormatter(format, false);
                 DateTime dt = formatter.parseDateTime(dateValue);
                 Days ds = Days.daysBetween(base, dt);
                 ret = Integer.toString(ds.getDays() + 1);
-            }
-            catch (IllegalArgumentException e) {
-                l.info("Can't parse date "+dateValue);
+            } catch (IllegalArgumentException e) {
+                l.info("Can't parse date " + dateValue);
 
             }
         }
@@ -73,15 +69,14 @@ public class DateArithmetics {
 
     public String computeTimeFact(String dateValue, String format) {
         String ret = "";
-        if(dateValue != null && dateValue.trim().length()>0) {
+        if (dateValue != null && dateValue.trim().length() > 0) {
             try {
                 DateTimeFormatter formatter = DateUtil.getDateFormatter(format, true);
                 DateTime dt = formatter.parseDateTime(dateValue);
-                int  ts = dt.getSecondOfDay();
+                int ts = dt.getSecondOfDay();
                 ret = Integer.toString(ts);
-            }
-            catch (IllegalArgumentException e) {
-                l.debug("Can't parse date "+dateValue);
+            } catch (IllegalArgumentException e) {
+                l.debug("Can't parse date " + dateValue);
             }
         }
         return ret;
@@ -89,16 +84,15 @@ public class DateArithmetics {
 
     public String computeTimeAttribute(String dateValue, String format) {
         String ret = "00";
-        if(dateValue != null && dateValue.trim().length()>0) {
+        if (dateValue != null && dateValue.trim().length() > 0) {
             try {
                 DateTimeFormatter formatter = DateUtil.getDateFormatter(format, true);
                 DateTime dt = formatter.parseDateTime(dateValue);
-                int  ts = dt.getSecondOfDay();
+                int ts = dt.getSecondOfDay();
                 String scs = Integer.toString(ts);
-                ret = (scs.length()>1)?(scs):("0"+scs);
-            }
-            catch (IllegalArgumentException e) {
-                l.debug("Can't parse date "+dateValue);
+                ret = (scs.length() > 1) ? (scs) : ("0" + scs);
+            } catch (IllegalArgumentException e) {
+                l.debug("Can't parse date " + dateValue);
             }
         }
         return ret;

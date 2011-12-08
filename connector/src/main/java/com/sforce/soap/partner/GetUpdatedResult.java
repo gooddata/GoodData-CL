@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class GetUpdatedResult  implements java.io.Serializable {
+public class GetUpdatedResult implements java.io.Serializable {
     private java.lang.String[] ids;
 
     private java.util.Calendar latestDateCovered;
@@ -18,18 +18,18 @@ public class GetUpdatedResult  implements java.io.Serializable {
     }
 
     public GetUpdatedResult(
-           java.lang.String[] ids,
-           java.util.Calendar latestDateCovered,
-           java.lang.String sforceReserved) {
-           this.ids = ids;
-           this.latestDateCovered = latestDateCovered;
-           this.sforceReserved = sforceReserved;
+            java.lang.String[] ids,
+            java.util.Calendar latestDateCovered,
+            java.lang.String sforceReserved) {
+        this.ids = ids;
+        this.latestDateCovered = latestDateCovered;
+        this.sforceReserved = sforceReserved;
     }
 
 
     /**
      * Gets the ids value for this GetUpdatedResult.
-     * 
+     *
      * @return ids
      */
     public java.lang.String[] getIds() {
@@ -39,7 +39,7 @@ public class GetUpdatedResult  implements java.io.Serializable {
 
     /**
      * Sets the ids value for this GetUpdatedResult.
-     * 
+     *
      * @param ids
      */
     public void setIds(java.lang.String[] ids) {
@@ -57,7 +57,7 @@ public class GetUpdatedResult  implements java.io.Serializable {
 
     /**
      * Gets the latestDateCovered value for this GetUpdatedResult.
-     * 
+     *
      * @return latestDateCovered
      */
     public java.util.Calendar getLatestDateCovered() {
@@ -67,7 +67,7 @@ public class GetUpdatedResult  implements java.io.Serializable {
 
     /**
      * Sets the latestDateCovered value for this GetUpdatedResult.
-     * 
+     *
      * @param latestDateCovered
      */
     public void setLatestDateCovered(java.util.Calendar latestDateCovered) {
@@ -77,7 +77,7 @@ public class GetUpdatedResult  implements java.io.Serializable {
 
     /**
      * Gets the sforceReserved value for this GetUpdatedResult.
-     * 
+     *
      * @return sforceReserved
      */
     public java.lang.String getSforceReserved() {
@@ -87,7 +87,7 @@ public class GetUpdatedResult  implements java.io.Serializable {
 
     /**
      * Sets the sforceReserved value for this GetUpdatedResult.
-     * 
+     *
      * @param sforceReserved
      */
     public void setSforceReserved(java.lang.String sforceReserved) {
@@ -95,6 +95,7 @@ public class GetUpdatedResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GetUpdatedResult)) return false;
         GetUpdatedResult other = (GetUpdatedResult) obj;
@@ -105,21 +106,22 @@ public class GetUpdatedResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.ids==null && other.getIds()==null) || 
-             (this.ids!=null &&
-              java.util.Arrays.equals(this.ids, other.getIds()))) &&
-            ((this.latestDateCovered==null && other.getLatestDateCovered()==null) || 
-             (this.latestDateCovered!=null &&
-              this.latestDateCovered.equals(other.getLatestDateCovered()))) &&
-            ((this.sforceReserved==null && other.getSforceReserved()==null) || 
-             (this.sforceReserved!=null &&
-              this.sforceReserved.equals(other.getSforceReserved())));
+        _equals = true &&
+                ((this.ids == null && other.getIds() == null) ||
+                        (this.ids != null &&
+                                java.util.Arrays.equals(this.ids, other.getIds()))) &&
+                ((this.latestDateCovered == null && other.getLatestDateCovered() == null) ||
+                        (this.latestDateCovered != null &&
+                                this.latestDateCovered.equals(other.getLatestDateCovered()))) &&
+                ((this.sforceReserved == null && other.getSforceReserved() == null) ||
+                        (this.sforceReserved != null &&
+                                this.sforceReserved.equals(other.getSforceReserved())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -127,12 +129,12 @@ public class GetUpdatedResult  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getIds() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getIds());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getIds());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getIds(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -149,7 +151,7 @@ public class GetUpdatedResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(GetUpdatedResult.class, true);
+            new org.apache.axis.description.TypeDesc(GetUpdatedResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "GetUpdatedResult"));
@@ -187,24 +189,24 @@ public class GetUpdatedResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

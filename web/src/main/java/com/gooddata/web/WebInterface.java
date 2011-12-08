@@ -25,18 +25,22 @@ package com.gooddata.web;
 
 import com.gooddata.Constants;
 import com.gooddata.util.FileUtil;
+import com.google.gdata.util.common.util.Base64;
 import com.google.gdata.util.common.util.Base64DecoderException;
 import net.sf.json.JSONObject;
-import com.google.gdata.util.common.util.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
-import javax.servlet.http.*;
-import javax.servlet.*;
 
 
 /**
@@ -104,73 +108,67 @@ public class WebInterface extends HttpServlet {
         DateTime today = new DateTime();
         DateTime start = today.minusDays(30);
         t = t.replace("%START_DATE_INITIAL_VALUE%", baseFmt.print(start));
-        t = t.replace("%END_DATE_INITIAL_VALUE%",baseFmt.print(today));
-        t = t.replace("%START_DATE_INITIAL_VALUE_UNIX%", Long.toString(start.getMillis()/1000));
-        t = t.replace("%END_DATE_INITIAL_VALUE_UNIX%",Long.toString(today.getMillis()/1000));
-        if(token != null) {
-            t = t.replaceAll("%TOKEN%",token);
+        t = t.replace("%END_DATE_INITIAL_VALUE%", baseFmt.print(today));
+        t = t.replace("%START_DATE_INITIAL_VALUE_UNIX%", Long.toString(start.getMillis() / 1000));
+        t = t.replace("%END_DATE_INITIAL_VALUE_UNIX%", Long.toString(today.getMillis() / 1000));
+        if (token != null) {
+            t = t.replaceAll("%TOKEN%", token);
             out.print(t);
-        }
-        else {
-            t = t.replaceAll("%TOKEN%","");
+        } else {
+            t = t.replaceAll("%TOKEN%", "");
             out.print(t);
         }
         out.close();
     }
 
     private String get(Map p, String n) {
-        String[] a = (String[])p.get(n);
-        if(a != null && a.length > 0) {
+        String[] a = (String[]) p.get(n);
+        if (a != null && a.length > 0) {
             return a[0];
         }
         return null;
     }
 
     private void process(Map parameters) throws IOException {
-        String createProjectFlag = get(parameters,"CREATE_PROJECT_FLAG");
+        String createProjectFlag = get(parameters, "CREATE_PROJECT_FLAG");
         String templateContent = "";
         String fileName = "";
-        if(createProjectFlag != null && (createProjectFlag.equalsIgnoreCase("on") || createProjectFlag.equalsIgnoreCase("true") ||
-            createProjectFlag.equalsIgnoreCase("1"))) {
+        if (createProjectFlag != null && (createProjectFlag.equalsIgnoreCase("on") || createProjectFlag.equalsIgnoreCase("true") ||
+                createProjectFlag.equalsIgnoreCase("1"))) {
             debug("CREATE template selected.");
             templateContent = FileUtil.readStringFromFile(CREATE_TEMPLATE);
             fileName = "create.project.%ID%.txt";
-        }
-        else {
+        } else {
             debug("LOAD template selected.");
             templateContent = FileUtil.readStringFromFile(LOAD_TEMPLATE);
             fileName = "load.data.%ID%.txt";
         }
-        for(String key: acceptedParams) {
-            String value = get(parameters,key);
-            if(value != null && value.length()>0) {
-                templateContent = templateContent.replace("%"+key+"%",value);
-            }
-            else {
-                if(createProjectFlag != null && (createProjectFlag.equalsIgnoreCase("on") || createProjectFlag.equalsIgnoreCase("true") ||
-            createProjectFlag.equalsIgnoreCase("1")) && "GDC_PROJECT_HASH".equalsIgnoreCase(key)) {
+        for (String key : acceptedParams) {
+            String value = get(parameters, key);
+            if (value != null && value.length() > 0) {
+                templateContent = templateContent.replace("%" + key + "%", value);
+            } else {
+                if (createProjectFlag != null && (createProjectFlag.equalsIgnoreCase("on") || createProjectFlag.equalsIgnoreCase("true") ||
+                        createProjectFlag.equalsIgnoreCase("1")) && "GDC_PROJECT_HASH".equalsIgnoreCase(key)) {
                     // ok
-                }
-                else {
-                    if("TOKEN".equalsIgnoreCase(key)) {
+                } else {
+                    if ("TOKEN".equalsIgnoreCase(key)) {
                         debug("OAuth token not generated. Please make sure you have granted this app the read_insights Facebook permission.");
                         throw new IOException("OAuth token not generated. Please make sure you have granted this app the read_insights Facebook permission.");
-                    }
-                    else {
-                        debug("Parameter "+key+" not supplied.");
-                        throw new IOException("Parameter "+key+" not supplied.");
+                    } else {
+                        debug("Parameter " + key + " not supplied.");
+                        throw new IOException("Parameter " + key + " not supplied.");
                     }
                 }
             }
         }
-        String value = get(parameters,"EMAIL");
-        if(value != null && value.length()>0) {
+        String value = get(parameters, "EMAIL");
+        if (value != null && value.length() > 0) {
             String id = DigestUtils.md5Hex(value);
-            templateContent = templateContent.replace("%ID%",id);
-            fileName = fileName.replace("%ID%",id);
-            FileUtil.writeStringToFile(templateContent, IN_QUEUE+System.getProperty("file.separator")+fileName);
-        }
-        else {
+            templateContent = templateContent.replace("%ID%", id);
+            fileName = fileName.replace("%ID%", id);
+            FileUtil.writeStringToFile(templateContent, IN_QUEUE + System.getProperty("file.separator") + fileName);
+        } else {
             debug("Parameter EMAIL not supplied.");
             throw new IOException("Parameter EMAIL not supplied.");
         }
@@ -181,40 +179,36 @@ public class WebInterface extends HttpServlet {
         setupLogger();
         dumpRequest(request);
         Map parameters = request.getParameterMap();
-        if(parameters.containsKey("SUBMIT_OK")) {
+        if (parameters.containsKey("SUBMIT_OK")) {
             String token = extractToken(request);
-            debug("POST: retrieving token="+token);
+            debug("POST: retrieving token=" + token);
             PrintWriter out = response.getWriter();
             response.setContentType("text/html");
             try {
                 process(parameters);
-                if(token != null && token.length()>0) {
-                    out.print(result.replace("%MSG%","Synchronization task submitted."));
+                if (token != null && token.length() > 0) {
+                    out.print(result.replace("%MSG%", "Synchronization task submitted."));
+                } else {
+                    out.print(result.replace("%MSG%", "Authorization required."));
                 }
-                else {
-                    out.print(result.replace("%MSG%","Authorization required."));
-                }
-            }
-            catch (IOException e) {
-                out.print(result.replace("%MSG%","Error encountered. Error message: " + e.getMessage()));
-            }
-            finally {
+            } catch (IOException e) {
+                out.print(result.replace("%MSG%", "Error encountered. Error message: " + e.getMessage()));
+            } finally {
                 out.close();
             }
-        }
-        else {
+        } else {
             doGet(request, response);
         }
     }
 
     private void setupLogger() throws IOException {
-        if(logger == null) {
+        if (logger == null) {
             logger = new FileWriter(logPath);
         }
     }
 
     private void debug(String msg) throws IOException {
-        if(logger != null) {
+        if (logger != null) {
             logger.write(msg);
             logger.write('\n');
         }
@@ -223,21 +217,21 @@ public class WebInterface extends HttpServlet {
 
     private void dumpRequest(HttpServletRequest request) throws IOException {
         String method = request.getMethod();
-        debug("Method: "+method);
+        debug("Method: " + method);
         Enumeration headerNames = request.getHeaderNames();
         debug("Headers");
-        while(headerNames.hasMoreElements()) {
-            String n = (String)headerNames.nextElement();
+        while (headerNames.hasMoreElements()) {
+            String n = (String) headerNames.nextElement();
             String v = request.getHeader(n);
-            debug(n+":"+v);
+            debug(n + ":" + v);
         }
 
         Enumeration parameterNames = request.getParameterNames();
         debug("Parameters");
-        while(parameterNames.hasMoreElements()) {
-            String n = (String)parameterNames.nextElement();
+        while (parameterNames.hasMoreElements()) {
+            String n = (String) parameterNames.nextElement();
             String v = request.getParameter(n);
-            debug(n+":"+v);
+            debug(n + ":" + v);
         }
     }
 
@@ -245,14 +239,14 @@ public class WebInterface extends HttpServlet {
         String token = null;
         token = request.getParameter("TOKEN");
         String base64 = request.getParameter("signed_request");
-        if(base64 != null) {
+        if (base64 != null) {
             String content = base64.split("\\.")[1];
             try {
                 String decodedContent = new String(Base64.decodeWebSafe(content));
                 JSONObject json = JSONObject.fromObject(decodedContent);
-                if(json.containsKey("oauth_token"))
+                if (json.containsKey("oauth_token"))
                     token = json.getString("oauth_token");
-                debug("Extracting token: token="+token);
+                debug("Extracting token: token=" + token);
             } catch (Base64DecoderException e) {
                 throw new IOException(e.getMessage());
             }

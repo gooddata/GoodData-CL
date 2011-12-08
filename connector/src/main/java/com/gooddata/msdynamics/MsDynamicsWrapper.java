@@ -89,10 +89,11 @@ public class MsDynamicsWrapper {
 
     /**
      * Constructor
-     * @param hostName CRM 2011 Online host
+     *
+     * @param hostName     CRM 2011 Online host
      * @param organization CRM 2011 Online organization
-     * @param user CRM 2011 Online username
-     * @param password CRM 2011 Online password
+     * @param user         CRM 2011 Online username
+     * @param password     CRM 2011 Online password
      */
     public MsDynamicsWrapper(String hostName, String organization, String user, String password) {
         soap = new SoapExecutor();
@@ -104,9 +105,10 @@ public class MsDynamicsWrapper {
 
     /**
      * Connects the CRM 2011 Online
+     *
      * @throws JaxenException issue with the response format
-     * @throws IOException generic IO issue
-     * @throws SOAPException issue with SOAP invocation
+     * @throws IOException    generic IO issue
+     * @throws SOAPException  issue with SOAP invocation
      */
     public void connect() throws JaxenException, IOException, SOAPException {
         String policy = retrievePolicy();
@@ -119,26 +121,28 @@ public class MsDynamicsWrapper {
 
     /**
      * Retrieves the MS CRM 2011 policy
+     *
      * @return the policy string
      * @throws JaxenException issue with the response format
-     * @throws IOException generic IO issue
-     * @throws SOAPException issue with SOAP invocation
+     * @throws IOException    generic IO issue
+     * @throws SOAPException  issue with SOAP invocation
      */
     public String retrievePolicy() throws IOException, SOAPException, JaxenException {
         String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrievePolicy.xml", MsDynamicsWrapper.class);
         SOAPMessage response = soap.execute(HTTPS + host + CRM_DISCOVERY_ENDPOINT, msg);
         XPath xp = soap.createXPath("//crm:Policy/text()", response);
         xp.addNamespace("crm", CRM_DISCOVERY_XMLNS);
-        Text result = (Text)xp.selectSingleNode(response.getSOAPBody());
+        Text result = (Text) xp.selectSingleNode(response.getSOAPBody());
         return result.getValue();
     }
 
     /**
      * Retrieves the CRM ticket
+     *
      * @return CRM ticket
      * @throws JaxenException issue with the response format
-     * @throws IOException generic IO issue
-     * @throws SOAPException issue with SOAP invocation
+     * @throws IOException    generic IO issue
+     * @throws SOAPException  issue with SOAP invocation
      */
     public String retrieveCrmTicket() throws IOException, SOAPException, JaxenException {
         String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrieveCrmTicket.xml", MsDynamicsWrapper.class);
@@ -147,19 +151,20 @@ public class MsDynamicsWrapper {
         SOAPMessage response = soap.execute(HTTPS + host + CRM_DISCOVERY_ENDPOINT, msg);
         XPath xp = soap.createXPath("//crm:CrmTicket/text()", response);
         xp.addNamespace("crm", CRM_DISCOVERY_XMLNS);
-        Text result = (Text)xp.selectSingleNode(response.getSOAPBody());
+        Text result = (Text) xp.selectSingleNode(response.getSOAPBody());
         return result.getNodeValue();
     }
 
     /**
      * Retrieves data from the CRM 2011 Online
-     * @param entity CRM 2011 entity (e.g. account or opportunity)
+     *
+     * @param entity  CRM 2011 entity (e.g. account or opportunity)
      * @param columns Entity fields (e.g. accountid, name etc.)
      * @param csvFile name of the CSV file where the results will be stored
      * @return number of rows retrieved
      * @throws JaxenException issue with the response format
-     * @throws IOException generic IO issue
-     * @throws SOAPException issue with SOAP invocation
+     * @throws IOException    generic IO issue
+     * @throws SOAPException  issue with SOAP invocation
      */
     public int retrieveMultiple(String entity, String[] columns, String csvFile)
             throws IOException, SOAPException, JaxenException {
@@ -170,11 +175,11 @@ public class MsDynamicsWrapper {
             String cookie = "";
             boolean hasNext = true;
             while (hasNext) {
-                List<Map<String,String>> ret = new ArrayList<Map<String,String>>();
+                List<Map<String, String>> ret = new ArrayList<Map<String, String>>();
                 RetrievePageInfo info = retrievePage(entity, columns, pageNumber++, cookie, ret);
-                for(Map<String,String>  m : ret) {
+                for (Map<String, String> m : ret) {
                     String[] row = new String[columns.length];
-                    for(int i=0; i<columns.length; i++) {
+                    for (int i = 0; i < columns.length; i++) {
                         row[i] = m.get(columns[i]);
                     }
                     cw.writeNext(row);
@@ -182,11 +187,10 @@ public class MsDynamicsWrapper {
                 cnt += ret.size();
                 cw.flush();
                 cookie = info.getPageCookie();
-                if("0".equalsIgnoreCase(info.getMoreRecords()))
+                if ("0".equalsIgnoreCase(info.getMoreRecords()))
                     hasNext = false;
             }
-        }
-        finally {
+        } finally {
             cw.close();
         }
         return cnt;
@@ -224,17 +228,18 @@ public class MsDynamicsWrapper {
 
     /**
      * Retrieves a single page of RetrieveMultiple result
-     * @param entity CRM 2011 entity (e.g. account or opportunity)
-     * @param columns Entity fields (e.g. accountid, name etc.)
+     *
+     * @param entity     CRM 2011 entity (e.g. account or opportunity)
+     * @param columns    Entity fields (e.g. accountid, name etc.)
      * @param pageNumber the result page number (1..N)
-     * @param cookie API paging cookie
-     * @param ret the List of Maps that will be populated with the data
+     * @param cookie     API paging cookie
+     * @param ret        the List of Maps that will be populated with the data
      * @return the RetrievePageInfo structure that describes the status of the retrieval
      * @throws JaxenException issue with the response format
-     * @throws IOException generic IO issue
-     * @throws SOAPException issue with SOAP invocation
+     * @throws IOException    generic IO issue
+     * @throws SOAPException  issue with SOAP invocation
      */
-    protected RetrievePageInfo retrievePage(String entity, String[] columns, int pageNumber, String cookie, List<Map<String,String>> ret)
+    protected RetrievePageInfo retrievePage(String entity, String[] columns, int pageNumber, String cookie, List<Map<String, String>> ret)
             throws IOException, SOAPException, JaxenException {
         String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/RetrieveMultiple.xml", MsDynamicsWrapper.class);
         msg = msg.replace(CRM_ORGANIZATION_PLACEHOLDER, getOrganization());
@@ -242,60 +247,58 @@ public class MsDynamicsWrapper {
         msg = msg.replace(CRM_ENTITY_PLACEHOLDER, entity);
         msg = msg.replace(CRM_PAGE_NUMBER_PLACEHOLDER, Integer.toString(pageNumber));
         msg = msg.replace(CRM_PAGE_COUNT_PLACEHOLDER, Integer.toString(PAGE_COUNT));
-        if(cookie != null && cookie.length() > 0) {
-            msg = msg.replace(CRM_PAGE_COOKIE_PLACEHOLDER,"<ns4:PageCookie><![CDATA["+cookie+"]]></ns4:PageCookie>");
-        }
-        else {
-            msg = msg.replace(CRM_PAGE_COOKIE_PLACEHOLDER,"");
+        if (cookie != null && cookie.length() > 0) {
+            msg = msg.replace(CRM_PAGE_COOKIE_PLACEHOLDER, "<ns4:PageCookie><![CDATA[" + cookie + "]]></ns4:PageCookie>");
+        } else {
+            msg = msg.replace(CRM_PAGE_COOKIE_PLACEHOLDER, "");
         }
         String columnsElement = "";
-        for(int i=0; i<columns.length; i++) {
-            columnsElement += "<ns4:Attribute>"+columns[i]+"</ns4:Attribute>";
+        for (int i = 0; i < columns.length; i++) {
+            columnsElement += "<ns4:Attribute>" + columns[i] + "</ns4:Attribute>";
         }
         msg = msg.replace(CRM_ATTRIBUTES_PLACEHOLDER, columnsElement);
         SOAPMessage response = soap.execute(HTTPS + host + CRM_ENDPOINT, msg);
         XPath xp = soap.createXPath("//crm:RetrieveMultipleResult", response);
         xp.addNamespace("crm", RESULT_XMLNS);
         List result = xp.selectNodes(response.getSOAPBody());
-        if(result != null && result.size()==1) {
-            SOAPElement e = (SOAPElement)result.get(0);
+        if (result != null && result.size() == 1) {
+            SOAPElement e = (SOAPElement) result.get(0);
             String more = e.getAttribute("MoreRecords");
             String newCookie = e.getAttribute("PagingCookie");
-            if(more != null && more.length()>0 && newCookie != null && newCookie.length()>0) {
+            if (more != null && more.length() > 0 && newCookie != null && newCookie.length() > 0) {
                 xp = soap.createXPath("//crm:BusinessEntity", response);
                 xp.addNamespace("crm", ENTITY_XMLNS);
                 result = xp.selectNodes(response.getSOAPBody());
-                for(Object o : result) {
-                    e = (SOAPElement)o;
-                    Map<String,String> instance =  new HashMap<String,String>();
+                for (Object o : result) {
+                    e = (SOAPElement) o;
+                    Map<String, String> instance = new HashMap<String, String>();
                     Iterator elements = e.getChildElements();
-                    while(elements.hasNext()) {
-                        SOAPElement name = (SOAPElement)elements.next();
+                    while (elements.hasNext()) {
+                        SOAPElement name = (SOAPElement) elements.next();
                         String value = name.getFirstChild().getNodeValue();
-                        instance.put(name.getElementName().getLocalName(),value);
+                        instance.put(name.getElementName().getLocalName(), value);
                     }
                     ret.add(instance);
                 }
                 return new RetrievePageInfo(newCookie, more);
-            }
-            else {
+            } else {
                 throw new SOAPException("RetrieveMultiple: Invalid response. The response doesn't contain either " +
                         "the MoreRecords or the PagingCookie attributes.");
             }
 
-        }
-        else {
+        } else {
             throw new SOAPException("RetrieveMultiple: Invalid response. The response doesn't contain " +
-                "the RetrieveMultipleResult element.");
+                    "the RetrieveMultipleResult element.");
         }
     }
 
     /**
      * Logs into the MS CRM 2011 Online
+     *
      * @return the Live ID token
      * @throws JaxenException issue with the response format
-     * @throws IOException generic IO issue
-     * @throws SOAPException issue with SOAP invocation
+     * @throws IOException    generic IO issue
+     * @throws SOAPException  issue with SOAP invocation
      */
     public String login() throws IOException, SOAPException, JaxenException {
         String msg = FileUtil.readStringFromClasspath("/com/gooddata/msdynamics/LiveIdLogin.xml", MsDynamicsWrapper.class);
@@ -306,7 +309,7 @@ public class MsDynamicsWrapper {
         SOAPMessage response = soap.execute(HTTPS + LIVE_ID_HOST + LIVE_ID_ENDPOINT, msg);
         XPath xp = soap.createXPath("//wsse:BinarySecurityToken/text()", response);
         xp.addNamespace("wsse", WSSE_XMLNS);
-        Node result = (Node)xp.selectSingleNode(response.getSOAPBody());
+        Node result = (Node) xp.selectSingleNode(response.getSOAPBody());
         return result.getValue();
     }
 

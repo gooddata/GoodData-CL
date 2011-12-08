@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class UpsertResult  implements java.io.Serializable {
+public class UpsertResult implements java.io.Serializable {
     private boolean created;
 
     private com.sforce.soap.partner.Error[] errors;
@@ -20,20 +20,20 @@ public class UpsertResult  implements java.io.Serializable {
     }
 
     public UpsertResult(
-           boolean created,
-           com.sforce.soap.partner.Error[] errors,
-           java.lang.String id,
-           boolean success) {
-           this.created = created;
-           this.errors = errors;
-           this.id = id;
-           this.success = success;
+            boolean created,
+            com.sforce.soap.partner.Error[] errors,
+            java.lang.String id,
+            boolean success) {
+        this.created = created;
+        this.errors = errors;
+        this.id = id;
+        this.success = success;
     }
 
 
     /**
      * Gets the created value for this UpsertResult.
-     * 
+     *
      * @return created
      */
     public boolean isCreated() {
@@ -43,7 +43,7 @@ public class UpsertResult  implements java.io.Serializable {
 
     /**
      * Sets the created value for this UpsertResult.
-     * 
+     *
      * @param created
      */
     public void setCreated(boolean created) {
@@ -53,7 +53,7 @@ public class UpsertResult  implements java.io.Serializable {
 
     /**
      * Gets the errors value for this UpsertResult.
-     * 
+     *
      * @return errors
      */
     public com.sforce.soap.partner.Error[] getErrors() {
@@ -63,7 +63,7 @@ public class UpsertResult  implements java.io.Serializable {
 
     /**
      * Sets the errors value for this UpsertResult.
-     * 
+     *
      * @param errors
      */
     public void setErrors(com.sforce.soap.partner.Error[] errors) {
@@ -81,7 +81,7 @@ public class UpsertResult  implements java.io.Serializable {
 
     /**
      * Gets the id value for this UpsertResult.
-     * 
+     *
      * @return id
      */
     public java.lang.String getId() {
@@ -91,7 +91,7 @@ public class UpsertResult  implements java.io.Serializable {
 
     /**
      * Sets the id value for this UpsertResult.
-     * 
+     *
      * @param id
      */
     public void setId(java.lang.String id) {
@@ -101,7 +101,7 @@ public class UpsertResult  implements java.io.Serializable {
 
     /**
      * Gets the success value for this UpsertResult.
-     * 
+     *
      * @return success
      */
     public boolean isSuccess() {
@@ -111,7 +111,7 @@ public class UpsertResult  implements java.io.Serializable {
 
     /**
      * Sets the success value for this UpsertResult.
-     * 
+     *
      * @param success
      */
     public void setSuccess(boolean success) {
@@ -119,6 +119,7 @@ public class UpsertResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof UpsertResult)) return false;
         UpsertResult other = (UpsertResult) obj;
@@ -129,20 +130,21 @@ public class UpsertResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.created == other.isCreated() &&
-            ((this.errors==null && other.getErrors()==null) || 
-             (this.errors!=null &&
-              java.util.Arrays.equals(this.errors, other.getErrors()))) &&
-            ((this.id==null && other.getId()==null) || 
-             (this.id!=null &&
-              this.id.equals(other.getId()))) &&
-            this.success == other.isSuccess();
+        _equals = true &&
+                this.created == other.isCreated() &&
+                ((this.errors == null && other.getErrors() == null) ||
+                        (this.errors != null &&
+                                java.util.Arrays.equals(this.errors, other.getErrors()))) &&
+                ((this.id == null && other.getId() == null) ||
+                        (this.id != null &&
+                                this.id.equals(other.getId()))) &&
+                this.success == other.isSuccess();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -151,12 +153,12 @@ public class UpsertResult  implements java.io.Serializable {
         int _hashCode = 1;
         _hashCode += (isCreated() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         if (getErrors() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getErrors());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getErrors());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getErrors(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -171,7 +173,7 @@ public class UpsertResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(UpsertResult.class, true);
+            new org.apache.axis.description.TypeDesc(UpsertResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "UpsertResult"));
@@ -214,24 +216,24 @@ public class UpsertResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

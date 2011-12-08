@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class LeadConvert  implements java.io.Serializable {
+public class LeadConvert implements java.io.Serializable {
     private java.lang.String accountId;
 
     private java.lang.String contactId;
@@ -30,30 +30,30 @@ public class LeadConvert  implements java.io.Serializable {
     }
 
     public LeadConvert(
-           java.lang.String accountId,
-           java.lang.String contactId,
-           java.lang.String convertedStatus,
-           boolean doNotCreateOpportunity,
-           java.lang.String leadId,
-           java.lang.String opportunityName,
-           boolean overwriteLeadSource,
-           java.lang.String ownerId,
-           boolean sendNotificationEmail) {
-           this.accountId = accountId;
-           this.contactId = contactId;
-           this.convertedStatus = convertedStatus;
-           this.doNotCreateOpportunity = doNotCreateOpportunity;
-           this.leadId = leadId;
-           this.opportunityName = opportunityName;
-           this.overwriteLeadSource = overwriteLeadSource;
-           this.ownerId = ownerId;
-           this.sendNotificationEmail = sendNotificationEmail;
+            java.lang.String accountId,
+            java.lang.String contactId,
+            java.lang.String convertedStatus,
+            boolean doNotCreateOpportunity,
+            java.lang.String leadId,
+            java.lang.String opportunityName,
+            boolean overwriteLeadSource,
+            java.lang.String ownerId,
+            boolean sendNotificationEmail) {
+        this.accountId = accountId;
+        this.contactId = contactId;
+        this.convertedStatus = convertedStatus;
+        this.doNotCreateOpportunity = doNotCreateOpportunity;
+        this.leadId = leadId;
+        this.opportunityName = opportunityName;
+        this.overwriteLeadSource = overwriteLeadSource;
+        this.ownerId = ownerId;
+        this.sendNotificationEmail = sendNotificationEmail;
     }
 
 
     /**
      * Gets the accountId value for this LeadConvert.
-     * 
+     *
      * @return accountId
      */
     public java.lang.String getAccountId() {
@@ -63,7 +63,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Sets the accountId value for this LeadConvert.
-     * 
+     *
      * @param accountId
      */
     public void setAccountId(java.lang.String accountId) {
@@ -73,7 +73,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Gets the contactId value for this LeadConvert.
-     * 
+     *
      * @return contactId
      */
     public java.lang.String getContactId() {
@@ -83,7 +83,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Sets the contactId value for this LeadConvert.
-     * 
+     *
      * @param contactId
      */
     public void setContactId(java.lang.String contactId) {
@@ -93,7 +93,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Gets the convertedStatus value for this LeadConvert.
-     * 
+     *
      * @return convertedStatus
      */
     public java.lang.String getConvertedStatus() {
@@ -103,7 +103,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Sets the convertedStatus value for this LeadConvert.
-     * 
+     *
      * @param convertedStatus
      */
     public void setConvertedStatus(java.lang.String convertedStatus) {
@@ -113,7 +113,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Gets the doNotCreateOpportunity value for this LeadConvert.
-     * 
+     *
      * @return doNotCreateOpportunity
      */
     public boolean isDoNotCreateOpportunity() {
@@ -123,7 +123,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Sets the doNotCreateOpportunity value for this LeadConvert.
-     * 
+     *
      * @param doNotCreateOpportunity
      */
     public void setDoNotCreateOpportunity(boolean doNotCreateOpportunity) {
@@ -133,7 +133,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Gets the leadId value for this LeadConvert.
-     * 
+     *
      * @return leadId
      */
     public java.lang.String getLeadId() {
@@ -143,7 +143,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Sets the leadId value for this LeadConvert.
-     * 
+     *
      * @param leadId
      */
     public void setLeadId(java.lang.String leadId) {
@@ -153,7 +153,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Gets the opportunityName value for this LeadConvert.
-     * 
+     *
      * @return opportunityName
      */
     public java.lang.String getOpportunityName() {
@@ -163,7 +163,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Sets the opportunityName value for this LeadConvert.
-     * 
+     *
      * @param opportunityName
      */
     public void setOpportunityName(java.lang.String opportunityName) {
@@ -173,7 +173,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Gets the overwriteLeadSource value for this LeadConvert.
-     * 
+     *
      * @return overwriteLeadSource
      */
     public boolean isOverwriteLeadSource() {
@@ -183,7 +183,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Sets the overwriteLeadSource value for this LeadConvert.
-     * 
+     *
      * @param overwriteLeadSource
      */
     public void setOverwriteLeadSource(boolean overwriteLeadSource) {
@@ -193,7 +193,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Gets the ownerId value for this LeadConvert.
-     * 
+     *
      * @return ownerId
      */
     public java.lang.String getOwnerId() {
@@ -203,7 +203,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Sets the ownerId value for this LeadConvert.
-     * 
+     *
      * @param ownerId
      */
     public void setOwnerId(java.lang.String ownerId) {
@@ -213,7 +213,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Gets the sendNotificationEmail value for this LeadConvert.
-     * 
+     *
      * @return sendNotificationEmail
      */
     public boolean isSendNotificationEmail() {
@@ -223,7 +223,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     /**
      * Sets the sendNotificationEmail value for this LeadConvert.
-     * 
+     *
      * @param sendNotificationEmail
      */
     public void setSendNotificationEmail(boolean sendNotificationEmail) {
@@ -231,6 +231,7 @@ public class LeadConvert  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof LeadConvert)) return false;
         LeadConvert other = (LeadConvert) obj;
@@ -241,33 +242,34 @@ public class LeadConvert  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.accountId==null && other.getAccountId()==null) || 
-             (this.accountId!=null &&
-              this.accountId.equals(other.getAccountId()))) &&
-            ((this.contactId==null && other.getContactId()==null) || 
-             (this.contactId!=null &&
-              this.contactId.equals(other.getContactId()))) &&
-            ((this.convertedStatus==null && other.getConvertedStatus()==null) || 
-             (this.convertedStatus!=null &&
-              this.convertedStatus.equals(other.getConvertedStatus()))) &&
-            this.doNotCreateOpportunity == other.isDoNotCreateOpportunity() &&
-            ((this.leadId==null && other.getLeadId()==null) || 
-             (this.leadId!=null &&
-              this.leadId.equals(other.getLeadId()))) &&
-            ((this.opportunityName==null && other.getOpportunityName()==null) || 
-             (this.opportunityName!=null &&
-              this.opportunityName.equals(other.getOpportunityName()))) &&
-            this.overwriteLeadSource == other.isOverwriteLeadSource() &&
-            ((this.ownerId==null && other.getOwnerId()==null) || 
-             (this.ownerId!=null &&
-              this.ownerId.equals(other.getOwnerId()))) &&
-            this.sendNotificationEmail == other.isSendNotificationEmail();
+        _equals = true &&
+                ((this.accountId == null && other.getAccountId() == null) ||
+                        (this.accountId != null &&
+                                this.accountId.equals(other.getAccountId()))) &&
+                ((this.contactId == null && other.getContactId() == null) ||
+                        (this.contactId != null &&
+                                this.contactId.equals(other.getContactId()))) &&
+                ((this.convertedStatus == null && other.getConvertedStatus() == null) ||
+                        (this.convertedStatus != null &&
+                                this.convertedStatus.equals(other.getConvertedStatus()))) &&
+                this.doNotCreateOpportunity == other.isDoNotCreateOpportunity() &&
+                ((this.leadId == null && other.getLeadId() == null) ||
+                        (this.leadId != null &&
+                                this.leadId.equals(other.getLeadId()))) &&
+                ((this.opportunityName == null && other.getOpportunityName() == null) ||
+                        (this.opportunityName != null &&
+                                this.opportunityName.equals(other.getOpportunityName()))) &&
+                this.overwriteLeadSource == other.isOverwriteLeadSource() &&
+                ((this.ownerId == null && other.getOwnerId() == null) ||
+                        (this.ownerId != null &&
+                                this.ownerId.equals(other.getOwnerId()))) &&
+                this.sendNotificationEmail == other.isSendNotificationEmail();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -301,7 +303,7 @@ public class LeadConvert  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(LeadConvert.class, true);
+            new org.apache.axis.description.TypeDesc(LeadConvert.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "LeadConvert"));
@@ -372,24 +374,24 @@ public class LeadConvert  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

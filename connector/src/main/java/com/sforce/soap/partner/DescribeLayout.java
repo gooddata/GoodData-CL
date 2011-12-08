@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeLayout  implements java.io.Serializable {
+public class DescribeLayout implements java.io.Serializable {
     private com.sforce.soap.partner.DescribeLayoutButton[] buttonLayoutSection;
 
     private com.sforce.soap.partner.DescribeLayoutSection[] detailLayoutSections;
@@ -22,22 +22,22 @@ public class DescribeLayout  implements java.io.Serializable {
     }
 
     public DescribeLayout(
-           com.sforce.soap.partner.DescribeLayoutButton[] buttonLayoutSection,
-           com.sforce.soap.partner.DescribeLayoutSection[] detailLayoutSections,
-           com.sforce.soap.partner.DescribeLayoutSection[] editLayoutSections,
-           java.lang.String id,
-           com.sforce.soap.partner.RelatedList[] relatedLists) {
-           this.buttonLayoutSection = buttonLayoutSection;
-           this.detailLayoutSections = detailLayoutSections;
-           this.editLayoutSections = editLayoutSections;
-           this.id = id;
-           this.relatedLists = relatedLists;
+            com.sforce.soap.partner.DescribeLayoutButton[] buttonLayoutSection,
+            com.sforce.soap.partner.DescribeLayoutSection[] detailLayoutSections,
+            com.sforce.soap.partner.DescribeLayoutSection[] editLayoutSections,
+            java.lang.String id,
+            com.sforce.soap.partner.RelatedList[] relatedLists) {
+        this.buttonLayoutSection = buttonLayoutSection;
+        this.detailLayoutSections = detailLayoutSections;
+        this.editLayoutSections = editLayoutSections;
+        this.id = id;
+        this.relatedLists = relatedLists;
     }
 
 
     /**
      * Gets the buttonLayoutSection value for this DescribeLayout.
-     * 
+     *
      * @return buttonLayoutSection
      */
     public com.sforce.soap.partner.DescribeLayoutButton[] getButtonLayoutSection() {
@@ -47,7 +47,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     /**
      * Sets the buttonLayoutSection value for this DescribeLayout.
-     * 
+     *
      * @param buttonLayoutSection
      */
     public void setButtonLayoutSection(com.sforce.soap.partner.DescribeLayoutButton[] buttonLayoutSection) {
@@ -57,7 +57,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     /**
      * Gets the detailLayoutSections value for this DescribeLayout.
-     * 
+     *
      * @return detailLayoutSections
      */
     public com.sforce.soap.partner.DescribeLayoutSection[] getDetailLayoutSections() {
@@ -67,7 +67,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     /**
      * Sets the detailLayoutSections value for this DescribeLayout.
-     * 
+     *
      * @param detailLayoutSections
      */
     public void setDetailLayoutSections(com.sforce.soap.partner.DescribeLayoutSection[] detailLayoutSections) {
@@ -85,7 +85,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     /**
      * Gets the editLayoutSections value for this DescribeLayout.
-     * 
+     *
      * @return editLayoutSections
      */
     public com.sforce.soap.partner.DescribeLayoutSection[] getEditLayoutSections() {
@@ -95,7 +95,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     /**
      * Sets the editLayoutSections value for this DescribeLayout.
-     * 
+     *
      * @param editLayoutSections
      */
     public void setEditLayoutSections(com.sforce.soap.partner.DescribeLayoutSection[] editLayoutSections) {
@@ -113,7 +113,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     /**
      * Gets the id value for this DescribeLayout.
-     * 
+     *
      * @return id
      */
     public java.lang.String getId() {
@@ -123,7 +123,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     /**
      * Sets the id value for this DescribeLayout.
-     * 
+     *
      * @param id
      */
     public void setId(java.lang.String id) {
@@ -133,7 +133,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     /**
      * Gets the relatedLists value for this DescribeLayout.
-     * 
+     *
      * @return relatedLists
      */
     public com.sforce.soap.partner.RelatedList[] getRelatedLists() {
@@ -143,7 +143,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     /**
      * Sets the relatedLists value for this DescribeLayout.
-     * 
+     *
      * @param relatedLists
      */
     public void setRelatedLists(com.sforce.soap.partner.RelatedList[] relatedLists) {
@@ -159,6 +159,7 @@ public class DescribeLayout  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayout)) return false;
         DescribeLayout other = (DescribeLayout) obj;
@@ -169,27 +170,28 @@ public class DescribeLayout  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.buttonLayoutSection==null && other.getButtonLayoutSection()==null) || 
-             (this.buttonLayoutSection!=null &&
-              java.util.Arrays.equals(this.buttonLayoutSection, other.getButtonLayoutSection()))) &&
-            ((this.detailLayoutSections==null && other.getDetailLayoutSections()==null) || 
-             (this.detailLayoutSections!=null &&
-              java.util.Arrays.equals(this.detailLayoutSections, other.getDetailLayoutSections()))) &&
-            ((this.editLayoutSections==null && other.getEditLayoutSections()==null) || 
-             (this.editLayoutSections!=null &&
-              java.util.Arrays.equals(this.editLayoutSections, other.getEditLayoutSections()))) &&
-            ((this.id==null && other.getId()==null) || 
-             (this.id!=null &&
-              this.id.equals(other.getId()))) &&
-            ((this.relatedLists==null && other.getRelatedLists()==null) || 
-             (this.relatedLists!=null &&
-              java.util.Arrays.equals(this.relatedLists, other.getRelatedLists())));
+        _equals = true &&
+                ((this.buttonLayoutSection == null && other.getButtonLayoutSection() == null) ||
+                        (this.buttonLayoutSection != null &&
+                                java.util.Arrays.equals(this.buttonLayoutSection, other.getButtonLayoutSection()))) &&
+                ((this.detailLayoutSections == null && other.getDetailLayoutSections() == null) ||
+                        (this.detailLayoutSections != null &&
+                                java.util.Arrays.equals(this.detailLayoutSections, other.getDetailLayoutSections()))) &&
+                ((this.editLayoutSections == null && other.getEditLayoutSections() == null) ||
+                        (this.editLayoutSections != null &&
+                                java.util.Arrays.equals(this.editLayoutSections, other.getEditLayoutSections()))) &&
+                ((this.id == null && other.getId() == null) ||
+                        (this.id != null &&
+                                this.id.equals(other.getId()))) &&
+                ((this.relatedLists == null && other.getRelatedLists() == null) ||
+                        (this.relatedLists != null &&
+                                java.util.Arrays.equals(this.relatedLists, other.getRelatedLists())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -197,34 +199,34 @@ public class DescribeLayout  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getButtonLayoutSection() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getButtonLayoutSection());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getButtonLayoutSection());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getButtonLayoutSection(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
         }
         if (getDetailLayoutSections() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getDetailLayoutSections());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getDetailLayoutSections());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getDetailLayoutSections(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
         }
         if (getEditLayoutSections() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getEditLayoutSections());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getEditLayoutSections());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getEditLayoutSections(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -233,12 +235,12 @@ public class DescribeLayout  implements java.io.Serializable {
             _hashCode += getId().hashCode();
         }
         if (getRelatedLists() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getRelatedLists());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getRelatedLists());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getRelatedLists(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -249,7 +251,7 @@ public class DescribeLayout  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeLayout.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeLayout.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeLayout"));
@@ -304,24 +306,24 @@ public class DescribeLayout  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

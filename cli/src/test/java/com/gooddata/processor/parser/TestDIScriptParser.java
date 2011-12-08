@@ -23,16 +23,12 @@
 
 package com.gooddata.processor.parser;
 
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.List;
-
+import com.gooddata.processor.Command;
 import junit.framework.TestCase;
-
 import org.apache.log4j.Logger;
 
-import com.gooddata.processor.Command;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * GoodData
@@ -43,16 +39,15 @@ import com.gooddata.processor.Command;
 public class TestDIScriptParser extends TestCase {
 
     private static Logger l = Logger.getLogger(TestDIScriptParser.class);
-    final InputStream ga =  getClass().getResourceAsStream("/com/gooddata/processor/parser/ga.txt");
+    final InputStream ga = getClass().getResourceAsStream("/com/gooddata/processor/parser/ga.txt");
 
     public void testParseCmd() throws Exception {
         try {
             DIScriptParser parser = new DIScriptParser(ga);
             List<Command> commands = parser.parse();
-            assertEquals(commands.size(),8);
-        }
-        catch(Exception e) {
-           e.printStackTrace();
+            assertEquals(commands.size(), 8);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner.fault;
 
-public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  implements java.io.Serializable {
+public class ApiQueryFault extends com.sforce.soap.partner.fault.ApiFault implements java.io.Serializable {
     private int row;
 
     private int column;
@@ -16,13 +16,13 @@ public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  impl
     }
 
     public ApiQueryFault(
-           com.sforce.soap.partner.fault.ExceptionCode exceptionCode,
-           java.lang.String exceptionMessage,
-           int row,
-           int column) {
+            com.sforce.soap.partner.fault.ExceptionCode exceptionCode,
+            java.lang.String exceptionMessage,
+            int row,
+            int column) {
         super(
-            exceptionCode,
-            exceptionMessage);
+                exceptionCode,
+                exceptionMessage);
         this.row = row;
         this.column = column;
     }
@@ -30,7 +30,7 @@ public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  impl
 
     /**
      * Gets the row value for this ApiQueryFault.
-     * 
+     *
      * @return row
      */
     public int getRow() {
@@ -40,7 +40,7 @@ public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  impl
 
     /**
      * Sets the row value for this ApiQueryFault.
-     * 
+     *
      * @param row
      */
     public void setRow(int row) {
@@ -50,7 +50,7 @@ public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  impl
 
     /**
      * Gets the column value for this ApiQueryFault.
-     * 
+     *
      * @return column
      */
     public int getColumn() {
@@ -60,7 +60,7 @@ public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  impl
 
     /**
      * Sets the column value for this ApiQueryFault.
-     * 
+     *
      * @param column
      */
     public void setColumn(int column) {
@@ -68,6 +68,7 @@ public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  impl
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ApiQueryFault)) return false;
         ApiQueryFault other = (ApiQueryFault) obj;
@@ -78,14 +79,15 @@ public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  impl
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            this.row == other.getRow() &&
-            this.column == other.getColumn();
+        _equals = super.equals(obj) &&
+                this.row == other.getRow() &&
+                this.column == other.getColumn();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -100,7 +102,7 @@ public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  impl
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(ApiQueryFault.class, true);
+            new org.apache.axis.description.TypeDesc(ApiQueryFault.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:fault.partner.soap.sforce.com", "ApiQueryFault"));
@@ -129,24 +131,24 @@ public class ApiQueryFault  extends com.sforce.soap.partner.fault.ApiFault  impl
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 

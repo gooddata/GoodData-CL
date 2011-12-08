@@ -24,7 +24,8 @@
 package com.gooddata.connector;
 
 import com.gooddata.Constants;
-import com.gooddata.exception.*;
+import com.gooddata.exception.HttpMethodException;
+import com.gooddata.exception.ProcessingException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
@@ -36,7 +37,6 @@ import com.gooddata.util.FileUtil;
 import com.gooddata.util.NetUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
@@ -83,6 +83,7 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
 
     /**
      * Creates a new Facebook connector
+     *
      * @return a new instance of the FacebookConnector
      */
     public static FacebookInsightsConnector createConnector() {
@@ -91,9 +92,10 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
 
     /**
      * Saves a template of the config file
-     * @param name new schema name
+     *
+     * @param name           new schema name
      * @param configFileName config file name
-     * @throws java.io.IOException if there is a problem with writing the config file
+     * @throws java.io.IOException   if there is a problem with writing the config file
      * @throws java.sql.SQLException if there is a problem with the db
      */
     public static void saveConfigTemplate(String name, String configFileName, String folder)
@@ -102,23 +104,23 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
         final SourceSchema s = SourceSchema.createSchema(name);
 
         SourceColumn o = new SourceColumn("objectid", SourceColumn.LDM_TYPE_DATE, "FAcebook Object ID");
-        if(folder != null && folder.length()>0)
+        if (folder != null && folder.length() > 0)
             o.setFolder(folder);
         s.addColumn(o);
 
         SourceColumn dt = new SourceColumn("date", SourceColumn.LDM_TYPE_DATE, "date");
         dt.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
-        if(folder != null && folder.length()>0)
+        if (folder != null && folder.length() > 0)
             dt.setFolder(folder);
         s.addColumn(dt);
 
         SourceColumn metric = new SourceColumn("metric", SourceColumn.LDM_TYPE_ATTRIBUTE, "metric");
-        if(folder != null && folder.length()>0)
+        if (folder != null && folder.length() > 0)
             metric.setFolder(folder);
         s.addColumn(metric);
 
         SourceColumn value = new SourceColumn("value", SourceColumn.LDM_TYPE_FACT, "fact");
-        if(folder != null && folder.length()>0)
+        if (folder != null && folder.length() > 0)
             value.setFolder(folder);
         s.addColumn(value);
 
@@ -138,11 +140,11 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
                 throw new HttpMethodException(msg);
             }
         } catch (HttpException e) {
-            l.debug("Error invoking Facebook REST API.",e);
-            throw new HttpMethodException("Error invoking Facebook REST API.",e);
+            l.debug("Error invoking Facebook REST API.", e);
+            throw new HttpMethodException("Error invoking Facebook REST API.", e);
         } catch (IOException e) {
-            l.debug("Error invoking GoodData REST API.",e);
-            throw new HttpMethodException("Error invoking Facebook REST API.",e);
+            l.debug("Error invoking GoodData REST API.", e);
+            throw new HttpMethodException("Error invoking Facebook REST API.", e);
         }
     }
 
@@ -151,11 +153,11 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
     }
 
     private String constructInsightsApiUrl(String baseUrlWithTime) {
-        return baseUrlWithTime + "&access_token="+ URLEncoder.encode(oauthToken);
+        return baseUrlWithTime + "&access_token=" + URLEncoder.encode(oauthToken);
     }
 
     private String constructInsightsApiUrl(String baseUrl, DateTime startDate, DateTime endDate) {
-        return baseUrl + "?since=" + (startDate.getMillis()/1000) + "&until=" + (endDate.getMillis()/1000) + "&access_token="+URLEncoder.encode(oauthToken);
+        return baseUrl + "?since=" + (startDate.getMillis() / 1000) + "&until=" + (endDate.getMillis() / 1000) + "&access_token=" + URLEncoder.encode(oauthToken);
     }
 
     private final DateTimeFormatter isoFmt = ISODateTimeFormat.dateTimeParser();
@@ -189,9 +191,8 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
             try {
                 Number n = Double.parseDouble(v);
                 setValue(n);
-            }
-            catch (NumberFormatException e) {
-                l.debug("Invalid Facebook Insights value: "+v);
+            } catch (NumberFormatException e) {
+                l.debug("Invalid Facebook Insights value: " + v);
             }
         }
 
@@ -202,14 +203,13 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
             try {
                 Number n = Double.parseDouble(v);
                 setValue(n);
-            }
-            catch (NumberFormatException e) {
-                l.debug("Invalid Facebook Insights value: "+v);
+            } catch (NumberFormatException e) {
+                l.debug("Invalid Facebook Insights value: " + v);
             }
         }
 
-        public String[] getRecord()  {
-            return new String[] {getObjectId(), defFmt.print(getDate()), getMetric(), (getValue()!=null)?(getValue().toString()):("0")};
+        public String[] getRecord() {
+            return new String[]{getObjectId(), defFmt.print(getDate()), getMetric(), (getValue() != null) ? (getValue().toString()) : ("0")};
         }
 
         public DateTime getDate() {
@@ -250,56 +250,52 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
     private String fetchInsightsRecords(String uri, List<InsightsRecord> ret) {
         String nextUri = null;
         JSONObject data = fetchJSON(uri);
-        if(data != null) {
+        if (data != null) {
             JSONArray dt = data.getJSONArray("data");
-            if(dt != null && !dt.isEmpty() && dt.size() > 0) {
-                for(int i=0; i<dt.size(); i++) {
+            if (dt != null && !dt.isEmpty() && dt.size() > 0) {
+                for (int i = 0; i < dt.size(); i++) {
                     JSONObject metricData = dt.getJSONObject(i);
-                    if(metricData != null && !metricData.isNullObject() && !metricData.isEmpty()) {
+                    if (metricData != null && !metricData.isNullObject() && !metricData.isEmpty()) {
                         String id = metricData.getString("id");
                         String metricName = metricData.getString("name");
-                        if(id != null && id.length()>0 && metricName != null && metricName.length()>0) {
-                            if(id.indexOf("/")>0) {
+                        if (id != null && id.length() > 0 && metricName != null && metricName.length() > 0) {
+                            if (id.indexOf("/") > 0) {
                                 String oid = id.split("/")[0];
                                 JSONArray dataPoints = metricData.getJSONArray("values");
-                                if(dataPoints != null && !dataPoints.isEmpty() && dataPoints.size() > 0) {
-                                    for(int j=0; j<dataPoints.size(); j++) {
+                                if (dataPoints != null && !dataPoints.isEmpty() && dataPoints.size() > 0) {
+                                    for (int j = 0; j < dataPoints.size(); j++) {
                                         JSONObject dataPoint = dataPoints.getJSONObject(j);
-                                        if(dataPoint != null && !dataPoint.isNullObject() && !dataPoint.isEmpty()) {
+                                        if (dataPoint != null && !dataPoint.isNullObject() && !dataPoint.isEmpty()) {
                                             String d = dataPoint.getString("end_time");
                                             Object v = dataPoint.get("value");
-                                            if(d!=null && v!=null && d.length()>0) {
+                                            if (d != null && v != null && d.length() > 0) {
                                                 String value = "0";
-                                                if(v instanceof Number || v instanceof String) {
+                                                if (v instanceof Number || v instanceof String) {
                                                     value = v.toString();
-                                                }
-                                                else if (v instanceof JSONArray) {
-                                                    Object vl = ((JSONArray)v).get(0);
-                                                    if(vl != null) {
+                                                } else if (v instanceof JSONArray) {
+                                                    Object vl = ((JSONArray) v).get(0);
+                                                    if (vl != null) {
                                                         value = vl.toString();
                                                     }
-                                                }
-                                                else {
+                                                } else {
                                                     value = v.toString();
                                                 }
-                                                ret.add(new InsightsRecord(oid, d,metricName,value));
+                                                ret.add(new InsightsRecord(oid, d, metricName, value));
                                             }
                                         }
                                     }
                                 }
+                            } else {
+                                l.debug("Invalid format of the Facebook Insights id: " + id);
                             }
-                            else {
-                                l.debug("Invalid format of the Facebook Insights id: "+id);
-                            }
-                        }
-                        else {
-                            l.debug("Invalid format of the Facebook Insights id: "+id+ " or metric: "+metricName);
+                        } else {
+                            l.debug("Invalid format of the Facebook Insights id: " + id + " or metric: " + metricName);
                         }
                     }
                 }
             }
             JSONObject paging = data.getJSONObject("paging");
-            if(paging != null && !paging.isNullObject() && !paging.isEmpty()) {
+            if (paging != null && !paging.isNullObject() && !paging.isEmpty()) {
                 nextUri = paging.getString("next");
             }
         }
@@ -311,7 +307,7 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
      */
     public void extract(String file, final boolean transform) throws IOException {
         File dataFile = new File(file);
-        l.debug("Extracting Facebook data to file="+dataFile.getAbsolutePath());
+        l.debug("Extracting Facebook data to file=" + dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
         Transformer t = Transformer.create(schema);
         String[] header = t.getHeader(transform);
@@ -322,16 +318,16 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
         url = fetchInsightsRecords(url, result);
         int cnt = 0;
 
-        while(result != null && result.size() > 0) {
+        while (result != null && result.size() > 0) {
             cnt += result.size();
             l.debug("Started retrieving Facebook data.");
-            for(InsightsRecord o : result) {
+            for (InsightsRecord o : result) {
                 String[] record = o.getRecord();
                 String[] row = new String[record.length];
-                for(int i=0; i< record.length; i++) {
+                for (int i = 0; i < record.length; i++) {
                     row[i] = record[i];
                 }
-                if(transform)
+                if (transform)
                     row = t.transformRow(row, DATE_LENGTH_UNRESTRICTED);
                 cw.writeNext(row);
                 cw.flush();
@@ -349,16 +345,13 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
-            if(c.match("GenerateFacebookInsightsConfig")) {
+            if (c.match("GenerateFacebookInsightsConfig")) {
                 generateConfig(c, cli, ctx);
-            }
-            else if(c.match("LoadFacebookInsights") || c.match("UseFacebookInsights")) {
+            } else if (c.match("LoadFacebookInsights") || c.match("UseFacebookInsights")) {
                 load(c, cli, ctx);
-            }
-            else
+            } else
                 return super.processCommand(c, cli, ctx);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
         return true;
@@ -366,8 +359,9 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
 
     /**
      * Loads new Facebook file command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws java.io.IOException in case of IO issues
      */
@@ -391,19 +385,20 @@ public class FacebookInsightsConnector extends AbstractConnector implements Conn
 
     /**
      * Generate new config file from CSV command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws java.io.IOException in case of IO issues
      */
     private void generateConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String name = c.getParamMandatory("name");
         String configFile = c.getParamMandatory("configFile");
-    	String folder = c.getParam( "folder");
+        String folder = c.getParam("folder");
         c.paramsProcessed();
 
         FacebookInsightsConnector.saveConfigTemplate(name, configFile, folder);
-        l.info("Facebook Insights Connector configuration successfully generated. See config file: "+configFile);
+        l.info("Facebook Insights Connector configuration successfully generated. See config file: " + configFile);
     }
 
     public DateTime getStartDate() {

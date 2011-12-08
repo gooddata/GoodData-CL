@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeLayoutComponent  implements java.io.Serializable {
+public class DescribeLayoutComponent implements java.io.Serializable {
     private int displayLines;
 
     private int tabOrder;
@@ -20,20 +20,20 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
     }
 
     public DescribeLayoutComponent(
-           int displayLines,
-           int tabOrder,
-           com.sforce.soap.partner.LayoutComponentType type,
-           java.lang.String value) {
-           this.displayLines = displayLines;
-           this.tabOrder = tabOrder;
-           this.type = type;
-           this.value = value;
+            int displayLines,
+            int tabOrder,
+            com.sforce.soap.partner.LayoutComponentType type,
+            java.lang.String value) {
+        this.displayLines = displayLines;
+        this.tabOrder = tabOrder;
+        this.type = type;
+        this.value = value;
     }
 
 
     /**
      * Gets the displayLines value for this DescribeLayoutComponent.
-     * 
+     *
      * @return displayLines
      */
     public int getDisplayLines() {
@@ -43,7 +43,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
 
     /**
      * Sets the displayLines value for this DescribeLayoutComponent.
-     * 
+     *
      * @param displayLines
      */
     public void setDisplayLines(int displayLines) {
@@ -53,7 +53,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
 
     /**
      * Gets the tabOrder value for this DescribeLayoutComponent.
-     * 
+     *
      * @return tabOrder
      */
     public int getTabOrder() {
@@ -63,7 +63,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
 
     /**
      * Sets the tabOrder value for this DescribeLayoutComponent.
-     * 
+     *
      * @param tabOrder
      */
     public void setTabOrder(int tabOrder) {
@@ -73,7 +73,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
 
     /**
      * Gets the type value for this DescribeLayoutComponent.
-     * 
+     *
      * @return type
      */
     public com.sforce.soap.partner.LayoutComponentType getType() {
@@ -83,7 +83,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
 
     /**
      * Sets the type value for this DescribeLayoutComponent.
-     * 
+     *
      * @param type
      */
     public void setType(com.sforce.soap.partner.LayoutComponentType type) {
@@ -93,7 +93,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
 
     /**
      * Gets the value value for this DescribeLayoutComponent.
-     * 
+     *
      * @return value
      */
     public java.lang.String getValue() {
@@ -103,7 +103,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
 
     /**
      * Sets the value value for this DescribeLayoutComponent.
-     * 
+     *
      * @param value
      */
     public void setValue(java.lang.String value) {
@@ -111,6 +111,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutComponent)) return false;
         DescribeLayoutComponent other = (DescribeLayoutComponent) obj;
@@ -121,20 +122,21 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.displayLines == other.getDisplayLines() &&
-            this.tabOrder == other.getTabOrder() &&
-            ((this.type==null && other.getType()==null) || 
-             (this.type!=null &&
-              this.type.equals(other.getType()))) &&
-            ((this.value==null && other.getValue()==null) || 
-             (this.value!=null &&
-              this.value.equals(other.getValue())));
+        _equals = true &&
+                this.displayLines == other.getDisplayLines() &&
+                this.tabOrder == other.getTabOrder() &&
+                ((this.type == null && other.getType() == null) ||
+                        (this.type != null &&
+                                this.type.equals(other.getType()))) &&
+                ((this.value == null && other.getValue() == null) ||
+                        (this.value != null &&
+                                this.value.equals(other.getValue())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -155,7 +157,7 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeLayoutComponent.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeLayoutComponent.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeLayoutComponent"));
@@ -196,24 +198,24 @@ public class DescribeLayoutComponent  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

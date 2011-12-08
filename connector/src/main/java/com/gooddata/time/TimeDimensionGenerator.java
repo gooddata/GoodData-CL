@@ -29,10 +29,10 @@ import com.gooddata.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 /**
  * Generates the time dimension CSV
+ *
  * @author zd@gooddata.com
  * @version 1.0
  */
@@ -46,23 +46,23 @@ public class TimeDimensionGenerator {
     DecimalFormat nf = new DecimalFormat("00");
 
     public void generate(String outputCsv) throws IOException {
-        String[] header = {"second_of_day","second","minute_of_day","minute","hour", "hour12", "am_pm","time","time12"};
+        String[] header = {"second_of_day", "second", "minute_of_day", "minute", "hour", "hour12", "am_pm", "time", "time12"};
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(outputCsv));
         cw.writeNext(header);
-        for(int sec_of_day = 0; sec_of_day < 24*60*60; sec_of_day ++) {
+        for (int sec_of_day = 0; sec_of_day < 24 * 60 * 60; sec_of_day++) {
             String[] row = new String[header.length];
             row[0] = nf.format(sec_of_day);
             int sec = sec_of_day % 60;
             row[1] = nf.format(sec);
-            int minute_of_day = sec_of_day/60;
+            int minute_of_day = sec_of_day / 60;
             row[2] = nf.format(minute_of_day);
             int minute = minute_of_day % 60;
             row[3] = nf.format(minute);
             int hour = minute_of_day / 60;
             row[4] = nf.format(hour);
-            int hour12 = (hour==12)?(12):(hour % 12);
+            int hour12 = (hour == 12) ? (12) : (hour % 12);
             row[5] = nf.format(hour12);
-            String ampm = (hour < 12)?("AM"):("PM");
+            String ampm = (hour < 12) ? ("AM") : ("PM");
             row[6] = ampm;
             String time = nf.format(hour) + ":" + nf.format(minute) + ":" + nf.format(sec);
             row[7] = time;

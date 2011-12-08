@@ -30,7 +30,6 @@ import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
 import org.jaxen.dom.DOMXPath;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import javax.xml.soap.*;
 import java.io.ByteArrayInputStream;
@@ -86,10 +85,11 @@ public class SoapExecutor {
 
     /**
      * Constructs XPath query over the SOAP message
-     * @param query XPath query
+     *
+     * @param query    XPath query
      * @param response SOAP message
      * @return XPath query
-     * @throws SOAPException in case of SOAP issue
+     * @throws SOAPException  in case of SOAP issue
      * @throws JaxenException XPath problem
      */
     public XPath createXPath(String query, SOAPMessage response) throws SOAPException, JaxenException {
@@ -114,11 +114,12 @@ public class SoapExecutor {
 
     /**
      * Namespace context resolver
+     *
      * @param context namespace context
      * @param element SOAP message element
      */
     protected void addNamespaces(SimpleNamespaceContext context,
-                       SOAPElement element) {
+                                 SOAPElement element) {
         Iterator namespaces = element.getNamespacePrefixes();
         while (namespaces.hasNext()) {
             String prefix = (String) namespaces.next();
@@ -129,9 +130,10 @@ public class SoapExecutor {
 
     /**
      * Dumps the SOAPMessage to String
+     *
      * @param msg the SOAP message
      * @return the String representation of the message
-     * @throws IOException  IO issue
+     * @throws IOException   IO issue
      * @throws SOAPException SOAP issue
      */
     public String dumpSoapMessage(SOAPMessage msg) throws IOException, SOAPException {

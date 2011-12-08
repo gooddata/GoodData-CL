@@ -28,7 +28,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,37 +36,36 @@ import java.util.regex.Pattern;
 
 /**
  * Filters the duplicate messages.
- * @version 1.0
+ *
  * @author zd@gooddata.com
+ * @version 1.0
  */
 public class DuplicateMessageFilter implements MessageFilter {
 
     private static Logger l = Logger.getLogger(DuplicateMessageFilter.class);
-    
-    private Map<String, Long> digestDB = new HashMap<String,Long>();
+
+    private Map<String, Long> digestDB = new HashMap<String, Long>();
     private String dbLocation;
     private final static String DB_FILE_NAME = ".gdn.msg.db";
 
     /**
      * Constructor
+     *
      * @param dbLoc - message db location
      */
     protected DuplicateMessageFilter(String dbLoc) {
         try {
             dbLocation = dbLoc;
             File db = new File(dbLocation);
-            if(!db.exists()) {
+            if (!db.exists()) {
                 createDB();
-            }
-            else {
+            } else {
                 load();
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             l.debug("Can't construct the duplicate message filter.", e);
             throw new InvalidParameterException("Can't construct the duplicate message filter.", e);
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             l.debug("Can't construct the duplicate message filter.", e);
             throw new InvalidParameterException("Can't construct the duplicate message filter.", e);
         }
@@ -75,6 +73,7 @@ public class DuplicateMessageFilter implements MessageFilter {
 
     /**
      * Returns the period in seconds from strings like 12d, 3h, 30m etc.
+     *
      * @param filteringCondition the duration string
      * @return the period length in seconds
      */
@@ -82,47 +81,47 @@ public class DuplicateMessageFilter implements MessageFilter {
         filteringCondition = filteringCondition.trim();
         Pattern rgxp = Pattern.compile("[0-9]+[w|d|h|m]");
         Matcher m = rgxp.matcher(filteringCondition);
-        if(m.find()) {
+        if (m.find()) {
             String c = m.group();
-            char p = c.charAt(c.length()-1);
+            char p = c.charAt(c.length() - 1);
             long d = 0;
-            switch(p) {
+            switch (p) {
                 case 'w':
-                    d = 7*24*60*60;
+                    d = 7 * 24 * 60 * 60;
                     break;
                 case 'd':
-                    d = 24*60*60;
+                    d = 24 * 60 * 60;
                     break;
                 case 'h':
-                    d = 60*60;
+                    d = 60 * 60;
                     break;
                 case 'm':
                     d = 60;
                     break;
                 default:
-                    l.error("Invalid filter condition "+filteringCondition);
-                    throw new InvalidParameterException("Invalid filter condition "+filteringCondition);
+                    l.error("Invalid filter condition " + filteringCondition);
+                    throw new InvalidParameterException("Invalid filter condition " + filteringCondition);
             }
-            String amt = c.substring(0,c.length()-1);
+            String amt = c.substring(0, c.length() - 1);
             long n = Long.parseLong(amt);
-            return n*d*1000;
-        }
-        else {
-            l.error("Invalid filter condition "+filteringCondition);
-            throw new InvalidParameterException("Invalid filter condition "+filteringCondition);                        
+            return n * d * 1000;
+        } else {
+            l.error("Invalid filter condition " + filteringCondition);
+            throw new InvalidParameterException("Invalid filter condition " + filteringCondition);
         }
     }
 
     /**
      * Filter creator
+     *
      * @return new MessageFilter
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public static  MessageFilter createFilter() {
-        final String[] dirs = new String[]{ "user.dir", "user.home" };
-		for (final String d : dirs) {
-			String path = System.getProperty(d) + File.separator + DB_FILE_NAME;
+    public static MessageFilter createFilter() {
+        final String[] dirs = new String[]{"user.dir", "user.home"};
+        for (final String d : dirs) {
+            String path = System.getProperty(d) + File.separator + DB_FILE_NAME;
             return new DuplicateMessageFilter(path);
         }
         String path = System.getProperty("user.dir") + File.separator + DB_FILE_NAME;
@@ -131,18 +130,19 @@ public class DuplicateMessageFilter implements MessageFilter {
 
     /**
      * Returns the filter decision
+     *
      * @param message - the message content
      * @return
      */
     public boolean filter(String message, String filterCondition) {
         Date dt = new Date();
-        long currentTime =  dt.getTime();
+        long currentTime = dt.getTime();
         String digest = DigestUtils.md5Hex(message);
         Long lastTime = digestDB.get(digest);
-        if(lastTime == null)
+        if (lastTime == null)
             return true;
         long per = currentTime - lastTime.longValue();
-        if(per > getPeriod(filterCondition))
+        if (per > getPeriod(filterCondition))
             return true;
         else
             return false;
@@ -150,12 +150,13 @@ public class DuplicateMessageFilter implements MessageFilter {
 
     /**
      * Updates the DB with new message
+     *
      * @param message - the message content
      * @return
      */
     public void update(String message) {
         Date dt = new Date();
-        long currentTime =  dt.getTime();
+        long currentTime = dt.getTime();
         String digest = DigestUtils.md5Hex(message);
         digestDB.put(digest, new Long(currentTime));
     }
@@ -170,30 +171,28 @@ public class DuplicateMessageFilter implements MessageFilter {
 
     public void save() throws IOException {
         File db = new File(dbLocation);
-        if(db.exists() && db.canWrite()) {
+        if (db.exists() && db.canWrite()) {
             ObjectOutputStream w = new ObjectOutputStream(new FileOutputStream(dbLocation));
             w.writeObject(digestDB);
             w.flush();
             w.close();
+        } else {
+            l.debug("Can't write the notification DB at " + dbLocation);
+            throw new InternalErrorException("Can't write the notification DB at " + dbLocation);
         }
-        else {
-            l.debug("Can't write the notification DB at "+dbLocation);
-            throw new InternalErrorException("Can't write the notification DB at "+dbLocation);
-        }
-        l.debug("Saved the notification DB at "+dbLocation);
+        l.debug("Saved the notification DB at " + dbLocation);
     }
 
     private void load() throws IOException, ClassNotFoundException {
         File db = new File(dbLocation);
-        if(db.exists() && db.canRead()) {
+        if (db.exists() && db.canRead()) {
             ObjectInputStream r = new ObjectInputStream(new FileInputStream(db));
-            digestDB = (Map<String, Long>)r.readObject();
+            digestDB = (Map<String, Long>) r.readObject();
+        } else {
+            l.debug("Can't read the notification DB at " + dbLocation);
+            throw new InternalErrorException("Can't read the notification DB at " + dbLocation);
         }
-        else {
-            l.debug("Can't read the notification DB at "+dbLocation);
-            throw new InternalErrorException("Can't read the notification DB at "+dbLocation);
-        }
-        l.debug("Using the notification DB at "+dbLocation);
+        l.debug("Using the notification DB at " + dbLocation);
     }
 
 }

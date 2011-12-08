@@ -49,7 +49,7 @@ public class Column {
      * Incremental load mode. All the existing date will be preserved. The new data are going to be appended.
      */
     public static final String LM_INCREMENTAL = "INCREMENTAL";
-    
+
     /**
      * Constructs a new SLI column
      *
@@ -69,10 +69,10 @@ public class Column {
         mode = column.getString("mode");
         JSONArray pa = column.getJSONArray("populates");
         populates = new String[pa.size()];
-        for(int i=0; i<pa.size(); i++) {
-            populates[i] = pa.getString(i);        
+        for (int i = 0; i < pa.size(); i++) {
+            populates[i] = pa.getString(i);
         }
-        populates = (String[])pa.toArray(populates);
+        populates = (String[]) pa.toArray(populates);
         if (column.containsKey("referenceKey"))
             referenceKey = column.getInt("referenceKey");
     }

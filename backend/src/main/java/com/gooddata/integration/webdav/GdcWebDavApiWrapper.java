@@ -27,7 +27,6 @@ import com.gooddata.exception.HttpMethodException;
 import com.gooddata.exception.HttpMethodNotFinishedYetException;
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.util.FileUtil;
 import com.gooddata.util.NetUtil;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -42,11 +41,12 @@ import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.MultiStatus;
 import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.MkColMethod;
-import org.apache.jackrabbit.webdav.client.methods.MkWorkspaceMethod;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,39 +83,41 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
 
     /**
      * WebDav transfers a local directory to the remote GDC WebDav server
+     *
      * @param archiveName the name of the ZIP archive that is going to be transferred
      * @throws java.io.IOException in case of IO issues
      */
     public void transferDir(String archiveName) throws IOException {
-        l.debug("Transfering archive "+archiveName);
+        l.debug("Transfering archive " + archiveName);
         File file = new File(archiveName);
         String dir = file.getName().split("\\.")[0];
-        MkColMethod mkdir = new MkColMethod(this.config.getUrl()+WEBDAV_URI+dir);
+        MkColMethod mkdir = new MkColMethod(this.config.getUrl() + WEBDAV_URI + dir);
         executeMethodOk(mkdir);
-        PutMethod put = new PutMethod(this.config.getUrl()+WEBDAV_URI+dir+"/"+DEFAULT_ARCHIVE_NAME);
+        PutMethod put = new PutMethod(this.config.getUrl() + WEBDAV_URI + dir + "/" + DEFAULT_ARCHIVE_NAME);
         RequestEntity requestEntity = new InputStreamRequestEntity(new FileInputStream(file));
         put.setRequestEntity(requestEntity);
         executeMethodOk(put);
-        l.debug("Transferred archive "+archiveName);
+        l.debug("Transferred archive " + archiveName);
     }
 
     /**
      * GET the transfer logs from the FTP server
+     *
      * @param remoteDir the primary transfer directory that contains the logs
      * @return Map with the log name and content
      * @throws java.io.IOException in case of IO issues
      */
     public Map<String, String> getTransferLogs(String remoteDir) throws IOException {
         l.debug("Retrieveing transfer logs.");
-        Map<String,String> result = new HashMap<String,String>();
-        PropFindMethod ls = new PropFindMethod(this.config.getUrl()+WEBDAV_URI+remoteDir+"/", DavConstants.PROPFIND_PROPERTY_NAMES, 1);
+        Map<String, String> result = new HashMap<String, String>();
+        PropFindMethod ls = new PropFindMethod(this.config.getUrl() + WEBDAV_URI + remoteDir + "/", DavConstants.PROPFIND_PROPERTY_NAMES, 1);
         String ret = executeMethodOk(ls);
         String[] files = ret.split(",");
-        for(String file : files) {
-            if(file.endsWith(".log") || file.endsWith(".json")) {
-                GetMethod get = new GetMethod(this.config.getUrl()+file);
+        for (String file : files) {
+            if (file.endsWith(".log") || file.endsWith(".json")) {
+                GetMethod get = new GetMethod(this.config.getUrl() + file);
                 String content = executeMethodOk(get);
-                result.put(file, content);                                    
+                result.put(file, content);
             }
         }
         l.debug("Transfer logs retrieved.");
@@ -128,6 +130,7 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
      * @param method the HTTP method
      * @return response body as String
      * @throws com.gooddata.exception.HttpMethodException
+     *
      */
     private String executeMethodOk(HttpMethod method) throws HttpMethodException {
         try {
@@ -141,23 +144,22 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
                 throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
             } else if (method.getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
-                if(method instanceof PropFindMethod) {
-                    PropFindMethod ls = (PropFindMethod)method;
+                if (method instanceof PropFindMethod) {
+                    PropFindMethod ls = (PropFindMethod) method;
                     MultiStatus m = ls.getResponseBodyAsMultiStatus();
                     MultiStatusResponse[] responses = m.getResponses();
                     String resp = "";
-                    for(MultiStatusResponse r : responses) {
-                        if(resp.length() == 0)
+                    for (MultiStatusResponse r : responses) {
+                        if (resp.length() == 0)
                             resp = r.getHref();
                         else
-                            resp += ","+r.getHref(); 
+                            resp += "," + r.getHref();
                     }
                     return resp;
+                } else {
+                    throw new HttpMethodException("Error invoking GoodData WebDav API. MultiStatus from non PROPFIND method.");
                 }
-                else {
-                    throw new HttpMethodException("Error invoking GoodData WebDav API. MultiStatus from non PROPFIND method.");   
-                }
-            }else {
+            } else {
                 String msg = method.getStatusCode() + " " + method.getStatusText();
                 String body = method.getResponseBodyAsString();
                 if (body != null) {
@@ -173,14 +175,14 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
                 throw new HttpMethodException(msg);
             }
         } catch (HttpException e) {
-            l.debug("Error invoking GoodData WebDav API.",e);
-            throw new HttpMethodException("Error invoking GoodData WebDav API.",e);
+            l.debug("Error invoking GoodData WebDav API.", e);
+            throw new HttpMethodException("Error invoking GoodData WebDav API.", e);
         } catch (IOException e) {
-            l.debug("Error invoking GoodData REST API.",e);
-            throw new HttpMethodException("Error invoking GoodData WebDav API.",e);
+            l.debug("Error invoking GoodData REST API.", e);
+            throw new HttpMethodException("Error invoking GoodData WebDav API.", e);
         } catch (DavException e) {
-            l.debug("Error invoking GoodData REST API.",e);
-            throw new HttpMethodException("Error invoking GoodData WebDav API.",e);
+            l.debug("Error invoking GoodData REST API.", e);
+            throw new HttpMethodException("Error invoking GoodData WebDav API.", e);
         }
     }
 

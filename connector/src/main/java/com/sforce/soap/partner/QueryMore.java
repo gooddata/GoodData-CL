@@ -7,21 +7,21 @@
 
 package com.sforce.soap.partner;
 
-public class QueryMore  implements java.io.Serializable {
+public class QueryMore implements java.io.Serializable {
     private java.lang.String queryLocator;
 
     public QueryMore() {
     }
 
     public QueryMore(
-           java.lang.String queryLocator) {
-           this.queryLocator = queryLocator;
+            java.lang.String queryLocator) {
+        this.queryLocator = queryLocator;
     }
 
 
     /**
      * Gets the queryLocator value for this QueryMore.
-     * 
+     *
      * @return queryLocator
      */
     public java.lang.String getQueryLocator() {
@@ -31,7 +31,7 @@ public class QueryMore  implements java.io.Serializable {
 
     /**
      * Sets the queryLocator value for this QueryMore.
-     * 
+     *
      * @param queryLocator
      */
     public void setQueryLocator(java.lang.String queryLocator) {
@@ -39,6 +39,7 @@ public class QueryMore  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof QueryMore)) return false;
         QueryMore other = (QueryMore) obj;
@@ -49,15 +50,16 @@ public class QueryMore  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.queryLocator==null && other.getQueryLocator()==null) || 
-             (this.queryLocator!=null &&
-              this.queryLocator.equals(other.getQueryLocator())));
+        _equals = true &&
+                ((this.queryLocator == null && other.getQueryLocator() == null) ||
+                        (this.queryLocator != null &&
+                                this.queryLocator.equals(other.getQueryLocator())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -73,7 +75,7 @@ public class QueryMore  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(QueryMore.class, true);
+            new org.apache.axis.description.TypeDesc(QueryMore.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">queryMore"));
@@ -96,24 +98,24 @@ public class QueryMore  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

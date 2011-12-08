@@ -23,10 +23,8 @@
 
 package com.gooddata.connector;
 
-import com.gooddata.Constants;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
-import com.gooddata.exception.SfdcException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
@@ -35,24 +33,18 @@ import com.gooddata.processor.ProcessingContext;
 import com.gooddata.transform.Transformer;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
-import com.gooddata.util.StringUtil;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
-
 import javassist.bytecode.annotation.Annotation;
-import org.apache.commons.codec.digest.DigestUtils;
-
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +64,7 @@ public class FacebookConnector extends AbstractConnector implements Connector {
 
     /**
      * Creates a new Facebook connector
+     *
      * @return a new instance of the FacebookConnector
      */
     public static FacebookConnector createConnector() {
@@ -80,10 +73,11 @@ public class FacebookConnector extends AbstractConnector implements Connector {
 
     /**
      * Saves a template of the config file
-     * @param name new schema name
+     *
+     * @param name           new schema name
      * @param configFileName config file name
-     * @param query FQL query
-     * @throws java.io.IOException if there is a problem with writing the config file
+     * @param query          FQL query
+     * @throws java.io.IOException   if there is a problem with writing the config file
      * @throws java.sql.SQLException if there is a problem with the db
      */
     public static void saveConfigTemplate(String name, String configFileName, String query, String folder)
@@ -91,12 +85,12 @@ public class FacebookConnector extends AbstractConnector implements Connector {
         l.debug("Saving Facebook config template.");
         final SourceSchema s = SourceSchema.createSchema(name);
         List<String> fields = getSelectColumns(query);
-        for(String field : fields) {
+        for (String field : fields) {
             SourceColumn column = new SourceColumn(field, SourceColumn.LDM_TYPE_ATTRIBUTE, field);
-            if(folder != null && folder.length()>0)
+            if (folder != null && folder.length() > 0)
                 column.setFolder(folder);
             s.addColumn(column);
-            l.debug("GenerateJdbcConfig: Processing column '"+field+"' type '"+SourceColumn.LDM_TYPE_ATTRIBUTE+"'");
+            l.debug("GenerateJdbcConfig: Processing column '" + field + "' type '" + SourceColumn.LDM_TYPE_ATTRIBUTE + "'");
         }
         s.writeConfig(new File(configFileName));
         l.debug("Saved Facebook config template.");
@@ -107,22 +101,21 @@ public class FacebookConnector extends AbstractConnector implements Connector {
         List<String> ret = new ArrayList<String>();
         Pattern regexp = Pattern.compile("select.*?from");
         Matcher m = regexp.matcher(query.toLowerCase());
-        if(m.find()) {
+        if (m.find()) {
             String sp = m.group();
-            sp = sp.substring(6,sp.length()-4).trim();
+            sp = sp.substring(6, sp.length() - 4).trim();
             String[] fields = sp.split(",");
-            for(String field : fields) {
+            for (String field : fields) {
                 field = field.trim();
-                if(field.length()<=0) {
-                    l.debug("The passed string '"+query+"' doesn't have the FQL SELECT ... FROM structure!");
-                    throw new InvalidParameterException("The passed string '"+query+"' doesn't have the FQL SELECT ... FROM structure!");
+                if (field.length() <= 0) {
+                    l.debug("The passed string '" + query + "' doesn't have the FQL SELECT ... FROM structure!");
+                    throw new InvalidParameterException("The passed string '" + query + "' doesn't have the FQL SELECT ... FROM structure!");
                 }
                 ret.add(field);
             }
-        }
-        else {
-            l.debug("The passed string '"+query+"' doesn't have the FQL SELECT ... FROM structure!");
-            throw new InvalidParameterException("The passed string '"+query+"' doesn't have the FQL SELECT ... FROM structure!");
+        } else {
+            l.debug("The passed string '" + query + "' doesn't have the FQL SELECT ... FROM structure!");
+            throw new InvalidParameterException("The passed string '" + query + "' doesn't have the FQL SELECT ... FROM structure!");
         }
         return ret;
     }
@@ -136,8 +129,8 @@ public class FacebookConnector extends AbstractConnector implements Connector {
             AnnotationsAttribute attribute = new AnnotationsAttribute(cf.getConstPool(), AnnotationsAttribute.visibleTag);
             Annotation ant = new Annotation(cf.getConstPool(), ClassPool.getDefault().get("com.restfb.Facebook"));
             attribute.addAnnotation(ant);
-            for(String col : cols) {
-                CtField f = CtField.make("public String "+col+";", c);
+            for (String col : cols) {
+                CtField f = CtField.make("public String " + col + ";", c);
                 f.getFieldInfo().addAttribute(attribute);
                 c.addField(f);
             }
@@ -154,7 +147,7 @@ public class FacebookConnector extends AbstractConnector implements Connector {
     private String extractValue(Object o, String fieldName) throws IOException {
         try {
             Object value = o.getClass().getDeclaredField(fieldName).get(o);
-            if(value != null)
+            if (value != null)
                 return value.toString();
             else
                 return "";
@@ -175,7 +168,7 @@ public class FacebookConnector extends AbstractConnector implements Connector {
     public void extract(String file, final boolean transform) throws IOException {
         File dataFile = new File(file);
 
-        l.debug("Extracting Facebook data to file="+dataFile.getAbsolutePath());
+        l.debug("Extracting Facebook data to file=" + dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
         Transformer t = Transformer.create(schema);
         String[] header = t.getHeader(true);
@@ -188,20 +181,19 @@ public class FacebookConnector extends AbstractConnector implements Connector {
 
         List result = fc.executeQuery(query, resultClass);
 
-        if(result != null && result.size() > 0) {
+        if (result != null && result.size() > 0) {
             l.debug("Started retrieving Facebook data.");
-            for(Object o : result) {
+            for (Object o : result) {
                 String[] row = new String[cols.size()];
-                for(int i=0; i< cols.size(); i++) {
+                for (int i = 0; i < cols.size(); i++) {
                     row[i] = extractValue(o, cols.get(i));
                 }
-                if(transform)
+                if (transform)
                     row = t.transformRow(row, DATE_LENGTH_UNRESTRICTED);
                 cw.writeNext(row);
                 cw.flush();
             }
-        }
-        else {
+        } else {
             l.debug("The Facebook query hasn't returned any row.");
             throw new IOException("The Facebook query hasn't returned any row.");
         }
@@ -214,16 +206,13 @@ public class FacebookConnector extends AbstractConnector implements Connector {
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
         try {
-            if(c.match("GenerateFacebookConfig")) {
+            if (c.match("GenerateFacebookConfig")) {
                 generateConfig(c, cli, ctx);
-            }
-            else if(c.match("LoadFacebook") || c.match("UseFacebook")) {
+            } else if (c.match("LoadFacebook") || c.match("UseFacebook")) {
                 load(c, cli, ctx);
-            }
-            else
+            } else
                 return super.processCommand(c, cli, ctx);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
         return true;
@@ -231,8 +220,9 @@ public class FacebookConnector extends AbstractConnector implements Connector {
 
     /**
      * Loads new Facebook file command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
      */
@@ -255,8 +245,9 @@ public class FacebookConnector extends AbstractConnector implements Connector {
 
     /**
      * Generate new config file from CSV command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
      */
@@ -264,13 +255,12 @@ public class FacebookConnector extends AbstractConnector implements Connector {
         String name = c.getParamMandatory("name");
         String configFile = c.getParamMandatory("configFile");
         String query = c.getParamMandatory("query");
-    	String folder = c.getParam( "folder");
+        String folder = c.getParam("folder");
         c.paramsProcessed();
 
         FacebookConnector.saveConfigTemplate(name, configFile, query, folder);
-        l.info("Facebook Connector configuration successfully generated. See config file: "+configFile);
+        l.info("Facebook Connector configuration successfully generated. See config file: " + configFile);
     }
-
 
 
     public String getOauthToken() {

@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class SetPassword  implements java.io.Serializable {
+public class SetPassword implements java.io.Serializable {
     private java.lang.String userId;
 
     private java.lang.String password;
@@ -16,16 +16,16 @@ public class SetPassword  implements java.io.Serializable {
     }
 
     public SetPassword(
-           java.lang.String userId,
-           java.lang.String password) {
-           this.userId = userId;
-           this.password = password;
+            java.lang.String userId,
+            java.lang.String password) {
+        this.userId = userId;
+        this.password = password;
     }
 
 
     /**
      * Gets the userId value for this SetPassword.
-     * 
+     *
      * @return userId
      */
     public java.lang.String getUserId() {
@@ -35,7 +35,7 @@ public class SetPassword  implements java.io.Serializable {
 
     /**
      * Sets the userId value for this SetPassword.
-     * 
+     *
      * @param userId
      */
     public void setUserId(java.lang.String userId) {
@@ -45,7 +45,7 @@ public class SetPassword  implements java.io.Serializable {
 
     /**
      * Gets the password value for this SetPassword.
-     * 
+     *
      * @return password
      */
     public java.lang.String getPassword() {
@@ -55,7 +55,7 @@ public class SetPassword  implements java.io.Serializable {
 
     /**
      * Sets the password value for this SetPassword.
-     * 
+     *
      * @param password
      */
     public void setPassword(java.lang.String password) {
@@ -63,6 +63,7 @@ public class SetPassword  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SetPassword)) return false;
         SetPassword other = (SetPassword) obj;
@@ -73,18 +74,19 @@ public class SetPassword  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.userId==null && other.getUserId()==null) || 
-             (this.userId!=null &&
-              this.userId.equals(other.getUserId()))) &&
-            ((this.password==null && other.getPassword()==null) || 
-             (this.password!=null &&
-              this.password.equals(other.getPassword())));
+        _equals = true &&
+                ((this.userId == null && other.getUserId() == null) ||
+                        (this.userId != null &&
+                                this.userId.equals(other.getUserId()))) &&
+                ((this.password == null && other.getPassword() == null) ||
+                        (this.password != null &&
+                                this.password.equals(other.getPassword())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -103,7 +105,7 @@ public class SetPassword  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(SetPassword.class, true);
+            new org.apache.axis.description.TypeDesc(SetPassword.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">setPassword"));
@@ -132,24 +134,24 @@ public class SetPassword  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

@@ -1,25 +1,25 @@
 <!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
 
 <schema>
-  <name>facebook</name>
-  <columns>
-    <column>
-      <name>gid</name>
-      <title>GID</title>
-      <ldmType>CONNECTION_POINT</ldmType>
-    </column>
-    <column>
-      <name>name</name>
-      <title>NAME</title>
-      <ldmType>ATTRIBUTE</ldmType>
-    </column>
-    <column>
-      <name>last_updated</name>
-      <title>LAST UPDATED</title>
-      <ldmType>DATE</ldmType>
-      <datetime>true</datetime>
-      <format>UNIXTIME</format>
-      <schemaReference>Last Updated</schemaReference>
-    </column>
-  </columns>
+    <name>facebook</name>
+    <columns>
+        <column>
+            <name>gid</name>
+            <title>GID</title>
+            <ldmType>CONNECTION_POINT</ldmType>
+        </column>
+        <column>
+            <name>name</name>
+            <title>NAME</title>
+            <ldmType>ATTRIBUTE</ldmType>
+        </column>
+        <column>
+            <name>last_updated</name>
+            <title>LAST UPDATED</title>
+            <ldmType>DATE</ldmType>
+            <datetime>true</datetime>
+            <format>UNIXTIME</format>
+            <schemaReference>Last Updated</schemaReference>
+        </column>
+    </columns>
 </schema>

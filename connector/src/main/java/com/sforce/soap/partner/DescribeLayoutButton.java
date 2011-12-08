@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeLayoutButton  implements java.io.Serializable {
+public class DescribeLayoutButton implements java.io.Serializable {
     private boolean custom;
 
     private java.lang.String label;
@@ -18,18 +18,18 @@ public class DescribeLayoutButton  implements java.io.Serializable {
     }
 
     public DescribeLayoutButton(
-           boolean custom,
-           java.lang.String label,
-           java.lang.String name) {
-           this.custom = custom;
-           this.label = label;
-           this.name = name;
+            boolean custom,
+            java.lang.String label,
+            java.lang.String name) {
+        this.custom = custom;
+        this.label = label;
+        this.name = name;
     }
 
 
     /**
      * Gets the custom value for this DescribeLayoutButton.
-     * 
+     *
      * @return custom
      */
     public boolean isCustom() {
@@ -39,7 +39,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
 
     /**
      * Sets the custom value for this DescribeLayoutButton.
-     * 
+     *
      * @param custom
      */
     public void setCustom(boolean custom) {
@@ -49,7 +49,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
 
     /**
      * Gets the label value for this DescribeLayoutButton.
-     * 
+     *
      * @return label
      */
     public java.lang.String getLabel() {
@@ -59,7 +59,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
 
     /**
      * Sets the label value for this DescribeLayoutButton.
-     * 
+     *
      * @param label
      */
     public void setLabel(java.lang.String label) {
@@ -69,7 +69,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
 
     /**
      * Gets the name value for this DescribeLayoutButton.
-     * 
+     *
      * @return name
      */
     public java.lang.String getName() {
@@ -79,7 +79,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
 
     /**
      * Sets the name value for this DescribeLayoutButton.
-     * 
+     *
      * @param name
      */
     public void setName(java.lang.String name) {
@@ -87,6 +87,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutButton)) return false;
         DescribeLayoutButton other = (DescribeLayoutButton) obj;
@@ -97,19 +98,20 @@ public class DescribeLayoutButton  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.custom == other.isCustom() &&
-            ((this.label==null && other.getLabel()==null) || 
-             (this.label!=null &&
-              this.label.equals(other.getLabel()))) &&
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName())));
+        _equals = true &&
+                this.custom == other.isCustom() &&
+                ((this.label == null && other.getLabel() == null) ||
+                        (this.label != null &&
+                                this.label.equals(other.getLabel()))) &&
+                ((this.name == null && other.getName() == null) ||
+                        (this.name != null &&
+                                this.name.equals(other.getName())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -129,7 +131,7 @@ public class DescribeLayoutButton  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeLayoutButton.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeLayoutButton.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeLayoutButton"));
@@ -164,24 +166,24 @@ public class DescribeLayoutButton  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

@@ -37,6 +37,7 @@ public class PropertySecureVault implements SecureVault {
 
     /**
      * Constructor
+     *
      * @param propertyFile file for storing the passwords
      */
     public PropertySecureVault(String propertyFile) throws IOException {
@@ -47,7 +48,7 @@ public class PropertySecureVault implements SecureVault {
      * @inheritDoc
      */
     public String getPassword(String username) {
-        return (String)this.properties.get(username);
+        return (String) this.properties.get(username);
     }
 
     public String getSecureFile() {

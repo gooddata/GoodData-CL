@@ -35,7 +35,6 @@ import java.util.List;
  * A simple CSV reader written from the scratch to replace Bytecode's CSV reader
  *
  * @author Pavel Kolesnikov
- *
  */
 public class CSVReader implements Closeable {
 
@@ -56,7 +55,7 @@ public class CSVReader implements Closeable {
 
     // status variables
     private final List<String> openRecord = new ArrayList<String>();
-    private final StringBuffer openField  = new StringBuffer();
+    private final StringBuffer openField = new StringBuffer();
     private char lastChar = 0;
     private boolean quotedField = false;
     private int quotedFieldStartRow = 0;
@@ -72,8 +71,7 @@ public class CSVReader implements Closeable {
     /**
      * Constructs CSVReader using a comma for the separator.
      *
-     * @param reader
-     *            the reader to an underlying CSV source.
+     * @param reader the reader to an underlying CSV source.
      */
     public CSVReader(Reader r) {
         this(r, DEFAULT_SEPARATOR, DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER);
@@ -82,10 +80,8 @@ public class CSVReader implements Closeable {
     /**
      * Constructs CSVReader with supplied separator.
      *
-     * @param reader
-     *            the reader to an underlying CSV source.
-     * @param separator
-     *            the delimiter to use for separating entries.
+     * @param reader    the reader to an underlying CSV source.
+     * @param separator the delimiter to use for separating entries.
      */
     public CSVReader(Reader r, char separator) {
         this(r, separator, DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER);
@@ -94,12 +90,9 @@ public class CSVReader implements Closeable {
     /**
      * Constructs CSVReader with supplied separator and quote char.
      *
-     * @param reader
-     *            the reader to an underlying CSV source.
-     * @param separator
-     *            the delimiter to use for separating entries
-     * @param quotechar
-     *            the character to use for quoted elements
+     * @param reader    the reader to an underlying CSV source.
+     * @param separator the delimiter to use for separating entries
+     * @param quotechar the character to use for quoted elements
      */
     public CSVReader(Reader r, char separator, char quotechar) {
         this(r, separator, quotechar, DEFAULT_ESCAPE_CHARACTER);
@@ -108,14 +101,10 @@ public class CSVReader implements Closeable {
     /**
      * Constructs CSVReader with supplied separator and quote char.
      *
-     * @param reader
-     *            the reader to an underlying CSV source.
-     * @param separator
-     *            the delimiter to use for separating entries
-     * @param quotechar
-     *            the character to use for quoted elements
-     * @param escape
-     *            the character to use for escaping a separator or quote
+     * @param reader    the reader to an underlying CSV source.
+     * @param separator the delimiter to use for separating entries
+     * @param quotechar the character to use for quoted elements
+     * @param escape    the character to use for escaping a separator or quote
      */
 
     public CSVReader(Reader r, char separator, char quotechar, char escape) {
@@ -135,9 +124,7 @@ public class CSVReader implements Closeable {
      *
      * @return a List of String[], with each String[] representing a line of the
      *         file.
-     *
-     * @throws IOException
-     *             if bad things happen during the read
+     * @throws IOException if bad things happen during the read
      */
     public List<String[]> readAll() throws IOException {
 
@@ -154,9 +141,7 @@ public class CSVReader implements Closeable {
      *
      * @return a string array with each comma-separated element as a separate
      *         entry.
-     *
-     * @throws IOException
-     *             if bad things happen during the read
+     * @throws IOException if bad things happen during the read
      */
     public String[] readNext() throws IOException {
         while (recordsQueue.isEmpty() && !eof) {
@@ -331,7 +316,7 @@ public class CSVReader implements Closeable {
      *
      * @throws IOException if the close fails
      */
-    public void close() throws IOException{
+    public void close() throws IOException {
         r.close();
     }
 

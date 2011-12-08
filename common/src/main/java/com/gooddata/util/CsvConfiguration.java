@@ -6,8 +6,7 @@ package com.gooddata.util;
 /**
  * Encapsulates CSV configuration.
  */
-public class CsvConfiguration
-{
+public class CsvConfiguration {
     private final boolean hasHeader;
     private final char separator;
     private final char quotechar;
@@ -48,7 +47,6 @@ public class CsvConfiguration
     public String toString() {
         return "CsvConfiguration [hasHeader=" + hasHeader + ", separator=" + separator + ", quotechar=" + quotechar + ", escape=" + escape + "]";
     }
-
 
 
 }

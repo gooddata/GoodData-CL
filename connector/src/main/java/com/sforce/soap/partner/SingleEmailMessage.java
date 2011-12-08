@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implements java.io.Serializable {
+public class SingleEmailMessage extends com.sforce.soap.partner.Email implements java.io.Serializable {
     private java.lang.String[] bccAddresses;
 
     private java.lang.String[] ccAddresses;
@@ -40,35 +40,35 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
     }
 
     public SingleEmailMessage(
-           java.lang.Boolean bccSender,
-           com.sforce.soap.partner.EmailPriority emailPriority,
-           java.lang.String replyTo,
-           java.lang.Boolean saveAsActivity,
-           java.lang.String senderDisplayName,
-           java.lang.String subject,
-           java.lang.Boolean useSignature,
-           java.lang.String[] bccAddresses,
-           java.lang.String[] ccAddresses,
-           java.lang.String charset,
-           java.lang.String[] documentAttachments,
-           java.lang.String htmlBody,
-           java.lang.String inReplyTo,
-           com.sforce.soap.partner.EmailFileAttachment[] fileAttachments,
-           java.lang.String orgWideEmailAddressId,
-           java.lang.String plainTextBody,
-           java.lang.String references,
-           java.lang.String targetObjectId,
-           java.lang.String templateId,
-           java.lang.String[] toAddresses,
-           java.lang.String whatId) {
+            java.lang.Boolean bccSender,
+            com.sforce.soap.partner.EmailPriority emailPriority,
+            java.lang.String replyTo,
+            java.lang.Boolean saveAsActivity,
+            java.lang.String senderDisplayName,
+            java.lang.String subject,
+            java.lang.Boolean useSignature,
+            java.lang.String[] bccAddresses,
+            java.lang.String[] ccAddresses,
+            java.lang.String charset,
+            java.lang.String[] documentAttachments,
+            java.lang.String htmlBody,
+            java.lang.String inReplyTo,
+            com.sforce.soap.partner.EmailFileAttachment[] fileAttachments,
+            java.lang.String orgWideEmailAddressId,
+            java.lang.String plainTextBody,
+            java.lang.String references,
+            java.lang.String targetObjectId,
+            java.lang.String templateId,
+            java.lang.String[] toAddresses,
+            java.lang.String whatId) {
         super(
-            bccSender,
-            emailPriority,
-            replyTo,
-            saveAsActivity,
-            senderDisplayName,
-            subject,
-            useSignature);
+                bccSender,
+                emailPriority,
+                replyTo,
+                saveAsActivity,
+                senderDisplayName,
+                subject,
+                useSignature);
         this.bccAddresses = bccAddresses;
         this.ccAddresses = ccAddresses;
         this.charset = charset;
@@ -88,7 +88,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the bccAddresses value for this SingleEmailMessage.
-     * 
+     *
      * @return bccAddresses
      */
     public java.lang.String[] getBccAddresses() {
@@ -98,7 +98,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the bccAddresses value for this SingleEmailMessage.
-     * 
+     *
      * @param bccAddresses
      */
     public void setBccAddresses(java.lang.String[] bccAddresses) {
@@ -116,7 +116,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the ccAddresses value for this SingleEmailMessage.
-     * 
+     *
      * @return ccAddresses
      */
     public java.lang.String[] getCcAddresses() {
@@ -126,7 +126,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the ccAddresses value for this SingleEmailMessage.
-     * 
+     *
      * @param ccAddresses
      */
     public void setCcAddresses(java.lang.String[] ccAddresses) {
@@ -144,7 +144,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the charset value for this SingleEmailMessage.
-     * 
+     *
      * @return charset
      */
     public java.lang.String getCharset() {
@@ -154,7 +154,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the charset value for this SingleEmailMessage.
-     * 
+     *
      * @param charset
      */
     public void setCharset(java.lang.String charset) {
@@ -164,7 +164,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the documentAttachments value for this SingleEmailMessage.
-     * 
+     *
      * @return documentAttachments
      */
     public java.lang.String[] getDocumentAttachments() {
@@ -174,7 +174,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the documentAttachments value for this SingleEmailMessage.
-     * 
+     *
      * @param documentAttachments
      */
     public void setDocumentAttachments(java.lang.String[] documentAttachments) {
@@ -192,7 +192,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the htmlBody value for this SingleEmailMessage.
-     * 
+     *
      * @return htmlBody
      */
     public java.lang.String getHtmlBody() {
@@ -202,7 +202,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the htmlBody value for this SingleEmailMessage.
-     * 
+     *
      * @param htmlBody
      */
     public void setHtmlBody(java.lang.String htmlBody) {
@@ -212,7 +212,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the inReplyTo value for this SingleEmailMessage.
-     * 
+     *
      * @return inReplyTo
      */
     public java.lang.String getInReplyTo() {
@@ -222,7 +222,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the inReplyTo value for this SingleEmailMessage.
-     * 
+     *
      * @param inReplyTo
      */
     public void setInReplyTo(java.lang.String inReplyTo) {
@@ -232,7 +232,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the fileAttachments value for this SingleEmailMessage.
-     * 
+     *
      * @return fileAttachments
      */
     public com.sforce.soap.partner.EmailFileAttachment[] getFileAttachments() {
@@ -242,7 +242,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the fileAttachments value for this SingleEmailMessage.
-     * 
+     *
      * @param fileAttachments
      */
     public void setFileAttachments(com.sforce.soap.partner.EmailFileAttachment[] fileAttachments) {
@@ -260,7 +260,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the orgWideEmailAddressId value for this SingleEmailMessage.
-     * 
+     *
      * @return orgWideEmailAddressId
      */
     public java.lang.String getOrgWideEmailAddressId() {
@@ -270,7 +270,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the orgWideEmailAddressId value for this SingleEmailMessage.
-     * 
+     *
      * @param orgWideEmailAddressId
      */
     public void setOrgWideEmailAddressId(java.lang.String orgWideEmailAddressId) {
@@ -280,7 +280,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the plainTextBody value for this SingleEmailMessage.
-     * 
+     *
      * @return plainTextBody
      */
     public java.lang.String getPlainTextBody() {
@@ -290,7 +290,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the plainTextBody value for this SingleEmailMessage.
-     * 
+     *
      * @param plainTextBody
      */
     public void setPlainTextBody(java.lang.String plainTextBody) {
@@ -300,7 +300,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the references value for this SingleEmailMessage.
-     * 
+     *
      * @return references
      */
     public java.lang.String getReferences() {
@@ -310,7 +310,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the references value for this SingleEmailMessage.
-     * 
+     *
      * @param references
      */
     public void setReferences(java.lang.String references) {
@@ -320,7 +320,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the targetObjectId value for this SingleEmailMessage.
-     * 
+     *
      * @return targetObjectId
      */
     public java.lang.String getTargetObjectId() {
@@ -330,7 +330,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the targetObjectId value for this SingleEmailMessage.
-     * 
+     *
      * @param targetObjectId
      */
     public void setTargetObjectId(java.lang.String targetObjectId) {
@@ -340,7 +340,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the templateId value for this SingleEmailMessage.
-     * 
+     *
      * @return templateId
      */
     public java.lang.String getTemplateId() {
@@ -350,7 +350,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the templateId value for this SingleEmailMessage.
-     * 
+     *
      * @param templateId
      */
     public void setTemplateId(java.lang.String templateId) {
@@ -360,7 +360,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the toAddresses value for this SingleEmailMessage.
-     * 
+     *
      * @return toAddresses
      */
     public java.lang.String[] getToAddresses() {
@@ -370,7 +370,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the toAddresses value for this SingleEmailMessage.
-     * 
+     *
      * @param toAddresses
      */
     public void setToAddresses(java.lang.String[] toAddresses) {
@@ -388,7 +388,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Gets the whatId value for this SingleEmailMessage.
-     * 
+     *
      * @return whatId
      */
     public java.lang.String getWhatId() {
@@ -398,7 +398,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     /**
      * Sets the whatId value for this SingleEmailMessage.
-     * 
+     *
      * @param whatId
      */
     public void setWhatId(java.lang.String whatId) {
@@ -406,6 +406,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SingleEmailMessage)) return false;
         SingleEmailMessage other = (SingleEmailMessage) obj;
@@ -416,54 +417,55 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            ((this.bccAddresses==null && other.getBccAddresses()==null) || 
-             (this.bccAddresses!=null &&
-              java.util.Arrays.equals(this.bccAddresses, other.getBccAddresses()))) &&
-            ((this.ccAddresses==null && other.getCcAddresses()==null) || 
-             (this.ccAddresses!=null &&
-              java.util.Arrays.equals(this.ccAddresses, other.getCcAddresses()))) &&
-            ((this.charset==null && other.getCharset()==null) || 
-             (this.charset!=null &&
-              this.charset.equals(other.getCharset()))) &&
-            ((this.documentAttachments==null && other.getDocumentAttachments()==null) || 
-             (this.documentAttachments!=null &&
-              java.util.Arrays.equals(this.documentAttachments, other.getDocumentAttachments()))) &&
-            ((this.htmlBody==null && other.getHtmlBody()==null) || 
-             (this.htmlBody!=null &&
-              this.htmlBody.equals(other.getHtmlBody()))) &&
-            ((this.inReplyTo==null && other.getInReplyTo()==null) || 
-             (this.inReplyTo!=null &&
-              this.inReplyTo.equals(other.getInReplyTo()))) &&
-            ((this.fileAttachments==null && other.getFileAttachments()==null) || 
-             (this.fileAttachments!=null &&
-              java.util.Arrays.equals(this.fileAttachments, other.getFileAttachments()))) &&
-            ((this.orgWideEmailAddressId==null && other.getOrgWideEmailAddressId()==null) || 
-             (this.orgWideEmailAddressId!=null &&
-              this.orgWideEmailAddressId.equals(other.getOrgWideEmailAddressId()))) &&
-            ((this.plainTextBody==null && other.getPlainTextBody()==null) || 
-             (this.plainTextBody!=null &&
-              this.plainTextBody.equals(other.getPlainTextBody()))) &&
-            ((this.references==null && other.getReferences()==null) || 
-             (this.references!=null &&
-              this.references.equals(other.getReferences()))) &&
-            ((this.targetObjectId==null && other.getTargetObjectId()==null) || 
-             (this.targetObjectId!=null &&
-              this.targetObjectId.equals(other.getTargetObjectId()))) &&
-            ((this.templateId==null && other.getTemplateId()==null) || 
-             (this.templateId!=null &&
-              this.templateId.equals(other.getTemplateId()))) &&
-            ((this.toAddresses==null && other.getToAddresses()==null) || 
-             (this.toAddresses!=null &&
-              java.util.Arrays.equals(this.toAddresses, other.getToAddresses()))) &&
-            ((this.whatId==null && other.getWhatId()==null) || 
-             (this.whatId!=null &&
-              this.whatId.equals(other.getWhatId())));
+        _equals = super.equals(obj) &&
+                ((this.bccAddresses == null && other.getBccAddresses() == null) ||
+                        (this.bccAddresses != null &&
+                                java.util.Arrays.equals(this.bccAddresses, other.getBccAddresses()))) &&
+                ((this.ccAddresses == null && other.getCcAddresses() == null) ||
+                        (this.ccAddresses != null &&
+                                java.util.Arrays.equals(this.ccAddresses, other.getCcAddresses()))) &&
+                ((this.charset == null && other.getCharset() == null) ||
+                        (this.charset != null &&
+                                this.charset.equals(other.getCharset()))) &&
+                ((this.documentAttachments == null && other.getDocumentAttachments() == null) ||
+                        (this.documentAttachments != null &&
+                                java.util.Arrays.equals(this.documentAttachments, other.getDocumentAttachments()))) &&
+                ((this.htmlBody == null && other.getHtmlBody() == null) ||
+                        (this.htmlBody != null &&
+                                this.htmlBody.equals(other.getHtmlBody()))) &&
+                ((this.inReplyTo == null && other.getInReplyTo() == null) ||
+                        (this.inReplyTo != null &&
+                                this.inReplyTo.equals(other.getInReplyTo()))) &&
+                ((this.fileAttachments == null && other.getFileAttachments() == null) ||
+                        (this.fileAttachments != null &&
+                                java.util.Arrays.equals(this.fileAttachments, other.getFileAttachments()))) &&
+                ((this.orgWideEmailAddressId == null && other.getOrgWideEmailAddressId() == null) ||
+                        (this.orgWideEmailAddressId != null &&
+                                this.orgWideEmailAddressId.equals(other.getOrgWideEmailAddressId()))) &&
+                ((this.plainTextBody == null && other.getPlainTextBody() == null) ||
+                        (this.plainTextBody != null &&
+                                this.plainTextBody.equals(other.getPlainTextBody()))) &&
+                ((this.references == null && other.getReferences() == null) ||
+                        (this.references != null &&
+                                this.references.equals(other.getReferences()))) &&
+                ((this.targetObjectId == null && other.getTargetObjectId() == null) ||
+                        (this.targetObjectId != null &&
+                                this.targetObjectId.equals(other.getTargetObjectId()))) &&
+                ((this.templateId == null && other.getTemplateId() == null) ||
+                        (this.templateId != null &&
+                                this.templateId.equals(other.getTemplateId()))) &&
+                ((this.toAddresses == null && other.getToAddresses() == null) ||
+                        (this.toAddresses != null &&
+                                java.util.Arrays.equals(this.toAddresses, other.getToAddresses()))) &&
+                ((this.whatId == null && other.getWhatId() == null) ||
+                        (this.whatId != null &&
+                                this.whatId.equals(other.getWhatId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -471,23 +473,23 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
         __hashCodeCalc = true;
         int _hashCode = super.hashCode();
         if (getBccAddresses() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getBccAddresses());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getBccAddresses());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getBccAddresses(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
         }
         if (getCcAddresses() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getCcAddresses());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getCcAddresses());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getCcAddresses(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -496,12 +498,12 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
             _hashCode += getCharset().hashCode();
         }
         if (getDocumentAttachments() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getDocumentAttachments());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getDocumentAttachments());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getDocumentAttachments(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -513,12 +515,12 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
             _hashCode += getInReplyTo().hashCode();
         }
         if (getFileAttachments() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getFileAttachments());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getFileAttachments());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getFileAttachments(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -539,12 +541,12 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
             _hashCode += getTemplateId().hashCode();
         }
         if (getToAddresses() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getToAddresses());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getToAddresses());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getToAddresses(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -558,7 +560,7 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(SingleEmailMessage.class, true);
+            new org.apache.axis.description.TypeDesc(SingleEmailMessage.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "SingleEmailMessage"));
@@ -669,24 +671,24 @@ public class SingleEmailMessage  extends com.sforce.soap.partner.Email  implemen
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

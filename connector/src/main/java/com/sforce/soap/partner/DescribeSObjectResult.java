@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeSObjectResult  implements java.io.Serializable {
+public class DescribeSObjectResult implements java.io.Serializable {
     private boolean activateable;
 
     private com.sforce.soap.partner.ChildRelationship[] childRelationships;
@@ -64,64 +64,64 @@ public class DescribeSObjectResult  implements java.io.Serializable {
     }
 
     public DescribeSObjectResult(
-           boolean activateable,
-           com.sforce.soap.partner.ChildRelationship[] childRelationships,
-           boolean createable,
-           boolean custom,
-           boolean customSetting,
-           boolean deletable,
-           boolean deprecatedAndHidden,
-           boolean feedEnabled,
-           com.sforce.soap.partner.Field[] fields,
-           java.lang.String keyPrefix,
-           java.lang.String label,
-           java.lang.String labelPlural,
-           boolean layoutable,
-           boolean mergeable,
-           java.lang.String name,
-           boolean queryable,
-           com.sforce.soap.partner.RecordTypeInfo[] recordTypeInfos,
-           boolean replicateable,
-           boolean retrieveable,
-           boolean searchable,
-           java.lang.Boolean triggerable,
-           boolean undeletable,
-           boolean updateable,
-           java.lang.String urlDetail,
-           java.lang.String urlEdit,
-           java.lang.String urlNew) {
-           this.activateable = activateable;
-           this.childRelationships = childRelationships;
-           this.createable = createable;
-           this.custom = custom;
-           this.customSetting = customSetting;
-           this.deletable = deletable;
-           this.deprecatedAndHidden = deprecatedAndHidden;
-           this.feedEnabled = feedEnabled;
-           this.fields = fields;
-           this.keyPrefix = keyPrefix;
-           this.label = label;
-           this.labelPlural = labelPlural;
-           this.layoutable = layoutable;
-           this.mergeable = mergeable;
-           this.name = name;
-           this.queryable = queryable;
-           this.recordTypeInfos = recordTypeInfos;
-           this.replicateable = replicateable;
-           this.retrieveable = retrieveable;
-           this.searchable = searchable;
-           this.triggerable = triggerable;
-           this.undeletable = undeletable;
-           this.updateable = updateable;
-           this.urlDetail = urlDetail;
-           this.urlEdit = urlEdit;
-           this.urlNew = urlNew;
+            boolean activateable,
+            com.sforce.soap.partner.ChildRelationship[] childRelationships,
+            boolean createable,
+            boolean custom,
+            boolean customSetting,
+            boolean deletable,
+            boolean deprecatedAndHidden,
+            boolean feedEnabled,
+            com.sforce.soap.partner.Field[] fields,
+            java.lang.String keyPrefix,
+            java.lang.String label,
+            java.lang.String labelPlural,
+            boolean layoutable,
+            boolean mergeable,
+            java.lang.String name,
+            boolean queryable,
+            com.sforce.soap.partner.RecordTypeInfo[] recordTypeInfos,
+            boolean replicateable,
+            boolean retrieveable,
+            boolean searchable,
+            java.lang.Boolean triggerable,
+            boolean undeletable,
+            boolean updateable,
+            java.lang.String urlDetail,
+            java.lang.String urlEdit,
+            java.lang.String urlNew) {
+        this.activateable = activateable;
+        this.childRelationships = childRelationships;
+        this.createable = createable;
+        this.custom = custom;
+        this.customSetting = customSetting;
+        this.deletable = deletable;
+        this.deprecatedAndHidden = deprecatedAndHidden;
+        this.feedEnabled = feedEnabled;
+        this.fields = fields;
+        this.keyPrefix = keyPrefix;
+        this.label = label;
+        this.labelPlural = labelPlural;
+        this.layoutable = layoutable;
+        this.mergeable = mergeable;
+        this.name = name;
+        this.queryable = queryable;
+        this.recordTypeInfos = recordTypeInfos;
+        this.replicateable = replicateable;
+        this.retrieveable = retrieveable;
+        this.searchable = searchable;
+        this.triggerable = triggerable;
+        this.undeletable = undeletable;
+        this.updateable = updateable;
+        this.urlDetail = urlDetail;
+        this.urlEdit = urlEdit;
+        this.urlNew = urlNew;
     }
 
 
     /**
      * Gets the activateable value for this DescribeSObjectResult.
-     * 
+     *
      * @return activateable
      */
     public boolean isActivateable() {
@@ -131,7 +131,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the activateable value for this DescribeSObjectResult.
-     * 
+     *
      * @param activateable
      */
     public void setActivateable(boolean activateable) {
@@ -141,7 +141,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the childRelationships value for this DescribeSObjectResult.
-     * 
+     *
      * @return childRelationships
      */
     public com.sforce.soap.partner.ChildRelationship[] getChildRelationships() {
@@ -151,7 +151,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the childRelationships value for this DescribeSObjectResult.
-     * 
+     *
      * @param childRelationships
      */
     public void setChildRelationships(com.sforce.soap.partner.ChildRelationship[] childRelationships) {
@@ -169,7 +169,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the createable value for this DescribeSObjectResult.
-     * 
+     *
      * @return createable
      */
     public boolean isCreateable() {
@@ -179,7 +179,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the createable value for this DescribeSObjectResult.
-     * 
+     *
      * @param createable
      */
     public void setCreateable(boolean createable) {
@@ -189,7 +189,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the custom value for this DescribeSObjectResult.
-     * 
+     *
      * @return custom
      */
     public boolean isCustom() {
@@ -199,7 +199,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the custom value for this DescribeSObjectResult.
-     * 
+     *
      * @param custom
      */
     public void setCustom(boolean custom) {
@@ -209,7 +209,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the customSetting value for this DescribeSObjectResult.
-     * 
+     *
      * @return customSetting
      */
     public boolean isCustomSetting() {
@@ -219,7 +219,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the customSetting value for this DescribeSObjectResult.
-     * 
+     *
      * @param customSetting
      */
     public void setCustomSetting(boolean customSetting) {
@@ -229,7 +229,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the deletable value for this DescribeSObjectResult.
-     * 
+     *
      * @return deletable
      */
     public boolean isDeletable() {
@@ -239,7 +239,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the deletable value for this DescribeSObjectResult.
-     * 
+     *
      * @param deletable
      */
     public void setDeletable(boolean deletable) {
@@ -249,7 +249,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the deprecatedAndHidden value for this DescribeSObjectResult.
-     * 
+     *
      * @return deprecatedAndHidden
      */
     public boolean isDeprecatedAndHidden() {
@@ -259,7 +259,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the deprecatedAndHidden value for this DescribeSObjectResult.
-     * 
+     *
      * @param deprecatedAndHidden
      */
     public void setDeprecatedAndHidden(boolean deprecatedAndHidden) {
@@ -269,7 +269,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the feedEnabled value for this DescribeSObjectResult.
-     * 
+     *
      * @return feedEnabled
      */
     public boolean isFeedEnabled() {
@@ -279,7 +279,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the feedEnabled value for this DescribeSObjectResult.
-     * 
+     *
      * @param feedEnabled
      */
     public void setFeedEnabled(boolean feedEnabled) {
@@ -289,7 +289,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the fields value for this DescribeSObjectResult.
-     * 
+     *
      * @return fields
      */
     public com.sforce.soap.partner.Field[] getFields() {
@@ -299,7 +299,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the fields value for this DescribeSObjectResult.
-     * 
+     *
      * @param fields
      */
     public void setFields(com.sforce.soap.partner.Field[] fields) {
@@ -317,7 +317,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the keyPrefix value for this DescribeSObjectResult.
-     * 
+     *
      * @return keyPrefix
      */
     public java.lang.String getKeyPrefix() {
@@ -327,7 +327,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the keyPrefix value for this DescribeSObjectResult.
-     * 
+     *
      * @param keyPrefix
      */
     public void setKeyPrefix(java.lang.String keyPrefix) {
@@ -337,7 +337,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the label value for this DescribeSObjectResult.
-     * 
+     *
      * @return label
      */
     public java.lang.String getLabel() {
@@ -347,7 +347,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the label value for this DescribeSObjectResult.
-     * 
+     *
      * @param label
      */
     public void setLabel(java.lang.String label) {
@@ -357,7 +357,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the labelPlural value for this DescribeSObjectResult.
-     * 
+     *
      * @return labelPlural
      */
     public java.lang.String getLabelPlural() {
@@ -367,7 +367,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the labelPlural value for this DescribeSObjectResult.
-     * 
+     *
      * @param labelPlural
      */
     public void setLabelPlural(java.lang.String labelPlural) {
@@ -377,7 +377,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the layoutable value for this DescribeSObjectResult.
-     * 
+     *
      * @return layoutable
      */
     public boolean isLayoutable() {
@@ -387,7 +387,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the layoutable value for this DescribeSObjectResult.
-     * 
+     *
      * @param layoutable
      */
     public void setLayoutable(boolean layoutable) {
@@ -397,7 +397,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the mergeable value for this DescribeSObjectResult.
-     * 
+     *
      * @return mergeable
      */
     public boolean isMergeable() {
@@ -407,7 +407,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the mergeable value for this DescribeSObjectResult.
-     * 
+     *
      * @param mergeable
      */
     public void setMergeable(boolean mergeable) {
@@ -417,7 +417,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the name value for this DescribeSObjectResult.
-     * 
+     *
      * @return name
      */
     public java.lang.String getName() {
@@ -427,7 +427,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the name value for this DescribeSObjectResult.
-     * 
+     *
      * @param name
      */
     public void setName(java.lang.String name) {
@@ -437,7 +437,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the queryable value for this DescribeSObjectResult.
-     * 
+     *
      * @return queryable
      */
     public boolean isQueryable() {
@@ -447,7 +447,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the queryable value for this DescribeSObjectResult.
-     * 
+     *
      * @param queryable
      */
     public void setQueryable(boolean queryable) {
@@ -457,7 +457,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the recordTypeInfos value for this DescribeSObjectResult.
-     * 
+     *
      * @return recordTypeInfos
      */
     public com.sforce.soap.partner.RecordTypeInfo[] getRecordTypeInfos() {
@@ -467,7 +467,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the recordTypeInfos value for this DescribeSObjectResult.
-     * 
+     *
      * @param recordTypeInfos
      */
     public void setRecordTypeInfos(com.sforce.soap.partner.RecordTypeInfo[] recordTypeInfos) {
@@ -485,7 +485,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the replicateable value for this DescribeSObjectResult.
-     * 
+     *
      * @return replicateable
      */
     public boolean isReplicateable() {
@@ -495,7 +495,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the replicateable value for this DescribeSObjectResult.
-     * 
+     *
      * @param replicateable
      */
     public void setReplicateable(boolean replicateable) {
@@ -505,7 +505,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the retrieveable value for this DescribeSObjectResult.
-     * 
+     *
      * @return retrieveable
      */
     public boolean isRetrieveable() {
@@ -515,7 +515,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the retrieveable value for this DescribeSObjectResult.
-     * 
+     *
      * @param retrieveable
      */
     public void setRetrieveable(boolean retrieveable) {
@@ -525,7 +525,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the searchable value for this DescribeSObjectResult.
-     * 
+     *
      * @return searchable
      */
     public boolean isSearchable() {
@@ -535,7 +535,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the searchable value for this DescribeSObjectResult.
-     * 
+     *
      * @param searchable
      */
     public void setSearchable(boolean searchable) {
@@ -545,7 +545,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the triggerable value for this DescribeSObjectResult.
-     * 
+     *
      * @return triggerable
      */
     public java.lang.Boolean getTriggerable() {
@@ -555,7 +555,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the triggerable value for this DescribeSObjectResult.
-     * 
+     *
      * @param triggerable
      */
     public void setTriggerable(java.lang.Boolean triggerable) {
@@ -565,7 +565,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the undeletable value for this DescribeSObjectResult.
-     * 
+     *
      * @return undeletable
      */
     public boolean isUndeletable() {
@@ -575,7 +575,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the undeletable value for this DescribeSObjectResult.
-     * 
+     *
      * @param undeletable
      */
     public void setUndeletable(boolean undeletable) {
@@ -585,7 +585,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the updateable value for this DescribeSObjectResult.
-     * 
+     *
      * @return updateable
      */
     public boolean isUpdateable() {
@@ -595,7 +595,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the updateable value for this DescribeSObjectResult.
-     * 
+     *
      * @param updateable
      */
     public void setUpdateable(boolean updateable) {
@@ -605,7 +605,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the urlDetail value for this DescribeSObjectResult.
-     * 
+     *
      * @return urlDetail
      */
     public java.lang.String getUrlDetail() {
@@ -615,7 +615,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the urlDetail value for this DescribeSObjectResult.
-     * 
+     *
      * @param urlDetail
      */
     public void setUrlDetail(java.lang.String urlDetail) {
@@ -625,7 +625,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the urlEdit value for this DescribeSObjectResult.
-     * 
+     *
      * @return urlEdit
      */
     public java.lang.String getUrlEdit() {
@@ -635,7 +635,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the urlEdit value for this DescribeSObjectResult.
-     * 
+     *
      * @param urlEdit
      */
     public void setUrlEdit(java.lang.String urlEdit) {
@@ -645,7 +645,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the urlNew value for this DescribeSObjectResult.
-     * 
+     *
      * @return urlNew
      */
     public java.lang.String getUrlNew() {
@@ -655,7 +655,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the urlNew value for this DescribeSObjectResult.
-     * 
+     *
      * @param urlNew
      */
     public void setUrlNew(java.lang.String urlNew) {
@@ -663,6 +663,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeSObjectResult)) return false;
         DescribeSObjectResult other = (DescribeSObjectResult) obj;
@@ -673,60 +674,61 @@ public class DescribeSObjectResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.activateable == other.isActivateable() &&
-            ((this.childRelationships==null && other.getChildRelationships()==null) || 
-             (this.childRelationships!=null &&
-              java.util.Arrays.equals(this.childRelationships, other.getChildRelationships()))) &&
-            this.createable == other.isCreateable() &&
-            this.custom == other.isCustom() &&
-            this.customSetting == other.isCustomSetting() &&
-            this.deletable == other.isDeletable() &&
-            this.deprecatedAndHidden == other.isDeprecatedAndHidden() &&
-            this.feedEnabled == other.isFeedEnabled() &&
-            ((this.fields==null && other.getFields()==null) || 
-             (this.fields!=null &&
-              java.util.Arrays.equals(this.fields, other.getFields()))) &&
-            ((this.keyPrefix==null && other.getKeyPrefix()==null) || 
-             (this.keyPrefix!=null &&
-              this.keyPrefix.equals(other.getKeyPrefix()))) &&
-            ((this.label==null && other.getLabel()==null) || 
-             (this.label!=null &&
-              this.label.equals(other.getLabel()))) &&
-            ((this.labelPlural==null && other.getLabelPlural()==null) || 
-             (this.labelPlural!=null &&
-              this.labelPlural.equals(other.getLabelPlural()))) &&
-            this.layoutable == other.isLayoutable() &&
-            this.mergeable == other.isMergeable() &&
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName()))) &&
-            this.queryable == other.isQueryable() &&
-            ((this.recordTypeInfos==null && other.getRecordTypeInfos()==null) || 
-             (this.recordTypeInfos!=null &&
-              java.util.Arrays.equals(this.recordTypeInfos, other.getRecordTypeInfos()))) &&
-            this.replicateable == other.isReplicateable() &&
-            this.retrieveable == other.isRetrieveable() &&
-            this.searchable == other.isSearchable() &&
-            ((this.triggerable==null && other.getTriggerable()==null) || 
-             (this.triggerable!=null &&
-              this.triggerable.equals(other.getTriggerable()))) &&
-            this.undeletable == other.isUndeletable() &&
-            this.updateable == other.isUpdateable() &&
-            ((this.urlDetail==null && other.getUrlDetail()==null) || 
-             (this.urlDetail!=null &&
-              this.urlDetail.equals(other.getUrlDetail()))) &&
-            ((this.urlEdit==null && other.getUrlEdit()==null) || 
-             (this.urlEdit!=null &&
-              this.urlEdit.equals(other.getUrlEdit()))) &&
-            ((this.urlNew==null && other.getUrlNew()==null) || 
-             (this.urlNew!=null &&
-              this.urlNew.equals(other.getUrlNew())));
+        _equals = true &&
+                this.activateable == other.isActivateable() &&
+                ((this.childRelationships == null && other.getChildRelationships() == null) ||
+                        (this.childRelationships != null &&
+                                java.util.Arrays.equals(this.childRelationships, other.getChildRelationships()))) &&
+                this.createable == other.isCreateable() &&
+                this.custom == other.isCustom() &&
+                this.customSetting == other.isCustomSetting() &&
+                this.deletable == other.isDeletable() &&
+                this.deprecatedAndHidden == other.isDeprecatedAndHidden() &&
+                this.feedEnabled == other.isFeedEnabled() &&
+                ((this.fields == null && other.getFields() == null) ||
+                        (this.fields != null &&
+                                java.util.Arrays.equals(this.fields, other.getFields()))) &&
+                ((this.keyPrefix == null && other.getKeyPrefix() == null) ||
+                        (this.keyPrefix != null &&
+                                this.keyPrefix.equals(other.getKeyPrefix()))) &&
+                ((this.label == null && other.getLabel() == null) ||
+                        (this.label != null &&
+                                this.label.equals(other.getLabel()))) &&
+                ((this.labelPlural == null && other.getLabelPlural() == null) ||
+                        (this.labelPlural != null &&
+                                this.labelPlural.equals(other.getLabelPlural()))) &&
+                this.layoutable == other.isLayoutable() &&
+                this.mergeable == other.isMergeable() &&
+                ((this.name == null && other.getName() == null) ||
+                        (this.name != null &&
+                                this.name.equals(other.getName()))) &&
+                this.queryable == other.isQueryable() &&
+                ((this.recordTypeInfos == null && other.getRecordTypeInfos() == null) ||
+                        (this.recordTypeInfos != null &&
+                                java.util.Arrays.equals(this.recordTypeInfos, other.getRecordTypeInfos()))) &&
+                this.replicateable == other.isReplicateable() &&
+                this.retrieveable == other.isRetrieveable() &&
+                this.searchable == other.isSearchable() &&
+                ((this.triggerable == null && other.getTriggerable() == null) ||
+                        (this.triggerable != null &&
+                                this.triggerable.equals(other.getTriggerable()))) &&
+                this.undeletable == other.isUndeletable() &&
+                this.updateable == other.isUpdateable() &&
+                ((this.urlDetail == null && other.getUrlDetail() == null) ||
+                        (this.urlDetail != null &&
+                                this.urlDetail.equals(other.getUrlDetail()))) &&
+                ((this.urlEdit == null && other.getUrlEdit() == null) ||
+                        (this.urlEdit != null &&
+                                this.urlEdit.equals(other.getUrlEdit()))) &&
+                ((this.urlNew == null && other.getUrlNew() == null) ||
+                        (this.urlNew != null &&
+                                this.urlNew.equals(other.getUrlNew())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -735,12 +737,12 @@ public class DescribeSObjectResult  implements java.io.Serializable {
         int _hashCode = 1;
         _hashCode += (isActivateable() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         if (getChildRelationships() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getChildRelationships());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getChildRelationships());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getChildRelationships(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -752,12 +754,12 @@ public class DescribeSObjectResult  implements java.io.Serializable {
         _hashCode += (isDeprecatedAndHidden() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         _hashCode += (isFeedEnabled() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         if (getFields() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getFields());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getFields());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getFields(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -778,12 +780,12 @@ public class DescribeSObjectResult  implements java.io.Serializable {
         }
         _hashCode += (isQueryable() ? Boolean.TRUE : Boolean.FALSE).hashCode();
         if (getRecordTypeInfos() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getRecordTypeInfos());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getRecordTypeInfos());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getRecordTypeInfos(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -811,7 +813,7 @@ public class DescribeSObjectResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeSObjectResult.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeSObjectResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeSObjectResult"));
@@ -991,24 +993,24 @@ public class DescribeSObjectResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

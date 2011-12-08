@@ -23,14 +23,13 @@
 
 package com.gooddata.csv;
 
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.util.CSVReader;
+import com.gooddata.util.FileUtil;
+import junit.framework.TestCase;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.util.FileUtil;
-
-import junit.framework.TestCase;
-import com.gooddata.util.CSVReader;
 
 /**
  * GoodData
@@ -61,64 +60,64 @@ public class DataTypeGuessTest extends TestCase {
     }
 
     public void testGuessCsvSchema() throws IOException {
-    	DataTypeGuess guesser = new DataTypeGuess(true);
+        DataTypeGuess guesser = new DataTypeGuess(true);
         {
-        	CSVReader csvr = FileUtil.getResourceAsCsvReader("/com/gooddata/csv/quotes.csv");
+            CSVReader csvr = FileUtil.getResourceAsCsvReader("/com/gooddata/csv/quotes.csv");
             SourceColumn[] types = guesser.guessCsvSchema(csvr);
-	        final String[] expected = new String[] {"FACT","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE",
-	                "ATTRIBUTE","ATTRIBUTE","DATE","FACT","FACT","FACT","FACT","FACT","FACT"};
-	        assertEquals(expected.length, types.length);
-	        for (int i = 0; i < expected.length; i++) {
-	        	assertEquals(expected[i], types[i].getLdmType());
-	        	if ("DATE".equals(types[i].getLdmType())) {
-	        		assertEquals("yyyy-MM-dd", types[i].getFormat());
-	        	}
-	        }
+            final String[] expected = new String[]{"FACT", "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE",
+                    "ATTRIBUTE", "ATTRIBUTE", "DATE", "FACT", "FACT", "FACT", "FACT", "FACT", "FACT"};
+            assertEquals(expected.length, types.length);
+            for (int i = 0; i < expected.length; i++) {
+                assertEquals(expected[i], types[i].getLdmType());
+                if ("DATE".equals(types[i].getLdmType())) {
+                    assertEquals("yyyy-MM-dd", types[i].getFormat());
+                }
+            }
         }
         {
-        	CSVReader csvr = FileUtil.getResourceAsCsvReader("/com/gooddata/csv/department.csv");
-        	SourceColumn[] types = guesser.guessCsvSchema(csvr);
-	        final String[] expected = new String[] {"ATTRIBUTE","ATTRIBUTE"};
-	        assertEquals(expected.length, types.length);
-	        for (int i = 0; i < expected.length; i++) {
-	        	assertEquals(expected[i], types[i].getLdmType());
-	        }
+            CSVReader csvr = FileUtil.getResourceAsCsvReader("/com/gooddata/csv/department.csv");
+            SourceColumn[] types = guesser.guessCsvSchema(csvr);
+            final String[] expected = new String[]{"ATTRIBUTE", "ATTRIBUTE"};
+            assertEquals(expected.length, types.length);
+            for (int i = 0; i < expected.length; i++) {
+                assertEquals(expected[i], types[i].getLdmType());
+            }
         }
         {
-	        CSVReader csvr = new CSVReader(new InputStreamReader(getClass().getResource("/com/gooddata/csv/employee.csv").openStream()));
-	        SourceColumn[] types = guesser.guessCsvSchema(csvr);
-	        final String[] expected = new String[] {"ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE"};
-	        assertEquals(expected.length, types.length);
-	        for (int i = 0; i < expected.length; i++) {
-	        	assertEquals(expected[i], types[i].getLdmType());
-	        }
+            CSVReader csvr = new CSVReader(new InputStreamReader(getClass().getResource("/com/gooddata/csv/employee.csv").openStream()));
+            SourceColumn[] types = guesser.guessCsvSchema(csvr);
+            final String[] expected = new String[]{"ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE"};
+            assertEquals(expected.length, types.length);
+            for (int i = 0; i < expected.length; i++) {
+                assertEquals(expected[i], types[i].getLdmType());
+            }
         }
         {
-	        CSVReader csvr = new CSVReader(new InputStreamReader(getClass().getResource("/com/gooddata/csv/salary.csv").openStream()));
-	        SourceColumn[] types = guesser.guessCsvSchema(csvr);
-	        final String[] expected = new String[] {"ATTRIBUTE","ATTRIBUTE","FACT","DATE"};
-	        assertEquals(expected.length, types.length);
-	        for (int i = 0; i < expected.length; i++) {
-	        	assertEquals(expected[i], types[i].getLdmType());
-	        	if ("DATE".equals(types[i].getLdmType())) {
-	        		assertEquals("yyyy-MM-dd", types[i].getFormat());
-	        	}
-	        }
+            CSVReader csvr = new CSVReader(new InputStreamReader(getClass().getResource("/com/gooddata/csv/salary.csv").openStream()));
+            SourceColumn[] types = guesser.guessCsvSchema(csvr);
+            final String[] expected = new String[]{"ATTRIBUTE", "ATTRIBUTE", "FACT", "DATE"};
+            assertEquals(expected.length, types.length);
+            for (int i = 0; i < expected.length; i++) {
+                assertEquals(expected[i], types[i].getLdmType());
+                if ("DATE".equals(types[i].getLdmType())) {
+                    assertEquals("yyyy-MM-dd", types[i].getFormat());
+                }
+            }
         }
     }
-    
+
     public void testGuessCsvSchemaWithDefaultLdmType() throws IOException {
-    	DataTypeGuess guesser = new DataTypeGuess(true);
-    	guesser.setDefaultLdmType("ATTRIBUTE");
+        DataTypeGuess guesser = new DataTypeGuess(true);
+        guesser.setDefaultLdmType("ATTRIBUTE");
         {
-        	CSVReader csvr = FileUtil.getResourceAsCsvReader("/com/gooddata/csv/quotes.csv");
+            CSVReader csvr = FileUtil.getResourceAsCsvReader("/com/gooddata/csv/quotes.csv");
             SourceColumn[] types = guesser.guessCsvSchema(csvr);
-	        final String[] expected = new String[] {"ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE",
-	                "ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE","ATTRIBUTE"};
-	        assertEquals(expected.length, types.length);
-	        for (int i = 0; i < expected.length; i++) {
-	        	assertEquals("ATTRIBUTE", types[i].getLdmType());
-	        }
+            final String[] expected = new String[]{"ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE",
+                    "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE", "ATTRIBUTE"};
+            assertEquals(expected.length, types.length);
+            for (int i = 0; i < expected.length; i++) {
+                assertEquals("ATTRIBUTE", types[i].getLdmType());
+            }
         }
     }
 

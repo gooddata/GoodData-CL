@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class PackageVersion  implements java.io.Serializable {
+public class PackageVersion implements java.io.Serializable {
     private int majorNumber;
 
     private int minorNumber;
@@ -18,18 +18,18 @@ public class PackageVersion  implements java.io.Serializable {
     }
 
     public PackageVersion(
-           int majorNumber,
-           int minorNumber,
-           java.lang.String namespace) {
-           this.majorNumber = majorNumber;
-           this.minorNumber = minorNumber;
-           this.namespace = namespace;
+            int majorNumber,
+            int minorNumber,
+            java.lang.String namespace) {
+        this.majorNumber = majorNumber;
+        this.minorNumber = minorNumber;
+        this.namespace = namespace;
     }
 
 
     /**
      * Gets the majorNumber value for this PackageVersion.
-     * 
+     *
      * @return majorNumber
      */
     public int getMajorNumber() {
@@ -39,7 +39,7 @@ public class PackageVersion  implements java.io.Serializable {
 
     /**
      * Sets the majorNumber value for this PackageVersion.
-     * 
+     *
      * @param majorNumber
      */
     public void setMajorNumber(int majorNumber) {
@@ -49,7 +49,7 @@ public class PackageVersion  implements java.io.Serializable {
 
     /**
      * Gets the minorNumber value for this PackageVersion.
-     * 
+     *
      * @return minorNumber
      */
     public int getMinorNumber() {
@@ -59,7 +59,7 @@ public class PackageVersion  implements java.io.Serializable {
 
     /**
      * Sets the minorNumber value for this PackageVersion.
-     * 
+     *
      * @param minorNumber
      */
     public void setMinorNumber(int minorNumber) {
@@ -69,7 +69,7 @@ public class PackageVersion  implements java.io.Serializable {
 
     /**
      * Gets the namespace value for this PackageVersion.
-     * 
+     *
      * @return namespace
      */
     public java.lang.String getNamespace() {
@@ -79,7 +79,7 @@ public class PackageVersion  implements java.io.Serializable {
 
     /**
      * Sets the namespace value for this PackageVersion.
-     * 
+     *
      * @param namespace
      */
     public void setNamespace(java.lang.String namespace) {
@@ -87,6 +87,7 @@ public class PackageVersion  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PackageVersion)) return false;
         PackageVersion other = (PackageVersion) obj;
@@ -97,17 +98,18 @@ public class PackageVersion  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.majorNumber == other.getMajorNumber() &&
-            this.minorNumber == other.getMinorNumber() &&
-            ((this.namespace==null && other.getNamespace()==null) || 
-             (this.namespace!=null &&
-              this.namespace.equals(other.getNamespace())));
+        _equals = true &&
+                this.majorNumber == other.getMajorNumber() &&
+                this.minorNumber == other.getMinorNumber() &&
+                ((this.namespace == null && other.getNamespace() == null) ||
+                        (this.namespace != null &&
+                                this.namespace.equals(other.getNamespace())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -125,7 +127,7 @@ public class PackageVersion  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(PackageVersion.class, true);
+            new org.apache.axis.description.TypeDesc(PackageVersion.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "PackageVersion"));
@@ -160,24 +162,24 @@ public class PackageVersion  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

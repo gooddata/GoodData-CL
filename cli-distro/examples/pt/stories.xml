@@ -1,144 +1,144 @@
 <!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
 
 <schema>
-  <name>stories</name>
-  <columns>
-      <column>
-        <name>cpId</name>
-        <title>Historical Story Id</title>
-        <ldmType>CONNECTION_POINT</ldmType>
-        <folder>Story</folder>
-      </column>
-      <column>
-        <name>snapshot</name>
-        <title>Snapshot Date</title>
-        <ldmType>DATE</ldmType>
-        <folder>Story</folder>
-        <format>yyyy-MM-dd</format>
-        <schemaReference>Snapshot</schemaReference>
-      </column>
-    <column>
-      <name>id</name>
-      <title>Story Id</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Story</folder>
-    </column>
-      <column>
-        <name>release</name>
-        <title>Release</title>
-        <ldmType>ATTRIBUTE</ldmType>
-        <folder>Story</folder>
-      </column>
-    <column>
-      <name>story</name>
-      <title>Story</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Story</folder>
-    </column>
-    <column>
-      <name>labels</name>
-      <title>Labels</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Story</folder>
-    </column>
-    <column>
-      <name>iteration</name>
-      <title>Iteration</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Story</folder>
-    </column>
-      <column>
-        <name>iteration_fact</name>
-        <title>Iteration</title>
-        <ldmType>FACT</ldmType>
-        <folder>Story</folder>
-      </column>
-      <column>
-        <name>iteration_velocity</name>
-        <title>Iteration Velocity</title>
-        <ldmType>FACT</ldmType>
-        <folder>Story</folder>
-      </column>
-    <column>
-      <name>iterationstart</name>
-      <title>Iteration Start</title>
-      <ldmType>DATE</ldmType>
-      <folder>Story</folder>
-      <format>yyyy-MM-dd</format>
-      <schemaReference>Iteration Start</schemaReference>
-    </column>
-    <column>
-      <name>iterationend</name>
-      <title>Iteration End</title>
-      <ldmType>DATE</ldmType>
-      <folder>Story</folder>
-      <format>yyyy-MM-dd</format>
-      <schemaReference>Iteration End</schemaReference>
-    </column>
-    <column>
-      <name>storytype</name>
-      <title>Story Type</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Story</folder>
-    </column>
-    <column>
-      <name>estimate</name>
-      <title>Estimate</title>
-      <ldmType>FACT</ldmType>
-      <folder>Story</folder>
-    </column>
-    <column>
-      <name>currentstate</name>
-      <title>Current State</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Story</folder>
-    </column>
+    <name>stories</name>
+    <columns>
+        <column>
+            <name>cpId</name>
+            <title>Historical Story Id</title>
+            <ldmType>CONNECTION_POINT</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>snapshot</name>
+            <title>Snapshot Date</title>
+            <ldmType>DATE</ldmType>
+            <folder>Story</folder>
+            <format>yyyy-MM-dd</format>
+            <schemaReference>Snapshot</schemaReference>
+        </column>
+        <column>
+            <name>id</name>
+            <title>Story Id</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>release</name>
+            <title>Release</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>story</name>
+            <title>Story</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>labels</name>
+            <title>Labels</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>iteration</name>
+            <title>Iteration</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>iteration_fact</name>
+            <title>Iteration</title>
+            <ldmType>FACT</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>iteration_velocity</name>
+            <title>Iteration Velocity</title>
+            <ldmType>FACT</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>iterationstart</name>
+            <title>Iteration Start</title>
+            <ldmType>DATE</ldmType>
+            <folder>Story</folder>
+            <format>yyyy-MM-dd</format>
+            <schemaReference>Iteration Start</schemaReference>
+        </column>
+        <column>
+            <name>iterationend</name>
+            <title>Iteration End</title>
+            <ldmType>DATE</ldmType>
+            <folder>Story</folder>
+            <format>yyyy-MM-dd</format>
+            <schemaReference>Iteration End</schemaReference>
+        </column>
+        <column>
+            <name>storytype</name>
+            <title>Story Type</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>estimate</name>
+            <title>Estimate</title>
+            <ldmType>FACT</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>currentstate</name>
+            <title>Current State</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Story</folder>
+        </column>
 
-      <column>
-        <name>createdat</name>
-        <title>Story Created At</title>
-        <ldmType>DATE</ldmType>
-        <folder>Story</folder>
-        <format>yyyy-MM-dd</format>
-        <schemaReference>Created At</schemaReference>
-      </column>
+        <column>
+            <name>createdat</name>
+            <title>Story Created At</title>
+            <ldmType>DATE</ldmType>
+            <folder>Story</folder>
+            <format>yyyy-MM-dd</format>
+            <schemaReference>Created At</schemaReference>
+        </column>
 
-      <column>
-        <name>acceptedat</name>
-        <title>Story Accepted At</title>
-        <ldmType>DATE</ldmType>
-        <folder>Story</folder>
-        <format>yyyy-MM-dd</format>
-        <schemaReference>Accepted At</schemaReference>
-      </column>
+        <column>
+            <name>acceptedat</name>
+            <title>Story Accepted At</title>
+            <ldmType>DATE</ldmType>
+            <folder>Story</folder>
+            <format>yyyy-MM-dd</format>
+            <schemaReference>Accepted At</schemaReference>
+        </column>
 
 
-    <column>
-      <name>deadline</name>
-      <title>Deadline</title>
-      <ldmType>DATE</ldmType>
-      <folder>Story</folder>
-      <format>yyyy-MM-dd</format>
-      <schemaReference>Deadline</schemaReference>
-    </column>
-    <column>
-      <name>requestedby</name>
-      <title>Requested By</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Story</folder>
-    </column>
-    <column>
-      <name>ownedby</name>
-      <title>Owned By</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>Story</folder>
-    </column>
-    <column>
-      <name>url</name>
-      <title>URL</title>
-      <ldmType>LABEL</ldmType>
-      <reference>id</reference>
-      <folder>Story</folder>
-    </column>
-  </columns>
+        <column>
+            <name>deadline</name>
+            <title>Deadline</title>
+            <ldmType>DATE</ldmType>
+            <folder>Story</folder>
+            <format>yyyy-MM-dd</format>
+            <schemaReference>Deadline</schemaReference>
+        </column>
+        <column>
+            <name>requestedby</name>
+            <title>Requested By</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>ownedby</name>
+            <title>Owned By</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>Story</folder>
+        </column>
+        <column>
+            <name>url</name>
+            <title>URL</title>
+            <ldmType>LABEL</ldmType>
+            <reference>id</reference>
+            <folder>Story</folder>
+        </column>
+    </columns>
 </schema>

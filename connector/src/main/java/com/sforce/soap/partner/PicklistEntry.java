@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class PicklistEntry  implements java.io.Serializable {
+public class PicklistEntry implements java.io.Serializable {
     private boolean active;
 
     private boolean defaultValue;
@@ -22,22 +22,22 @@ public class PicklistEntry  implements java.io.Serializable {
     }
 
     public PicklistEntry(
-           boolean active,
-           boolean defaultValue,
-           java.lang.String label,
-           byte[] validFor,
-           java.lang.String value) {
-           this.active = active;
-           this.defaultValue = defaultValue;
-           this.label = label;
-           this.validFor = validFor;
-           this.value = value;
+            boolean active,
+            boolean defaultValue,
+            java.lang.String label,
+            byte[] validFor,
+            java.lang.String value) {
+        this.active = active;
+        this.defaultValue = defaultValue;
+        this.label = label;
+        this.validFor = validFor;
+        this.value = value;
     }
 
 
     /**
      * Gets the active value for this PicklistEntry.
-     * 
+     *
      * @return active
      */
     public boolean isActive() {
@@ -47,7 +47,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     /**
      * Sets the active value for this PicklistEntry.
-     * 
+     *
      * @param active
      */
     public void setActive(boolean active) {
@@ -57,7 +57,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     /**
      * Gets the defaultValue value for this PicklistEntry.
-     * 
+     *
      * @return defaultValue
      */
     public boolean isDefaultValue() {
@@ -67,7 +67,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     /**
      * Sets the defaultValue value for this PicklistEntry.
-     * 
+     *
      * @param defaultValue
      */
     public void setDefaultValue(boolean defaultValue) {
@@ -77,7 +77,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     /**
      * Gets the label value for this PicklistEntry.
-     * 
+     *
      * @return label
      */
     public java.lang.String getLabel() {
@@ -87,7 +87,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     /**
      * Sets the label value for this PicklistEntry.
-     * 
+     *
      * @param label
      */
     public void setLabel(java.lang.String label) {
@@ -97,7 +97,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     /**
      * Gets the validFor value for this PicklistEntry.
-     * 
+     *
      * @return validFor
      */
     public byte[] getValidFor() {
@@ -107,7 +107,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     /**
      * Sets the validFor value for this PicklistEntry.
-     * 
+     *
      * @param validFor
      */
     public void setValidFor(byte[] validFor) {
@@ -117,7 +117,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     /**
      * Gets the value value for this PicklistEntry.
-     * 
+     *
      * @return value
      */
     public java.lang.String getValue() {
@@ -127,7 +127,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     /**
      * Sets the value value for this PicklistEntry.
-     * 
+     *
      * @param value
      */
     public void setValue(java.lang.String value) {
@@ -135,6 +135,7 @@ public class PicklistEntry  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PicklistEntry)) return false;
         PicklistEntry other = (PicklistEntry) obj;
@@ -145,23 +146,24 @@ public class PicklistEntry  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.active == other.isActive() &&
-            this.defaultValue == other.isDefaultValue() &&
-            ((this.label==null && other.getLabel()==null) || 
-             (this.label!=null &&
-              this.label.equals(other.getLabel()))) &&
-            ((this.validFor==null && other.getValidFor()==null) || 
-             (this.validFor!=null &&
-              java.util.Arrays.equals(this.validFor, other.getValidFor()))) &&
-            ((this.value==null && other.getValue()==null) || 
-             (this.value!=null &&
-              this.value.equals(other.getValue())));
+        _equals = true &&
+                this.active == other.isActive() &&
+                this.defaultValue == other.isDefaultValue() &&
+                ((this.label == null && other.getLabel() == null) ||
+                        (this.label != null &&
+                                this.label.equals(other.getLabel()))) &&
+                ((this.validFor == null && other.getValidFor() == null) ||
+                        (this.validFor != null &&
+                                java.util.Arrays.equals(this.validFor, other.getValidFor()))) &&
+                ((this.value == null && other.getValue() == null) ||
+                        (this.value != null &&
+                                this.value.equals(other.getValue())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -174,12 +176,12 @@ public class PicklistEntry  implements java.io.Serializable {
             _hashCode += getLabel().hashCode();
         }
         if (getValidFor() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getValidFor());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getValidFor());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getValidFor(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -193,7 +195,7 @@ public class PicklistEntry  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(PicklistEntry.class, true);
+            new org.apache.axis.description.TypeDesc(PicklistEntry.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "PicklistEntry"));
@@ -241,24 +243,24 @@ public class PicklistEntry  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

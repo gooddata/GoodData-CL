@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class Email  implements java.io.Serializable {
+public class Email implements java.io.Serializable {
     private java.lang.Boolean bccSender;
 
     private com.sforce.soap.partner.EmailPriority emailPriority;
@@ -26,26 +26,26 @@ public class Email  implements java.io.Serializable {
     }
 
     public Email(
-           java.lang.Boolean bccSender,
-           com.sforce.soap.partner.EmailPriority emailPriority,
-           java.lang.String replyTo,
-           java.lang.Boolean saveAsActivity,
-           java.lang.String senderDisplayName,
-           java.lang.String subject,
-           java.lang.Boolean useSignature) {
-           this.bccSender = bccSender;
-           this.emailPriority = emailPriority;
-           this.replyTo = replyTo;
-           this.saveAsActivity = saveAsActivity;
-           this.senderDisplayName = senderDisplayName;
-           this.subject = subject;
-           this.useSignature = useSignature;
+            java.lang.Boolean bccSender,
+            com.sforce.soap.partner.EmailPriority emailPriority,
+            java.lang.String replyTo,
+            java.lang.Boolean saveAsActivity,
+            java.lang.String senderDisplayName,
+            java.lang.String subject,
+            java.lang.Boolean useSignature) {
+        this.bccSender = bccSender;
+        this.emailPriority = emailPriority;
+        this.replyTo = replyTo;
+        this.saveAsActivity = saveAsActivity;
+        this.senderDisplayName = senderDisplayName;
+        this.subject = subject;
+        this.useSignature = useSignature;
     }
 
 
     /**
      * Gets the bccSender value for this Email.
-     * 
+     *
      * @return bccSender
      */
     public java.lang.Boolean getBccSender() {
@@ -55,7 +55,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Sets the bccSender value for this Email.
-     * 
+     *
      * @param bccSender
      */
     public void setBccSender(java.lang.Boolean bccSender) {
@@ -65,7 +65,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Gets the emailPriority value for this Email.
-     * 
+     *
      * @return emailPriority
      */
     public com.sforce.soap.partner.EmailPriority getEmailPriority() {
@@ -75,7 +75,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Sets the emailPriority value for this Email.
-     * 
+     *
      * @param emailPriority
      */
     public void setEmailPriority(com.sforce.soap.partner.EmailPriority emailPriority) {
@@ -85,7 +85,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Gets the replyTo value for this Email.
-     * 
+     *
      * @return replyTo
      */
     public java.lang.String getReplyTo() {
@@ -95,7 +95,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Sets the replyTo value for this Email.
-     * 
+     *
      * @param replyTo
      */
     public void setReplyTo(java.lang.String replyTo) {
@@ -105,7 +105,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Gets the saveAsActivity value for this Email.
-     * 
+     *
      * @return saveAsActivity
      */
     public java.lang.Boolean getSaveAsActivity() {
@@ -115,7 +115,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Sets the saveAsActivity value for this Email.
-     * 
+     *
      * @param saveAsActivity
      */
     public void setSaveAsActivity(java.lang.Boolean saveAsActivity) {
@@ -125,7 +125,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Gets the senderDisplayName value for this Email.
-     * 
+     *
      * @return senderDisplayName
      */
     public java.lang.String getSenderDisplayName() {
@@ -135,7 +135,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Sets the senderDisplayName value for this Email.
-     * 
+     *
      * @param senderDisplayName
      */
     public void setSenderDisplayName(java.lang.String senderDisplayName) {
@@ -145,7 +145,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Gets the subject value for this Email.
-     * 
+     *
      * @return subject
      */
     public java.lang.String getSubject() {
@@ -155,7 +155,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Sets the subject value for this Email.
-     * 
+     *
      * @param subject
      */
     public void setSubject(java.lang.String subject) {
@@ -165,7 +165,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Gets the useSignature value for this Email.
-     * 
+     *
      * @return useSignature
      */
     public java.lang.Boolean getUseSignature() {
@@ -175,7 +175,7 @@ public class Email  implements java.io.Serializable {
 
     /**
      * Sets the useSignature value for this Email.
-     * 
+     *
      * @param useSignature
      */
     public void setUseSignature(java.lang.Boolean useSignature) {
@@ -183,6 +183,7 @@ public class Email  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Email)) return false;
         Email other = (Email) obj;
@@ -193,33 +194,34 @@ public class Email  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.bccSender==null && other.getBccSender()==null) || 
-             (this.bccSender!=null &&
-              this.bccSender.equals(other.getBccSender()))) &&
-            ((this.emailPriority==null && other.getEmailPriority()==null) || 
-             (this.emailPriority!=null &&
-              this.emailPriority.equals(other.getEmailPriority()))) &&
-            ((this.replyTo==null && other.getReplyTo()==null) || 
-             (this.replyTo!=null &&
-              this.replyTo.equals(other.getReplyTo()))) &&
-            ((this.saveAsActivity==null && other.getSaveAsActivity()==null) || 
-             (this.saveAsActivity!=null &&
-              this.saveAsActivity.equals(other.getSaveAsActivity()))) &&
-            ((this.senderDisplayName==null && other.getSenderDisplayName()==null) || 
-             (this.senderDisplayName!=null &&
-              this.senderDisplayName.equals(other.getSenderDisplayName()))) &&
-            ((this.subject==null && other.getSubject()==null) || 
-             (this.subject!=null &&
-              this.subject.equals(other.getSubject()))) &&
-            ((this.useSignature==null && other.getUseSignature()==null) || 
-             (this.useSignature!=null &&
-              this.useSignature.equals(other.getUseSignature())));
+        _equals = true &&
+                ((this.bccSender == null && other.getBccSender() == null) ||
+                        (this.bccSender != null &&
+                                this.bccSender.equals(other.getBccSender()))) &&
+                ((this.emailPriority == null && other.getEmailPriority() == null) ||
+                        (this.emailPriority != null &&
+                                this.emailPriority.equals(other.getEmailPriority()))) &&
+                ((this.replyTo == null && other.getReplyTo() == null) ||
+                        (this.replyTo != null &&
+                                this.replyTo.equals(other.getReplyTo()))) &&
+                ((this.saveAsActivity == null && other.getSaveAsActivity() == null) ||
+                        (this.saveAsActivity != null &&
+                                this.saveAsActivity.equals(other.getSaveAsActivity()))) &&
+                ((this.senderDisplayName == null && other.getSenderDisplayName() == null) ||
+                        (this.senderDisplayName != null &&
+                                this.senderDisplayName.equals(other.getSenderDisplayName()))) &&
+                ((this.subject == null && other.getSubject() == null) ||
+                        (this.subject != null &&
+                                this.subject.equals(other.getSubject()))) &&
+                ((this.useSignature == null && other.getUseSignature() == null) ||
+                        (this.useSignature != null &&
+                                this.useSignature.equals(other.getUseSignature())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -253,7 +255,7 @@ public class Email  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(Email.class, true);
+            new org.apache.axis.description.TypeDesc(Email.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "Email"));
@@ -312,24 +314,24 @@ public class Email  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

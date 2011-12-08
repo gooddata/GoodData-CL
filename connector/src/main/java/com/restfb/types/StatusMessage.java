@@ -22,81 +22,81 @@
 
 package com.restfb.types;
 
-import static com.restfb.util.DateUtils.toDateFromLongFormat;
-import static java.util.Collections.unmodifiableList;
+import com.restfb.Facebook;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.restfb.Facebook;
+import static com.restfb.util.DateUtils.toDateFromLongFormat;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/status">Status
  * Message Graph API type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.6
  */
 public class StatusMessage extends NamedFacebookType {
-  @Facebook
-  private NamedFacebookType from;
+    @Facebook
+    private NamedFacebookType from;
 
-  @Facebook
-  private String message;
+    @Facebook
+    private String message;
 
-  @Facebook("updated_time")
-  private String updatedTime;
+    @Facebook("updated_time")
+    private String updatedTime;
 
-  @Facebook
-  private List<NamedFacebookType> likes = new ArrayList<NamedFacebookType>();
+    @Facebook
+    private List<NamedFacebookType> likes = new ArrayList<NamedFacebookType>();
 
-  @Facebook
-  private List<Comment> comments = new ArrayList<Comment>();
+    @Facebook
+    private List<Comment> comments = new ArrayList<Comment>();
 
-  /**
-   * The user who posted the message.
-   * 
-   * @return The user who posted the message.
-   */
-  public NamedFacebookType getFrom() {
-    return from;
-  }
+    /**
+     * The user who posted the message.
+     *
+     * @return The user who posted the message.
+     */
+    public NamedFacebookType getFrom() {
+        return from;
+    }
 
-  /**
-   * The status message content.
-   * 
-   * @return The status message content.
-   */
-  public String getMessage() {
-    return message;
-  }
+    /**
+     * The status message content.
+     *
+     * @return The status message content.
+     */
+    public String getMessage() {
+        return message;
+    }
 
-  /**
-   * The time the message was published.
-   * 
-   * @return The time the message was published.
-   */
-  public Date getUpdatedTime() {
-    return toDateFromLongFormat(updatedTime);
-  }
+    /**
+     * The time the message was published.
+     *
+     * @return The time the message was published.
+     */
+    public Date getUpdatedTime() {
+        return toDateFromLongFormat(updatedTime);
+    }
 
-  /**
-   * The users that have liked this message.
-   * 
-   * @return The users that have liked this message.
-   */
-  public List<NamedFacebookType> getLikes() {
-    return unmodifiableList(likes);
-  }
+    /**
+     * The users that have liked this message.
+     *
+     * @return The users that have liked this message.
+     */
+    public List<NamedFacebookType> getLikes() {
+        return unmodifiableList(likes);
+    }
 
-  /**
-   * All of the comments on this message.
-   * 
-   * @return All of the comments on this message.
-   */
-  public List<Comment> getComments() {
-    return unmodifiableList(comments);
-  }
+    /**
+     * All of the comments on this message.
+     *
+     * @return All of the comments on this message.
+     */
+    public List<Comment> getComments() {
+        return unmodifiableList(comments);
+    }
 }

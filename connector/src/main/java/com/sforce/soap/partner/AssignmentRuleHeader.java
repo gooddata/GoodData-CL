@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class AssignmentRuleHeader  implements java.io.Serializable {
+public class AssignmentRuleHeader implements java.io.Serializable {
     private java.lang.String assignmentRuleId;
 
     private java.lang.Boolean useDefaultRule;
@@ -16,16 +16,16 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
     }
 
     public AssignmentRuleHeader(
-           java.lang.String assignmentRuleId,
-           java.lang.Boolean useDefaultRule) {
-           this.assignmentRuleId = assignmentRuleId;
-           this.useDefaultRule = useDefaultRule;
+            java.lang.String assignmentRuleId,
+            java.lang.Boolean useDefaultRule) {
+        this.assignmentRuleId = assignmentRuleId;
+        this.useDefaultRule = useDefaultRule;
     }
 
 
     /**
      * Gets the assignmentRuleId value for this AssignmentRuleHeader.
-     * 
+     *
      * @return assignmentRuleId
      */
     public java.lang.String getAssignmentRuleId() {
@@ -35,7 +35,7 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
 
     /**
      * Sets the assignmentRuleId value for this AssignmentRuleHeader.
-     * 
+     *
      * @param assignmentRuleId
      */
     public void setAssignmentRuleId(java.lang.String assignmentRuleId) {
@@ -45,7 +45,7 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
 
     /**
      * Gets the useDefaultRule value for this AssignmentRuleHeader.
-     * 
+     *
      * @return useDefaultRule
      */
     public java.lang.Boolean getUseDefaultRule() {
@@ -55,7 +55,7 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
 
     /**
      * Sets the useDefaultRule value for this AssignmentRuleHeader.
-     * 
+     *
      * @param useDefaultRule
      */
     public void setUseDefaultRule(java.lang.Boolean useDefaultRule) {
@@ -63,6 +63,7 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof AssignmentRuleHeader)) return false;
         AssignmentRuleHeader other = (AssignmentRuleHeader) obj;
@@ -73,18 +74,19 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.assignmentRuleId==null && other.getAssignmentRuleId()==null) || 
-             (this.assignmentRuleId!=null &&
-              this.assignmentRuleId.equals(other.getAssignmentRuleId()))) &&
-            ((this.useDefaultRule==null && other.getUseDefaultRule()==null) || 
-             (this.useDefaultRule!=null &&
-              this.useDefaultRule.equals(other.getUseDefaultRule())));
+        _equals = true &&
+                ((this.assignmentRuleId == null && other.getAssignmentRuleId() == null) ||
+                        (this.assignmentRuleId != null &&
+                                this.assignmentRuleId.equals(other.getAssignmentRuleId()))) &&
+                ((this.useDefaultRule == null && other.getUseDefaultRule() == null) ||
+                        (this.useDefaultRule != null &&
+                                this.useDefaultRule.equals(other.getUseDefaultRule())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -103,7 +105,7 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(AssignmentRuleHeader.class, true);
+            new org.apache.axis.description.TypeDesc(AssignmentRuleHeader.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">AssignmentRuleHeader"));
@@ -132,24 +134,24 @@ public class AssignmentRuleHeader  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

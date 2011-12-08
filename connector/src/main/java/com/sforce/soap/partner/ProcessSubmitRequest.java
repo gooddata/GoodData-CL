@@ -7,26 +7,26 @@
 
 package com.sforce.soap.partner;
 
-public class ProcessSubmitRequest  extends com.sforce.soap.partner.ProcessRequest  implements java.io.Serializable {
+public class ProcessSubmitRequest extends com.sforce.soap.partner.ProcessRequest implements java.io.Serializable {
     private java.lang.String objectId;
 
     public ProcessSubmitRequest() {
     }
 
     public ProcessSubmitRequest(
-           java.lang.String comments,
-           java.lang.String[] nextApproverIds,
-           java.lang.String objectId) {
+            java.lang.String comments,
+            java.lang.String[] nextApproverIds,
+            java.lang.String objectId) {
         super(
-            comments,
-            nextApproverIds);
+                comments,
+                nextApproverIds);
         this.objectId = objectId;
     }
 
 
     /**
      * Gets the objectId value for this ProcessSubmitRequest.
-     * 
+     *
      * @return objectId
      */
     public java.lang.String getObjectId() {
@@ -36,7 +36,7 @@ public class ProcessSubmitRequest  extends com.sforce.soap.partner.ProcessReques
 
     /**
      * Sets the objectId value for this ProcessSubmitRequest.
-     * 
+     *
      * @param objectId
      */
     public void setObjectId(java.lang.String objectId) {
@@ -44,6 +44,7 @@ public class ProcessSubmitRequest  extends com.sforce.soap.partner.ProcessReques
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ProcessSubmitRequest)) return false;
         ProcessSubmitRequest other = (ProcessSubmitRequest) obj;
@@ -54,15 +55,16 @@ public class ProcessSubmitRequest  extends com.sforce.soap.partner.ProcessReques
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = super.equals(obj) && 
-            ((this.objectId==null && other.getObjectId()==null) || 
-             (this.objectId!=null &&
-              this.objectId.equals(other.getObjectId())));
+        _equals = super.equals(obj) &&
+                ((this.objectId == null && other.getObjectId() == null) ||
+                        (this.objectId != null &&
+                                this.objectId.equals(other.getObjectId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -78,7 +80,7 @@ public class ProcessSubmitRequest  extends com.sforce.soap.partner.ProcessReques
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(ProcessSubmitRequest.class, true);
+            new org.apache.axis.description.TypeDesc(ProcessSubmitRequest.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "ProcessSubmitRequest"));
@@ -101,24 +103,24 @@ public class ProcessSubmitRequest  extends com.sforce.soap.partner.ProcessReques
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

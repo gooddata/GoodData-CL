@@ -23,16 +23,6 @@
 
 package com.gooddata.connector;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-
 import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
@@ -41,6 +31,10 @@ import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+
+import java.io.*;
 
 /**
  * GoodData Google Analytics Connector
@@ -68,6 +62,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
 
     /**
      * Creates a new Time Dimension Connector
+     *
      * @return new Time Dimension Connector
      */
     public static DateDimensionConnector createConnector() {
@@ -80,33 +75,33 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
      * {@inheritDoc}
      */
     public void extract(String file, boolean transform) throws IOException {
-        l.debug("Extracting time dimension data "+name);
-        if(name == null || name.trim().length()<=0)
+        l.debug("Extracting time dimension data " + name);
+        if (name == null || name.trim().length() <= 0)
             name = "";
         InputStream r = DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/data.csv");
         FileOutputStream w = new FileOutputStream(file);
         byte[] buf = new byte[BUF_LEN];
-        int cnt = r.read(buf,0,BUF_LEN);
-        while(cnt > 0) {
-            w.write(buf,0,cnt);
-            cnt = r.read(buf,0,BUF_LEN);
+        int cnt = r.read(buf, 0, BUF_LEN);
+        while (cnt > 0) {
+            w.write(buf, 0, cnt);
+            cnt = r.read(buf, 0, BUF_LEN);
         }
         w.flush();
         w.close();
-        l.debug("Extracted time dimension data "+name);
+        l.debug("Extracted time dimension data " + name);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
+    public void extractAndTransfer(Command c, String pid, Connector cc, boolean waitForFinish, CliParams p, ProcessingContext ctx)
             throws IOException, InterruptedException {
-        if(includeTime) {
+        if (includeTime) {
             l.debug("Extracting data.");
             File tmpDir = FileUtil.createTempDir();
             File tmpZipDir = FileUtil.createTempDir();
             String archiveName = tmpDir.getName();
-            MDC.put("GdcDataPackageDir",archiveName);
+            MDC.put("GdcDataPackageDir", archiveName);
             String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
                     archiveName + ".zip";
 
@@ -118,7 +113,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
             ctx.getFtpApi(p).transferDir(archivePath);
             // kick the GooDData server to load the data package to the project
             String taskUri = ctx.getRestApi(p).startLoading(pid, archiveName);
-            if(waitForFinish) {
+            if (waitForFinish) {
                 checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
             }
             //cleanup
@@ -132,14 +127,15 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
 
     /**
      * Generate manifest file for date dimension in provided directory
+     *
      * @param dir
      * @throws IOException
      */
     public void deploy(String dir) throws IOException {
-        l.debug("Extracting time dimension manifest "+name);
+        l.debug("Extracting time dimension manifest " + name);
         String fn = dir + System.getProperty("file.separator") + GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
 
-        if(name == null || name.trim().length()<=0) {
+        if (name == null || name.trim().length() <= 0) {
             name = "";
         }
 
@@ -153,7 +149,7 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
             line = is.readLine();
         }
         FileUtil.writeStringToFile(script.toString(), fn);
-        l.debug("Manifest file written to file '"+fn+"'. Content: "+script);
+        l.debug("Manifest file written to file '" + fn + "'. Content: " + script);
     }
 
     /**
@@ -163,19 +159,19 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
     public void deploy(String dir, String archiveName) throws IOException {
         deploy(dir);
         FileUtil.compressDir(dir, archiveName);
-        l.debug("Time dimension temp dir compressed: "+name);
+        l.debug("Time dimension temp dir compressed: " + name);
     }
 
     /**
      * {@inheritDoc}
      */
     public String generateMaqlCreate() {
-        l.debug("Generating time dimension MAQL with context "+name);
-        if(name != null && name.trim().length()>0) {
+        l.debug("Generating time dimension MAQL with context " + name);
+        if (name != null && name.trim().length() > 0) {
             String idp = StringUtil.toIdentifier(name);
             String ts = StringUtil.toTitle(name);
-            String script = "INCLUDE TEMPLATE \""+getType()+"\" MODIFY (IDENTIFIER \""+idp+"\", TITLE \""+ts+"\");\n\n";
-            if(includeTime) {
+            String script = "INCLUDE TEMPLATE \"" + getType() + "\" MODIFY (IDENTIFIER \"" + idp + "\", TITLE \"" + ts + "\");\n\n";
+            if (includeTime) {
                 try {
                     BufferedReader is = new BufferedReader(new InputStreamReader(
                             DateDimensionConnector.class.getResourceAsStream("/com/gooddata/connector/TimeDimension.maql")));
@@ -184,17 +180,15 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
                         script += line.replace("%id%", idp).replace("%name%", ts) + "\n";
                         line = is.readLine();
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     throw new InternalErrorException("Can't read the time dimension MAQL,", e);
                 }
             }
-            l.debug("Generated time dimension MAQL with context "+name);
+            l.debug("Generated time dimension MAQL with context " + name);
             return script;
-        }
-        else {
+        } else {
             l.debug("Generated time dimension MAQL with no context ");
-            return "INCLUDE TEMPLATE \""+getType()+"\"";
+            return "INCLUDE TEMPLATE \"" + getType() + "\"";
         }
 
     }
@@ -203,41 +197,40 @@ public class DateDimensionConnector extends AbstractConnector implements Connect
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
-        l.debug("Processing command "+c.getCommand());
+        l.debug("Processing command " + c.getCommand());
         try {
-            if(c.match("LoadDateDimension") || c.match("UseDateDimension")) {
+            if (c.match("LoadDateDimension") || c.match("UseDateDimension")) {
                 loadDateDimension(c, cli, ctx);
-            }
-            else {
-                l.debug("No match passing the command "+c.getCommand()+" further.");
+            } else {
+                l.debug("No match passing the command " + c.getCommand() + " further.");
                 return super.processCommand(c, cli, ctx);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
-        l.debug("Processed command "+c.getCommand());
+        l.debug("Processed command " + c.getCommand());
         return true;
     }
 
     /**
      * Loads DateDimension data command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
      */
     private void loadDateDimension(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String ct = "";
-        if(c.checkParam("name"))
-            ct = c.getParam( "name");
+        if (c.checkParam("name"))
+            ct = c.getParam("name");
         this.name = ct;
-        if(c.checkParam("includeTime")) {
-            String ic = c.getParam( "includeTime");
+        if (c.checkParam("includeTime")) {
+            String ic = c.getParam("includeTime");
             includeTime = (ic != null && "true".equalsIgnoreCase(ic));
         }
-        if(c.checkParam("type")) {
-            type = c.getParam( "type");
+        if (c.checkParam("type")) {
+            type = c.getParam("type");
         }
         c.paramsProcessed();
 

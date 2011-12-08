@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeTab  implements java.io.Serializable {
+public class DescribeTab implements java.io.Serializable {
     private boolean custom;
 
     private java.lang.String iconUrl;
@@ -24,24 +24,24 @@ public class DescribeTab  implements java.io.Serializable {
     }
 
     public DescribeTab(
-           boolean custom,
-           java.lang.String iconUrl,
-           java.lang.String label,
-           java.lang.String miniIconUrl,
-           java.lang.String sobjectName,
-           java.lang.String url) {
-           this.custom = custom;
-           this.iconUrl = iconUrl;
-           this.label = label;
-           this.miniIconUrl = miniIconUrl;
-           this.sobjectName = sobjectName;
-           this.url = url;
+            boolean custom,
+            java.lang.String iconUrl,
+            java.lang.String label,
+            java.lang.String miniIconUrl,
+            java.lang.String sobjectName,
+            java.lang.String url) {
+        this.custom = custom;
+        this.iconUrl = iconUrl;
+        this.label = label;
+        this.miniIconUrl = miniIconUrl;
+        this.sobjectName = sobjectName;
+        this.url = url;
     }
 
 
     /**
      * Gets the custom value for this DescribeTab.
-     * 
+     *
      * @return custom
      */
     public boolean isCustom() {
@@ -51,7 +51,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Sets the custom value for this DescribeTab.
-     * 
+     *
      * @param custom
      */
     public void setCustom(boolean custom) {
@@ -61,7 +61,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Gets the iconUrl value for this DescribeTab.
-     * 
+     *
      * @return iconUrl
      */
     public java.lang.String getIconUrl() {
@@ -71,7 +71,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Sets the iconUrl value for this DescribeTab.
-     * 
+     *
      * @param iconUrl
      */
     public void setIconUrl(java.lang.String iconUrl) {
@@ -81,7 +81,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Gets the label value for this DescribeTab.
-     * 
+     *
      * @return label
      */
     public java.lang.String getLabel() {
@@ -91,7 +91,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Sets the label value for this DescribeTab.
-     * 
+     *
      * @param label
      */
     public void setLabel(java.lang.String label) {
@@ -101,7 +101,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Gets the miniIconUrl value for this DescribeTab.
-     * 
+     *
      * @return miniIconUrl
      */
     public java.lang.String getMiniIconUrl() {
@@ -111,7 +111,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Sets the miniIconUrl value for this DescribeTab.
-     * 
+     *
      * @param miniIconUrl
      */
     public void setMiniIconUrl(java.lang.String miniIconUrl) {
@@ -121,7 +121,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Gets the sobjectName value for this DescribeTab.
-     * 
+     *
      * @return sobjectName
      */
     public java.lang.String getSobjectName() {
@@ -131,7 +131,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Sets the sobjectName value for this DescribeTab.
-     * 
+     *
      * @param sobjectName
      */
     public void setSobjectName(java.lang.String sobjectName) {
@@ -141,7 +141,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Gets the url value for this DescribeTab.
-     * 
+     *
      * @return url
      */
     public java.lang.String getUrl() {
@@ -151,7 +151,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     /**
      * Sets the url value for this DescribeTab.
-     * 
+     *
      * @param url
      */
     public void setUrl(java.lang.String url) {
@@ -159,6 +159,7 @@ public class DescribeTab  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeTab)) return false;
         DescribeTab other = (DescribeTab) obj;
@@ -169,28 +170,29 @@ public class DescribeTab  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.custom == other.isCustom() &&
-            ((this.iconUrl==null && other.getIconUrl()==null) || 
-             (this.iconUrl!=null &&
-              this.iconUrl.equals(other.getIconUrl()))) &&
-            ((this.label==null && other.getLabel()==null) || 
-             (this.label!=null &&
-              this.label.equals(other.getLabel()))) &&
-            ((this.miniIconUrl==null && other.getMiniIconUrl()==null) || 
-             (this.miniIconUrl!=null &&
-              this.miniIconUrl.equals(other.getMiniIconUrl()))) &&
-            ((this.sobjectName==null && other.getSobjectName()==null) || 
-             (this.sobjectName!=null &&
-              this.sobjectName.equals(other.getSobjectName()))) &&
-            ((this.url==null && other.getUrl()==null) || 
-             (this.url!=null &&
-              this.url.equals(other.getUrl())));
+        _equals = true &&
+                this.custom == other.isCustom() &&
+                ((this.iconUrl == null && other.getIconUrl() == null) ||
+                        (this.iconUrl != null &&
+                                this.iconUrl.equals(other.getIconUrl()))) &&
+                ((this.label == null && other.getLabel() == null) ||
+                        (this.label != null &&
+                                this.label.equals(other.getLabel()))) &&
+                ((this.miniIconUrl == null && other.getMiniIconUrl() == null) ||
+                        (this.miniIconUrl != null &&
+                                this.miniIconUrl.equals(other.getMiniIconUrl()))) &&
+                ((this.sobjectName == null && other.getSobjectName() == null) ||
+                        (this.sobjectName != null &&
+                                this.sobjectName.equals(other.getSobjectName()))) &&
+                ((this.url == null && other.getUrl() == null) ||
+                        (this.url != null &&
+                                this.url.equals(other.getUrl())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -219,7 +221,7 @@ public class DescribeTab  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeTab.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeTab.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeTab"));
@@ -272,24 +274,24 @@ public class DescribeTab  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

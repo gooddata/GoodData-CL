@@ -29,104 +29,104 @@ import com.restfb.util.ReflectionUtils;
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/">Venue Graph API
  * type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.5
  */
 public class Venue {
-  @Facebook
-  private String street;
+    @Facebook
+    private String street;
 
-  @Facebook
-  private String city;
+    @Facebook
+    private String city;
 
-  @Facebook
-  private String state;
+    @Facebook
+    private String state;
 
-  @Facebook
-  private String country;
+    @Facebook
+    private String country;
 
-  @Facebook
-  private Double latitude;
+    @Facebook
+    private Double latitude;
 
-  @Facebook
-  private Double longitude;
+    @Facebook
+    private Double longitude;
 
-  /**
-   * @see Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    return ReflectionUtils.hashCode(this);
-  }
+    /**
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return ReflectionUtils.hashCode(this);
+    }
 
-  /**
-   * @see Object#equals(Object)
-   */
-  @Override
-  public boolean equals(Object that) {
-    return ReflectionUtils.equals(this, that);
-  }
+    /**
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(Object that) {
+        return ReflectionUtils.equals(this, that);
+    }
 
-  /**
-   * @see Object#toString()
-   */
-  @Override
-  public String toString() {
-    return ReflectionUtils.toString(this);
-  }
+    /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        return ReflectionUtils.toString(this);
+    }
 
-  /**
-   * Street address of the venue.
-   * 
-   * @return Street address of the venue.
-   */
-  public String getStreet() {
-    return street;
-  }
+    /**
+     * Street address of the venue.
+     *
+     * @return Street address of the venue.
+     */
+    public String getStreet() {
+        return street;
+    }
 
-  /**
-   * The venue's city.
-   * 
-   * @return The venue's city.
-   */
-  public String getCity() {
-    return city;
-  }
+    /**
+     * The venue's city.
+     *
+     * @return The venue's city.
+     */
+    public String getCity() {
+        return city;
+    }
 
-  /**
-   * The venue's state.
-   * 
-   * @return The venue's state.
-   */
-  public String getState() {
-    return state;
-  }
+    /**
+     * The venue's state.
+     *
+     * @return The venue's state.
+     */
+    public String getState() {
+        return state;
+    }
 
-  /**
-   * The venue's country.
-   * 
-   * @return The venue's country.
-   */
-  public String getCountry() {
-    return country;
-  }
+    /**
+     * The venue's country.
+     *
+     * @return The venue's country.
+     */
+    public String getCountry() {
+        return country;
+    }
 
-  /**
-   * The venue's latitude.
-   * 
-   * @return The venue's latitude.
-   */
-  public Double getLatitude() {
-    return latitude;
-  }
+    /**
+     * The venue's latitude.
+     *
+     * @return The venue's latitude.
+     */
+    public Double getLatitude() {
+        return latitude;
+    }
 
-  /**
-   * The venue's longitude.
-   * 
-   * @return The venue's longitude.
-   */
-  public Double getLongitude() {
-    return longitude;
-  }
+    /**
+     * The venue's longitude.
+     *
+     * @return The venue's longitude.
+     */
+    public Double getLongitude() {
+        return longitude;
+    }
 }

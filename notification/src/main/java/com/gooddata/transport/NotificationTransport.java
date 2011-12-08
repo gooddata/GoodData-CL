@@ -25,6 +25,7 @@ package com.gooddata.transport;
 
 /**
  * Ntification transport abstraction
+ *
  * @author zd@gooddata.com
  * @version: 1.0
  */
@@ -32,12 +33,14 @@ public interface NotificationTransport {
 
     /**
      * Sends the message
+     *
      * @param message mesage
      */
     public void send(String message);
 
     /**
      * Returns the notification transport protocol
+     *
      * @return
      */
     public String getProtocol();

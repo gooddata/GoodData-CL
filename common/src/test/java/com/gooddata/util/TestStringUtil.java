@@ -54,9 +54,9 @@ public class TestStringUtil extends TestCase {
     private static Logger l = Logger.getLogger(TestStringUtil.class);
 
     public void testformatShortName() throws Exception {
-        BufferedReader in =  FileUtil.createBufferedUtf8Reader(getClass().getResourceAsStream("/com/gooddata/util/test1.txt"));
-        assertEquals(StringUtil.toIdentifier(in.readLine()),"aiiarsiarsiaeaeieaeeareisariseaiarsreuireiurieufdnfmdfdnm323232322");
-        assertEquals(StringUtil.toIdentifier(in.readLine()),"siarsiaeaeieaedffg");
+        BufferedReader in = FileUtil.createBufferedUtf8Reader(getClass().getResourceAsStream("/com/gooddata/util/test1.txt"));
+        assertEquals(StringUtil.toIdentifier(in.readLine()), "aiiarsiarsiaeaeieaeeareisariseaiarsreuireiurieufdnfmdfdnm323232322");
+        assertEquals(StringUtil.toIdentifier(in.readLine()), "siarsiaeaeieaedffg");
     }
 
 

@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class RecordTypeInfo  implements java.io.Serializable {
+public class RecordTypeInfo implements java.io.Serializable {
     private boolean available;
 
     private boolean defaultRecordTypeMapping;
@@ -20,20 +20,20 @@ public class RecordTypeInfo  implements java.io.Serializable {
     }
 
     public RecordTypeInfo(
-           boolean available,
-           boolean defaultRecordTypeMapping,
-           java.lang.String name,
-           java.lang.String recordTypeId) {
-           this.available = available;
-           this.defaultRecordTypeMapping = defaultRecordTypeMapping;
-           this.name = name;
-           this.recordTypeId = recordTypeId;
+            boolean available,
+            boolean defaultRecordTypeMapping,
+            java.lang.String name,
+            java.lang.String recordTypeId) {
+        this.available = available;
+        this.defaultRecordTypeMapping = defaultRecordTypeMapping;
+        this.name = name;
+        this.recordTypeId = recordTypeId;
     }
 
 
     /**
      * Gets the available value for this RecordTypeInfo.
-     * 
+     *
      * @return available
      */
     public boolean isAvailable() {
@@ -43,7 +43,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
 
     /**
      * Sets the available value for this RecordTypeInfo.
-     * 
+     *
      * @param available
      */
     public void setAvailable(boolean available) {
@@ -53,7 +53,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
 
     /**
      * Gets the defaultRecordTypeMapping value for this RecordTypeInfo.
-     * 
+     *
      * @return defaultRecordTypeMapping
      */
     public boolean isDefaultRecordTypeMapping() {
@@ -63,7 +63,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
 
     /**
      * Sets the defaultRecordTypeMapping value for this RecordTypeInfo.
-     * 
+     *
      * @param defaultRecordTypeMapping
      */
     public void setDefaultRecordTypeMapping(boolean defaultRecordTypeMapping) {
@@ -73,7 +73,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
 
     /**
      * Gets the name value for this RecordTypeInfo.
-     * 
+     *
      * @return name
      */
     public java.lang.String getName() {
@@ -83,7 +83,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
 
     /**
      * Sets the name value for this RecordTypeInfo.
-     * 
+     *
      * @param name
      */
     public void setName(java.lang.String name) {
@@ -93,7 +93,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
 
     /**
      * Gets the recordTypeId value for this RecordTypeInfo.
-     * 
+     *
      * @return recordTypeId
      */
     public java.lang.String getRecordTypeId() {
@@ -103,7 +103,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
 
     /**
      * Sets the recordTypeId value for this RecordTypeInfo.
-     * 
+     *
      * @param recordTypeId
      */
     public void setRecordTypeId(java.lang.String recordTypeId) {
@@ -111,6 +111,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof RecordTypeInfo)) return false;
         RecordTypeInfo other = (RecordTypeInfo) obj;
@@ -121,20 +122,21 @@ public class RecordTypeInfo  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.available == other.isAvailable() &&
-            this.defaultRecordTypeMapping == other.isDefaultRecordTypeMapping() &&
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName()))) &&
-            ((this.recordTypeId==null && other.getRecordTypeId()==null) || 
-             (this.recordTypeId!=null &&
-              this.recordTypeId.equals(other.getRecordTypeId())));
+        _equals = true &&
+                this.available == other.isAvailable() &&
+                this.defaultRecordTypeMapping == other.isDefaultRecordTypeMapping() &&
+                ((this.name == null && other.getName() == null) ||
+                        (this.name != null &&
+                                this.name.equals(other.getName()))) &&
+                ((this.recordTypeId == null && other.getRecordTypeId() == null) ||
+                        (this.recordTypeId != null &&
+                                this.recordTypeId.equals(other.getRecordTypeId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -155,7 +157,7 @@ public class RecordTypeInfo  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RecordTypeInfo.class, true);
+            new org.apache.axis.description.TypeDesc(RecordTypeInfo.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "RecordTypeInfo"));
@@ -196,24 +198,24 @@ public class RecordTypeInfo  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

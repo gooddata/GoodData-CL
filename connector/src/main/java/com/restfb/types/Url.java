@@ -28,38 +28,38 @@ import com.restfb.Facebook;
  * @author <a href="http://restfb.com">Mark Allen</a>
  */
 public class Url extends NamedFacebookType {
-  @Facebook
-  private Long shares;
+    @Facebook
+    private Long shares;
 
-  @Facebook
-  private String picture;
+    @Facebook
+    private String picture;
 
-  @Facebook
-  private String link;
+    @Facebook
+    private String link;
 
-  @Facebook
-  private String category;
+    @Facebook
+    private String category;
 
-  @Facebook("fan_count")
-  private Long fanCount;
+    @Facebook("fan_count")
+    private Long fanCount;
 
-  public Long getShares() {
-    return shares;
-  }
+    public Long getShares() {
+        return shares;
+    }
 
-  public String getPicture() {
-    return picture;
-  }
+    public String getPicture() {
+        return picture;
+    }
 
-  public String getLink() {
-    return link;
-  }
+    public String getLink() {
+        return link;
+    }
 
-  public String getCategory() {
-    return category;
-  }
+    public String getCategory() {
+        return category;
+    }
 
-  public Long getFanCount() {
-    return fanCount;
-  }
+    public Long getFanCount() {
+        return fanCount;
+    }
 }

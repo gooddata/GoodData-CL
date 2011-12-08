@@ -23,7 +23,8 @@
 
 package com.gooddata.util;
 
-import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NTCredentials;
 import org.apache.commons.httpclient.auth.AuthPolicy;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.log4j.Logger;
@@ -41,26 +42,25 @@ public class NetUtil {
     public static void configureHttpProxy(HttpClient client) {
         final String proxyHost = System.getProperty("http.proxyHost");
         final int proxyPort = System.getProperty("http.proxyPort") == null
-            ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
+                ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
 
         if (proxyHost != null) {
-            l.debug("Configuring HTTP client with proxyHost="+proxyHost+", proxyPort="+proxyPort);
+            l.debug("Configuring HTTP client with proxyHost=" + proxyHost + ", proxyPort=" + proxyPort);
             final String domain = System.getProperty("http.auth.ntlm.domain");
-            if(domain != null && domain.length()>0) {
-                l.debug("NTLM proxy requested for domain="+domain);
+            if (domain != null && domain.length() > 0) {
+                l.debug("NTLM proxy requested for domain=" + domain);
                 final String user = System.getProperty("http.proxyUser");
                 final String password = System.getProperty("http.proxyUser");
-                l.debug("Configuring HTTP client with proxyUser="+user+" and password.");
+                l.debug("Configuring HTTP client with proxyUser=" + user + " and password.");
                 List authPrefs = new ArrayList();
                 authPrefs.add(AuthPolicy.NTLM);
-                client.getState().setProxyCredentials(new AuthScope(null, proxyPort, null),new NTCredentials(user,
+                client.getState().setProxyCredentials(new AuthScope(null, proxyPort, null), new NTCredentials(user,
                         password, "", domain));
                 client.getParams().setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs);
             }
-            client.getHostConfiguration().setProxy(proxyHost,proxyPort);
+            client.getHostConfiguration().setProxy(proxyHost, proxyPort);
         }
     }
-
 
 
 }

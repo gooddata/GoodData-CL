@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeLayoutResult  implements java.io.Serializable {
+public class DescribeLayoutResult implements java.io.Serializable {
     private com.sforce.soap.partner.DescribeLayout[] layouts;
 
     private com.sforce.soap.partner.RecordTypeMapping[] recordTypeMappings;
@@ -18,18 +18,18 @@ public class DescribeLayoutResult  implements java.io.Serializable {
     }
 
     public DescribeLayoutResult(
-           com.sforce.soap.partner.DescribeLayout[] layouts,
-           com.sforce.soap.partner.RecordTypeMapping[] recordTypeMappings,
-           boolean recordTypeSelectorRequired) {
-           this.layouts = layouts;
-           this.recordTypeMappings = recordTypeMappings;
-           this.recordTypeSelectorRequired = recordTypeSelectorRequired;
+            com.sforce.soap.partner.DescribeLayout[] layouts,
+            com.sforce.soap.partner.RecordTypeMapping[] recordTypeMappings,
+            boolean recordTypeSelectorRequired) {
+        this.layouts = layouts;
+        this.recordTypeMappings = recordTypeMappings;
+        this.recordTypeSelectorRequired = recordTypeSelectorRequired;
     }
 
 
     /**
      * Gets the layouts value for this DescribeLayoutResult.
-     * 
+     *
      * @return layouts
      */
     public com.sforce.soap.partner.DescribeLayout[] getLayouts() {
@@ -39,7 +39,7 @@ public class DescribeLayoutResult  implements java.io.Serializable {
 
     /**
      * Sets the layouts value for this DescribeLayoutResult.
-     * 
+     *
      * @param layouts
      */
     public void setLayouts(com.sforce.soap.partner.DescribeLayout[] layouts) {
@@ -57,7 +57,7 @@ public class DescribeLayoutResult  implements java.io.Serializable {
 
     /**
      * Gets the recordTypeMappings value for this DescribeLayoutResult.
-     * 
+     *
      * @return recordTypeMappings
      */
     public com.sforce.soap.partner.RecordTypeMapping[] getRecordTypeMappings() {
@@ -67,7 +67,7 @@ public class DescribeLayoutResult  implements java.io.Serializable {
 
     /**
      * Sets the recordTypeMappings value for this DescribeLayoutResult.
-     * 
+     *
      * @param recordTypeMappings
      */
     public void setRecordTypeMappings(com.sforce.soap.partner.RecordTypeMapping[] recordTypeMappings) {
@@ -85,7 +85,7 @@ public class DescribeLayoutResult  implements java.io.Serializable {
 
     /**
      * Gets the recordTypeSelectorRequired value for this DescribeLayoutResult.
-     * 
+     *
      * @return recordTypeSelectorRequired
      */
     public boolean isRecordTypeSelectorRequired() {
@@ -95,7 +95,7 @@ public class DescribeLayoutResult  implements java.io.Serializable {
 
     /**
      * Sets the recordTypeSelectorRequired value for this DescribeLayoutResult.
-     * 
+     *
      * @param recordTypeSelectorRequired
      */
     public void setRecordTypeSelectorRequired(boolean recordTypeSelectorRequired) {
@@ -103,6 +103,7 @@ public class DescribeLayoutResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutResult)) return false;
         DescribeLayoutResult other = (DescribeLayoutResult) obj;
@@ -113,19 +114,20 @@ public class DescribeLayoutResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.layouts==null && other.getLayouts()==null) || 
-             (this.layouts!=null &&
-              java.util.Arrays.equals(this.layouts, other.getLayouts()))) &&
-            ((this.recordTypeMappings==null && other.getRecordTypeMappings()==null) || 
-             (this.recordTypeMappings!=null &&
-              java.util.Arrays.equals(this.recordTypeMappings, other.getRecordTypeMappings()))) &&
-            this.recordTypeSelectorRequired == other.isRecordTypeSelectorRequired();
+        _equals = true &&
+                ((this.layouts == null && other.getLayouts() == null) ||
+                        (this.layouts != null &&
+                                java.util.Arrays.equals(this.layouts, other.getLayouts()))) &&
+                ((this.recordTypeMappings == null && other.getRecordTypeMappings() == null) ||
+                        (this.recordTypeMappings != null &&
+                                java.util.Arrays.equals(this.recordTypeMappings, other.getRecordTypeMappings()))) &&
+                this.recordTypeSelectorRequired == other.isRecordTypeSelectorRequired();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -133,23 +135,23 @@ public class DescribeLayoutResult  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getLayouts() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getLayouts());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getLayouts());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getLayouts(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
         }
         if (getRecordTypeMappings() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getRecordTypeMappings());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getRecordTypeMappings());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getRecordTypeMappings(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -161,7 +163,7 @@ public class DescribeLayoutResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeLayoutResult.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeLayoutResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeLayoutResult"));
@@ -199,24 +201,24 @@ public class DescribeLayoutResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

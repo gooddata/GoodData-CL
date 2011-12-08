@@ -7,21 +7,21 @@
 
 package com.sforce.soap.partner;
 
-public class SearchRecord  implements java.io.Serializable {
+public class SearchRecord implements java.io.Serializable {
     private com.sforce.soap.partner.sobject.SObject record;
 
     public SearchRecord() {
     }
 
     public SearchRecord(
-           com.sforce.soap.partner.sobject.SObject record) {
-           this.record = record;
+            com.sforce.soap.partner.sobject.SObject record) {
+        this.record = record;
     }
 
 
     /**
      * Gets the record value for this SearchRecord.
-     * 
+     *
      * @return record
      */
     public com.sforce.soap.partner.sobject.SObject getRecord() {
@@ -31,7 +31,7 @@ public class SearchRecord  implements java.io.Serializable {
 
     /**
      * Sets the record value for this SearchRecord.
-     * 
+     *
      * @param record
      */
     public void setRecord(com.sforce.soap.partner.sobject.SObject record) {
@@ -39,6 +39,7 @@ public class SearchRecord  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SearchRecord)) return false;
         SearchRecord other = (SearchRecord) obj;
@@ -49,15 +50,16 @@ public class SearchRecord  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.record==null && other.getRecord()==null) || 
-             (this.record!=null &&
-              this.record.equals(other.getRecord())));
+        _equals = true &&
+                ((this.record == null && other.getRecord() == null) ||
+                        (this.record != null &&
+                                this.record.equals(other.getRecord())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -73,7 +75,7 @@ public class SearchRecord  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(SearchRecord.class, true);
+            new org.apache.axis.description.TypeDesc(SearchRecord.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "SearchRecord"));
@@ -96,24 +98,24 @@ public class SearchRecord  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

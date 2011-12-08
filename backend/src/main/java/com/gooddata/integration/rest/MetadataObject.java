@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 
 /**
  * Represents GoodData metadata object
- * 
+ *
  * @author Zdenek Svoboda <zd@gooddata.com>
  * @version 1.0
  */
@@ -56,6 +56,7 @@ public class MetadataObject implements JSON, Map, Comparable {
 
     /**
      * Extracts the dependent objects uris from the content
+     *
      * @return list of depenedent object uris
      */
     public List<String> getDependentObjectUris() {
@@ -64,10 +65,10 @@ public class MetadataObject implements JSON, Map, Comparable {
         String content = toString();
         Pattern p = Pattern.compile("[\\\"\\[]/gdc/md/[^/]*?/obj/[0-9]+?[\\\"\\]/]");
         Matcher m = p.matcher(content);
-        while(m.find()) {
+        while (m.find()) {
             String u = m.group();
-            u = u.substring(1,u.length() - 1);
-            if(!u.equalsIgnoreCase(uri) && !uris.contains(u))
+            u = u.substring(1, u.length() - 1);
+            if (!u.equalsIgnoreCase(uri) && !uris.contains(u))
                 uris.add(u);
         }
         return uris;
@@ -75,14 +76,15 @@ public class MetadataObject implements JSON, Map, Comparable {
 
     /**
      * Extracts the dependent objects IDs from the content
+     *
      * @return list of depenedent object IDs
      */
-     public List<String> getDependentObjectIds() {
+    public List<String> getDependentObjectIds() {
         List<String> uris = getDependentObjectUris();
         List<String> ids = new ArrayList<String>();
-        for(String uri : uris) {
+        for (String uri : uris) {
             int i = uri.lastIndexOf("/");
-            String id = uri.substring(i+1);
+            String id = uri.substring(i + 1);
             ids.add(id);
         }
         return ids;
@@ -140,10 +142,10 @@ public class MetadataObject implements JSON, Map, Comparable {
                 l.debug("The JSON object doesn't contain the content tag object=" + jsonObject.toString());
                 throw new GdcRestApiException("The JSON object doesn't contain the content tag object=" + jsonObject.toString());
             }
-            if(rootKey.equalsIgnoreCase("report")) {
+            if (rootKey.equalsIgnoreCase("report")) {
                 c.discard("results");
             }
-            if(rootKey.equalsIgnoreCase("folder") || rootKey.equalsIgnoreCase("domain")) {
+            if (rootKey.equalsIgnoreCase("folder") || rootKey.equalsIgnoreCase("domain")) {
                 c.discard("entries");
             }
 
@@ -199,6 +201,7 @@ public class MetadataObject implements JSON, Map, Comparable {
 
     /**
      * Extracts the object's identifier
+     *
      * @return the GoodData object identifier
      */
     public String getIdentifier() {
@@ -224,6 +227,7 @@ public class MetadataObject implements JSON, Map, Comparable {
 
     /**
      * Extracts the object's uri
+     *
      * @return the GoodData object uri
      */
     public String getUri() {
@@ -249,6 +253,7 @@ public class MetadataObject implements JSON, Map, Comparable {
 
     /**
      * Extracts the object's type
+     *
      * @return the GoodData object type
      */
     public String getType() {

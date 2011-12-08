@@ -36,11 +36,12 @@ public interface Executor {
 
     /**
      * Processes single command
-     * @param c command to be processed
+     *
+     * @param c   command to be processed
      * @param cli parameters (commandline params)
      * @param ctx processing context
-     * @throws ProcessingException in case of issues during the command processing
      * @return true if the command has been processed, false otherwise
+     * @throws ProcessingException in case of issues during the command processing
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException;
 

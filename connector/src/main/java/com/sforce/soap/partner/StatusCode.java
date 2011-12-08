@@ -14,7 +14,7 @@ public class StatusCode implements java.io.Serializable {
     // Constructor
     protected StatusCode(java.lang.String value) {
         _value_ = value;
-        _table_.put(_value_,this);
+        _table_.put(_value_, this);
     }
 
     public static final java.lang.String _ALL_OR_NONE_OPERATION_ROLLED_BACK = "ALL_OR_NONE_OPERATION_ROLLED_BACK";
@@ -347,45 +347,66 @@ public class StatusCode implements java.io.Serializable {
     public static final StatusCode USER_WITH_APEX_SHARES_EXCEPTION = new StatusCode(_USER_WITH_APEX_SHARES_EXCEPTION);
     public static final StatusCode WEBLINK_SIZE_LIMIT_EXCEEDED = new StatusCode(_WEBLINK_SIZE_LIMIT_EXCEEDED);
     public static final StatusCode WRONG_CONTROLLER_TYPE = new StatusCode(_WRONG_CONTROLLER_TYPE);
-    public java.lang.String getValue() { return _value_;}
+
+    public java.lang.String getValue() {
+        return _value_;
+    }
+
     public static StatusCode fromValue(java.lang.String value)
-          throws java.lang.IllegalArgumentException {
+            throws java.lang.IllegalArgumentException {
         StatusCode enumeration = (StatusCode)
-            _table_.get(value);
-        if (enumeration==null) throw new java.lang.IllegalArgumentException();
+                _table_.get(value);
+        if (enumeration == null) throw new java.lang.IllegalArgumentException();
         return enumeration;
     }
+
     public static StatusCode fromString(java.lang.String value)
-          throws java.lang.IllegalArgumentException {
+            throws java.lang.IllegalArgumentException {
         return fromValue(value);
     }
-    public boolean equals(java.lang.Object obj) {return (obj == this);}
-    public int hashCode() { return toString().hashCode();}
-    public java.lang.String toString() { return _value_;}
-    public java.lang.Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
+
+    public boolean equals(java.lang.Object obj) {
+        return (obj == this);
+    }
+
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    public java.lang.String toString() {
+        return _value_;
+    }
+
+    public java.lang.Object readResolve() throws java.io.ObjectStreamException {
+        return fromValue(_value_);
+    }
+
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new org.apache.axis.encoding.ser.EnumSerializer(
-            _javaType, _xmlType);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.EnumSerializer(
+                        _javaType, _xmlType);
     }
+
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new org.apache.axis.encoding.ser.EnumDeserializer(
-            _javaType, _xmlType);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.EnumDeserializer(
+                        _javaType, _xmlType);
     }
+
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(StatusCode.class);
+            new org.apache.axis.description.TypeDesc(StatusCode.class);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "StatusCode"));
     }
+
     /**
      * Return type metadata object
      */

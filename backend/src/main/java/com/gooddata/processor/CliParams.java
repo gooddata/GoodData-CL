@@ -34,7 +34,7 @@ import java.util.HashMap;
  * @author zd <zd@gooddata.com>
  * @version 1.0
  */
-public class CliParams extends HashMap<String,String> {
+public class CliParams extends HashMap<String, String> {
 
 
     private NamePasswordConfiguration httpConfig = null;
@@ -44,6 +44,7 @@ public class CliParams extends HashMap<String,String> {
 
     /**
      * HTTP config getter
+     *
      * @return HTTP config
      */
     public NamePasswordConfiguration getHttpConfig() {
@@ -52,6 +53,7 @@ public class CliParams extends HashMap<String,String> {
 
     /**
      * HTTP config setter
+     *
      * @param httpConfig HTTP config
      */
     public void setHttpConfig(NamePasswordConfiguration httpConfig) {
@@ -60,13 +62,16 @@ public class CliParams extends HashMap<String,String> {
 
     /**
      * FTP config getter
+     *
      * @return FTP config
      */
     public NamePasswordConfiguration getFtpConfig() {
         return ftpConfig;
     }
+
     /**
      * FTP config setter
+     *
      * @param ftpConfig FTP config
      */
     public void setFtpConfig(NamePasswordConfiguration ftpConfig) {

@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class QueryResult  implements java.io.Serializable {
+public class QueryResult implements java.io.Serializable {
     private boolean done;
 
     private java.lang.String queryLocator;
@@ -20,20 +20,20 @@ public class QueryResult  implements java.io.Serializable {
     }
 
     public QueryResult(
-           boolean done,
-           java.lang.String queryLocator,
-           com.sforce.soap.partner.sobject.SObject[] records,
-           int size) {
-           this.done = done;
-           this.queryLocator = queryLocator;
-           this.records = records;
-           this.size = size;
+            boolean done,
+            java.lang.String queryLocator,
+            com.sforce.soap.partner.sobject.SObject[] records,
+            int size) {
+        this.done = done;
+        this.queryLocator = queryLocator;
+        this.records = records;
+        this.size = size;
     }
 
 
     /**
      * Gets the done value for this QueryResult.
-     * 
+     *
      * @return done
      */
     public boolean isDone() {
@@ -43,7 +43,7 @@ public class QueryResult  implements java.io.Serializable {
 
     /**
      * Sets the done value for this QueryResult.
-     * 
+     *
      * @param done
      */
     public void setDone(boolean done) {
@@ -53,7 +53,7 @@ public class QueryResult  implements java.io.Serializable {
 
     /**
      * Gets the queryLocator value for this QueryResult.
-     * 
+     *
      * @return queryLocator
      */
     public java.lang.String getQueryLocator() {
@@ -63,7 +63,7 @@ public class QueryResult  implements java.io.Serializable {
 
     /**
      * Sets the queryLocator value for this QueryResult.
-     * 
+     *
      * @param queryLocator
      */
     public void setQueryLocator(java.lang.String queryLocator) {
@@ -73,7 +73,7 @@ public class QueryResult  implements java.io.Serializable {
 
     /**
      * Gets the records value for this QueryResult.
-     * 
+     *
      * @return records
      */
     public com.sforce.soap.partner.sobject.SObject[] getRecords() {
@@ -83,7 +83,7 @@ public class QueryResult  implements java.io.Serializable {
 
     /**
      * Sets the records value for this QueryResult.
-     * 
+     *
      * @param records
      */
     public void setRecords(com.sforce.soap.partner.sobject.SObject[] records) {
@@ -101,7 +101,7 @@ public class QueryResult  implements java.io.Serializable {
 
     /**
      * Gets the size value for this QueryResult.
-     * 
+     *
      * @return size
      */
     public int getSize() {
@@ -111,7 +111,7 @@ public class QueryResult  implements java.io.Serializable {
 
     /**
      * Sets the size value for this QueryResult.
-     * 
+     *
      * @param size
      */
     public void setSize(int size) {
@@ -119,6 +119,7 @@ public class QueryResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof QueryResult)) return false;
         QueryResult other = (QueryResult) obj;
@@ -129,20 +130,21 @@ public class QueryResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.done == other.isDone() &&
-            ((this.queryLocator==null && other.getQueryLocator()==null) || 
-             (this.queryLocator!=null &&
-              this.queryLocator.equals(other.getQueryLocator()))) &&
-            ((this.records==null && other.getRecords()==null) || 
-             (this.records!=null &&
-              java.util.Arrays.equals(this.records, other.getRecords()))) &&
-            this.size == other.getSize();
+        _equals = true &&
+                this.done == other.isDone() &&
+                ((this.queryLocator == null && other.getQueryLocator() == null) ||
+                        (this.queryLocator != null &&
+                                this.queryLocator.equals(other.getQueryLocator()))) &&
+                ((this.records == null && other.getRecords() == null) ||
+                        (this.records != null &&
+                                java.util.Arrays.equals(this.records, other.getRecords()))) &&
+                this.size == other.getSize();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -154,12 +156,12 @@ public class QueryResult  implements java.io.Serializable {
             _hashCode += getQueryLocator().hashCode();
         }
         if (getRecords() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getRecords());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getRecords());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getRecords(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -171,7 +173,7 @@ public class QueryResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(QueryResult.class, true);
+            new org.apache.axis.description.TypeDesc(QueryResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "QueryResult"));
@@ -214,24 +216,24 @@ public class QueryResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

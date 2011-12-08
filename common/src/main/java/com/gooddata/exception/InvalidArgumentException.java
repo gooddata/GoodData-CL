@@ -32,9 +32,10 @@ package com.gooddata.exception;
 public class InvalidArgumentException extends GdcException {
     /**
      * Constructor
+     *
      * @param s exception message
      */
     public InvalidArgumentException(String s) {
-    	super(s);
+        super(s);
     }
 }

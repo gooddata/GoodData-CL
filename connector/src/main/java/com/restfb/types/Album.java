@@ -22,103 +22,103 @@
 
 package com.restfb.types;
 
-import static com.restfb.util.DateUtils.toDateFromLongFormat;
+import com.restfb.Facebook;
 
 import java.util.Date;
 
-import com.restfb.Facebook;
+import static com.restfb.util.DateUtils.toDateFromLongFormat;
 
 /**
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/album">Album Graph
  * API type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.5
  */
 public class Album extends NamedFacebookType {
-  @Facebook
-  private CategorizedFacebookType from;
+    @Facebook
+    private CategorizedFacebookType from;
 
-  @Facebook
-  private String description;
+    @Facebook
+    private String description;
 
-  @Facebook
-  private String location;
+    @Facebook
+    private String location;
 
-  @Facebook
-  private String link;
+    @Facebook
+    private String link;
 
-  @Facebook
-  private Long count;
+    @Facebook
+    private Long count;
 
-  @Facebook("created_time")
-  private String createdTime;
+    @Facebook("created_time")
+    private String createdTime;
 
-  @Facebook("updated_time")
-  private String updatedTime;
+    @Facebook("updated_time")
+    private String updatedTime;
 
-  /**
-   * An object containing the ID and name of the profile who posted this album.
-   * 
-   * @return An object containing the ID and name of the profile who posted this
-   *         album.
-   */
-  public CategorizedFacebookType getFrom() {
-    return from;
-  }
+    /**
+     * An object containing the ID and name of the profile who posted this album.
+     *
+     * @return An object containing the ID and name of the profile who posted this
+     *         album.
+     */
+    public CategorizedFacebookType getFrom() {
+        return from;
+    }
 
-  /**
-   * The description of the album.
-   * 
-   * @return The description of the album.
-   */
-  public String getDescription() {
-    return description;
-  }
+    /**
+     * The description of the album.
+     *
+     * @return The description of the album.
+     */
+    public String getDescription() {
+        return description;
+    }
 
-  /**
-   * The location of the album.
-   * 
-   * @return The location of the album.
-   */
-  public String getLocation() {
-    return location;
-  }
+    /**
+     * The location of the album.
+     *
+     * @return The location of the album.
+     */
+    public String getLocation() {
+        return location;
+    }
 
-  /**
-   * A link to this album on Facebook.
-   * 
-   * @return A link to this album on Facebook.
-   */
-  public String getLink() {
-    return link;
-  }
+    /**
+     * A link to this album on Facebook.
+     *
+     * @return A link to this album on Facebook.
+     */
+    public String getLink() {
+        return link;
+    }
 
-  /**
-   * The number of photos in this album.
-   * 
-   * @return The number of photos in this album.
-   */
-  public Long getCount() {
-    return count;
-  }
+    /**
+     * The number of photos in this album.
+     *
+     * @return The number of photos in this album.
+     */
+    public Long getCount() {
+        return count;
+    }
 
-  /**
-   * The time the photo album was initially created.
-   * 
-   * @return The time the photo album was initially created.
-   */
-  public Date getCreatedTime() {
-    return toDateFromLongFormat(createdTime);
-  }
+    /**
+     * The time the photo album was initially created.
+     *
+     * @return The time the photo album was initially created.
+     */
+    public Date getCreatedTime() {
+        return toDateFromLongFormat(createdTime);
+    }
 
-  /**
-   * The last time the photo album was updated.
-   * 
-   * @return The last time the photo album was updated.
-   */
-  public Date getUpdatedTime() {
-    return toDateFromLongFormat(updatedTime);
-  }
+    /**
+     * The last time the photo album was updated.
+     *
+     * @return The last time the photo album was updated.
+     */
+    public Date getUpdatedTime() {
+        return toDateFromLongFormat(updatedTime);
+    }
 }

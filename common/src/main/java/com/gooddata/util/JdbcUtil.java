@@ -41,6 +41,7 @@ public class JdbcUtil {
 
     /**
      * Execute update
+     *
      * @param con connection
      * @param sql sql statement
      * @return number of affected rows
@@ -53,22 +54,20 @@ public class JdbcUtil {
             s = con.createStatement();
             l.debug("Executing SQL: statement='" + sql + "'");
             rc = s.executeUpdate(sql);
-            l.debug("Executed SQL: statement='" + sql + "' rows="+rc);
+            l.debug("Executed SQL: statement='" + sql + "' rows=" + rc);
             return rc;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             l.debug("Error executing SQL: statement='" + sql + "', result='" + rc + "'", e);
             throw e;
-        }
-        finally {
-            if( s!= null )
+        } finally {
+            if (s != null)
                 s.close();
         }
     }
-    
+
     /**
      * Executes an update using a prepared statement.
-     * <p>
+     * <p/>
      * Example:
      * <pre> final int myid = 42;
      * JdbcUtil.executeUpdate(con, "select * from table where id = ?", new StatementHandler() {
@@ -77,49 +76,49 @@ public class JdbcUtil {
      *     }
      * });
      * </pre>
-     * 
+     *
      * @param con connection
      * @param sql sql prepared statement (i.e. may contain the "?" placeholders to be populated by the <tt>sh</tt> handler
-     * @param sh {@link StatementHandler} instance to setup the prepared statement
+     * @param sh  {@link StatementHandler} instance to setup the prepared statement
      * @return number of affected rows
      * @throws SQLException in case of a db issue
      */
     public static int executeUpdate(Connection con, String sql, StatementHandler sh) throws SQLException {
-    	PreparedStatement s = null;
-    	int rc = 0;
-    	try {
-    		s = con.prepareStatement(sql);
-    		sh.prepare(s);
+        PreparedStatement s = null;
+        int rc = 0;
+        try {
+            s = con.prepareStatement(sql);
+            sh.prepare(s);
             l.debug("Executing SQL: statement='" + sh.toString() + "'");
-    		rc = s.executeUpdate();
-    		return rc;
-    	} catch (SQLException e) {
-    		l.debug("Error executing SQL: statement='" + sql + "', result='" + rc + "'", e);
+            rc = s.executeUpdate();
+            return rc;
+        } catch (SQLException e) {
+            l.debug("Error executing SQL: statement='" + sql + "', result='" + rc + "'", e);
             throw e;
-    	} finally {
-    		if (s != null)
-    			s.close();
-    	}
+        } finally {
+            if (s != null)
+                s.close();
+        }
     }
 
     /**
      * Execute query
-     * @param s JDBC statement
-     * @param sql sql statement
+     *
+     * @param s         JDBC statement
+     * @param sql       sql statement
      * @param fetchSize max fetch size
      * @return Jdbc ResultSet
-     * @throws SQLException in case of a db issue 
+     * @throws SQLException in case of a db issue
      */
     private static ResultSet executeQuery(Statement s, String sql, int fetchSize) throws SQLException {
         ResultSet rs = null;
         try {
-    		s.setFetchSize(fetchSize);        	
+            s.setFetchSize(fetchSize);
             l.debug("Executing SQL: statement='" + sql + "'");
             rs = s.executeQuery(sql);
             l.debug("Executed SQL: statement='" + sql + "'");
             return rs;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             l.debug("Error executing SQL: statement='" + sql + "'", e);
             throw e;
         }
@@ -127,65 +126,67 @@ public class JdbcUtil {
 
     /**
      * Execute query an passes the ResultSet to the given handler on each record
-     * @param c JDBC connection
-     * @param sql sql statement
-     * @param handler Jdbc ResultSet handler
-     * @param limit maximum number of rows to process
-     * @param fetchSize max fetch size  
-     * @throws SQLException in case of a db issue 
+     *
+     * @param c         JDBC connection
+     * @param sql       sql statement
+     * @param handler   Jdbc ResultSet handler
+     * @param limit     maximum number of rows to process
+     * @param fetchSize max fetch size
+     * @throws SQLException in case of a db issue
      */
     public static void executeQuery(Connection c, String sql, ResultSetHandler handler, int limit, int fetchSize) throws SQLException, IOException {
-    	Statement st = null;
-    	ResultSet rs = null;
-    	try {
-    		st = c.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
-    	              			   java.sql.ResultSet.CONCUR_READ_ONLY);
+        Statement st = null;
+        ResultSet rs = null;
+        try {
+            st = c.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
+                    java.sql.ResultSet.CONCUR_READ_ONLY);
             l.debug("Executing SQL: statement='" + st.toString() + "'");
-    		rs = executeQuery(st, sql, fetchSize);
-    		while (rs.next() && limit-- > 0) {
-    			handler.handle(rs);
-    		}
-    	} finally {
-    		if (rs != null)
-    			rs.close();
-    		if (st != null)
-    			st.close();
-    	}
+            rs = executeQuery(st, sql, fetchSize);
+            while (rs.next() && limit-- > 0) {
+                handler.handle(rs);
+            }
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
+        }
     }
 
     /**
      * Execute query an passes the ResultSet to the given handler on each record
-     * @param c JDBC connection
-     * @param sql sql statement
-     * @param handler Jdbc ResultSet handler
+     *
+     * @param c         JDBC connection
+     * @param sql       sql statement
+     * @param handler   Jdbc ResultSet handler
      * @param fetchSize max fetch size
      * @throws SQLException in case of a db issue
      */
     public static void executeQuery(Connection c, String sql, ResultSetHandler handler, int fetchSize) throws SQLException, IOException {
-    	executeQuery(c,sql,handler,Integer.MAX_VALUE, fetchSize);
+        executeQuery(c, sql, handler, Integer.MAX_VALUE, fetchSize);
     }
 
     /**
      * Result set handler callback interface for {@link JdbcUtil#executeQuery(Connection, String, ResultSetHandler, int)}
      */
     public static interface ResultSetHandler {
-    	public void handle(ResultSet rs) throws SQLException, IOException;
+        public void handle(ResultSet rs) throws SQLException, IOException;
     }
-    
+
     /**
      * Dummy resultset handler callback; literally does nothing
      */
     public static class DummyResultSetHandler implements ResultSetHandler {
-    	public void handle(ResultSet rs) throws SQLException {
-    		; // intentionally does nothing
-    	}
+        public void handle(ResultSet rs) throws SQLException {
+            ; // intentionally does nothing
+        }
     }
-    
+
     /**
      * Statement handler callback interface for {@link JdbcUtil#executeUpdate(Connection, String, StatementHandler)}
      */
     public static interface StatementHandler {
-    	public void prepare(PreparedStatement stmt) throws SQLException;
+        public void prepare(PreparedStatement stmt) throws SQLException;
     }
 
 }

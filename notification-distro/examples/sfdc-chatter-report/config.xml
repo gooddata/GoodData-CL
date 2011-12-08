@@ -1,20 +1,20 @@
 <!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
 
 <notification>
-  <messages>
-    <message>
-      <condition>1</condition>
-      <reports>
-        <report>
-          <alias>SalesReps</alias>
-          <uri>/gdc/md/xm7bli0xz3wdo6no5k2j53io6o1dyeqa/obj/200009204</uri>
-        </report>
-      </reports>
-      <message>Best Sales Reps %SalesReps%! Check out what's up!</message>
-      <uri>sfdc://www.salesforce.com</uri>
-      <dupFilterExact>1m</dupFilterExact>
-      <dupFilterKind>1m</dupFilterKind>
-      <messageTimestampFormat>MM/dd/yyyy hh:mm</messageTimestampFormat>
-   </message>
-  </messages>
+    <messages>
+        <message>
+            <condition>1</condition>
+            <reports>
+                <report>
+                    <alias>SalesReps</alias>
+                    <uri>/gdc/md/xm7bli0xz3wdo6no5k2j53io6o1dyeqa/obj/200009204</uri>
+                </report>
+            </reports>
+            <message>Best Sales Reps %SalesReps%! Check out what's up!</message>
+            <uri>sfdc://www.salesforce.com</uri>
+            <dupFilterExact>1m</dupFilterExact>
+            <dupFilterKind>1m</dupFilterKind>
+            <messageTimestampFormat>MM/dd/yyyy hh:mm</messageTimestampFormat>
+        </message>
+    </messages>
 </notification>

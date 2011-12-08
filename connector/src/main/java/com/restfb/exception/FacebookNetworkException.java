@@ -27,63 +27,56 @@ import static java.lang.String.format;
 /**
  * Indicates that a network error occurred while trying to connect to the
  * Facebook API endpoint.
- * <p>
+ * <p/>
  * Examples: No network adapter available, API endpoint is down.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  */
 public class FacebookNetworkException extends FacebookException {
-  /**
-   * The HTTP response status code.
-   */
-  private Integer httpStatusCode;
+    /**
+     * The HTTP response status code.
+     */
+    private Integer httpStatusCode;
 
-  /**
-   * Creates an exception with the given message and cause.
-   * 
-   * @param message
-   *          A message describing this exception.
-   * @param cause
-   *          The exception that caused this exception to be thrown.
-   */
-  public FacebookNetworkException(String message, Throwable cause) {
-    this(message, cause, null);
-  }
+    /**
+     * Creates an exception with the given message and cause.
+     *
+     * @param message A message describing this exception.
+     * @param cause   The exception that caused this exception to be thrown.
+     */
+    public FacebookNetworkException(String message, Throwable cause) {
+        this(message, cause, null);
+    }
 
-  /**
-   * Creates an exception with the given message and HTTP status code.
-   * 
-   * @param message
-   *          A message describing this exception.
-   * @param httpStatusCode
-   *          The HTTP response status code.
-   */
-  public FacebookNetworkException(String message, Integer httpStatusCode) {
-    this(message, null, httpStatusCode);
-  }
+    /**
+     * Creates an exception with the given message and HTTP status code.
+     *
+     * @param message        A message describing this exception.
+     * @param httpStatusCode The HTTP response status code.
+     */
+    public FacebookNetworkException(String message, Integer httpStatusCode) {
+        this(message, null, httpStatusCode);
+    }
 
-  /**
-   * Creates an exception with the given message, cause, and HTTP status code.
-   * 
-   * @param message
-   *          A message describing this exception.
-   * @param cause
-   *          The exception that caused this exception to be thrown.
-   * @param httpStatusCode
-   *          The HTTP response status code.
-   */
-  public FacebookNetworkException(String message, Throwable cause, Integer httpStatusCode) {
-    super(format("A network error occurred while trying to " + "communicate with Facebook: %s (HTTP status code %d)",
-      message, httpStatusCode), cause);
-    this.httpStatusCode = httpStatusCode;
-  }
+    /**
+     * Creates an exception with the given message, cause, and HTTP status code.
+     *
+     * @param message        A message describing this exception.
+     * @param cause          The exception that caused this exception to be thrown.
+     * @param httpStatusCode The HTTP response status code.
+     */
+    public FacebookNetworkException(String message, Throwable cause, Integer httpStatusCode) {
+        super(format("A network error occurred while trying to " + "communicate with Facebook: %s (HTTP status code %d)",
+                message, httpStatusCode), cause);
+        this.httpStatusCode = httpStatusCode;
+    }
 
-  /**
-   * Gets the HTTP response status code.
-   * 
-   * @return The HTTP response status code.
-   */
-  public Integer getHttpStatusCode() {
-    return httpStatusCode;
-  }
+    /**
+     * Gets the HTTP response status code.
+     *
+     * @return The HTTP response status code.
+     */
+    public Integer getHttpStatusCode() {
+        return httpStatusCode;
+    }
 }

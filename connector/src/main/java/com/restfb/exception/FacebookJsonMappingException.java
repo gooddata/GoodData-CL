@@ -24,29 +24,26 @@ package com.restfb.exception;
 
 /**
  * Indicates that an error occurred while mapping JSON data to a Java object.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  */
 public class FacebookJsonMappingException extends FacebookException {
-  /**
-   * Creates an exception with the given message.
-   * 
-   * @param message
-   *          A message describing this exception.
-   */
-  public FacebookJsonMappingException(String message) {
-    super(message);
-  }
+    /**
+     * Creates an exception with the given message.
+     *
+     * @param message A message describing this exception.
+     */
+    public FacebookJsonMappingException(String message) {
+        super(message);
+    }
 
-  /**
-   * Creates an exception with the given message and cause.
-   * 
-   * @param message
-   *          A message describing this exception.
-   * @param cause
-   *          The exception that caused this exception to be thrown.
-   */
-  public FacebookJsonMappingException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    /**
+     * Creates an exception with the given message and cause.
+     *
+     * @param message A message describing this exception.
+     * @param cause   The exception that caused this exception to be thrown.
+     */
+    public FacebookJsonMappingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

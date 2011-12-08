@@ -23,23 +23,15 @@
 
 package com.gooddata.modeling.model;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.util.StringUtil;
 import com.thoughtworks.xstream.XStream;
 import org.apache.log4j.Logger;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * GoodData source schema. Source schema describes the structure of the source data and its mapping to the LDM types
@@ -54,7 +46,7 @@ public class SourceSchema {
     // initial XML config comment
     public static String CONFIG_INITIAL_COMMENT = "<!-- See documentation at " +
             "http://developer.gooddata.com/gooddata-cl/xml-config.html -->\n\n";
-    
+
 
     /**
      * The LDM schema name
@@ -74,6 +66,7 @@ public class SourceSchema {
 
     /**
      * Constructor
+     *
      * @param name schema name
      */
     protected SourceSchema(String name) {
@@ -83,6 +76,7 @@ public class SourceSchema {
 
     /**
      * Returns the column's index
+     *
      * @param c column
      * @return the column's index
      */
@@ -92,6 +86,7 @@ public class SourceSchema {
 
     /**
      * Creates a new empty schema
+     *
      * @param name the schema name
      * @return new SourceSchema
      */
@@ -101,35 +96,39 @@ public class SourceSchema {
 
     /**
      * Creates a new SourceSchema from the XML config file
+     *
      * @param configFile the config file
      * @return new SourceSchema
-     * @throws IOException in case of an IO issue 
+     * @throws IOException in case of an IO issue
      */
     public static SourceSchema createSchema(File configFile) throws IOException {
         return fromXml(configFile);
     }
-    
+
     /**
      * Creates a new SourceSchema from the XML config steam
+     *
      * @param configStream the config stream
      * @return new SourceSchema
-     * @throws IOException in case of an IO issue 
+     * @throws IOException in case of an IO issue
      */
     public static SourceSchema createSchema(InputStream configStream) throws IOException {
         return fromXml(configStream);
     }
-    
+
     /**
      * Get a dataset name that should be used for a server-side dataset corresponding
      * to this schema
+     *
      * @return
      */
     public String getDatasetName() {
-    	return "dataset." + getName();
+        return "dataset." + getName();
     }
 
     /**
      * Serializes the schema to XML
+     *
      * @return the xml representation of the object
      * @throws IOException in case of an IO issue
      */
@@ -145,29 +144,31 @@ public class SourceSchema {
 
     /**
      * Deserializes the schema from XML
-     * @param configFile  the file with the XML definition
+     *
+     * @param configFile the file with the XML definition
      * @throws IOException in case of an IO issue
      */
     protected static SourceSchema fromXml(File configFile) throws IOException {
         return fromXml(new FileInputStream(configFile));
     }
-    
+
     /**
      * Deserializes the schema from an XML stream
+     *
      * @param is the stream of the XML definition
      * @throws IOException in case of an IO issue
      */
     protected static SourceSchema fromXml(InputStream is) throws IOException {
-    	XStream xstream = new XStream();
+        XStream xstream = new XStream();
         xstream.alias("column", SourceColumn.class);
         xstream.alias("schema", SourceSchema.class);
         Reader r = new InputStreamReader(is, "utf8");
-        SourceSchema schema = (SourceSchema)xstream.fromXML(r);
+        SourceSchema schema = (SourceSchema) xstream.fromXML(r);
         r.close();
         // normalize names
         // for some reason the XML Stream doesn't use setters
         schema.setName(schema.getName());
-        for(SourceColumn c : schema.getColumns()) {
+        for (SourceColumn c : schema.getColumns()) {
             c.setName(c.getName());
             c.setTitle(c.getTitle());
             c.setFolder(c.getFolder());
@@ -179,7 +180,8 @@ public class SourceSchema {
 
     /**
      * Write the config file
-     * @param configFile  the config file
+     *
+     * @param configFile the config file
      * @throws IOException in case of an IO issue
      */
     public void writeConfig(File configFile) throws IOException {
@@ -188,19 +190,20 @@ public class SourceSchema {
         w.flush();
         w.close();
     }
-    
+
     /**
      * Return the config file
-     * 
+     *
      * @return string representation of the config file
      * @throws IOException in case of an IO issue
      */
     public String getConfig() throws IOException {
-    	return toXml();
+        return toXml();
     }
 
     /**
      * Columns getter
+     *
      * @return the List of all columns
      */
     public List<SourceColumn> getColumns() {
@@ -209,6 +212,7 @@ public class SourceSchema {
 
     /**
      * Columns setter
+     *
      * @param columns the List of columns
      */
     public void setColumns(List<SourceColumn> columns) {
@@ -217,6 +221,7 @@ public class SourceSchema {
 
     /**
      * Adds a new column
+     *
      * @param c the new column
      */
     public void addColumn(SourceColumn c) {
@@ -225,6 +230,7 @@ public class SourceSchema {
 
     /**
      * Name getter
+     *
      * @return schema name
      */
     public String getName() {
@@ -233,6 +239,7 @@ public class SourceSchema {
 
     /**
      * Title getter
+     *
      * @return schema title
      */
     public String getTitle() {
@@ -241,6 +248,7 @@ public class SourceSchema {
 
     /**
      * Name setter
+     *
      * @param name schema name
      */
     public void setName(String name) {
@@ -250,9 +258,11 @@ public class SourceSchema {
 
     /**
      * Returns a column by it's name
+     *
      * @param name name to search for (case sensitive)
      * @return the matching column
-     * @throws com.gooddata.exception.ModelException thrown if the column doesn't exist
+     * @throws com.gooddata.exception.ModelException
+     *          thrown if the column doesn't exist
      */
     public SourceColumn getColumnByName(String name) throws ModelException {
         for (SourceColumn c : columns)
@@ -264,9 +274,11 @@ public class SourceSchema {
 
     /**
      * Returns a column by it's type
+     *
      * @param type type to search for (case sensitive)
      * @return the matching columns
-     * @throws com.gooddata.exception.ModelException thrown if the column doesn't exist
+     * @throws com.gooddata.exception.ModelException
+     *          thrown if the column doesn't exist
      */
     public List<SourceColumn> getColumnByType(String type) {
         ArrayList<SourceColumn> l = new ArrayList<SourceColumn>();
@@ -278,6 +290,7 @@ public class SourceSchema {
 
     /**
      * Returns all LABEL columns
+     *
      * @return all LABEL columns
      */
     public List<SourceColumn> getLabels() {
@@ -286,6 +299,7 @@ public class SourceSchema {
 
     /**
      * Returns all ATTRIBUTE columns
+     *
      * @return all ATTRIBUTE columns
      */
     public List<SourceColumn> getAttributes() {
@@ -294,6 +308,7 @@ public class SourceSchema {
 
     /**
      * Returns all FACT columns
+     *
      * @return all FACT columns
      */
     public List<SourceColumn> getFacts() {
@@ -302,6 +317,7 @@ public class SourceSchema {
 
     /**
      * Returns all REFERENCE columns
+     *
      * @return all REFERENCE columns
      */
     public List<SourceColumn> getReferences() {
@@ -310,6 +326,7 @@ public class SourceSchema {
 
     /**
      * Returns all IGNORE columns
+     *
      * @return all IGNORE columns
      */
     public List<SourceColumn> getIgnored() {
@@ -319,6 +336,7 @@ public class SourceSchema {
 
     /**
      * Returns all CONNECTION POINT columns
+     *
      * @return all CONNECTION POINT columns
      */
     public List<SourceColumn> getConnectionPoints() {
@@ -327,53 +345,55 @@ public class SourceSchema {
 
     /**
      * Returns all DATE columns
+     *
      * @return all DATE POINT columns
      */
     public List<SourceColumn> getDates() {
         return getColumnByType(SourceColumn.LDM_TYPE_DATE);
     }
-    
+
     @Override
     public String toString() {
-    	return new StringBuffer(getName()).append(" [").append(getColumns()).append("]").toString();
+        return new StringBuffer(getName()).append(" [").append(getColumns()).append("]").toString();
     }
 
     /**
      * Validates the source schema
+     *
      * @throws ModelException in case of a validation error
      */
     public void validate() throws ModelException {
-        if(name == null || name.length() <=0)
+        if (name == null || name.length() <= 0)
             throw new ModelException("Schema needs to have a name.");
         /*
         if(StringUtil.containsInvvalidIdentifierChar(name))
             throw new ModelException("Schema name contains invalid characters");
         */
-        for(SourceColumn c : columns)
+        for (SourceColumn c : columns)
             c.validate();
     }
 
     /**
      * Return the position of the IDENTITY column
+     *
      * @return
      */
     public int getIdentityColumn() {
         List<SourceColumn> cps = getConnectionPoints();
         int identityColumn = -1;
-        for(int i=0; i<cps.size(); i++) {
+        for (int i = 0; i < cps.size(); i++) {
             SourceColumn cp = cps.get(i);
-            if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(cp.getTransformation())) {
-                if(identityColumn >= 0) {
-                    l.debug("There are multiple CONNECTION POINTS in the schema "+getName());
-                    throw new InvalidParameterException("There are multiple CONNECTION POINTS in the schema "+getName());
-                }
-                else {
+            if (SourceColumn.LDM_IDENTITY.equalsIgnoreCase(cp.getTransformation())) {
+                if (identityColumn >= 0) {
+                    l.debug("There are multiple CONNECTION POINTS in the schema " + getName());
+                    throw new InvalidParameterException("There are multiple CONNECTION POINTS in the schema " + getName());
+                } else {
                     identityColumn = i;
                 }
             }
         }
         return identityColumn;
     }
-    
+
 
 }

@@ -28,7 +28,6 @@ import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.util.DateUtil;
-import com.gooddata.util.StringUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
@@ -42,9 +41,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * GoodData transformation
@@ -73,15 +70,14 @@ public class Transformer {
     public String[] getHeader(boolean transform) {
         List<SourceColumn> columns = schema.getColumns();
         List<String> header = new ArrayList<String>();
-        for(int i = 0; i < columns.size(); i++) {
+        for (int i = 0; i < columns.size(); i++) {
             SourceColumn c = columns.get(i);
-            if(!SourceColumn.LDM_TYPE_IGNORE.equalsIgnoreCase(c.getLdmType())) {
-                if(transform) {
+            if (!SourceColumn.LDM_TYPE_IGNORE.equalsIgnoreCase(c.getLdmType())) {
+                if (transform) {
                     header.add(c.getName());
-                }
-                else {
+                } else {
                     String t = c.getTransformation();
-                    if(t == null) {
+                    if (t == null) {
                         header.add(c.getName());
                     }
                 }
@@ -97,48 +93,48 @@ public class Transformer {
 
     /**
      * Runs all the row transformations
-     * @param row the row data
+     *
+     * @param row        the row data
      * @param dateLength
      * @return
      */
     public String[] transformRow(Object[] row, int dateLength) {
         try {
-            if(row != null) {
+            if (row != null) {
                 List<SourceColumn> columns = schema.getColumns();
-                boolean computeIdentity = (schema.getIdentityColumn() >=0);
+                boolean computeIdentity = (schema.getIdentityColumn() >= 0);
                 int idx = 0;
                 String key = "";
                 JexlContext jc = new MapContext();
-                for(int i=0; i<columns.size(); i++) {
+                for (int i = 0; i < columns.size(); i++) {
                     SourceColumn c = columns.get(i);
                     String t = c.getTransformation();
-                    if( t == null) {
+                    if (t == null) {
                         // this is core (non-transformed) column
-                        if(idx < row.length) {
-                            if(SourceColumn.LDM_TYPE_FACT.equalsIgnoreCase(c.getLdmType())) {
+                        if (idx < row.length) {
+                            if (SourceColumn.LDM_TYPE_FACT.equalsIgnoreCase(c.getLdmType())) {
                                 row[idx] = handleFact(row[idx]);
                             }
-                            if(SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(c.getLdmType())) {
+                            if (SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(c.getLdmType())) {
                                 row[idx] = handleDate(row[idx], c);
                                 row[idx] = cutStringDate(row[idx], dateLength);
                             }
                             // compute identity if required
-                            if(computeIdentity && SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(c.getLdmType()) ||
+                            if (computeIdentity && SourceColumn.LDM_TYPE_ATTRIBUTE.equalsIgnoreCase(c.getLdmType()) ||
                                     SourceColumn.LDM_TYPE_DATE.equalsIgnoreCase(c.getLdmType()) ||
                                     SourceColumn.LDM_TYPE_REFERENCE.equalsIgnoreCase(c.getLdmType())) {
                                 key += row[idx] + "|";
                             }
-                            jc.set(c.getName(), (row[idx]!=null)?(row[idx]):(""));
+                            jc.set(c.getName(), (row[idx] != null) ? (row[idx]) : (""));
                             idx++;
-                        }
-                        else {
-                            throw new InvalidParameterException("Transform: The schema "+schema.getName()+" contains different" +
+                        } else {
+                            throw new InvalidParameterException("Transform: The schema " + schema.getName() + " contains different" +
                                     " number of columns than the processed row.");
                         }
                     }
                 }
                 // insert identity var
-                if(computeIdentity) {
+                if (computeIdentity) {
                     String identity = DigestUtils.md5Hex(key);
                     jc.set("IDENTITY", identity);
                 }
@@ -149,58 +145,52 @@ public class Transformer {
                 idx = 0;
                 int cntWithoutIgnored = columns.size();
                 List<SourceColumn> ignored = schema.getIgnored();
-                if(ignored != null)
+                if (ignored != null)
                     cntWithoutIgnored -= ignored.size();
                 List<String> nrow = new ArrayList<String>(cntWithoutIgnored);
-                for(int i=0; i < columns.size(); i++) {
+                for (int i = 0; i < columns.size(); i++) {
                     SourceColumn c = columns.get(i);
                     String t = c.getTransformation();
                     //System.err.println("Column "+c.getName()+" tx:"+c.getTransformation());
                     String cid = c.getName();
-                    if(!SourceColumn.LDM_TYPE_IGNORE.equalsIgnoreCase(c.getLdmType())) {
-                        if( t == null) {
+                    if (!SourceColumn.LDM_TYPE_IGNORE.equalsIgnoreCase(c.getLdmType())) {
+                        if (t == null) {
                             Object value = jc.get(cid);
-                            if(value != null) {
+                            if (value != null) {
                                 nrow.add(value.toString());
-                            }
-                            else {
-                                l.debug("The column "+cid+" doesn't contain any value.");
+                            } else {
+                                l.debug("The column " + cid + " doesn't contain any value.");
                             }
 
-                        }
-                        else {
+                        } else {
                             Object result = expressions[i].evaluate(jc);
-                            String value = (result != null)?(result.toString()):("");
+                            String value = (result != null) ? (result.toString()) : ("");
                             nrow.add(value);
                             jc.set(cid, result);
                         }
                     }
                 }
                 return nrow.toArray(fk);
-            }
-            else {
+            } else {
                 throw new InvalidParameterException("The number of columns in the transformed row is different than in the schema.");
             }
-        }
-        catch(Exception e) {
-            throw new InvalidParameterException("Transformation expression error (see debug log). "+e.getMessage(), e);
+        } catch (Exception e) {
+            throw new InvalidParameterException("Transformation expression error (see debug log). " + e.getMessage(), e);
         }
     }
 
     private Object cutStringDate(Object o, int dateLength) {
-        if(dateLength > 0) {
-            if(o !=null) {
-                if(o instanceof String) {
+        if (dateLength > 0) {
+            if (o != null) {
+                if (o instanceof String) {
                     String val = (String) o;
-                    if(val.length()>dateLength) {
-                        return val.substring(0,dateLength);
+                    if (val.length() > dateLength) {
+                        return val.substring(0, dateLength);
                     }
-                }
-                else {
+                } else {
                     l.debug("Attempt to truncate non-string date representation in Transformer.transformRow.");
                 }
-            }
-            else {
+            } else {
                 return "";
             }
         }
@@ -208,18 +198,18 @@ public class Transformer {
     }
 
     private Object handleDate(Object o, SourceColumn c) {
-        if(o == null)
+        if (o == null)
             return "";
-        if(o instanceof DateTime) {
+        if (o instanceof DateTime) {
             DateTime v = (DateTime) o;
             DateTimeFormatter dtf = DateUtil.getDateFormatter(c.getFormat(), c.isDatetime());
             return dtf.print(v);
         }
-        if(Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(c.getFormat())) {
-            if(o instanceof String)
-                return DateUtil.convertUnixTimeToString((String)o);
-            else if(o instanceof Number)
-                return DateUtil.convertUnixTimeToString((Number)o);
+        if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(c.getFormat())) {
+            if (o instanceof String)
+                return DateUtil.convertUnixTimeToString((String) o);
+            else if (o instanceof Number)
+                return DateUtil.convertUnixTimeToString((Number) o);
             else
                 throw new InvalidParameterException("Can't convert UNIX time to date.");
         }
@@ -227,25 +217,20 @@ public class Transformer {
     }
 
     private Object handleFact(Object o) {
-        if(o == null)
+        if (o == null)
             return "";
-        if(o instanceof Number) {
-            if(o instanceof Integer) {
+        if (o instanceof Number) {
+            if (o instanceof Integer) {
                 return intf.format(o);
-            }
-            else if(o instanceof BigInteger) {
+            } else if (o instanceof BigInteger) {
                 return intf.format(o);
-            }
-            else if(o instanceof Long) {
+            } else if (o instanceof Long) {
                 return intf.format(o);
-            }
-            else if(o instanceof Double) {
+            } else if (o instanceof Double) {
                 return decf.format(o);
-            }
-            else if(o instanceof Float) {
+            } else if (o instanceof Float) {
                 return decf.format(o);
-            }
-            else if(o instanceof BigDecimal) {
+            } else if (o instanceof BigDecimal) {
                 return decf.format(o);
             }
         }
@@ -259,31 +244,28 @@ public class Transformer {
 
     public void setSchema(SourceSchema schema) {
         try {
-            if(schema != null) {
+            if (schema != null) {
                 List<SourceColumn> columns = schema.getColumns();
-                if(columns != null & columns.size() > 0) {
-                    Expression[] es =  new Expression[columns.size()];
-                    for(int i=0; i<columns.size(); i++) {
+                if (columns != null & columns.size() > 0) {
+                    Expression[] es = new Expression[columns.size()];
+                    for (int i = 0; i < columns.size(); i++) {
                         SourceColumn c = columns.get(i);
-                        if(c != null) {
+                        if (c != null) {
                             String t = c.getTransformation();
-                            if( t != null) {
+                            if (t != null) {
                                 es[i] = jexl.createExpression(t);
                             }
                         }
                     }
                     setExpressions(es);
                     this.schema = schema;
-                }
-                else {
+                } else {
                     throw new InvalidParameterException("The Transformer requires a non-empty schema to run.");
                 }
-            }
-            else {
+            } else {
                 throw new InvalidParameterException("The Transformer requires a schema to run.");
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new InvalidParameterException("Can't create transformation.", e);
         }
     }

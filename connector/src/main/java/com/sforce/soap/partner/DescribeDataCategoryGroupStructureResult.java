@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeDataCategoryGroupStructureResult  implements java.io.Serializable {
+public class DescribeDataCategoryGroupStructureResult implements java.io.Serializable {
     private java.lang.String description;
 
     private java.lang.String label;
@@ -22,22 +22,22 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
     }
 
     public DescribeDataCategoryGroupStructureResult(
-           java.lang.String description,
-           java.lang.String label,
-           java.lang.String name,
-           java.lang.String sobject,
-           com.sforce.soap.partner.DataCategory[] topCategories) {
-           this.description = description;
-           this.label = label;
-           this.name = name;
-           this.sobject = sobject;
-           this.topCategories = topCategories;
+            java.lang.String description,
+            java.lang.String label,
+            java.lang.String name,
+            java.lang.String sobject,
+            com.sforce.soap.partner.DataCategory[] topCategories) {
+        this.description = description;
+        this.label = label;
+        this.name = name;
+        this.sobject = sobject;
+        this.topCategories = topCategories;
     }
 
 
     /**
      * Gets the description value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @return description
      */
     public java.lang.String getDescription() {
@@ -47,7 +47,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     /**
      * Sets the description value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @param description
      */
     public void setDescription(java.lang.String description) {
@@ -57,7 +57,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     /**
      * Gets the label value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @return label
      */
     public java.lang.String getLabel() {
@@ -67,7 +67,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     /**
      * Sets the label value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @param label
      */
     public void setLabel(java.lang.String label) {
@@ -77,7 +77,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     /**
      * Gets the name value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @return name
      */
     public java.lang.String getName() {
@@ -87,7 +87,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     /**
      * Sets the name value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @param name
      */
     public void setName(java.lang.String name) {
@@ -97,7 +97,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     /**
      * Gets the sobject value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @return sobject
      */
     public java.lang.String getSobject() {
@@ -107,7 +107,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     /**
      * Sets the sobject value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @param sobject
      */
     public void setSobject(java.lang.String sobject) {
@@ -117,7 +117,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     /**
      * Gets the topCategories value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @return topCategories
      */
     public com.sforce.soap.partner.DataCategory[] getTopCategories() {
@@ -127,7 +127,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     /**
      * Sets the topCategories value for this DescribeDataCategoryGroupStructureResult.
-     * 
+     *
      * @param topCategories
      */
     public void setTopCategories(com.sforce.soap.partner.DataCategory[] topCategories) {
@@ -143,6 +143,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeDataCategoryGroupStructureResult)) return false;
         DescribeDataCategoryGroupStructureResult other = (DescribeDataCategoryGroupStructureResult) obj;
@@ -153,27 +154,28 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.description==null && other.getDescription()==null) || 
-             (this.description!=null &&
-              this.description.equals(other.getDescription()))) &&
-            ((this.label==null && other.getLabel()==null) || 
-             (this.label!=null &&
-              this.label.equals(other.getLabel()))) &&
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName()))) &&
-            ((this.sobject==null && other.getSobject()==null) || 
-             (this.sobject!=null &&
-              this.sobject.equals(other.getSobject()))) &&
-            ((this.topCategories==null && other.getTopCategories()==null) || 
-             (this.topCategories!=null &&
-              java.util.Arrays.equals(this.topCategories, other.getTopCategories())));
+        _equals = true &&
+                ((this.description == null && other.getDescription() == null) ||
+                        (this.description != null &&
+                                this.description.equals(other.getDescription()))) &&
+                ((this.label == null && other.getLabel() == null) ||
+                        (this.label != null &&
+                                this.label.equals(other.getLabel()))) &&
+                ((this.name == null && other.getName() == null) ||
+                        (this.name != null &&
+                                this.name.equals(other.getName()))) &&
+                ((this.sobject == null && other.getSobject() == null) ||
+                        (this.sobject != null &&
+                                this.sobject.equals(other.getSobject()))) &&
+                ((this.topCategories == null && other.getTopCategories() == null) ||
+                        (this.topCategories != null &&
+                                java.util.Arrays.equals(this.topCategories, other.getTopCategories())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -193,12 +195,12 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
             _hashCode += getSobject().hashCode();
         }
         if (getTopCategories() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getTopCategories());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getTopCategories());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getTopCategories(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -209,7 +211,7 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeDataCategoryGroupStructureResult.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeDataCategoryGroupStructureResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeDataCategoryGroupStructureResult"));
@@ -258,24 +260,24 @@ public class DescribeDataCategoryGroupStructureResult  implements java.io.Serial
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

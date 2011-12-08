@@ -23,16 +23,6 @@
 
 package com.gooddata.modeling.generator;
 
-import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_ATTRIBUTE;
-import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_CONNECTION_POINT;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
 import com.gooddata.modeling.generator.MaqlGenerator.State.Attribute;
 import com.gooddata.modeling.generator.MaqlGenerator.State.Column;
 import com.gooddata.modeling.generator.MaqlGenerator.State.ConnectionPoint;
@@ -41,6 +31,15 @@ import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_ATTRIBUTE;
+import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_CONNECTION_POINT;
 
 /**
  * GoodData MAQL Generator generates the MAQL from the LDM schema object
@@ -84,6 +83,7 @@ public class MaqlGenerator {
 
     /**
      * should generateMaql*() methods append SYNCHRONIZE commands?
+     *
      * @param synchronize
      */
     public void setSynchronize(final boolean synchronize) {
@@ -92,6 +92,7 @@ public class MaqlGenerator {
 
     /**
      * Generate MAQL for specified (new) columns
+     *
      * @return MAQL as String
      */
     public String generateMaqlAdd(Iterable<SourceColumn> newColumns, Iterable<SourceColumn> knownColumns) {
@@ -100,8 +101,9 @@ public class MaqlGenerator {
 
     /**
      * Creates attribute table name
+     *
      * @param schema source schema
-     * @param sc source column
+     * @param sc     source column
      * @return the attribute table name
      */
     public static String createAttributeTableName(SourceSchema schema, SourceColumn sc) {
@@ -111,6 +113,7 @@ public class MaqlGenerator {
 
     /**
      * Generate MAQL DROP statement for selected columns
+     *
      * @param columns list of columns
      * @return MAQL as String
      */
@@ -144,7 +147,7 @@ public class MaqlGenerator {
 
         StringBuilder script = new StringBuilder();
         script.append("# Drop labels\n");
-        for (final Column c: state.labels) {
+        for (final Column c : state.labels) {
             script.append(c.generateMaqlDdlDrop());
         }
         script.append(nonLabelsScript);
@@ -162,7 +165,7 @@ public class MaqlGenerator {
      * Generates the single <tt>SYNCHRONIZE</tt> command based on the given
      * schema name. Ignores the <tt>synchronize</tt> flag (set by the {@link #setSynchronize(boolean)}
      * method)
-     * 
+     *
      * @return
      */
     public String generateMaqlSynchronize() {
@@ -174,7 +177,8 @@ public class MaqlGenerator {
 
     /**
      * Generate MAQL for selected (new) columns
-     * @param newColumns list of columns
+     *
+     * @param newColumns    list of columns
      * @param createFactsOf create the facts of attribute
      * @return MAQL as String
      */
@@ -193,9 +197,9 @@ public class MaqlGenerator {
         for (final Column c : state.attributes.values()) {
             script += c.generateMaqlDdlAdd();
             if (c instanceof ConnectionPoint) {
-                connectionPoint = (ConnectionPoint)c;
+                connectionPoint = (ConnectionPoint) c;
             } else {
-                final Attribute a = (Attribute)c;
+                final Attribute a = (Attribute) c;
                 script += a.generateOriginalLabelMaqlDdl();
                 script += a.generateDefaultLabelMaqlDdl();
             }
@@ -219,7 +223,7 @@ public class MaqlGenerator {
             script += "# it is used for COUNT aggregations.\n";
             // generate the facts of / record id special attribute
             script += "CREATE ATTRIBUTE " + factsOfAttrMaqlDdl + " VISUAL(TITLE \""
-                    + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "."+state.factsOfPrimaryColumn+"} FULLSET;\n";
+                    + "Records of " + lsn + "\") AS KEYS {" + getFactTableName() + "." + state.factsOfPrimaryColumn + "} FULLSET;\n";
             script += "ALTER DATASET {" + schema.getDatasetName() + "} ADD {attr." + schemaName + ".factsof};\n\n";
         }
 
@@ -229,7 +233,7 @@ public class MaqlGenerator {
         boolean cpDefLabelSet = false;
         for (final Column c : state.labels) {
             script += c.generateMaqlDdlAdd();
-            Label l = (Label)c;
+            Label l = (Label) c;
             if (!cpDefLabelSet && (connectionPoint != null) && l.attr.identifier.equals(connectionPoint.identifier)) {
                 script += l.generateMaqlDdlDefaultLabel();
                 cpDefLabelSet = true;
@@ -251,6 +255,7 @@ public class MaqlGenerator {
 
     /**
      * Generate MAQL folders for specified columns
+     *
      * @param columns list of columns
      * @return MAQL as String
      */
@@ -266,14 +271,12 @@ public class MaqlGenerator {
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_HYPERLINK) ||
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
                         column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
-                {
+                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
                     if (!attributeFolders.contains(folder))
                         attributeFolders.add(folder);
                 }
                 if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
-                {
+                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
                     if (!factFolders.contains(folder))
                         factFolders.add(folder);
                 }
@@ -281,7 +284,7 @@ public class MaqlGenerator {
         }
 
         String script = "";
-        if(!attributeFolders.isEmpty() || !factFolders.isEmpty())
+        if (!attributeFolders.isEmpty() || !factFolders.isEmpty())
             script += "# Create the folders that group attributes and facts.\n";
         // Generate statements for the ATTRIBUTE folders
         for (String folder : attributeFolders) {
@@ -304,6 +307,7 @@ public class MaqlGenerator {
 
     /**
      * Generate fact table name
+     *
      * @return fact table name
      */
     private String getFactTableName() {
@@ -312,6 +316,7 @@ public class MaqlGenerator {
 
     /**
      * Generate the MAQL for the facts of attribute
+     *
      * @param schemaName schema name
      * @return facts of attribute MAQL DDL
      */
@@ -329,8 +334,10 @@ public class MaqlGenerator {
         private List<Reference> references = new ArrayList<Reference>();
         private boolean hasCp = false;
         private String factsOfPrimaryColumn = N.ID;
+
         /**
          * Main loop. Process all columns in the schema
+         *
          * @param column source columns
          */
         private void processColumn(SourceColumn column) {
@@ -340,10 +347,9 @@ public class MaqlGenerator {
             } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_FACT)) {
                 facts.add(new Fact(column));
             } else if (column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
-                if(column.getSchemaReference() != null && column.getSchemaReference().length() > 0) {
+                if (column.getSchemaReference() != null && column.getSchemaReference().length() > 0) {
                     dates.add(new DateColumn(column));
-                }
-                else {
+                } else {
                     Attribute attr = new Attribute(column);
                     attributes.put(attr.columnName, attr);
                 }
@@ -374,6 +380,7 @@ public class MaqlGenerator {
 
         /**
          * Processes connection point column
+         *
          * @param column source column
          */
         private void processConnectionPoint(SourceColumn column) {
@@ -405,7 +412,7 @@ public class MaqlGenerator {
             }
 
             protected String createForeignKeyMaqlDdl() {
-                return "{" + getFactTableName() + "." + columnName + "_" + N.ID+ "}";
+                return "{" + getFactTableName() + "." + columnName + "_" + N.ID + "}";
             }
 
             public abstract String generateMaqlDdlAdd();
@@ -429,7 +436,7 @@ public class MaqlGenerator {
                 this.table = (table == null) ? createAttributeTableName(schema, column) : table;
                 this.defaultLabelIdentifier = "label." + schemaName + "." + columnName;
                 this.defaultLabelDdl = "{" + defaultLabelIdentifier + "} VISUAL(TITLE \""
-                        + lcn + "\") AS {" + this.table + "."+N.NM_PFX + columnName + "}";
+                        + lcn + "\") AS {" + this.table + "." + N.NM_PFX + columnName + "}";
             }
 
             Attribute(SourceColumn column) {
@@ -448,7 +455,7 @@ public class MaqlGenerator {
                 String fks = createForeignKeyMaqlDdl();
                 if (!reference) {
                     script += "CREATE ATTRIBUTE {" + identifier + "} VISUAL(TITLE \"" + lcn
-                            + "\"" + folderStatement + ") AS KEYS {" + table + "."+N.ID+"} FULLSET";
+                            + "\"" + folderStatement + ") AS KEYS {" + table + "." + N.ID + "} FULLSET";
                     if ((fks != null) && (fks.length() > 0)) {
                         script += ", " + fks;
                     }
@@ -463,12 +470,11 @@ public class MaqlGenerator {
                 }
 
                 String dataType = column.getDataType();
-                if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(column.getTransformation()))
+                if (SourceColumn.LDM_IDENTITY.equalsIgnoreCase(column.getTransformation()))
                     dataType = SourceColumn.IDENTITY_DATATYPE;
-                if(dataType != null && dataType.length() > 0) {
-                    script += "ALTER DATATYPE {" + table + "."+N.NM_PFX + columnName + "} "+dataType+";\n";
-                }
-                else {
+                if (dataType != null && dataType.length() > 0) {
+                    script += "ALTER DATATYPE {" + table + "." + N.NM_PFX + columnName + "} " + dataType + ";\n";
+                } else {
                     script += "\n";
                 }
 
@@ -510,11 +516,11 @@ public class MaqlGenerator {
                 // we have converted the date/time facts and the time attribute to explicit schema elements
                 // we needed to distinguish these schema columns, so we have added the suffixes
                 // we need to strip the suffixes here to make sure that the identifiers have backward compatible names
-                if(column.isDateFact()) {
-                    this.identifier = N.DT + "." + schemaName + "." + columnName.replace(N.DT_SLI_SFX,"");
+                if (column.isDateFact()) {
+                    this.identifier = N.DT + "." + schemaName + "." + columnName.replace(N.DT_SLI_SFX, "");
                 }
-                if(column.isTimeFact()) {
-                    this.identifier = N.TM + "." +  N.DT + "." + schemaName + "." + columnName.replace(N.TM_SLI_SFX,"");
+                if (column.isTimeFact()) {
+                    this.identifier = N.TM + "." + N.DT + "." + schemaName + "." + columnName.replace(N.TM_SLI_SFX, "");
                 }
 
             }
@@ -531,20 +537,19 @@ public class MaqlGenerator {
                 // we have converted the date/time facts and the time attribute to explicit schema elements
                 // we needed to keep the dt_ and tm_ prefixes instead of the f_
                 String fcolname = N.FCT_PFX + columnName;
-                if(column.isDateFact())
-                    fcolname = N.DT_PFX + columnName.replace(N.DT_SLI_SFX,"");
-                if(column.isTimeFact())
-                    fcolname = N.TM_PFX + columnName.replace(N.TM_SLI_SFX,"");
-                String script =  "CREATE FACT {"+identifier+"} VISUAL(TITLE \"" + lcn
-                        + "\"" + folderStatement + ") AS {" + getFactTableName() + "."+ fcolname + "};\n"
+                if (column.isDateFact())
+                    fcolname = N.DT_PFX + columnName.replace(N.DT_SLI_SFX, "");
+                if (column.isTimeFact())
+                    fcolname = N.TM_PFX + columnName.replace(N.TM_SLI_SFX, "");
+                String script = "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
+                        + "\"" + folderStatement + ") AS {" + getFactTableName() + "." + fcolname + "};\n"
                         + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {" + identifier + "};\n";
                 String dataType = column.getDataType();
-                if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(column.getTransformation()))
+                if (SourceColumn.LDM_IDENTITY.equalsIgnoreCase(column.getTransformation()))
                     dataType = SourceColumn.IDENTITY_DATATYPE;
-                if(dataType != null && dataType.length() > 0) {
-                    script += "ALTER DATATYPE {" + getFactTableName() + "."+ fcolname + "} "+dataType+";\n";
-                }
-                else {
+                if (dataType != null && dataType.length() > 0) {
+                    script += "ALTER DATATYPE {" + getFactTableName() + "." + fcolname + "} " + dataType + ";\n";
+                } else {
                     script += "\n";
                 }
                 return script;
@@ -570,15 +575,14 @@ public class MaqlGenerator {
                 }
                 String script = "# Add labels to attributes\n";
                 script += "ALTER ATTRIBUTE {attr." + schemaName + "." + scnPk + "} ADD LABELS {label." + schemaName + "." + scnPk + "."
-                        + columnName + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + "."+N.NM_PFX + columnName + "};\n";
+                        + columnName + "} VISUAL(TITLE \"" + lcn + "\") AS {" + attr.table + "." + N.NM_PFX + columnName + "};\n";
 
                 String dataType = column.getDataType();
-                if(SourceColumn.LDM_IDENTITY.equalsIgnoreCase(column.getTransformation()))
+                if (SourceColumn.LDM_IDENTITY.equalsIgnoreCase(column.getTransformation()))
                     dataType = SourceColumn.IDENTITY_DATATYPE;
-                if(dataType != null && dataType.length() > 0) {
-                    script += "ALTER DATATYPE {" + attr.table + "."+N.NM_PFX + columnName + "} "+dataType+";\n";
-                }
-                else {
+                if (dataType != null && dataType.length() > 0) {
+                    script += "ALTER DATATYPE {" + attr.table + "." + N.NM_PFX + columnName + "} " + dataType + ";\n";
+                } else {
                     script += "\n";
                 }
                 return script;
@@ -648,14 +652,14 @@ public class MaqlGenerator {
                 String reference = column.getSchemaReference();
 
                 String stat = generateFactMaqlCreate();
-                if(reference != null && reference.length() > 0) {
+                if (reference != null && reference.length() > 0) {
                     String r = column.getReference();
-                    if(r == null || r.length() <= 0) {
+                    if (r == null || r.length() <= 0) {
                         r = N.DT_ATTR_NAME;
                     }
                     stat += "# Connect the date to the date dimension.\n";
-                    stat += "ALTER ATTRIBUTE {"+reference+"."+r+"} ADD KEYS {"+getFactTableName() +
-                            "."+N.DT_PFX + columnName + "_"+N.ID+"};\n\n";
+                    stat += "ALTER ATTRIBUTE {" + reference + "." + r + "} ADD KEYS {" + getFactTableName() +
+                            "." + N.DT_PFX + columnName + "_" + N.ID + "};\n\n";
                     /* This is now handled by adding entirely new attribute to the schema in the initSchema
                     if(includeTime) {
                         stat += "# Connect the time to the time dimension.\n";
@@ -671,14 +675,14 @@ public class MaqlGenerator {
                 String script = generateFactMaqlDrop();
                 String reference = column.getSchemaReference();
                 boolean includeTime = column.isDatetime();
-                if(reference != null && reference.length() > 0) {
+                if (reference != null && reference.length() > 0) {
                     String r = column.getReference();
-                    if(r == null || r.length() <= 0) {
+                    if (r == null || r.length() <= 0) {
                         r = N.DT_ATTR_NAME;
                     }
                     script += "# Disconnect the date dimension.\n";
-                    script += "ALTER ATTRIBUTE {"+reference+"."+r+"} DROP KEYS {"+getFactTableName() +
-                            "."+N.DT_PFX + columnName + "_"+N.ID+"};\n\n";
+                    script += "ALTER ATTRIBUTE {" + reference + "." + r + "} DROP KEYS {" + getFactTableName() +
+                            "." + N.DT_PFX + columnName + "_" + N.ID + "};\n\n";
                     /* Consistently with generateMaqlAddDrop(), it's moved somewhere else
                     if(includeTime) {
                         script += "ALTER ATTRIBUTE {"+N.TM_ATTR_NAME+reference+"} DROP KEYS {"+getFactTableName() +
@@ -749,11 +753,11 @@ public class MaqlGenerator {
 
             @Override
             public String generateMaqlDdlAdd() {
-                String foreignAttrId = "{attr"+"."+column.getSchemaReference()+"."+column.getReference()+"}";
+                String foreignAttrId = "{attr" + "." + column.getSchemaReference() + "." + column.getReference() + "}";
                 String fk = createForeignKeyMaqlDdl();
-                if(column.isTimeFact()) {
-                    foreignAttrId = "{"+N.TM_ATTR_NAME+column.getSchemaReference()+"}";
-                    fk = "{"+getFactTableName() + "."+N.TM_PFX + columnName+"}";
+                if (column.isTimeFact()) {
+                    foreignAttrId = "{" + N.TM_ATTR_NAME + column.getSchemaReference() + "}";
+                    fk = "{" + getFactTableName() + "." + N.TM_PFX + columnName + "}";
                 }
                 String script = "# Connect the reference to the appropriate dimension.\n";
                 script += "ALTER ATTRIBUTE " + foreignAttrId
@@ -763,11 +767,11 @@ public class MaqlGenerator {
 
 
             public String generateMaqlDdlDrop() {
-                String foreignAttrId = "{attr"+"."+column.getSchemaReference()+"."+column.getReference()+"}";
+                String foreignAttrId = "{attr" + "." + column.getSchemaReference() + "." + column.getReference() + "}";
                 String fk = createForeignKeyMaqlDdl();
-                if(column.isTimeFact()) {
-                    foreignAttrId = "{"+N.TM_ATTR_NAME+column.getSchemaReference()+"}";
-                    fk = "{"+getFactTableName() + "."+N.TM_PFX + columnName+"}";
+                if (column.isTimeFact()) {
+                    foreignAttrId = "{" + N.TM_ATTR_NAME + column.getSchemaReference() + "}";
+                    fk = "{" + getFactTableName() + "." + N.TM_PFX + columnName + "}";
                 }
                 String script = "# Disconnect the reference from the appropriate dimension.\n";
                 script += "ALTER ATTRIBUTE " + foreignAttrId
@@ -785,9 +789,9 @@ public class MaqlGenerator {
      * drops these lines from the generated MAQL DDL script.
      *
      * @param deletedColumns list of deleted {@link SourceColumn}s
-     * @param newColumns list of new {@link SourceColumn}s
-     * @param maql the MAQL DDL script generated by {@link MaqlGenerator} from both deleted
-     *      and new columns
+     * @param newColumns     list of new {@link SourceColumn}s
+     * @param maql           the MAQL DDL script generated by {@link MaqlGenerator} from both deleted
+     *                       and new columns
      * @return MAQL DDL script without the redundant DROP and CREATE lines
      */
     public String removeDropAndRecreateOfDateFacts(
@@ -806,7 +810,7 @@ public class MaqlGenerator {
                 if (state.dates.size() != 1) {
                     throw new AssertionError(String.format("One date field processed by MaqlGenerator.State but the state object holds %d date fields", state.dates.size()));
                 }
-                final String factMaqlDrop   = state.dates.get(0).generateFactMaqlDrop();
+                final String factMaqlDrop = state.dates.get(0).generateFactMaqlDrop();
                 final String factMaqlCreate = state.dates.get(0).generateFactMaqlCreate();
                 if (maql.contains(factMaqlDrop) && maql.contains(factMaqlCreate)) {
                     result = result.replace(factMaqlDrop, "");

@@ -25,17 +25,12 @@ package com.gooddata.connector;
 
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
-import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
 import com.gooddata.sugar.SugarCrmWrapper;
-import com.gooddata.transform.Transformer;
-import com.gooddata.util.CSVReader;
-import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.jaxen.JaxenException;
 
@@ -75,8 +70,9 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
         super();
     }
 
-   /**
+    /**
      * Creates a new SugarCrm connector
+     *
      * @return a new instance of the SugarCrm connector
      */
     public static SugarCrmConnector createConnector() {
@@ -93,13 +89,13 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
         try {
             SugarCrmWrapper m = new SugarCrmWrapper(getHostname(), getUsername(), getPassword());
             m.connect();
-            l.debug("Executing SugarCrm query entity: "+getEntity()+" fields: "+getFields());
-            if(fields != null && fields.length() > 0) {
+            l.debug("Executing SugarCrm query entity: " + getEntity() + " fields: " + getFields());
+            if (fields != null && fields.length() > 0) {
                 String[] fs = fields.split(",");
                 List<String> cfs = new ArrayList<String>();
                 List<String> lfs = new ArrayList<String>();
-                for(int i=0; i<fs.length; i++) {
-                    if(fs[i].contains("."))
+                for (int i = 0; i < fs.length; i++) {
+                    if (fs[i].contains("."))
                         lfs.add(fs[i].trim());
                     else
                         cfs.add(fs[i].trim());
@@ -107,25 +103,22 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
                 File dt = FileUtil.getTempFile();
                 m.getAllEntries(getEntity(), cfs.toArray(new String[]{}), lfs.toArray(new String[]{}), "", dt.getAbsolutePath());
                 int rowCnt = copyAndTransform(FileUtil.createUtf8CsvReader(dt), FileUtil.createUtf8CsvWriter(new File(file)), transform, 10);
-                l.info("Finished SugarCrm query execution. Retrieved "+rowCnt+" rows of data.");
-            }
-            else {
+                l.info("Finished SugarCrm query execution. Retrieved " + rowCnt + " rows of data.");
+            } else {
                 throw new InvalidParameterException("The SugarCrm fields parameter must contain the comma separated list " +
                         "of the entity fields.");
             }
-        }
-        catch (SOAPException e) {
+        } catch (SOAPException e) {
             throw new IOException(e);
-        }
-        catch (JaxenException e) {
+        } catch (JaxenException e) {
             throw new IOException(e);
         }
     }
 
 
-
-   /**
+    /**
      * SugarCrm username getter
+     *
      * @return SugarCrm username
      */
     public String getUsername() {
@@ -134,6 +127,7 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
 
     /**
      * SugarCrm username setter
+     *
      * @param username SugarCrm username
      */
     public void setUsername(String username) {
@@ -142,6 +136,7 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
 
     /**
      * SugarCrm password getter
+     *
      * @return SugarCrm password
      */
     public String getPassword() {
@@ -150,6 +145,7 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
 
     /**
      * SugarCrm password setter
+     *
      * @param password SugarCrm password
      */
     public void setPassword(String password) {
@@ -175,34 +171,33 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
-        l.debug("Processing command "+c.getCommand());
+        l.debug("Processing command " + c.getCommand());
         try {
-            if(c.match("LoadSugarCrm") || c.match("UseSugarCrm")) {
+            if (c.match("LoadSugarCrm") || c.match("UseSugarCrm")) {
                 loadSugarCrm(c, cli, ctx);
-            }
-            else {
-                l.debug("No match passing the command "+c.getCommand()+" further.");
+            } else {
+                l.debug("No match passing the command " + c.getCommand() + " further.");
                 return super.processCommand(c, cli, ctx);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
-        l.debug("Processed command "+c.getCommand());
+        l.debug("Processed command " + c.getCommand());
         return true;
     }
 
     /**
      * Loads SugarCrm data command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws java.io.IOException in case of IO issues
      */
     private void loadSugarCrm(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
-        String usr = c.getParamMandatory( "username");
-        String psw = c.getParamMandatory( "password");
+        String usr = c.getParamMandatory("username");
+        String psw = c.getParamMandatory("password");
         String e = c.getParamMandatory("entity");
         String f = c.getParamMandatory("fields");
         String host = c.getParamMandatory("host");
@@ -217,7 +212,7 @@ public class SugarCrmConnector extends AbstractConnector implements Connector {
         setHostname(host);
         ctx.setConnector(this);
         setProjectId(ctx);
-        l.info("Sugar CRM Connector successfully loaded (entity: " + e + "fields: "+StringUtil.previewString(f, 256)+").");
+        l.info("Sugar CRM Connector successfully loaded (entity: " + e + "fields: " + StringUtil.previewString(f, 256) + ").");
     }
 
     public String getFields() {

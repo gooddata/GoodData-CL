@@ -22,192 +22,192 @@
 
 package com.restfb.types;
 
-import static com.restfb.util.DateUtils.toDateFromLongFormat;
-import static java.util.Collections.unmodifiableList;
+import com.restfb.Facebook;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.restfb.Facebook;
+import static com.restfb.util.DateUtils.toDateFromLongFormat;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/photo">Photo Graph
  * API type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.5
  */
 public class Photo extends NamedFacebookType {
-  @Facebook
-  private CategorizedFacebookType from;
-
-  @Facebook
-  private String picture;
-
-  @Facebook
-  private String source;
-
-  @Facebook
-  private Integer height;
-
-  @Facebook
-  private Integer width;
-
-  @Facebook
-  private String link;
-
-  @Facebook
-  private String icon;
-
-  @Facebook("created_time")
-  private String createdTime;
-
-  @Facebook("updated_time")
-  private String updatedTime;
-
-  @Facebook
-  private List<Tag> tags = new ArrayList<Tag>();
-
-  /**
-   * Represents the <a
-   * href="http://developers.facebook.com/docs/reference/api/photo">Tag Graph
-   * API type</a>.
-   * 
-   * @author <a href="http://restfb.com">Mark Allen</a>
-   * @since 1.5
-   */
-  public static class Tag extends NamedFacebookType {
     @Facebook
-    private Integer x;
+    private CategorizedFacebookType from;
 
     @Facebook
-    private Integer y;
+    private String picture;
+
+    @Facebook
+    private String source;
+
+    @Facebook
+    private Integer height;
+
+    @Facebook
+    private Integer width;
+
+    @Facebook
+    private String link;
+
+    @Facebook
+    private String icon;
 
     @Facebook("created_time")
     private String createdTime;
 
+    @Facebook("updated_time")
+    private String updatedTime;
+
+    @Facebook
+    private List<Tag> tags = new ArrayList<Tag>();
+
     /**
-     * X coordinate (as a percentage of distance from left vs. width).
-     * 
-     * @return X coordinate (as a percentage of distance from left vs. width).
+     * Represents the <a
+     * href="http://developers.facebook.com/docs/reference/api/photo">Tag Graph
+     * API type</a>.
+     *
+     * @author <a href="http://restfb.com">Mark Allen</a>
+     * @since 1.5
      */
-    public Integer getX() {
-      return x;
+    public static class Tag extends NamedFacebookType {
+        @Facebook
+        private Integer x;
+
+        @Facebook
+        private Integer y;
+
+        @Facebook("created_time")
+        private String createdTime;
+
+        /**
+         * X coordinate (as a percentage of distance from left vs. width).
+         *
+         * @return X coordinate (as a percentage of distance from left vs. width).
+         */
+        public Integer getX() {
+            return x;
+        }
+
+        /**
+         * Y coordinate (as a percentage of distance from top vs. height).
+         *
+         * @return Y coordinate (as a percentage of distance from top vs. height).
+         */
+        public Integer getY() {
+            return y;
+        }
+
+        /**
+         * Date this tag was created.
+         *
+         * @return Date this tag was created.
+         */
+        public Date getCreatedTime() {
+            return toDateFromLongFormat(createdTime);
+        }
     }
 
     /**
-     * Y coordinate (as a percentage of distance from top vs. height).
-     * 
-     * @return Y coordinate (as a percentage of distance from top vs. height).
+     * An object containing the name and ID of the user who posted the photo.
+     *
+     * @return An object containing the name and ID of the user who posted the
+     *         photo.
      */
-    public Integer getY() {
-      return y;
+    public CategorizedFacebookType getFrom() {
+        return from;
     }
 
     /**
-     * Date this tag was created.
-     * 
-     * @return Date this tag was created.
+     * The album-sized view of the photo.
+     *
+     * @return The album-sized view of the photo.
+     */
+    public String getPicture() {
+        return picture;
+    }
+
+    /**
+     * The full-sized source of the photo.
+     *
+     * @return The full-sized source of the photo.
+     */
+    public String getSource() {
+        return source;
+    }
+
+    /**
+     * The height of the photo, in pixels.
+     *
+     * @return The height of the photo, in pixels.
+     */
+    public Integer getHeight() {
+        return height;
+    }
+
+    /**
+     * The width of the photo, in pixels.
+     *
+     * @return The width of the photo, in pixels.
+     */
+    public Integer getWidth() {
+        return width;
+    }
+
+    /**
+     * A link to the photo on Facebook.
+     *
+     * @return A link to the photo on Facebook.
+     */
+    public String getLink() {
+        return link;
+    }
+
+    /**
+     * The icon-sized source of the photo.
+     *
+     * @return The icon-sized source of the photo.
+     */
+    public String getIcon() {
+        return icon;
+    }
+
+    /**
+     * The time the photo was initially published.
+     *
+     * @return The time the photo was initially published.
      */
     public Date getCreatedTime() {
-      return toDateFromLongFormat(createdTime);
+        return toDateFromLongFormat(createdTime);
     }
-  }
 
-  /**
-   * An object containing the name and ID of the user who posted the photo.
-   * 
-   * @return An object containing the name and ID of the user who posted the
-   *         photo.
-   */
-  public CategorizedFacebookType getFrom() {
-    return from;
-  }
+    /**
+     * The last time the photo or its caption was updated.
+     *
+     * @return The last time the photo or its caption was updated.
+     */
+    public Date getUpdatedTime() {
+        return toDateFromLongFormat(updatedTime);
+    }
 
-  /**
-   * The album-sized view of the photo.
-   * 
-   * @return The album-sized view of the photo.
-   */
-  public String getPicture() {
-    return picture;
-  }
-
-  /**
-   * The full-sized source of the photo.
-   * 
-   * @return The full-sized source of the photo.
-   */
-  public String getSource() {
-    return source;
-  }
-
-  /**
-   * The height of the photo, in pixels.
-   * 
-   * @return The height of the photo, in pixels.
-   */
-  public Integer getHeight() {
-    return height;
-  }
-
-  /**
-   * The width of the photo, in pixels.
-   * 
-   * @return The width of the photo, in pixels.
-   */
-  public Integer getWidth() {
-    return width;
-  }
-
-  /**
-   * A link to the photo on Facebook.
-   * 
-   * @return A link to the photo on Facebook.
-   */
-  public String getLink() {
-    return link;
-  }
-
-  /**
-   * The icon-sized source of the photo.
-   * 
-   * @return The icon-sized source of the photo.
-   */
-  public String getIcon() {
-    return icon;
-  }
-
-  /**
-   * The time the photo was initially published.
-   * 
-   * @return The time the photo was initially published.
-   */
-  public Date getCreatedTime() {
-    return toDateFromLongFormat(createdTime);
-  }
-
-  /**
-   * The last time the photo or its caption was updated.
-   * 
-   * @return The last time the photo or its caption was updated.
-   */
-  public Date getUpdatedTime() {
-    return toDateFromLongFormat(updatedTime);
-  }
-
-  /**
-   * An array containing the users and their positions in this photo. The x and
-   * y coordinates are percentages from the left and top edges of the photo,
-   * respectively.
-   * 
-   * @return An array containing the users and their positions in this photo.
-   *         The x and y coordinates are percentages from the left and top edges
-   *         of the photo, respectively.
-   */
-  public List<Tag> getTags() {
-    return unmodifiableList(tags);
-  }
+    /**
+     * An array containing the users and their positions in this photo. The x and
+     * y coordinates are percentages from the left and top edges of the photo,
+     * respectively.
+     *
+     * @return An array containing the users and their positions in this photo.
+     *         The x and y coordinates are percentages from the left and top edges
+     *         of the photo, respectively.
+     */
+    public List<Tag> getTags() {
+        return unmodifiableList(tags);
+    }
 }

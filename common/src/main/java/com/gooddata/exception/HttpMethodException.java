@@ -28,11 +28,10 @@
 
 package com.gooddata.exception;
 
-import org.apache.commons.httpclient.*;
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import org.apache.commons.httpclient.HttpMethod;
+
 import java.util.Formatter;
 
 /**
@@ -73,8 +72,8 @@ public class HttpMethodException extends GdcRestApiException {
                 /* Error structure sometimes lacks the tag... */
                 if (error.has("error"))
                     error = error.getJSONObject("error");
-                msg = new Formatter().format(error.getString ("message"),
-                    error.getJSONArray ("parameters")).toString();
+                msg = new Formatter().format(error.getString("message"),
+                        error.getJSONArray("parameters")).toString();
             } catch (JSONException jsone) {
                 /* Do not worry about the non-standard or broken
                  * error JSON. The msg is already meaningful enough.*/
@@ -99,12 +98,12 @@ public class HttpMethodException extends GdcRestApiException {
      * Constructs an instance of <code>HttpMethodException</code> for a response to HTTP method call,
      * interpreting GoodData error structures.
      *
-     * @param method the call
+     * @param method    the call
      * @param throwable original exception
      */
     public HttpMethodException(HttpMethod method, Throwable throwable) {
         super(throwable);
-	guiltyMethod = method;
+        guiltyMethod = method;
     }
 
     /**
@@ -114,8 +113,8 @@ public class HttpMethodException extends GdcRestApiException {
      * @param method the call
      */
     public HttpMethodException(HttpMethod method) {
-        super((String)null);
-	guiltyMethod = method;
+        super((String) null);
+        guiltyMethod = method;
     }
 
     public HttpMethodException(String msg, Throwable e) {

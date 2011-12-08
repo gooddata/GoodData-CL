@@ -7,21 +7,21 @@
 
 package com.sforce.soap.partner;
 
-public class LocaleOptions  implements java.io.Serializable {
+public class LocaleOptions implements java.io.Serializable {
     private java.lang.String language;
 
     public LocaleOptions() {
     }
 
     public LocaleOptions(
-           java.lang.String language) {
-           this.language = language;
+            java.lang.String language) {
+        this.language = language;
     }
 
 
     /**
      * Gets the language value for this LocaleOptions.
-     * 
+     *
      * @return language
      */
     public java.lang.String getLanguage() {
@@ -31,7 +31,7 @@ public class LocaleOptions  implements java.io.Serializable {
 
     /**
      * Sets the language value for this LocaleOptions.
-     * 
+     *
      * @param language
      */
     public void setLanguage(java.lang.String language) {
@@ -39,6 +39,7 @@ public class LocaleOptions  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof LocaleOptions)) return false;
         LocaleOptions other = (LocaleOptions) obj;
@@ -49,15 +50,16 @@ public class LocaleOptions  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.language==null && other.getLanguage()==null) || 
-             (this.language!=null &&
-              this.language.equals(other.getLanguage())));
+        _equals = true &&
+                ((this.language == null && other.getLanguage() == null) ||
+                        (this.language != null &&
+                                this.language.equals(other.getLanguage())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -73,7 +75,7 @@ public class LocaleOptions  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(LocaleOptions.class, true);
+            new org.apache.axis.description.TypeDesc(LocaleOptions.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">LocaleOptions"));
@@ -97,24 +99,24 @@ public class LocaleOptions  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

@@ -25,6 +25,7 @@ package com.gooddata.config;
 
 /**
  * Notification metric
+ *
  * @author zd@gooddata.com
  * @version 1.0
  */
@@ -36,8 +37,9 @@ public class Report {
 
     /**
      * Constructor
+     *
      * @param alias metric alias (name) is whatever you want to call it in your expressions
-     * @param uri the GDC metric URI
+     * @param uri   the GDC metric URI
      */
     public Report(String alias, String uri) {
         setAlias(alias);

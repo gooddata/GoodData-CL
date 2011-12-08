@@ -3,12 +3,11 @@
  */
 package com.gooddata.modeling.generator;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class MaqlGeneratorTest {
 

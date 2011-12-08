@@ -7,21 +7,21 @@
 
 package com.sforce.soap.partner;
 
-public class ResetPassword  implements java.io.Serializable {
+public class ResetPassword implements java.io.Serializable {
     private java.lang.String userId;
 
     public ResetPassword() {
     }
 
     public ResetPassword(
-           java.lang.String userId) {
-           this.userId = userId;
+            java.lang.String userId) {
+        this.userId = userId;
     }
 
 
     /**
      * Gets the userId value for this ResetPassword.
-     * 
+     *
      * @return userId
      */
     public java.lang.String getUserId() {
@@ -31,7 +31,7 @@ public class ResetPassword  implements java.io.Serializable {
 
     /**
      * Sets the userId value for this ResetPassword.
-     * 
+     *
      * @param userId
      */
     public void setUserId(java.lang.String userId) {
@@ -39,6 +39,7 @@ public class ResetPassword  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ResetPassword)) return false;
         ResetPassword other = (ResetPassword) obj;
@@ -49,15 +50,16 @@ public class ResetPassword  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.userId==null && other.getUserId()==null) || 
-             (this.userId!=null &&
-              this.userId.equals(other.getUserId())));
+        _equals = true &&
+                ((this.userId == null && other.getUserId() == null) ||
+                        (this.userId != null &&
+                                this.userId.equals(other.getUserId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -73,7 +75,7 @@ public class ResetPassword  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(ResetPassword.class, true);
+            new org.apache.axis.description.TypeDesc(ResetPassword.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">resetPassword"));
@@ -96,24 +98,24 @@ public class ResetPassword  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

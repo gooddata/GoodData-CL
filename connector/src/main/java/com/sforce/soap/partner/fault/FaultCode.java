@@ -14,7 +14,7 @@ public class FaultCode implements java.io.Serializable {
     // Constructor
     protected FaultCode(javax.xml.namespace.QName value) {
         _value_ = value;
-        _table_.put(_value_,this);
+        _table_.put(_value_, this);
     }
 
     public static final javax.xml.namespace.QName _value1 = javax.xml.namespace.QName.valueOf("{urn:fault.partner.soap.sforce.com}API_CURRENTLY_DISABLED");
@@ -197,49 +197,70 @@ public class FaultCode implements java.io.Serializable {
     public static final FaultCode value88 = new FaultCode(_value88);
     public static final FaultCode value89 = new FaultCode(_value89);
     public static final FaultCode value90 = new FaultCode(_value90);
-    public javax.xml.namespace.QName getValue() { return _value_;}
+
+    public javax.xml.namespace.QName getValue() {
+        return _value_;
+    }
+
     public static FaultCode fromValue(javax.xml.namespace.QName value)
-          throws java.lang.IllegalArgumentException {
+            throws java.lang.IllegalArgumentException {
         FaultCode enumeration = (FaultCode)
-            _table_.get(value);
-        if (enumeration==null) throw new java.lang.IllegalArgumentException();
+                _table_.get(value);
+        if (enumeration == null) throw new java.lang.IllegalArgumentException();
         return enumeration;
     }
+
     public static FaultCode fromString(java.lang.String value)
-          throws java.lang.IllegalArgumentException {
+            throws java.lang.IllegalArgumentException {
         try {
             return fromValue(javax.xml.namespace.QName.valueOf(value));
         } catch (Exception e) {
             throw new java.lang.IllegalArgumentException();
         }
     }
-    public boolean equals(java.lang.Object obj) {return (obj == this);}
-    public int hashCode() { return toString().hashCode();}
-    public java.lang.String toString() { return _value_.toString();}
-    public java.lang.Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
+
+    public boolean equals(java.lang.Object obj) {
+        return (obj == this);
+    }
+
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    public java.lang.String toString() {
+        return _value_.toString();
+    }
+
+    public java.lang.Object readResolve() throws java.io.ObjectStreamException {
+        return fromValue(_value_);
+    }
+
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new org.apache.axis.encoding.ser.EnumSerializer(
-            _javaType, _xmlType);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.EnumSerializer(
+                        _javaType, _xmlType);
     }
+
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new org.apache.axis.encoding.ser.EnumDeserializer(
-            _javaType, _xmlType);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.EnumDeserializer(
+                        _javaType, _xmlType);
     }
+
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(FaultCode.class);
+            new org.apache.axis.description.TypeDesc(FaultCode.class);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:fault.partner.soap.sforce.com", "FaultCode"));
     }
+
     /**
      * Return type metadata object
      */

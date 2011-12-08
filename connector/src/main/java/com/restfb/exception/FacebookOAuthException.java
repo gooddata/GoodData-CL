@@ -25,28 +25,26 @@ package com.restfb.exception;
 /**
  * Indicates that the Facebook Graph API endpoint returned JSON which indicates
  * an error condition related to the OAuth token included in the request.
- * <p>
+ * <p/>
  * Example:<code>
-  {
-      "error": {
-        "type": "OAuthException",
-        "message": "Invalid access token signature."
-      }
-  } </code>
- * 
+ * {
+ * "error": {
+ * "type": "OAuthException",
+ * "message": "Invalid access token signature."
+ * }
+ * } </code>
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.6
  */
 public class FacebookOAuthException extends FacebookGraphException {
-  /**
-   * Creates an exception with the given error type and message.
-   * 
-   * @param errorType
-   *          Value of the Facebook response attribute {@code error.type}.
-   * @param errorMessage
-   *          Value of the Facebook response attribute {@code error.message}.
-   */
-  public FacebookOAuthException(String errorType, String errorMessage) {
-    super(errorType, errorMessage);
-  }
+    /**
+     * Creates an exception with the given error type and message.
+     *
+     * @param errorType    Value of the Facebook response attribute {@code error.type}.
+     * @param errorMessage Value of the Facebook response attribute {@code error.message}.
+     */
+    public FacebookOAuthException(String errorType, String errorMessage) {
+        super(errorType, errorMessage);
+    }
 }

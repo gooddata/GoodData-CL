@@ -24,7 +24,6 @@
 package com.gooddata.util;
 
 import net.sf.json.JSON;
-import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 
 /**

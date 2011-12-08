@@ -14,7 +14,7 @@ public class FieldType implements java.io.Serializable {
     // Constructor
     protected FieldType(java.lang.String value) {
         _value_ = value;
-        _table_.put(_value_,this);
+        _table_.put(_value_, this);
     }
 
     public static final java.lang.String _value1 = "string";
@@ -61,45 +61,66 @@ public class FieldType implements java.io.Serializable {
     public static final FieldType value20 = new FieldType(_value20);
     public static final FieldType value21 = new FieldType(_value21);
     public static final FieldType value22 = new FieldType(_value22);
-    public java.lang.String getValue() { return _value_;}
+
+    public java.lang.String getValue() {
+        return _value_;
+    }
+
     public static FieldType fromValue(java.lang.String value)
-          throws java.lang.IllegalArgumentException {
+            throws java.lang.IllegalArgumentException {
         FieldType enumeration = (FieldType)
-            _table_.get(value);
-        if (enumeration==null) throw new java.lang.IllegalArgumentException();
+                _table_.get(value);
+        if (enumeration == null) throw new java.lang.IllegalArgumentException();
         return enumeration;
     }
+
     public static FieldType fromString(java.lang.String value)
-          throws java.lang.IllegalArgumentException {
+            throws java.lang.IllegalArgumentException {
         return fromValue(value);
     }
-    public boolean equals(java.lang.Object obj) {return (obj == this);}
-    public int hashCode() { return toString().hashCode();}
-    public java.lang.String toString() { return _value_;}
-    public java.lang.Object readResolve() throws java.io.ObjectStreamException { return fromValue(_value_);}
+
+    public boolean equals(java.lang.Object obj) {
+        return (obj == this);
+    }
+
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    public java.lang.String toString() {
+        return _value_;
+    }
+
+    public java.lang.Object readResolve() throws java.io.ObjectStreamException {
+        return fromValue(_value_);
+    }
+
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new org.apache.axis.encoding.ser.EnumSerializer(
-            _javaType, _xmlType);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.EnumSerializer(
+                        _javaType, _xmlType);
     }
+
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new org.apache.axis.encoding.ser.EnumDeserializer(
-            _javaType, _xmlType);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.EnumDeserializer(
+                        _javaType, _xmlType);
     }
+
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(FieldType.class);
+            new org.apache.axis.description.TypeDesc(FieldType.class);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "fieldType"));
     }
+
     /**
      * Return type metadata object
      */

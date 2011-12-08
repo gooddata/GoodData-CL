@@ -23,7 +23,6 @@
 
 package com.gooddata.config;
 
-import com.gooddata.modeling.model.SourceColumn;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.*;
@@ -36,7 +35,7 @@ public class NotificationConfig {
     // initial XML config comment
     public static String CONFIG_INITIAL_COMMENT = "<!-- See documentation at " +
             "http://developer.gooddata.com/gooddata-cl/xml-config.html -->\n\n";
-    
+
 
     private List<NotificationMessage> messages = new ArrayList<NotificationMessage>();
 
@@ -44,15 +43,16 @@ public class NotificationConfig {
      * Default constructor
      */
     public NotificationConfig() {
-        
+
     }
 
     /**
      * Constructor
+     *
      * @param messages config messages (elements)
      */
     public NotificationConfig(List<NotificationMessage> messages) {
-        setMessages(messages);   
+        setMessages(messages);
     }
 
     public void addMessage(NotificationMessage msg) {
@@ -69,6 +69,7 @@ public class NotificationConfig {
 
     /**
      * Serializes the schema to XML
+     *
      * @return the xml representation of the object
      * @throws java.io.IOException in case of an IO issue
      */
@@ -83,7 +84,8 @@ public class NotificationConfig {
 
     /**
      * Deserializes the config from XML
-     * @param configFile  the file with the XML definition
+     *
+     * @param configFile the file with the XML definition
      * @throws IOException in case of an IO issue
      */
     public static NotificationConfig fromXml(File configFile) throws IOException {
@@ -92,24 +94,26 @@ public class NotificationConfig {
 
     /**
      * Deserializes the config from an XML stream
+     *
      * @param is the stream of the XML definition
      * @throws IOException in case of an IO issue
      */
     public static NotificationConfig fromXml(InputStream is) throws IOException {
-    	XStream xstream = new XStream();
+        XStream xstream = new XStream();
         xstream.alias("metric", Metric.class);
         xstream.alias("report", Report.class);
         xstream.alias("message", NotificationMessage.class);
         xstream.alias("notification", NotificationConfig.class);
         Reader r = new InputStreamReader(is, "utf8");
-        NotificationConfig schema = (NotificationConfig)xstream.fromXML(r);
+        NotificationConfig schema = (NotificationConfig) xstream.fromXML(r);
         r.close();
         return schema;
     }
 
     /**
      * Write the config file
-     * @param configFile  the config file
+     *
+     * @param configFile the config file
      * @throws IOException in case of an IO issue
      */
     public void writeConfig(File configFile) throws IOException {
@@ -118,5 +122,5 @@ public class NotificationConfig {
         w.flush();
         w.close();
     }
-    
+
 }

@@ -11,7 +11,8 @@
             <offset>%OFFSET%</offset>
             <select_fields soapenc:arrayType="xsd:string[0]"
                            xsi:type="soapenc:Array"
-                           xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">%FIELDS%</select_fields>
+                           xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">%FIELDS%
+            </select_fields>
             %LINKED_FIELDS%
             <max_results>%MAX_ROWS%</max_results>
         </ns1:get_entry_list>

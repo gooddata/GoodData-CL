@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class LoginScopeHeader  implements java.io.Serializable {
+public class LoginScopeHeader implements java.io.Serializable {
     private java.lang.String organizationId;
 
     private java.lang.String portalId;
@@ -16,16 +16,16 @@ public class LoginScopeHeader  implements java.io.Serializable {
     }
 
     public LoginScopeHeader(
-           java.lang.String organizationId,
-           java.lang.String portalId) {
-           this.organizationId = organizationId;
-           this.portalId = portalId;
+            java.lang.String organizationId,
+            java.lang.String portalId) {
+        this.organizationId = organizationId;
+        this.portalId = portalId;
     }
 
 
     /**
      * Gets the organizationId value for this LoginScopeHeader.
-     * 
+     *
      * @return organizationId
      */
     public java.lang.String getOrganizationId() {
@@ -35,7 +35,7 @@ public class LoginScopeHeader  implements java.io.Serializable {
 
     /**
      * Sets the organizationId value for this LoginScopeHeader.
-     * 
+     *
      * @param organizationId
      */
     public void setOrganizationId(java.lang.String organizationId) {
@@ -45,7 +45,7 @@ public class LoginScopeHeader  implements java.io.Serializable {
 
     /**
      * Gets the portalId value for this LoginScopeHeader.
-     * 
+     *
      * @return portalId
      */
     public java.lang.String getPortalId() {
@@ -55,7 +55,7 @@ public class LoginScopeHeader  implements java.io.Serializable {
 
     /**
      * Sets the portalId value for this LoginScopeHeader.
-     * 
+     *
      * @param portalId
      */
     public void setPortalId(java.lang.String portalId) {
@@ -63,6 +63,7 @@ public class LoginScopeHeader  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof LoginScopeHeader)) return false;
         LoginScopeHeader other = (LoginScopeHeader) obj;
@@ -73,18 +74,19 @@ public class LoginScopeHeader  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.organizationId==null && other.getOrganizationId()==null) || 
-             (this.organizationId!=null &&
-              this.organizationId.equals(other.getOrganizationId()))) &&
-            ((this.portalId==null && other.getPortalId()==null) || 
-             (this.portalId!=null &&
-              this.portalId.equals(other.getPortalId())));
+        _equals = true &&
+                ((this.organizationId == null && other.getOrganizationId() == null) ||
+                        (this.organizationId != null &&
+                                this.organizationId.equals(other.getOrganizationId()))) &&
+                ((this.portalId == null && other.getPortalId() == null) ||
+                        (this.portalId != null &&
+                                this.portalId.equals(other.getPortalId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -103,7 +105,7 @@ public class LoginScopeHeader  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(LoginScopeHeader.class, true);
+            new org.apache.axis.description.TypeDesc(LoginScopeHeader.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">LoginScopeHeader"));
@@ -133,24 +135,24 @@ public class LoginScopeHeader  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

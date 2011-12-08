@@ -23,27 +23,6 @@
 
 package com.gooddata.connector;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.gooddata.transform.Transformer;
-import com.sforce.soap.partner.*;
-import org.apache.axis.message.MessageElement;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-
-import com.gooddata.util.CSVWriter;
-
-import com.gooddata.exception.InternalErrorException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.exception.SfdcException;
 import com.gooddata.modeling.model.SourceColumn;
@@ -51,15 +30,21 @@ import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.transform.Transformer;
+import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import com.sforce.soap.partner.fault.ApiQueryFault;
-import com.sforce.soap.partner.fault.ExceptionCode;
-import com.sforce.soap.partner.fault.InvalidIdFault;
-import com.sforce.soap.partner.fault.InvalidQueryLocatorFault;
-import com.sforce.soap.partner.fault.LoginFault;
-import com.sforce.soap.partner.fault.UnexpectedErrorFault;
+import com.sforce.soap.partner.*;
+import com.sforce.soap.partner.fault.*;
 import com.sforce.soap.partner.sobject.SObject;
+import org.apache.axis.message.MessageElement;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.*;
 
 /**
  * GoodData SFDC Connector
@@ -86,8 +71,9 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         super();
     }
 
-   /**
+    /**
      * Creates a new SFDC connector
+     *
      * @return a new instance of the SFDC connector
      */
     public static SfdcConnector createConnector() {
@@ -96,48 +82,44 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * Executes the SFDC query, returns one row only. This is useful for metadata inspection purposes
-     * @param binding SFDC stub
+     *
+     * @param binding   SFDC stub
      * @param sfdcQuery SFDC SOOL query
-     * @param clientID SFDC partner client ID
+     * @param clientID  SFDC partner client ID
      * @return results as List of SObjects
      * @throws SfdcException in case of SFDC communication errors
      */
     protected static SObject executeQueryFirstRow(SoapBindingStub binding, String sfdcQuery, String clientID) throws SfdcException {
-        l.debug("Executing SFDC query "+sfdcQuery);
+        l.debug("Executing SFDC query " + sfdcQuery);
         List<SObject> result = new ArrayList<SObject>();
         QueryOptions qo = new QueryOptions();
         qo.setBatchSize(1);
         binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),
-             "QueryOptions", qo);
+                "QueryOptions", qo);
         try {
             QueryResult qr = binding.query(sfdcQuery);
-            if(qr.getSize()>0) {
+            if (qr.getSize() > 0) {
                 SObject[] sObjects = qr.getRecords();
                 result.addAll(Arrays.asList(sObjects));
             }
-        }
-        catch (ApiQueryFault ex) {
-            l.debug("Executing SFDC query failed",ex);
-            throw new SfdcException("Failed to execute SFDC query.",ex);
-        }
-        catch (UnexpectedErrorFault e) {
-            l.debug("Executing SFDC query failed",e);
-            throw new SfdcException("Failed to execute SFDC query.",e);
-        }
-        catch (InvalidIdFault e) {
-            l.debug("Executing SFDC query failed",e);
-            throw new SfdcException("Failed to execute SFDC query.",e);
-        }
-        catch (InvalidQueryLocatorFault e) {
-            l.debug("Executing SFDC query failed",e);
-            throw new SfdcException("Failed to execute SFDC query.",e);
-        }
-        catch (RemoteException e) {
-            l.debug("Executing SFDC query failed",e);
-            throw new SfdcException("Failed to execute SFDC query.",e);
+        } catch (ApiQueryFault ex) {
+            l.debug("Executing SFDC query failed", ex);
+            throw new SfdcException("Failed to execute SFDC query.", ex);
+        } catch (UnexpectedErrorFault e) {
+            l.debug("Executing SFDC query failed", e);
+            throw new SfdcException("Failed to execute SFDC query.", e);
+        } catch (InvalidIdFault e) {
+            l.debug("Executing SFDC query failed", e);
+            throw new SfdcException("Failed to execute SFDC query.", e);
+        } catch (InvalidQueryLocatorFault e) {
+            l.debug("Executing SFDC query failed", e);
+            throw new SfdcException("Failed to execute SFDC query.", e);
+        } catch (RemoteException e) {
+            l.debug("Executing SFDC query failed", e);
+            throw new SfdcException("Failed to execute SFDC query.", e);
         }
         l.debug("Finihed SFDC query execution.");
-        if(result.size()>0)
+        if (result.size() > 0)
             return result.get(0);
         else
             return null;
@@ -145,63 +127,63 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * Retrieves the object's metadata
-     * @param c SFDC stub
+     *
+     * @param c    SFDC stub
      * @param name SFDC object name
      * @return Map of fields
      * @throws RemoteException communication error
      */
     protected static Map<String, Field> describeObject(SoapBindingStub c, String name) throws RemoteException {
-        l.debug("Retrieving SFDC object "+name+" metadata.");
-        Map<String,Field> result = new HashMap<String,Field>();
+        l.debug("Retrieving SFDC object " + name + " metadata.");
+        Map<String, Field> result = new HashMap<String, Field>();
         DescribeSObjectResult describeSObjectResult = c.describeSObject(name);
-        if (! (describeSObjectResult == null)) {
+        if (!(describeSObjectResult == null)) {
             Field[] fields = describeSObjectResult.getFields();
             if (fields != null) {
-                for(Field field: fields) {
+                for (Field field : fields) {
                     result.put(field.getName(), field);
                 }
             }
         }
-        l.debug("SFDC object "+name+" metadata retrieved.");
+        l.debug("SFDC object " + name + " metadata retrieved.");
         return result;
     }
 
 
     /**
      * Saves a template of the config file
-     * @param name new schema name
+     *
+     * @param name           new schema name
      * @param configFileName config file name
-     * @param sfdcUsr SFDC username
-     * @param sfdcPsw SFDC password
-     * @param sfdcToken SFDC security token
-     * @param query SFDC query
-     * @param partnerId SFDC partner ID
+     * @param sfdcUsr        SFDC username
+     * @param sfdcPsw        SFDC password
+     * @param sfdcToken      SFDC security token
+     * @param query          SFDC query
+     * @param partnerId      SFDC partner ID
      * @throws IOException if there is a problem with writing the config file
      */
     public static void saveConfigTemplate(String name, String configFileName, String sfdcHostname, String sfdcUsr, String sfdcPsw, String sfdcToken, String partnerId,
-                                  String query)
+                                          String query)
             throws IOException {
         l.debug("Saving SFDC config template.");
         SourceSchema s = SourceSchema.createSchema(name);
         SoapBindingStub c = connect(sfdcHostname, sfdcUsr, sfdcPsw, sfdcToken, partnerId);
         SObject result = executeQueryFirstRow(c, query, partnerId);
-        if(result != null) {
-            Map<String,Field> fields = describeObject(c, result.getType());
-            for(MessageElement column : result.get_any()) {
+        if (result != null) {
+            Map<String, Field> fields = describeObject(c, result.getType());
+            for (MessageElement column : result.get_any()) {
                 String nm = column.getName();
                 String tp = getColumnType(fields, nm);
-                if(tp.equals(SourceColumn.LDM_TYPE_DATE)) {
+                if (tp.equals(SourceColumn.LDM_TYPE_DATE)) {
                     SourceColumn sc = new SourceColumn(nm, tp, nm, name);
                     sc.setFormat("yyyy-MM-dd");
                     s.addColumn(sc);
-                }
-                else {
+                } else {
                     SourceColumn sc = new SourceColumn(nm, tp, nm, name);
                     s.addColumn(sc);
                 }
             }
-        }
-        else {
+        } else {
             l.debug("The SFDC query hasn't returned any row.");
             throw new SfdcException("The SFDC query hasn't returned any row.");
         }
@@ -211,28 +193,29 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * Derives the LDM type from the SFDC type
-     * @param fields SFDC object metadata
+     *
+     * @param fields    SFDC object metadata
      * @param fieldName the field name
      * @return LDM type
      */
-    protected static String getColumnType(Map<String,Field> fields, String fieldName) {
+    protected static String getColumnType(Map<String, Field> fields, String fieldName) {
         String type = SourceColumn.LDM_TYPE_ATTRIBUTE;
         Field f = fields.get(fieldName);
-        if(f != null) {
+        if (f != null) {
             FieldType t = f.getType();
-            if(t.getValue().equalsIgnoreCase("id"))
+            if (t.getValue().equalsIgnoreCase("id"))
                 type = SourceColumn.LDM_TYPE_CONNECTION_POINT;
-            else if(t.getValue().equalsIgnoreCase("string"))
+            else if (t.getValue().equalsIgnoreCase("string"))
                 type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-            else if(t.getValue().equalsIgnoreCase("currency"))
+            else if (t.getValue().equalsIgnoreCase("currency"))
                 type = SourceColumn.LDM_TYPE_FACT;
-            else if(t.getValue().equalsIgnoreCase("boolean"))
+            else if (t.getValue().equalsIgnoreCase("boolean"))
                 type = SourceColumn.LDM_TYPE_ATTRIBUTE;
-            else if(t.getValue().equalsIgnoreCase("reference"))
+            else if (t.getValue().equalsIgnoreCase("reference"))
                 type = SourceColumn.LDM_TYPE_REFERENCE;
-            else if(t.getValue().equalsIgnoreCase("date"))
+            else if (t.getValue().equalsIgnoreCase("date"))
                 type = SourceColumn.LDM_TYPE_DATE;
-            else if(t.getValue().equalsIgnoreCase("datetime"))
+            else if (t.getValue().equalsIgnoreCase("datetime"))
                 type = SourceColumn.LDM_TYPE_DATE;
         }
         return type;
@@ -243,16 +226,16 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      */
     public void extract(String file, boolean transform) throws IOException {
         File dataFile = new File(file);
-        l.debug("Extracting SFDC data to file="+dataFile.getAbsolutePath());
+        l.debug("Extracting SFDC data to file=" + dataFile.getAbsolutePath());
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(dataFile);
         Transformer t = Transformer.create(schema);
         String[] header = t.getHeader(transform);
         cw.writeNext(header);
         SoapBindingStub c = connect(getSfdcHostname(), getSfdcUsername(), getSfdcPassword(), getSfdcToken(), getClientID());
-        l.debug("Executing SFDC query "+sfdcQuery);
+        l.debug("Executing SFDC query " + sfdcQuery);
         QueryOptions qo = new QueryOptions();
         qo.setBatchSize(500);
-        c.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),"QueryOptions", qo);
+        c.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(), "QueryOptions", qo);
         String[] colTypes = null;
         boolean firstBatch = true;
         int rowCnt = 0;
@@ -261,16 +244,16 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             boolean isdone = false;
             do {
                 SObject[] sObjects = qr.getRecords();
-                if(sObjects != null && sObjects.length >0) {
+                if (sObjects != null && sObjects.length > 0) {
                     l.debug("Started retrieving SFDC data.");
                     boolean firstRow = true;
-                    for( SObject srow : sObjects) {
-                        if(firstBatch && firstRow) {
+                    for (SObject srow : sObjects) {
+                        if (firstBatch && firstRow) {
                             SObject hdr = sObjects[0];
-                            Map<String,Field> fields = describeObject(c, hdr.getType());
+                            Map<String, Field> fields = describeObject(c, hdr.getType());
                             MessageElement[] frCols = hdr.get_any();
                             colTypes = new String[frCols.length];
-                            for(int i=0; i< frCols. length; i++) {
+                            for (int i = 0; i < frCols.length; i++) {
                                 String nm = frCols[i].getName();
                                 colTypes[i] = getColumnType(fields, nm);
                             }
@@ -278,7 +261,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                         }
                         MessageElement[] cols = srow.get_any();
                         Object[] row = new Object[cols.length];
-                        for(int i=0; i<row.length; i++) {
+                        for (int i = 0; i < row.length; i++) {
                             if (colTypes[i].equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
                                 row[i] = new DateTime(cols[i].getValue());
                             } else {
@@ -286,12 +269,11 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                             }
                         }
                         String[] nrow = null;
-                        if(transform) {
+                        if (transform) {
                             nrow = t.transformRow(row, DATE_LENGTH_UNRESTRICTED);
-                        }
-                        else {
+                        } else {
                             nrow = new String[row.length];
-                            for(int i = 0; i<row.length; i++) {
+                            for (int i = 0; i < row.length; i++) {
                                 nrow[i] = row[i].toString();
                             }
                         }
@@ -300,35 +282,30 @@ public class SfdcConnector extends AbstractConnector implements Connector {
                         rowCnt++;
                     }
                     isdone = qr.isDone();
-                    if(!isdone) {
+                    if (!isdone) {
                         qr = c.queryMore(qr.getQueryLocator());
                         firstBatch = false;
                     }
                 }
-            } while(!isdone);
+            } while (!isdone);
             l.debug("Retrieved " + rowCnt + " rows of SFDC data.");
             cw.close();
 
-        }
-        catch (ApiQueryFault ex) {
-            l.debug("Executing SFDC query failed",ex);
-            throw new SfdcException("Failed to execute SFDC query.",ex);
-        }
-        catch (UnexpectedErrorFault e) {
-            l.debug("Executing SFDC query failed",e);
-            throw new SfdcException("Failed to execute SFDC query.",e);
-        }
-        catch (InvalidIdFault e) {
-            l.debug("Executing SFDC query failed",e);
-            throw new SfdcException("Failed to execute SFDC query.",e);
-        }
-        catch (InvalidQueryLocatorFault e) {
-            l.debug("Executing SFDC query failed",e);
-            throw new SfdcException("Failed to execute SFDC query.",e);
-        }
-        catch (RemoteException e) {
-            l.debug("Executing SFDC query failed",e);
-            throw new SfdcException("Failed to execute SFDC query.",e);
+        } catch (ApiQueryFault ex) {
+            l.debug("Executing SFDC query failed", ex);
+            throw new SfdcException("Failed to execute SFDC query.", ex);
+        } catch (UnexpectedErrorFault e) {
+            l.debug("Executing SFDC query failed", e);
+            throw new SfdcException("Failed to execute SFDC query.", e);
+        } catch (InvalidIdFault e) {
+            l.debug("Executing SFDC query failed", e);
+            throw new SfdcException("Failed to execute SFDC query.", e);
+        } catch (InvalidQueryLocatorFault e) {
+            l.debug("Executing SFDC query failed", e);
+            throw new SfdcException("Failed to execute SFDC query.", e);
+        } catch (RemoteException e) {
+            l.debug("Executing SFDC query failed", e);
+            throw new SfdcException("Failed to execute SFDC query.", e);
         }
         l.debug("Finihed SFDC query execution.");
 
@@ -336,11 +313,11 @@ public class SfdcConnector extends AbstractConnector implements Connector {
     }
 
 
-
     /**
      * Connect the SFDC
-     * @param usr SFDC username
-     * @param psw SFDC pasword
+     *
+     * @param usr   SFDC username
+     * @param psw   SFDC pasword
      * @param token SFDC security token
      * @return SFDC stub
      * @throws SfdcException in case of connection issues
@@ -359,57 +336,46 @@ public class SfdcConnector extends AbstractConnector implements Connector {
             // Time out after a minute
             binding.setTimeout(60000);
             // Test operation
-            if(clientID != null && clientID.length()>0) {
+            if (clientID != null && clientID.length() > 0) {
                 CallOptions co = new CallOptions();
                 co.setClient(clientID);
                 binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(), "CallOptions", co);
             }
             loginResult = binding.login(usr, psw);
-        }
-        catch (LoginFault ex) {
+        } catch (LoginFault ex) {
             // The LoginFault derives from AxisFault
             ExceptionCode exCode = ex.getExceptionCode();
-            if(exCode == ExceptionCode.FUNCTIONALITY_NOT_ENABLED) {
+            if (exCode == ExceptionCode.FUNCTIONALITY_NOT_ENABLED) {
                 l.debug("Error logging into the SFDC. Functionality not enabled.", ex);
                 throw new SfdcException("Error logging into the SFDC. Functionality not enabled.", ex);
-            }
-            else if(exCode == ExceptionCode.INVALID_CLIENT) {
+            } else if (exCode == ExceptionCode.INVALID_CLIENT) {
                 l.debug("Error logging into the SFDC. Invalid client.", ex);
                 throw new SfdcException("Error logging into the SFDC. Invalid client.", ex);
-            }
-            else if(exCode == ExceptionCode.INVALID_LOGIN) {
+            } else if (exCode == ExceptionCode.INVALID_LOGIN) {
                 l.debug("Error logging into the SFDC. Invalid login.", ex);
                 throw new SfdcException("Error logging into the SFDC. Invalid login.", ex);
-            }
-            else if(exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_DOMAIN) {
+            } else if (exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_DOMAIN) {
                 l.debug("Error logging into the SFDC. Restricred domain.", ex);
                 throw new SfdcException("Error logging into the SFDC. Restricred domain.", ex);
-            }
-            else if(exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_TIME) {
+            } else if (exCode == ExceptionCode.LOGIN_DURING_RESTRICTED_TIME) {
                 l.debug("Error logging into the SFDC. Restricred during time.", ex);
                 throw new SfdcException("Error logging into the SFDC. Restricred during time.", ex);
-            }
-            else if(exCode == ExceptionCode.ORG_LOCKED) {
+            } else if (exCode == ExceptionCode.ORG_LOCKED) {
                 l.debug("Error logging into the SFDC. Organization locked.", ex);
                 throw new SfdcException("Error logging into the SFDC. Organization locked.", ex);
-            }
-            else if(exCode == ExceptionCode.PASSWORD_LOCKOUT) {
+            } else if (exCode == ExceptionCode.PASSWORD_LOCKOUT) {
                 l.debug("Error logging into the SFDC. Password lock-out.", ex);
                 throw new SfdcException("Error logging into the SFDC. Password lock-out.", ex);
-            }
-            else if(exCode == ExceptionCode.SERVER_UNAVAILABLE) {
+            } else if (exCode == ExceptionCode.SERVER_UNAVAILABLE) {
                 l.debug("Error logging into the SFDC. Server not available.", ex);
                 throw new SfdcException("Error logging into the SFDC. Server not available.", ex);
-            }
-            else if(exCode == ExceptionCode.TRIAL_EXPIRED) {
+            } else if (exCode == ExceptionCode.TRIAL_EXPIRED) {
                 l.debug("Error logging into the SFDC. Trial expired.", ex);
                 throw new SfdcException("Error logging into the SFDC. Trial expired.", ex);
-            }
-            else if(exCode == ExceptionCode.UNSUPPORTED_CLIENT) {
+            } else if (exCode == ExceptionCode.UNSUPPORTED_CLIENT) {
                 l.debug("Error logging into the SFDC. Unsupported client.", ex);
                 throw new SfdcException("Error logging into the SFDC. Unsupported client.", ex);
-            }
-            else {
+            } else {
                 l.debug("Error logging into the SFDC.", ex);
                 throw new SfdcException("Error logging into the SFDC.", ex);
             }
@@ -429,7 +395,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
          *  of the binding object using the URL returned from the LoginResult.
          */
         binding._setProperty(SoapBindingStub.ENDPOINT_ADDRESS_PROPERTY,
-            loginResult.getServerUrl());
+                loginResult.getServerUrl());
         /** The sample client application now has an instance of the SoapBindingStub
          *  that is pointing to the correct endpoint. Next, the sample client application
          *  sets a persistent SOAP header (to be included on all subsequent calls that
@@ -450,13 +416,14 @@ public class SfdcConnector extends AbstractConnector implements Connector {
          */
         // set the session header for subsequent call authentication
         binding.setHeader(new SforceServiceLocator().getServiceName().getNamespaceURI(),
-                          "SessionHeader", sh);
+                "SessionHeader", sh);
         l.debug("Connected to SFDC.");
         return binding;
     }
 
     /**
      * SFDC username getter
+     *
      * @return SFDC username
      */
     public String getSfdcUsername() {
@@ -465,6 +432,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * SFDC username setter
+     *
      * @param sfdcUsername SFDC username
      */
     public void setSfdcUsername(String sfdcUsername) {
@@ -473,6 +441,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * SFDC password getter
+     *
      * @return SFDC password
      */
     public String getSfdcPassword() {
@@ -481,6 +450,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * SFDC password setter
+     *
      * @param sfdcPassword SFDC password
      */
     public void setSfdcPassword(String sfdcPassword) {
@@ -489,6 +459,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * SFDC query getter
+     *
      * @return SFDC query
      */
     public String getSfdcQuery() {
@@ -497,14 +468,16 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * SFDC query setter
+     *
      * @param sfdcQuery SFDC query
      */
     public void setSfdcQuery(String sfdcQuery) {
         this.sfdcQuery = sfdcQuery;
     }
-    
+
     /**
      * SFDC security token getter
+     *
      * @return SFDC security token
      */
     public String getSfdcToken() {
@@ -513,6 +486,7 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * SFDC security token setter
+     *
      * @param sfdcToken SFDC security token
      */
     public void setSfdcToken(String sfdcToken) {
@@ -545,37 +519,35 @@ public class SfdcConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
-        l.debug("Processing command "+c.getCommand());
+        l.debug("Processing command " + c.getCommand());
         try {
-            if(c.match("GenerateSfdcConfig")) {
+            if (c.match("GenerateSfdcConfig")) {
                 generateSfdcConfig(c, cli, ctx);
-            }
-            else if(c.match("LoadSfdc") || c.match("UseSfdc")) {
+            } else if (c.match("LoadSfdc") || c.match("UseSfdc")) {
                 loadSfdc(c, cli, ctx);
-            }
-            else {
-                l.debug("No match passing the command "+c.getCommand()+" further.");
+            } else {
+                l.debug("No match passing the command " + c.getCommand() + " further.");
                 return super.processCommand(c, cli, ctx);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
-        l.debug("Processed command "+c.getCommand());
+        l.debug("Processed command " + c.getCommand());
         return true;
     }
 
     /**
      * Loads SFDC data command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
      */
     private void loadSfdc(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
-        String usr = c.getParamMandatory( "username");
-        String psw = c.getParamMandatory( "password");
+        String usr = c.getParamMandatory("username");
+        String psw = c.getParamMandatory("password");
         String q = c.getParamMandatory("query");
         String t = c.getParam("token");
         String host = c.getParam("host");
@@ -600,16 +572,17 @@ public class SfdcConnector extends AbstractConnector implements Connector {
 
     /**
      * Generates the SFDC config
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
      */
     private void generateSfdcConfig(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
         String name = c.getParamMandatory("name");
-        String usr = c.getParamMandatory( "username");
-        String psw = c.getParamMandatory( "password");
+        String usr = c.getParamMandatory("username");
+        String psw = c.getParamMandatory("password");
         String token = c.getParam("token");
         String query = c.getParamMandatory("query");
         String host = c.getParam("host");
@@ -620,6 +593,6 @@ public class SfdcConnector extends AbstractConnector implements Connector {
         c.paramsProcessed();
 
         SfdcConnector.saveConfigTemplate(name, configFile, host, usr, psw, token, partnerId, query);
-        l.info("SFDC Connector configuration successfully generated. See config file: "+configFile);
+        l.info("SFDC Connector configuration successfully generated. See config file: " + configFile);
     }
 }

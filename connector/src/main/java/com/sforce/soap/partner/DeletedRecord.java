@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DeletedRecord  implements java.io.Serializable {
+public class DeletedRecord implements java.io.Serializable {
     private java.util.Calendar deletedDate;
 
     private java.lang.String id;
@@ -16,16 +16,16 @@ public class DeletedRecord  implements java.io.Serializable {
     }
 
     public DeletedRecord(
-           java.util.Calendar deletedDate,
-           java.lang.String id) {
-           this.deletedDate = deletedDate;
-           this.id = id;
+            java.util.Calendar deletedDate,
+            java.lang.String id) {
+        this.deletedDate = deletedDate;
+        this.id = id;
     }
 
 
     /**
      * Gets the deletedDate value for this DeletedRecord.
-     * 
+     *
      * @return deletedDate
      */
     public java.util.Calendar getDeletedDate() {
@@ -35,7 +35,7 @@ public class DeletedRecord  implements java.io.Serializable {
 
     /**
      * Sets the deletedDate value for this DeletedRecord.
-     * 
+     *
      * @param deletedDate
      */
     public void setDeletedDate(java.util.Calendar deletedDate) {
@@ -45,7 +45,7 @@ public class DeletedRecord  implements java.io.Serializable {
 
     /**
      * Gets the id value for this DeletedRecord.
-     * 
+     *
      * @return id
      */
     public java.lang.String getId() {
@@ -55,7 +55,7 @@ public class DeletedRecord  implements java.io.Serializable {
 
     /**
      * Sets the id value for this DeletedRecord.
-     * 
+     *
      * @param id
      */
     public void setId(java.lang.String id) {
@@ -63,6 +63,7 @@ public class DeletedRecord  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DeletedRecord)) return false;
         DeletedRecord other = (DeletedRecord) obj;
@@ -73,18 +74,19 @@ public class DeletedRecord  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.deletedDate==null && other.getDeletedDate()==null) || 
-             (this.deletedDate!=null &&
-              this.deletedDate.equals(other.getDeletedDate()))) &&
-            ((this.id==null && other.getId()==null) || 
-             (this.id!=null &&
-              this.id.equals(other.getId())));
+        _equals = true &&
+                ((this.deletedDate == null && other.getDeletedDate() == null) ||
+                        (this.deletedDate != null &&
+                                this.deletedDate.equals(other.getDeletedDate()))) &&
+                ((this.id == null && other.getId() == null) ||
+                        (this.id != null &&
+                                this.id.equals(other.getId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -103,7 +105,7 @@ public class DeletedRecord  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DeletedRecord.class, true);
+            new org.apache.axis.description.TypeDesc(DeletedRecord.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DeletedRecord"));
@@ -132,24 +134,24 @@ public class DeletedRecord  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

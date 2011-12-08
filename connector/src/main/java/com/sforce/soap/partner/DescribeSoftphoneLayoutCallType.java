@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
+public class DescribeSoftphoneLayoutCallType implements java.io.Serializable {
     private com.sforce.soap.partner.DescribeSoftphoneLayoutInfoField[] infoFields;
 
     private java.lang.String name;
@@ -22,22 +22,22 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
     }
 
     public DescribeSoftphoneLayoutCallType(
-           com.sforce.soap.partner.DescribeSoftphoneLayoutInfoField[] infoFields,
-           java.lang.String name,
-           com.sforce.soap.partner.DescribeSoftphoneScreenPopOption[] screenPopOptions,
-           java.lang.String screenPopsOpenWithin,
-           com.sforce.soap.partner.DescribeSoftphoneLayoutSection[] sections) {
-           this.infoFields = infoFields;
-           this.name = name;
-           this.screenPopOptions = screenPopOptions;
-           this.screenPopsOpenWithin = screenPopsOpenWithin;
-           this.sections = sections;
+            com.sforce.soap.partner.DescribeSoftphoneLayoutInfoField[] infoFields,
+            java.lang.String name,
+            com.sforce.soap.partner.DescribeSoftphoneScreenPopOption[] screenPopOptions,
+            java.lang.String screenPopsOpenWithin,
+            com.sforce.soap.partner.DescribeSoftphoneLayoutSection[] sections) {
+        this.infoFields = infoFields;
+        this.name = name;
+        this.screenPopOptions = screenPopOptions;
+        this.screenPopsOpenWithin = screenPopsOpenWithin;
+        this.sections = sections;
     }
 
 
     /**
      * Gets the infoFields value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @return infoFields
      */
     public com.sforce.soap.partner.DescribeSoftphoneLayoutInfoField[] getInfoFields() {
@@ -47,7 +47,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     /**
      * Sets the infoFields value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @param infoFields
      */
     public void setInfoFields(com.sforce.soap.partner.DescribeSoftphoneLayoutInfoField[] infoFields) {
@@ -65,7 +65,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     /**
      * Gets the name value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @return name
      */
     public java.lang.String getName() {
@@ -75,7 +75,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     /**
      * Sets the name value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @param name
      */
     public void setName(java.lang.String name) {
@@ -85,7 +85,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     /**
      * Gets the screenPopOptions value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @return screenPopOptions
      */
     public com.sforce.soap.partner.DescribeSoftphoneScreenPopOption[] getScreenPopOptions() {
@@ -95,7 +95,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     /**
      * Sets the screenPopOptions value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @param screenPopOptions
      */
     public void setScreenPopOptions(com.sforce.soap.partner.DescribeSoftphoneScreenPopOption[] screenPopOptions) {
@@ -113,7 +113,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     /**
      * Gets the screenPopsOpenWithin value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @return screenPopsOpenWithin
      */
     public java.lang.String getScreenPopsOpenWithin() {
@@ -123,7 +123,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     /**
      * Sets the screenPopsOpenWithin value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @param screenPopsOpenWithin
      */
     public void setScreenPopsOpenWithin(java.lang.String screenPopsOpenWithin) {
@@ -133,7 +133,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     /**
      * Gets the sections value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @return sections
      */
     public com.sforce.soap.partner.DescribeSoftphoneLayoutSection[] getSections() {
@@ -143,7 +143,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     /**
      * Sets the sections value for this DescribeSoftphoneLayoutCallType.
-     * 
+     *
      * @param sections
      */
     public void setSections(com.sforce.soap.partner.DescribeSoftphoneLayoutSection[] sections) {
@@ -159,6 +159,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeSoftphoneLayoutCallType)) return false;
         DescribeSoftphoneLayoutCallType other = (DescribeSoftphoneLayoutCallType) obj;
@@ -169,27 +170,28 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.infoFields==null && other.getInfoFields()==null) || 
-             (this.infoFields!=null &&
-              java.util.Arrays.equals(this.infoFields, other.getInfoFields()))) &&
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName()))) &&
-            ((this.screenPopOptions==null && other.getScreenPopOptions()==null) || 
-             (this.screenPopOptions!=null &&
-              java.util.Arrays.equals(this.screenPopOptions, other.getScreenPopOptions()))) &&
-            ((this.screenPopsOpenWithin==null && other.getScreenPopsOpenWithin()==null) || 
-             (this.screenPopsOpenWithin!=null &&
-              this.screenPopsOpenWithin.equals(other.getScreenPopsOpenWithin()))) &&
-            ((this.sections==null && other.getSections()==null) || 
-             (this.sections!=null &&
-              java.util.Arrays.equals(this.sections, other.getSections())));
+        _equals = true &&
+                ((this.infoFields == null && other.getInfoFields() == null) ||
+                        (this.infoFields != null &&
+                                java.util.Arrays.equals(this.infoFields, other.getInfoFields()))) &&
+                ((this.name == null && other.getName() == null) ||
+                        (this.name != null &&
+                                this.name.equals(other.getName()))) &&
+                ((this.screenPopOptions == null && other.getScreenPopOptions() == null) ||
+                        (this.screenPopOptions != null &&
+                                java.util.Arrays.equals(this.screenPopOptions, other.getScreenPopOptions()))) &&
+                ((this.screenPopsOpenWithin == null && other.getScreenPopsOpenWithin() == null) ||
+                        (this.screenPopsOpenWithin != null &&
+                                this.screenPopsOpenWithin.equals(other.getScreenPopsOpenWithin()))) &&
+                ((this.sections == null && other.getSections() == null) ||
+                        (this.sections != null &&
+                                java.util.Arrays.equals(this.sections, other.getSections())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -197,12 +199,12 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getInfoFields() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getInfoFields());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getInfoFields());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getInfoFields(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -211,12 +213,12 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
             _hashCode += getName().hashCode();
         }
         if (getScreenPopOptions() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getScreenPopOptions());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getScreenPopOptions());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getScreenPopOptions(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -225,12 +227,12 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
             _hashCode += getScreenPopsOpenWithin().hashCode();
         }
         if (getSections() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getSections());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getSections());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getSections(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -241,7 +243,7 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeSoftphoneLayoutCallType.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeSoftphoneLayoutCallType.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeSoftphoneLayoutCallType"));
@@ -294,24 +296,24 @@ public class DescribeSoftphoneLayoutCallType  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

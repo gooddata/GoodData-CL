@@ -1,11 +1,11 @@
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee" version="2.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/java.sun.com/dtd/web-app_2_3.dtd">
-  <servlet>
-    <servlet-name>gdc-facebook-login</servlet-name>
-    <servlet-class>com.gooddata.web.WebInterface</servlet-class>
-  </servlet>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" version="2.5">
+    <servlet>
+        <servlet-name>gdc-facebook-login</servlet-name>
+        <servlet-class>com.gooddata.web.WebInterface</servlet-class>
+    </servlet>
 
-  <servlet-mapping>
-    <servlet-name>gdc-facebook-login</servlet-name>
-    <url-pattern>/gdc/facebook/login/*</url-pattern>
-  </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>gdc-facebook-login</servlet-name>
+        <url-pattern>/gdc/facebook/login/*</url-pattern>
+    </servlet-mapping>
 </web-app>

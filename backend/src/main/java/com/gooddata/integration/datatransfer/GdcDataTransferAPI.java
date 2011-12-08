@@ -23,18 +23,8 @@
 
 package com.gooddata.integration.datatransfer;
 
-import com.gooddata.exception.GdcUploadErrorException;
-import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.util.FileUtil;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPSClient;
-import org.apache.commons.net.ftp.FTPReply;
-import org.apache.log4j.Logger;
-
-import java.io.*;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Map;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * GoodData FTP API Java wrapper
@@ -47,6 +37,7 @@ public interface GdcDataTransferAPI {
 
     /**
      * Transfers a local directory to the remote GDC server
+     *
      * @param archiveName the name of the ZIP archive that is going to be transferred
      * @throws IOException in case of IO issues
      */
@@ -54,6 +45,7 @@ public interface GdcDataTransferAPI {
 
     /**
      * GET the transfer logs from the server
+     *
      * @param remoteDir the primary transfer directory that contains the logs
      * @return Map with the log name and content
      * @throws IOException in case of IO issues

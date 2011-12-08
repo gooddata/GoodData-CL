@@ -2,25 +2,25 @@
 <!-- weird underscores added to test a recent underscores related bug -->
 
 <schema>
-  <name>data_ratata</name>
-  <columns>
-    <column>
-      <name>da_te</name>
-      <title>Date</title>
-      <ldmType>DATE</ldmType>
-      <datetime>false</datetime>
-      <format>MM/dd/yyyy</format>
-      <schemaReference>Date</schemaReference>
-    </column>
-    <column>
-      <name>num_ber</name>
-      <title>Number</title>
-      <ldmType>FACT</ldmType>
-    </column>
-    <column>
-      <name>sta_te</name>
-      <title>State</title>
-      <ldmType>ATTRIBUTE</ldmType>
-    </column>
-  </columns>
+    <name>data_ratata</name>
+    <columns>
+        <column>
+            <name>da_te</name>
+            <title>Date</title>
+            <ldmType>DATE</ldmType>
+            <datetime>false</datetime>
+            <format>MM/dd/yyyy</format>
+            <schemaReference>Date</schemaReference>
+        </column>
+        <column>
+            <name>num_ber</name>
+            <title>Number</title>
+            <ldmType>FACT</ldmType>
+        </column>
+        <column>
+            <name>sta_te</name>
+            <title>State</title>
+            <ldmType>ATTRIBUTE</ldmType>
+        </column>
+    </columns>
 </schema>

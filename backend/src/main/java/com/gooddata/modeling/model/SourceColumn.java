@@ -76,11 +76,12 @@ public class SourceColumn {
 
     /**
      * SourceColumn constructor
-     * @param name columna name
-     * @param ldmType column LDM type
-     * @param title column type
-     * @param folder column folder
-     * @param pk LABEL's OR REFERENCE's primary source column
+     *
+     * @param name     columna name
+     * @param ldmType  column LDM type
+     * @param title    column type
+     * @param folder   column folder
+     * @param pk       LABEL's OR REFERENCE's primary source column
      * @param pkSchema LABEL's OR REFERENCE's primary source schema
      */
     public SourceColumn(String name, String ldmType, String title, String folder, String pk, String pkSchema) {
@@ -90,11 +91,12 @@ public class SourceColumn {
 
     /**
      * SourceColumn constructor
-     * @param name columna name
+     *
+     * @param name    columna name
      * @param ldmType column LDM type
-     * @param title column type
-     * @param folder column folder
-     * @param pk LABELs primary attribute
+     * @param title   column type
+     * @param folder  column folder
+     * @param pk      LABELs primary attribute
      */
     public SourceColumn(String name, String ldmType, String title, String folder, String pk) {
         setName(name);
@@ -106,11 +108,13 @@ public class SourceColumn {
 
     /**
      * Constructor
-     * @param name column name
+     *
+     * @param name    column name
      * @param ldmType LDM type
-     * @param title title
-     * @param folder enclosing folder
-     * @throws com.gooddata.exception.ModelException issue with a model consistency
+     * @param title   title
+     * @param folder  enclosing folder
+     * @throws com.gooddata.exception.ModelException
+     *          issue with a model consistency
      */
     public SourceColumn(String name, String ldmType, String title, String folder) {
         this(name, ldmType, title, folder, null);
@@ -118,10 +122,12 @@ public class SourceColumn {
 
     /**
      * Constructor
-     * @param name column name
+     *
+     * @param name    column name
      * @param ldmType LDM type
-     * @param title title
-     * @throws com.gooddata.exception.ModelException issue with a model consistency
+     * @param title   title
+     * @throws com.gooddata.exception.ModelException
+     *          issue with a model consistency
      */
     public SourceColumn(String name, String ldmType, String title) {
         this(name, ldmType, title, null, null);
@@ -129,8 +135,10 @@ public class SourceColumn {
 
     /**
      * Column name
-     */ /**
+     */
+    /**
      * Column's name getter
+     *
      * @return column name
      */
     public String getName() {
@@ -139,6 +147,7 @@ public class SourceColumn {
 
     /**
      * Column's name setter
+     *
      * @param nm column's name
      */
     public void setName(String nm) {
@@ -147,8 +156,10 @@ public class SourceColumn {
 
     /**
      * Column LDM type (ATTRIBUTE | LABEL | FACT)
-     */ /**
+     */
+    /**
      * Column's LDM type getter
+     *
      * @return column LDM type
      */
     public String getLdmType() {
@@ -157,6 +168,7 @@ public class SourceColumn {
 
     /**
      * Column's LDM type setter
+     *
      * @param ldmType column's LDM type (ATTRIBUTE | LABEL | FACT)
      */
     public void setLdmType(String ldmType) {
@@ -165,15 +177,16 @@ public class SourceColumn {
 
     /**
      * LABEL's or REFERENCE's primary source column
-     */ /**
+     */
+    /**
      * LABEL's or REFERENCE's primary source column getter.
      *
      * @return LABEL's or REFERENCE's primary source column, <tt>null</tt> for other LDM types regardless
-     *      of earlier invocations of {@link #setReference(String)}
+     *         of earlier invocations of {@link #setReference(String)}
      */
     public String getReference() {
         if (SourceColumn.LDM_TYPE_REFERENCE.equals(getLdmType()) || SourceColumn.LDM_TYPE_LABEL.equals(getLdmType()) ||
-                SourceColumn.LDM_TYPE_DATE.equals(getLdmType()) || SourceColumn.LDM_TYPE_HYPERLINK.equals(getLdmType()) ){
+                SourceColumn.LDM_TYPE_DATE.equals(getLdmType()) || SourceColumn.LDM_TYPE_HYPERLINK.equals(getLdmType())) {
             return reference;
         }
         return null;
@@ -181,6 +194,7 @@ public class SourceColumn {
 
     /**
      * LABEL's or REFERENCE's primary source column setter
+     *
      * @param reference LABEL's or REFERENCE's primary source column
      */
     public void setReference(String reference) {
@@ -189,10 +203,12 @@ public class SourceColumn {
 
     /**
      * REFERENCE's primary source schema
-     */ /**
+     */
+    /**
      * LABEL's, DATE's or REFERENCE's primary source schema getter
+     *
      * @return LABEL's, DATE's or REFERENCE's primary source schema. Returns <tt>null</tt> for other
-     *      LDM types regardless of previous invocations of {@link #setSchemaReference(String)}
+     *         LDM types regardless of previous invocations of {@link #setSchemaReference(String)}
      */
     public String getSchemaReference() {
         if (LDM_TYPE_REFERENCE.equals(getLdmType()) || LDM_TYPE_DATE.equals(getLdmType()) || LDM_TYPE_LABEL.equals(getLdmType()) || LDM_TYPE_ATTRIBUTE.equals(getLdmType())) {
@@ -203,6 +219,7 @@ public class SourceColumn {
 
     /**
      * LABEL's or REFERENCE's primary source schema setter
+     *
      * @param pks LABEL's or REFERENCE's primary source schema
      */
     public void setSchemaReference(String pks) {
@@ -211,8 +228,10 @@ public class SourceColumn {
 
     /**
      * Column title
-     */ /**
+     */
+    /**
      * Column's title getter
+     *
      * @return column title
      */
     public String getTitle() {
@@ -221,6 +240,7 @@ public class SourceColumn {
 
     /**
      * Column's title setter
+     *
      * @param title column's title
      */
     public void setTitle(String title) {
@@ -229,8 +249,10 @@ public class SourceColumn {
 
     /**
      * Column's folder
-     */ /**
+     */
+    /**
      * Column's folder getter
+     *
      * @return column folder
      */
     public String getFolder() {
@@ -239,6 +261,7 @@ public class SourceColumn {
 
     /**
      * Column's folder setter
+     *
      * @param folder column's folder
      */
     public void setFolder(String folder) {
@@ -247,8 +270,10 @@ public class SourceColumn {
 
     /**
      * Column's format
-     */ /**
+     */
+    /**
      * Format getter
+     *
      * @return column format
      */
     public String getFormat() {
@@ -257,6 +282,7 @@ public class SourceColumn {
 
     /**
      * Format setter
+     *
      * @param format column format
      */
     public void setFormat(String format) {
@@ -296,29 +322,31 @@ public class SourceColumn {
 
     /**
      * Validates the source column
-     * @throws com.gooddata.exception.ModelException in case of a validation error
+     *
+     * @throws com.gooddata.exception.ModelException
+     *          in case of a validation error
      */
     public void validate() throws ModelException {
         /*
         if(StringUtil.containsInvvalidIdentifierChar(name))
             throw new ModelException("Column name "+name+" contains invalid characters");
          */
-        if( !LDM_TYPE_ATTRIBUTE.equals(getLdmType()) &&
+        if (!LDM_TYPE_ATTRIBUTE.equals(getLdmType()) &&
                 !LDM_TYPE_CONNECTION_POINT.equals(getLdmType()) &&
                 !LDM_TYPE_DATE.equals(getLdmType()) &&
                 !LDM_TYPE_FACT.equals(getLdmType()) &&
                 !LDM_TYPE_IGNORE.equals(getLdmType()) &&
                 !LDM_TYPE_LABEL.equals(getLdmType()) &&
-                !LDM_TYPE_REFERENCE.equals(getLdmType()) )
-            throw new ModelException("Column "+ getName() +" has invalid LDM type "+ getLdmType());
-        if(LDM_TYPE_LABEL.equals(getLdmType()) && (getReference() == null || getReference().length()<=0))
-            throw new ModelException("Column "+ getName() +" has type LABEL but doesn't contain any reference.");
-        if(LDM_TYPE_REFERENCE.equals(getLdmType()) && (getReference() == null || getReference().length()<=0))
-            throw new ModelException("Column "+ getName() +" has type REFERENCE but doesn't contain any reference.");
-        if(LDM_TYPE_REFERENCE.equals(getLdmType()) && (getSchemaReference() == null || getSchemaReference().length()<=0))
-            throw new ModelException("Column "+ getName() +" has type REFERENCE but doesn't contain any schema reference.");
-        if(LDM_TYPE_DATE.equals(getLdmType()) && (getFormat() == null || getFormat().length()<=0))
-            throw new ModelException("Column "+ getName() +" has type DATE but doesn't contain any date format.");
+                !LDM_TYPE_REFERENCE.equals(getLdmType()))
+            throw new ModelException("Column " + getName() + " has invalid LDM type " + getLdmType());
+        if (LDM_TYPE_LABEL.equals(getLdmType()) && (getReference() == null || getReference().length() <= 0))
+            throw new ModelException("Column " + getName() + " has type LABEL but doesn't contain any reference.");
+        if (LDM_TYPE_REFERENCE.equals(getLdmType()) && (getReference() == null || getReference().length() <= 0))
+            throw new ModelException("Column " + getName() + " has type REFERENCE but doesn't contain any reference.");
+        if (LDM_TYPE_REFERENCE.equals(getLdmType()) && (getSchemaReference() == null || getSchemaReference().length() <= 0))
+            throw new ModelException("Column " + getName() + " has type REFERENCE but doesn't contain any schema reference.");
+        if (LDM_TYPE_DATE.equals(getLdmType()) && (getFormat() == null || getFormat().length() <= 0))
+            throw new ModelException("Column " + getName() + " has type DATE but doesn't contain any date format.");
     }
 
     /* (non-Javadoc)

@@ -9,9 +9,9 @@ package com.sforce.soap.partner;
 
 public interface SforceService extends javax.xml.rpc.Service {
 
-/**
- * Sforce SOAP API
- */
+    /**
+     * Sforce SOAP API
+     */
     public java.lang.String getSoapAddress();
 
     public com.sforce.soap.partner.Soap getSoap() throws javax.xml.rpc.ServiceException;

@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class ProcessResult  implements java.io.Serializable {
+public class ProcessResult implements java.io.Serializable {
     private java.lang.String[] actorIds;
 
     private java.lang.String entityId;
@@ -26,26 +26,26 @@ public class ProcessResult  implements java.io.Serializable {
     }
 
     public ProcessResult(
-           java.lang.String[] actorIds,
-           java.lang.String entityId,
-           com.sforce.soap.partner.Error[] errors,
-           java.lang.String instanceId,
-           java.lang.String instanceStatus,
-           java.lang.String[] newWorkitemIds,
-           boolean success) {
-           this.actorIds = actorIds;
-           this.entityId = entityId;
-           this.errors = errors;
-           this.instanceId = instanceId;
-           this.instanceStatus = instanceStatus;
-           this.newWorkitemIds = newWorkitemIds;
-           this.success = success;
+            java.lang.String[] actorIds,
+            java.lang.String entityId,
+            com.sforce.soap.partner.Error[] errors,
+            java.lang.String instanceId,
+            java.lang.String instanceStatus,
+            java.lang.String[] newWorkitemIds,
+            boolean success) {
+        this.actorIds = actorIds;
+        this.entityId = entityId;
+        this.errors = errors;
+        this.instanceId = instanceId;
+        this.instanceStatus = instanceStatus;
+        this.newWorkitemIds = newWorkitemIds;
+        this.success = success;
     }
 
 
     /**
      * Gets the actorIds value for this ProcessResult.
-     * 
+     *
      * @return actorIds
      */
     public java.lang.String[] getActorIds() {
@@ -55,7 +55,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Sets the actorIds value for this ProcessResult.
-     * 
+     *
      * @param actorIds
      */
     public void setActorIds(java.lang.String[] actorIds) {
@@ -73,7 +73,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Gets the entityId value for this ProcessResult.
-     * 
+     *
      * @return entityId
      */
     public java.lang.String getEntityId() {
@@ -83,7 +83,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Sets the entityId value for this ProcessResult.
-     * 
+     *
      * @param entityId
      */
     public void setEntityId(java.lang.String entityId) {
@@ -93,7 +93,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Gets the errors value for this ProcessResult.
-     * 
+     *
      * @return errors
      */
     public com.sforce.soap.partner.Error[] getErrors() {
@@ -103,7 +103,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Sets the errors value for this ProcessResult.
-     * 
+     *
      * @param errors
      */
     public void setErrors(com.sforce.soap.partner.Error[] errors) {
@@ -121,7 +121,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Gets the instanceId value for this ProcessResult.
-     * 
+     *
      * @return instanceId
      */
     public java.lang.String getInstanceId() {
@@ -131,7 +131,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Sets the instanceId value for this ProcessResult.
-     * 
+     *
      * @param instanceId
      */
     public void setInstanceId(java.lang.String instanceId) {
@@ -141,7 +141,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Gets the instanceStatus value for this ProcessResult.
-     * 
+     *
      * @return instanceStatus
      */
     public java.lang.String getInstanceStatus() {
@@ -151,7 +151,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Sets the instanceStatus value for this ProcessResult.
-     * 
+     *
      * @param instanceStatus
      */
     public void setInstanceStatus(java.lang.String instanceStatus) {
@@ -161,7 +161,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Gets the newWorkitemIds value for this ProcessResult.
-     * 
+     *
      * @return newWorkitemIds
      */
     public java.lang.String[] getNewWorkitemIds() {
@@ -171,7 +171,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Sets the newWorkitemIds value for this ProcessResult.
-     * 
+     *
      * @param newWorkitemIds
      */
     public void setNewWorkitemIds(java.lang.String[] newWorkitemIds) {
@@ -189,7 +189,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Gets the success value for this ProcessResult.
-     * 
+     *
      * @return success
      */
     public boolean isSuccess() {
@@ -199,7 +199,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     /**
      * Sets the success value for this ProcessResult.
-     * 
+     *
      * @param success
      */
     public void setSuccess(boolean success) {
@@ -207,6 +207,7 @@ public class ProcessResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ProcessResult)) return false;
         ProcessResult other = (ProcessResult) obj;
@@ -217,31 +218,32 @@ public class ProcessResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.actorIds==null && other.getActorIds()==null) || 
-             (this.actorIds!=null &&
-              java.util.Arrays.equals(this.actorIds, other.getActorIds()))) &&
-            ((this.entityId==null && other.getEntityId()==null) || 
-             (this.entityId!=null &&
-              this.entityId.equals(other.getEntityId()))) &&
-            ((this.errors==null && other.getErrors()==null) || 
-             (this.errors!=null &&
-              java.util.Arrays.equals(this.errors, other.getErrors()))) &&
-            ((this.instanceId==null && other.getInstanceId()==null) || 
-             (this.instanceId!=null &&
-              this.instanceId.equals(other.getInstanceId()))) &&
-            ((this.instanceStatus==null && other.getInstanceStatus()==null) || 
-             (this.instanceStatus!=null &&
-              this.instanceStatus.equals(other.getInstanceStatus()))) &&
-            ((this.newWorkitemIds==null && other.getNewWorkitemIds()==null) || 
-             (this.newWorkitemIds!=null &&
-              java.util.Arrays.equals(this.newWorkitemIds, other.getNewWorkitemIds()))) &&
-            this.success == other.isSuccess();
+        _equals = true &&
+                ((this.actorIds == null && other.getActorIds() == null) ||
+                        (this.actorIds != null &&
+                                java.util.Arrays.equals(this.actorIds, other.getActorIds()))) &&
+                ((this.entityId == null && other.getEntityId() == null) ||
+                        (this.entityId != null &&
+                                this.entityId.equals(other.getEntityId()))) &&
+                ((this.errors == null && other.getErrors() == null) ||
+                        (this.errors != null &&
+                                java.util.Arrays.equals(this.errors, other.getErrors()))) &&
+                ((this.instanceId == null && other.getInstanceId() == null) ||
+                        (this.instanceId != null &&
+                                this.instanceId.equals(other.getInstanceId()))) &&
+                ((this.instanceStatus == null && other.getInstanceStatus() == null) ||
+                        (this.instanceStatus != null &&
+                                this.instanceStatus.equals(other.getInstanceStatus()))) &&
+                ((this.newWorkitemIds == null && other.getNewWorkitemIds() == null) ||
+                        (this.newWorkitemIds != null &&
+                                java.util.Arrays.equals(this.newWorkitemIds, other.getNewWorkitemIds()))) &&
+                this.success == other.isSuccess();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -249,12 +251,12 @@ public class ProcessResult  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getActorIds() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getActorIds());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getActorIds());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getActorIds(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -263,12 +265,12 @@ public class ProcessResult  implements java.io.Serializable {
             _hashCode += getEntityId().hashCode();
         }
         if (getErrors() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getErrors());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getErrors());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getErrors(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -280,12 +282,12 @@ public class ProcessResult  implements java.io.Serializable {
             _hashCode += getInstanceStatus().hashCode();
         }
         if (getNewWorkitemIds() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getNewWorkitemIds());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getNewWorkitemIds());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getNewWorkitemIds(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -297,7 +299,7 @@ public class ProcessResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(ProcessResult.class, true);
+            new org.apache.axis.description.TypeDesc(ProcessResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "ProcessResult"));
@@ -362,24 +364,24 @@ public class ProcessResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

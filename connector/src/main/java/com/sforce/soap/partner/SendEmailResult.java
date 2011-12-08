@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class SendEmailResult  implements java.io.Serializable {
+public class SendEmailResult implements java.io.Serializable {
     private com.sforce.soap.partner.SendEmailError[] errors;
 
     private boolean success;
@@ -16,16 +16,16 @@ public class SendEmailResult  implements java.io.Serializable {
     }
 
     public SendEmailResult(
-           com.sforce.soap.partner.SendEmailError[] errors,
-           boolean success) {
-           this.errors = errors;
-           this.success = success;
+            com.sforce.soap.partner.SendEmailError[] errors,
+            boolean success) {
+        this.errors = errors;
+        this.success = success;
     }
 
 
     /**
      * Gets the errors value for this SendEmailResult.
-     * 
+     *
      * @return errors
      */
     public com.sforce.soap.partner.SendEmailError[] getErrors() {
@@ -35,7 +35,7 @@ public class SendEmailResult  implements java.io.Serializable {
 
     /**
      * Sets the errors value for this SendEmailResult.
-     * 
+     *
      * @param errors
      */
     public void setErrors(com.sforce.soap.partner.SendEmailError[] errors) {
@@ -53,7 +53,7 @@ public class SendEmailResult  implements java.io.Serializable {
 
     /**
      * Gets the success value for this SendEmailResult.
-     * 
+     *
      * @return success
      */
     public boolean isSuccess() {
@@ -63,7 +63,7 @@ public class SendEmailResult  implements java.io.Serializable {
 
     /**
      * Sets the success value for this SendEmailResult.
-     * 
+     *
      * @param success
      */
     public void setSuccess(boolean success) {
@@ -71,6 +71,7 @@ public class SendEmailResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SendEmailResult)) return false;
         SendEmailResult other = (SendEmailResult) obj;
@@ -81,16 +82,17 @@ public class SendEmailResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.errors==null && other.getErrors()==null) || 
-             (this.errors!=null &&
-              java.util.Arrays.equals(this.errors, other.getErrors()))) &&
-            this.success == other.isSuccess();
+        _equals = true &&
+                ((this.errors == null && other.getErrors() == null) ||
+                        (this.errors != null &&
+                                java.util.Arrays.equals(this.errors, other.getErrors()))) &&
+                this.success == other.isSuccess();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -98,12 +100,12 @@ public class SendEmailResult  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getErrors() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getErrors());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getErrors());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getErrors(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -115,7 +117,7 @@ public class SendEmailResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(SendEmailResult.class, true);
+            new org.apache.axis.description.TypeDesc(SendEmailResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "SendEmailResult"));
@@ -146,24 +148,24 @@ public class SendEmailResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

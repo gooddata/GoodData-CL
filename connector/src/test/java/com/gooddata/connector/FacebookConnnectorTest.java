@@ -33,20 +33,20 @@ import java.io.IOException;
 
 public class FacebookConnnectorTest extends TestCase {
 
-	public void testGuessSourceSchema() throws IOException {
+    public void testGuessSourceSchema() throws IOException {
 
-        String[] queries = new String[] {"SELECT uid,name FROM Users", "select uid , name FROM Users",
+        String[] queries = new String[]{"SELECT uid,name FROM Users", "select uid , name FROM Users",
                 "select uid , name from Users", "select uid from Users", "select uid,name,age from Users", "SELECT uid, name FROM user WHERE uid = me() OR uid IN (SELECT uid2 FROM friend WHERE uid1 = me())"};
-        int[] cols = new int[] {2,2,2,1,3,2};
+        int[] cols = new int[]{2, 2, 2, 1, 3, 2};
 
-        for(int i=0; i<queries.length; i++) {
+        for (int i = 0; i < queries.length; i++) {
             File tmpFile = FileUtil.getTempFile();
             FacebookConnector.saveConfigTemplate("TEST", tmpFile.getAbsolutePath(), queries[i], null);
             SourceSchema schema = SourceSchema.createSchema(tmpFile);
-            assertEquals(cols[i],schema.getColumns().size());
+            assertEquals(cols[i], schema.getColumns().size());
             FileUtil.recursiveDelete(tmpFile);
         }
-		
-	}
-	
+
+    }
+
 }

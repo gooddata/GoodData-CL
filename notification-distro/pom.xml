@@ -23,18 +23,18 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.gooddata.cl</groupId>
-		<artifactId>gooddata-cl</artifactId>
-		<version>1.2.45</version>
-	</parent>
+    <parent>
+        <groupId>com.gooddata.cl</groupId>
+        <artifactId>gooddata-cl</artifactId>
+        <version>1.2.45</version>
+    </parent>
 
-	<artifactId>gooddata-alert</artifactId>
-	<description>Builds the GoodData notification tool distro.</description>
-	<name>gooddata-alert</name>
+    <artifactId>gooddata-alert</artifactId>
+    <description>Builds the GoodData notification tool distro.</description>
+    <name>gooddata-alert</name>
 
     <licenses>
         <license>
@@ -45,43 +45,43 @@
         </license>
     </licenses>
 
-	<dependencies>
+    <dependencies>
         <!-- GoodData CL modules -->
-		<dependency>
-			<groupId>com.gooddata.cl</groupId>
-			<artifactId>gooddata-notification</artifactId>			
-		</dependency>
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/notification.xml</descriptor>
-					</descriptors>
-					<archive>
-						<manifest>
-						    <addClasspath>true</addClasspath>
-						    <mainClass>com.gooddata.processor.GdcNotification</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin> 
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-						<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-						<outputDirectory>${project.build.directory}/lib</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>	   
-		</plugins>
-	</build>
+        <dependency>
+            <groupId>com.gooddata.cl</groupId>
+            <artifactId>gooddata-notification</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/notification.xml</descriptor>
+                    </descriptors>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.gooddata.processor.GdcNotification</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

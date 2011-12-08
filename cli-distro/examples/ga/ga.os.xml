@@ -1,105 +1,105 @@
 <!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
 
 <schema>
-  <name>OS</name>
-  <columns>
-    <column>
-      <name>id</name>
-      <title>ID (OS)</title>
-      <ldmType>CONNECTION_POINT</ldmType>
-      <transformation>IDENTITY</transformation>
-    </column>
-    <column>
-      <name>profileId</name>
-      <title>Profile ID</title>
-      <ldmType>IGNORE</ldmType>
-      <schemaReference>Profile</schemaReference>
-      <reference>id</reference>
-    </column>
-    <column>
-      <name>date</name>
-      <title>Date (OS)</title>
-      <ldmType>DATE</ldmType>
-      <format>yyyy-MM-dd</format>
-      <schemaReference>Visit</schemaReference>
-    </column>
-    <column>
-      <name>screenColors</name>
-      <title>Screen Colors</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>screenResolution</name>
-      <title>Screen Resolution</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>operatingSystem</name>
-      <title>OS</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>operatingSystemVersion</name>
-      <title>OS Version</title>
-      <ldmType>ATTRIBUTE</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>bounces</name>
-      <title>Bounces (OS)</title>
-      <ldmType>FACT</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>newVisits</name>
-      <title>New Visits (OS)</title>
-      <ldmType>FACT</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>pageViews</name>
-      <title>Page Views (OS)</title>
-      <ldmType>FACT</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>visits</name>
-      <title>Visits (OS)</title>
-      <ldmType>FACT</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>timeOnSite</name>
-      <title>Time On Site (OS)</title>
-      <ldmType>FACT</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>uniquePageviews</name>
-      <title>Unique Page Views (OS)</title>
-      <ldmType>FACT</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>timeOnPage</name>
-      <title>Time On Page (OS)</title>
-      <ldmType>FACT</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>exits</name>
-      <title>Exits (OS)</title>
-      <ldmType>FACT</ldmType>
-      <folder>OS</folder>
-    </column>
-    <column>
-      <name>entrances</name>
-      <title>Entrances (OS)</title>
-      <ldmType>FACT</ldmType>
-      <folder>OS</folder>
-    </column>
-  </columns>
+    <name>OS</name>
+    <columns>
+        <column>
+            <name>id</name>
+            <title>ID (OS)</title>
+            <ldmType>CONNECTION_POINT</ldmType>
+            <transformation>IDENTITY</transformation>
+        </column>
+        <column>
+            <name>profileId</name>
+            <title>Profile ID</title>
+            <ldmType>IGNORE</ldmType>
+            <schemaReference>Profile</schemaReference>
+            <reference>id</reference>
+        </column>
+        <column>
+            <name>date</name>
+            <title>Date (OS)</title>
+            <ldmType>DATE</ldmType>
+            <format>yyyy-MM-dd</format>
+            <schemaReference>Visit</schemaReference>
+        </column>
+        <column>
+            <name>screenColors</name>
+            <title>Screen Colors</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>screenResolution</name>
+            <title>Screen Resolution</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>operatingSystem</name>
+            <title>OS</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>operatingSystemVersion</name>
+            <title>OS Version</title>
+            <ldmType>ATTRIBUTE</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>bounces</name>
+            <title>Bounces (OS)</title>
+            <ldmType>FACT</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>newVisits</name>
+            <title>New Visits (OS)</title>
+            <ldmType>FACT</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>pageViews</name>
+            <title>Page Views (OS)</title>
+            <ldmType>FACT</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>visits</name>
+            <title>Visits (OS)</title>
+            <ldmType>FACT</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>timeOnSite</name>
+            <title>Time On Site (OS)</title>
+            <ldmType>FACT</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>uniquePageviews</name>
+            <title>Unique Page Views (OS)</title>
+            <ldmType>FACT</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>timeOnPage</name>
+            <title>Time On Page (OS)</title>
+            <ldmType>FACT</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>exits</name>
+            <title>Exits (OS)</title>
+            <ldmType>FACT</ldmType>
+            <folder>OS</folder>
+        </column>
+        <column>
+            <name>entrances</name>
+            <title>Entrances (OS)</title>
+            <ldmType>FACT</ldmType>
+            <folder>OS</folder>
+        </column>
+    </columns>
 </schema>

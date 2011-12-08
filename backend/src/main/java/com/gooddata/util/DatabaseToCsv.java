@@ -32,6 +32,7 @@ import java.util.List;
 
 /**
  * Unloads all tables in a database to set of CSV files
+ *
  * @author zd@gooddata.com
  * @version: 1.0
  */
@@ -49,17 +50,18 @@ public class DatabaseToCsv {
 
     /**
      * Constructor
-     * @param driver JDBC driver
+     *
+     * @param driver  JDBC driver
      * @param jdbcCon JDBC connection URL
-     * @param usr database username
-     * @param psw database password 
+     * @param usr     database username
+     * @param psw     database password
      */
     public DatabaseToCsv(String driver, String jdbcCon, String usr, String psw) {
         setJdbcDriver(driver);
         setJdbcUrl(jdbcCon);
         setJdbcUsername(usr);
         setJdbcPassword(psw);
-        l.debug("Loading JDBC driver "+jdbcDriver);
+        l.debug("Loading JDBC driver " + jdbcDriver);
         try {
             Class.forName(jdbcDriver).newInstance();
         } catch (InstantiationException e) {
@@ -69,12 +71,13 @@ public class DatabaseToCsv {
         } catch (ClassNotFoundException e) {
             l.error("Can't load JDBC driver.", e);
         }
-        l.debug("JDBC driver "+jdbcDriver+" loaded.");        
+        l.debug("JDBC driver " + jdbcDriver + " loaded.");
     }
 
 
     /**
      * Connects to the database
+     *
      * @return database connection
      * @throws SQLException
      */
@@ -94,15 +97,14 @@ public class DatabaseToCsv {
             while (rs.next()) {
                 String tableName = rs.getString(3);
                 String tableType = rs.getString(4);
-                if(tableType.equalsIgnoreCase("table")) {
+                if (tableType.equalsIgnoreCase("table")) {
                     r.add(tableName);
                 }
             }
-        }
-        finally {
-            if(rs != null)
+        } finally {
+            if (rs != null)
                 rs.close();
-            if(con != null)
+            if (con != null)
                 con.close();
         }
         return r;
@@ -110,19 +112,20 @@ public class DatabaseToCsv {
 
     /**
      * Export all DB tables to CSVs
+     *
      * @param dir the target directory
      * @throws SQLException
      * @throws IOException
      */
     public void export(String dir) throws SQLException, IOException {
         List<String> tables = listSourceTables();
-        for(String table : tables) {
+        for (String table : tables) {
             exportTable(table, dir + System.getProperty("file.separator") + table + ".csv");
         }
     }
 
     private void exportTable(String tableName, String csvName) throws SQLException, IOException {
-        l.info("Exporting table "+tableName+ " to "+ csvName);
+        l.info("Exporting table " + tableName + " to " + csvName);
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
@@ -131,30 +134,29 @@ public class DatabaseToCsv {
             con = connect();
             st = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
             st.setFetchSize(FETCH_SIZE);
-            rs = st.executeQuery("SELECT * FROM "+tableName);
+            rs = st.executeQuery("SELECT * FROM " + tableName);
             ResultSetMetaData md = rs.getMetaData();
             int cnt = md.getColumnCount();
             String[] row = new String[cnt];
-            for(int i = 1; i <= cnt; i++) {
-                row[i-1] = md.getColumnName(i);
+            for (int i = 1; i <= cnt; i++) {
+                row[i - 1] = md.getColumnName(i);
             }
             cw.writeNext(row);
             while (rs.next()) {
-                for(int i = 1; i <= cnt; i++) {
-                    row[i-1] = rs.getString(i);
-                    if(row[i-1] == null || rs.wasNull())
-                        row[i-1] = "";
+                for (int i = 1; i <= cnt; i++) {
+                    row[i - 1] = rs.getString(i);
+                    if (row[i - 1] == null || rs.wasNull())
+                        row[i - 1] = "";
                 }
                 cw.writeNext(row);
             }
             cw.flush();
             cw.close();
-            l.info("Exported table "+tableName+ " to "+ csvName);
-        }
-        finally {
-            if(rs != null)
+            l.info("Exported table " + tableName + " to " + csvName);
+        } finally {
+            if (rs != null)
                 rs.close();
-            if(con != null)
+            if (con != null)
                 con.close();
         }
     }
@@ -191,6 +193,6 @@ public class DatabaseToCsv {
     public void setJdbcPassword(String jdbcPassword) {
         this.jdbcPassword = jdbcPassword;
     }
-    
+
 
 }

@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class PicklistForRecordType  implements java.io.Serializable {
+public class PicklistForRecordType implements java.io.Serializable {
     private java.lang.String picklistName;
 
     private com.sforce.soap.partner.PicklistEntry[] picklistValues;
@@ -16,16 +16,16 @@ public class PicklistForRecordType  implements java.io.Serializable {
     }
 
     public PicklistForRecordType(
-           java.lang.String picklistName,
-           com.sforce.soap.partner.PicklistEntry[] picklistValues) {
-           this.picklistName = picklistName;
-           this.picklistValues = picklistValues;
+            java.lang.String picklistName,
+            com.sforce.soap.partner.PicklistEntry[] picklistValues) {
+        this.picklistName = picklistName;
+        this.picklistValues = picklistValues;
     }
 
 
     /**
      * Gets the picklistName value for this PicklistForRecordType.
-     * 
+     *
      * @return picklistName
      */
     public java.lang.String getPicklistName() {
@@ -35,7 +35,7 @@ public class PicklistForRecordType  implements java.io.Serializable {
 
     /**
      * Sets the picklistName value for this PicklistForRecordType.
-     * 
+     *
      * @param picklistName
      */
     public void setPicklistName(java.lang.String picklistName) {
@@ -45,7 +45,7 @@ public class PicklistForRecordType  implements java.io.Serializable {
 
     /**
      * Gets the picklistValues value for this PicklistForRecordType.
-     * 
+     *
      * @return picklistValues
      */
     public com.sforce.soap.partner.PicklistEntry[] getPicklistValues() {
@@ -55,7 +55,7 @@ public class PicklistForRecordType  implements java.io.Serializable {
 
     /**
      * Sets the picklistValues value for this PicklistForRecordType.
-     * 
+     *
      * @param picklistValues
      */
     public void setPicklistValues(com.sforce.soap.partner.PicklistEntry[] picklistValues) {
@@ -71,6 +71,7 @@ public class PicklistForRecordType  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PicklistForRecordType)) return false;
         PicklistForRecordType other = (PicklistForRecordType) obj;
@@ -81,18 +82,19 @@ public class PicklistForRecordType  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.picklistName==null && other.getPicklistName()==null) || 
-             (this.picklistName!=null &&
-              this.picklistName.equals(other.getPicklistName()))) &&
-            ((this.picklistValues==null && other.getPicklistValues()==null) || 
-             (this.picklistValues!=null &&
-              java.util.Arrays.equals(this.picklistValues, other.getPicklistValues())));
+        _equals = true &&
+                ((this.picklistName == null && other.getPicklistName() == null) ||
+                        (this.picklistName != null &&
+                                this.picklistName.equals(other.getPicklistName()))) &&
+                ((this.picklistValues == null && other.getPicklistValues() == null) ||
+                        (this.picklistValues != null &&
+                                java.util.Arrays.equals(this.picklistValues, other.getPicklistValues())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -103,12 +105,12 @@ public class PicklistForRecordType  implements java.io.Serializable {
             _hashCode += getPicklistName().hashCode();
         }
         if (getPicklistValues() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getPicklistValues());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getPicklistValues());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getPicklistValues(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -119,7 +121,7 @@ public class PicklistForRecordType  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(PicklistForRecordType.class, true);
+            new org.apache.axis.description.TypeDesc(PicklistForRecordType.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "PicklistForRecordType"));
@@ -150,24 +152,24 @@ public class PicklistForRecordType  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

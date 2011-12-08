@@ -1,21 +1,21 @@
 <!-- See information at ../../doc/XML.md -->
 
 <notification>
-  <messages>
-    <message>
-      <condition>Visits>100000</condition>
-      <metrics>
-        <metric>
-          <alias>Visits</alias>
-          <uri>/gdc/md/ca6a1r1lbfwpt2v05k36nbc0cjpu7lh9/obj/200002998</uri>
-          <format>#,###</format>
-        </metric>
-      </metrics>
-      <message>Visits today %Visits%! Check out what's up!</message>
-      <uri>sfdc://www.salesforce.com</uri>
-      <dupFilterExact>1m</dupFilterExact>
-<!--  <dupFilterKind>1m</dupFilterKind> -->
-      <messageTimestampFormat>MM/dd/yyyy hh:mm</messageTimestampFormat>
-   </message>
-  </messages>
+    <messages>
+        <message>
+            <condition>Visits>100000</condition>
+            <metrics>
+                <metric>
+                    <alias>Visits</alias>
+                    <uri>/gdc/md/ca6a1r1lbfwpt2v05k36nbc0cjpu7lh9/obj/200002998</uri>
+                    <format>#,###</format>
+                </metric>
+            </metrics>
+            <message>Visits today %Visits%! Check out what's up!</message>
+            <uri>sfdc://www.salesforce.com</uri>
+            <dupFilterExact>1m</dupFilterExact>
+            <!--  <dupFilterKind>1m</dupFilterKind> -->
+            <messageTimestampFormat>MM/dd/yyyy hh:mm</messageTimestampFormat>
+        </message>
+    </messages>
 </notification>

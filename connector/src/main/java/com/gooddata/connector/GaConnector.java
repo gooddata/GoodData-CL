@@ -23,9 +23,10 @@
 
 package com.gooddata.connector;
 
-import com.gooddata.exception.*;
-import com.gooddata.transform.Transformer;
-import com.gooddata.util.CSVWriter;
+import com.gooddata.exception.InternalErrorException;
+import com.gooddata.exception.InvalidArgumentException;
+import com.gooddata.exception.InvalidCommandException;
+import com.gooddata.exception.ProcessingException;
 import com.gooddata.google.analytics.FeedDumper;
 import com.gooddata.google.analytics.GaQuery;
 import com.gooddata.modeling.model.SourceColumn;
@@ -33,6 +34,8 @@ import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
+import com.gooddata.transform.Transformer;
+import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.google.gdata.client.ClientLoginAccountType;
 import com.google.gdata.client.analytics.AnalyticsService;
@@ -54,7 +57,7 @@ import java.net.MalformedURLException;
 public class GaConnector extends AbstractConnector implements Connector {
 
     public static final String GA_DATE = "ga:date";
-    
+
     private static Logger l = Logger.getLogger(GaConnector.class);
 
     private static final String APP_NAME = "gdc-ga-client";
@@ -71,10 +74,10 @@ public class GaConnector extends AbstractConnector implements Connector {
     protected GaConnector() {
     }
 
-     /**
-      * Creates a new Google Analytics Connector
-      * @return a new instance of the GA connector
-      *
+    /**
+     * Creates a new Google Analytics Connector
+     *
+     * @return a new instance of the GA connector
      */
     public static GaConnector createConnector() {
         return new GaConnector();
@@ -82,10 +85,12 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Saves a template of the config file
-     * @param name the new config file name
+     *
+     * @param name           the new config file name
      * @param configFileName the new config file name
-     * @param gQuery the Google Analytics query
-     * @throws com.gooddata.exception.InvalidArgumentException if there is a problem with arguments
+     * @param gQuery         the Google Analytics query
+     * @throws com.gooddata.exception.InvalidArgumentException
+     *                     if there is a problem with arguments
      * @throws IOException if there is a problem with writing the config file
      */
     public static void saveConfigTemplate(String name, String configFileName, GaQuery gQuery)
@@ -94,52 +99,47 @@ public class GaConnector extends AbstractConnector implements Connector {
         String dims = gQuery.getDimensions();
         String mtrs = gQuery.getMetrics();
         SourceSchema s = SourceSchema.createSchema(name);
-        SourceColumn cp = new SourceColumn("id",SourceColumn.LDM_TYPE_CONNECTION_POINT, "id");
+        SourceColumn cp = new SourceColumn("id", SourceColumn.LDM_TYPE_CONNECTION_POINT, "id");
         s.addColumn(cp);
-        cp = new SourceColumn("profileId",SourceColumn.LDM_TYPE_ATTRIBUTE, "profileId");
+        cp = new SourceColumn("profileId", SourceColumn.LDM_TYPE_ATTRIBUTE, "profileId");
         s.addColumn(cp);
-        if(dims != null && dims.length() > 0) {
+        if (dims != null && dims.length() > 0) {
             String[] dimensions = dims.split("\\|");
-            for(String dim : dimensions) {
+            for (String dim : dimensions) {
                 // remove the "ga:"
-                if(dim != null && dim.length() > 3) {
-                    String d= dim.substring(3);
-                    if(GA_DATE.equals(dim)) {
-                        SourceColumn sc = new SourceColumn(d,SourceColumn.LDM_TYPE_DATE, d);
+                if (dim != null && dim.length() > 3) {
+                    String d = dim.substring(3);
+                    if (GA_DATE.equals(dim)) {
+                        SourceColumn sc = new SourceColumn(d, SourceColumn.LDM_TYPE_DATE, d);
                         sc.setFormat("yyyy-MM-dd");
                         s.addColumn(sc);
-                    }
-                    else {
-                        SourceColumn sc = new SourceColumn(d,SourceColumn.LDM_TYPE_ATTRIBUTE, d);
+                    } else {
+                        SourceColumn sc = new SourceColumn(d, SourceColumn.LDM_TYPE_ATTRIBUTE, d);
                         s.addColumn(sc);
                     }
-                }
-                else {
+                } else {
                     l.debug("Invalid dimension name '" + dim + "'");
                     throw new InvalidArgumentException("Invalid dimension name '" + dim + "'");
                 }
             }
-        }
-        else {
+        } else {
             l.debug("Please specify Google Analytics dimensions separated by comma.");
-            throw new InvalidArgumentException("Please specify Google Analytics dimensions separated by comma.");            
+            throw new InvalidArgumentException("Please specify Google Analytics dimensions separated by comma.");
         }
-        if(mtrs != null && mtrs.length() > 0) {
+        if (mtrs != null && mtrs.length() > 0) {
             String[] metrics = mtrs.split("\\|");
-            for(String mtr : metrics) {
+            for (String mtr : metrics) {
                 // remove the "ga:"
-                if(mtr != null && mtr.length() > 3) {
-                    String m= mtr.substring(3);
-                    SourceColumn sc = new SourceColumn(m,SourceColumn.LDM_TYPE_FACT, m);
+                if (mtr != null && mtr.length() > 3) {
+                    String m = mtr.substring(3);
+                    SourceColumn sc = new SourceColumn(m, SourceColumn.LDM_TYPE_FACT, m);
                     s.addColumn(sc);
-                }
-                else {
+                } else {
                     l.debug("Invalid dimension name '" + mtr + "'");
                     throw new InvalidArgumentException("Invalid metric name '" + mtr + "'");
                 }
             }
-        }
-        else {
+        } else {
             l.debug("Please specify Google Analytics metrics separated by comma.");
             throw new InvalidArgumentException("Please specify Google Analytics metrics separated by comma.");
         }
@@ -153,15 +153,14 @@ public class GaConnector extends AbstractConnector implements Connector {
     public void extract(String file, final boolean transform) throws IOException {
         try {
             AnalyticsService as = new AnalyticsService(APP_NAME);
-            if(googleAnalyticsToken != null && googleAnalyticsToken.length() > 0) {
+            if (googleAnalyticsToken != null && googleAnalyticsToken.length() > 0) {
                 as.setAuthSubToken(googleAnalyticsToken);
-            } else if(googleAnalyticsUsername != null && googleAnalyticsUsername.length() > 0 &&
-                  googleAnalyticsPassword != null && googleAnalyticsPassword.length() > 0) {
+            } else if (googleAnalyticsUsername != null && googleAnalyticsUsername.length() > 0 &&
+                    googleAnalyticsPassword != null && googleAnalyticsPassword.length() > 0) {
                 as.setUserCredentials(googleAnalyticsUsername, googleAnalyticsPassword, ClientLoginAccountType.GOOGLE);
-            }
-            else {
+            } else {
                 throw new InvalidCommandException("The UseGoogleAnalytics command requires either GA token or " +
-                    "username and password!");
+                        "username and password!");
             }
             File dataFile = new File(file);
             GaQuery gaq = getGoogleAnalyticsQuery();
@@ -173,26 +172,26 @@ public class GaConnector extends AbstractConnector implements Connector {
 
             String[] header = t.getHeader(transform);
             cw.writeNext(header);
-            
-            for(int startIndex = 1; cnt > 0; startIndex += cnt + 1) {
+
+            for (int startIndex = 1; cnt > 0; startIndex += cnt + 1) {
                 gaq.setStartIndex(startIndex);
                 DataFeed feed = as.getFeed(gaq.getUrl(), DataFeed.class);
-                l.debug("Retrieving GA data from index="+startIndex);
+                l.debug("Retrieving GA data from index=" + startIndex);
                 cnt = FeedDumper.dump(cw, feed, gaq, t, transform);
-                l.debug("Retrieved "+cnt+" entries.");
+                l.debug("Retrieved " + cnt + " entries.");
             }
             cw.close();
-        }
-        catch (AuthenticationException e) {
+        } catch (AuthenticationException e) {
             throw new InternalErrorException(e);
         } catch (ServiceException e) {
             throw new InternalErrorException(e);
         }
     }
 
-    
+
     /**
      * Google Analytics username getter
+     *
      * @return Google Analytics username
      */
     public String getGoogleAnalyticsUsername() {
@@ -201,6 +200,7 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Google Analytics username setter
+     *
      * @param googleAnalyticsUsername Google Analytics username
      */
     public void setGoogleAnalyticsUsername(String googleAnalyticsUsername) {
@@ -209,6 +209,7 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Google Analytics password getter
+     *
      * @return Google Analytics password
      */
     public String getGoogleAnalyticsPassword() {
@@ -217,6 +218,7 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Google Analytics password setter
+     *
      * @param googleAnalyticsPassword Google Analytics password
      */
     public void setGoogleAnalyticsPassword(String googleAnalyticsPassword) {
@@ -225,6 +227,7 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Google Analytics query getter
+     *
      * @return Google Analytics query
      */
     public GaQuery getGoogleAnalyticsQuery() {
@@ -233,6 +236,7 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Google Analytics query setter
+     *
      * @param googleAnalyticsQuery Google Analytics query
      */
     public void setGoogleAnalyticsQuery(GaQuery googleAnalyticsQuery) {
@@ -243,30 +247,28 @@ public class GaConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
-        l.debug("Processing command "+c.getCommand());
+        l.debug("Processing command " + c.getCommand());
         try {
-            if(c.match("GenerateGoogleAnalyticsConfig")) {
+            if (c.match("GenerateGoogleAnalyticsConfig")) {
                 generateGAConfig(c, cli, ctx);
-            }
-            else if(c.match("UseGoogleAnalytics")) {
+            } else if (c.match("UseGoogleAnalytics")) {
                 loadGA(c, cli, ctx);
-            }
-            else {
-                l.debug("No match passing the command "+c.getCommand()+" further.");
+            } else {
+                l.debug("No match passing the command " + c.getCommand() + " further.");
                 return super.processCommand(c, cli, ctx);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
-        l.debug("Processed command "+c.getCommand());
+        l.debug("Processed command " + c.getCommand());
         return true;
     }
 
     /**
      * Loads new GA data command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
      */
@@ -285,23 +287,22 @@ public class GaConnector extends AbstractConnector implements Connector {
         File conf = FileUtil.getFile(configFile);
         initSchema(conf.getAbsolutePath());
         gq.setIds(id);
-        if(token != null && token.length() > 0) {
+        if (token != null && token.length() > 0) {
             setGoogleAnalyticsToken(token);
-        } else if(usr != null && usr.length() > 0 &&
-                  psw != null && psw.length() > 0) {
+        } else if (usr != null && usr.length() > 0 &&
+                psw != null && psw.length() > 0) {
             setGoogleAnalyticsUsername(usr);
             setGoogleAnalyticsPassword(psw);
-        }
-        else {
+        } else {
             throw new InvalidCommandException("The UseGoogleAnalytics command requires either GA token or " +
-                    "username and password!");            
+                    "username and password!");
         }
         setGoogleAnalyticsQuery(gq);
-        gq.setDimensions(c.getParamMandatory("dimensions").replace("|",","));
-        gq.setMetrics(c.getParamMandatory("metrics").replace("|",","));
+        gq.setDimensions(c.getParamMandatory("dimensions").replace("|", ","));
+        gq.setMetrics(c.getParamMandatory("metrics").replace("|", ","));
         gq.setStartDate(c.getParamMandatory("startDate"));
         gq.setEndDate(c.getParamMandatory("endDate"));
-        if(c.checkParam("filters"))
+        if (c.checkParam("filters"))
             gq.setFilters(c.getParam("filters"));
         c.paramsProcessed();
 
@@ -313,8 +314,9 @@ public class GaConnector extends AbstractConnector implements Connector {
 
     /**
      * Generate GA config command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws IOException in case of IO issues
      */
@@ -334,7 +336,7 @@ public class GaConnector extends AbstractConnector implements Connector {
         gq.setDimensions(dimensions);
         gq.setMetrics(metrics);
         GaConnector.saveConfigTemplate(name, configFile, gq);
-        l.info("Google Analytics Connector configuration successfully generated. See config file: "+configFile);
+        l.info("Google Analytics Connector configuration successfully generated. See config file: " + configFile);
     }
 
     public String getGoogleAnalyticsToken() {

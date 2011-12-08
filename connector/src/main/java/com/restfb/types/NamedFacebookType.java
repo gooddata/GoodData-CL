@@ -28,20 +28,20 @@ import com.restfb.Facebook;
  * Superclass for <a
  * href="http://developers.facebook.com/docs/reference/api/">Graph API types</a>
  * that include a {@code name} field.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.5
  */
 public class NamedFacebookType extends FacebookType {
-  @Facebook
-  private String name;
+    @Facebook
+    private String name;
 
-  /**
-   * The name field for this type.
-   * 
-   * @return The name field for this type.
-   */
-  public String getName() {
-    return name;
-  }
+    /**
+     * The name field for this type.
+     *
+     * @return The name field for this type.
+     */
+    public String getName() {
+        return name;
+    }
 }

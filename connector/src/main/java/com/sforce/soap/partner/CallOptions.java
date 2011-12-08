@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class CallOptions  implements java.io.Serializable {
+public class CallOptions implements java.io.Serializable {
     private java.lang.String client;
 
     private java.lang.String defaultNamespace;
@@ -16,16 +16,16 @@ public class CallOptions  implements java.io.Serializable {
     }
 
     public CallOptions(
-           java.lang.String client,
-           java.lang.String defaultNamespace) {
-           this.client = client;
-           this.defaultNamespace = defaultNamespace;
+            java.lang.String client,
+            java.lang.String defaultNamespace) {
+        this.client = client;
+        this.defaultNamespace = defaultNamespace;
     }
 
 
     /**
      * Gets the client value for this CallOptions.
-     * 
+     *
      * @return client
      */
     public java.lang.String getClient() {
@@ -35,7 +35,7 @@ public class CallOptions  implements java.io.Serializable {
 
     /**
      * Sets the client value for this CallOptions.
-     * 
+     *
      * @param client
      */
     public void setClient(java.lang.String client) {
@@ -45,7 +45,7 @@ public class CallOptions  implements java.io.Serializable {
 
     /**
      * Gets the defaultNamespace value for this CallOptions.
-     * 
+     *
      * @return defaultNamespace
      */
     public java.lang.String getDefaultNamespace() {
@@ -55,7 +55,7 @@ public class CallOptions  implements java.io.Serializable {
 
     /**
      * Sets the defaultNamespace value for this CallOptions.
-     * 
+     *
      * @param defaultNamespace
      */
     public void setDefaultNamespace(java.lang.String defaultNamespace) {
@@ -63,6 +63,7 @@ public class CallOptions  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof CallOptions)) return false;
         CallOptions other = (CallOptions) obj;
@@ -73,18 +74,19 @@ public class CallOptions  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.client==null && other.getClient()==null) || 
-             (this.client!=null &&
-              this.client.equals(other.getClient()))) &&
-            ((this.defaultNamespace==null && other.getDefaultNamespace()==null) || 
-             (this.defaultNamespace!=null &&
-              this.defaultNamespace.equals(other.getDefaultNamespace())));
+        _equals = true &&
+                ((this.client == null && other.getClient() == null) ||
+                        (this.client != null &&
+                                this.client.equals(other.getClient()))) &&
+                ((this.defaultNamespace == null && other.getDefaultNamespace() == null) ||
+                        (this.defaultNamespace != null &&
+                                this.defaultNamespace.equals(other.getDefaultNamespace())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -103,7 +105,7 @@ public class CallOptions  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(CallOptions.class, true);
+            new org.apache.axis.description.TypeDesc(CallOptions.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">CallOptions"));
@@ -132,24 +134,24 @@ public class CallOptions  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

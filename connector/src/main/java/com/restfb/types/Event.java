@@ -22,115 +22,115 @@
 
 package com.restfb.types;
 
-import static com.restfb.util.DateUtils.toDateFromLongFormat;
+import com.restfb.Facebook;
 
 import java.util.Date;
 
-import com.restfb.Facebook;
+import static com.restfb.util.DateUtils.toDateFromLongFormat;
 
 /**
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/event">Event Graph
  * API type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.5
  */
 public class Event extends NamedFacebookType {
-  @Facebook
-  private NamedFacebookType owner;
+    @Facebook
+    private NamedFacebookType owner;
 
-  @Facebook
-  private String description;
+    @Facebook
+    private String description;
 
-  @Facebook("start_time")
-  private String startTime;
+    @Facebook("start_time")
+    private String startTime;
 
-  @Facebook("end_time")
-  private String endTime;
+    @Facebook("end_time")
+    private String endTime;
 
-  @Facebook
-  private String location;
+    @Facebook
+    private String location;
 
-  @Facebook
-  private Venue venue;
+    @Facebook
+    private Venue venue;
 
-  @Facebook
-  private String privacy;
+    @Facebook
+    private String privacy;
 
-  @Facebook("updated_time")
-  private String updatedTime;
+    @Facebook("updated_time")
+    private String updatedTime;
 
-  /**
-   * An object containing the name and ID of the user who owns the event
-   * 
-   * @return An object containing the name and ID of the user who owns the
-   *         event.
-   */
-  public NamedFacebookType getOwner() {
-    return owner;
-  }
+    /**
+     * An object containing the name and ID of the user who owns the event
+     *
+     * @return An object containing the name and ID of the user who owns the
+     *         event.
+     */
+    public NamedFacebookType getOwner() {
+        return owner;
+    }
 
-  /**
-   * The long-form HTML description of the event.
-   * 
-   * @return The long-form HTML description of the event.
-   */
-  public String getDescription() {
-    return description;
-  }
+    /**
+     * The long-form HTML description of the event.
+     *
+     * @return The long-form HTML description of the event.
+     */
+    public String getDescription() {
+        return description;
+    }
 
-  /**
-   * The start time of the event.
-   * 
-   * @return The start time of the event.
-   */
-  public Date getStartTime() {
-    return toDateFromLongFormat(startTime);
-  }
+    /**
+     * The start time of the event.
+     *
+     * @return The start time of the event.
+     */
+    public Date getStartTime() {
+        return toDateFromLongFormat(startTime);
+    }
 
-  /**
-   * The end time of the event.
-   * 
-   * @return The end time of the event.
-   */
-  public Date getEndTime() {
-    return toDateFromLongFormat(endTime);
-  }
+    /**
+     * The end time of the event.
+     *
+     * @return The end time of the event.
+     */
+    public Date getEndTime() {
+        return toDateFromLongFormat(endTime);
+    }
 
-  /**
-   * The location for this event, a string name.
-   * 
-   * @return The location for this event, a string name.
-   */
-  public String getLocation() {
-    return location;
-  }
+    /**
+     * The location for this event, a string name.
+     *
+     * @return The location for this event, a string name.
+     */
+    public String getLocation() {
+        return location;
+    }
 
-  /**
-   * The location of this event, a structured address object.
-   * 
-   * @return The location of this event, a structured address object.
-   */
-  public Venue getVenue() {
-    return venue;
-  }
+    /**
+     * The location of this event, a structured address object.
+     *
+     * @return The location of this event, a structured address object.
+     */
+    public Venue getVenue() {
+        return venue;
+    }
 
-  /**
-   * The visibility of this event. Can be 'OPEN', 'CLOSED', or 'SECRET'.
-   * 
-   * @return The visibility of this event. Can be 'OPEN', 'CLOSED', or 'SECRET'.
-   */
-  public String getPrivacy() {
-    return privacy;
-  }
+    /**
+     * The visibility of this event. Can be 'OPEN', 'CLOSED', or 'SECRET'.
+     *
+     * @return The visibility of this event. Can be 'OPEN', 'CLOSED', or 'SECRET'.
+     */
+    public String getPrivacy() {
+        return privacy;
+    }
 
-  /**
-   * The last time the event was updated.
-   * 
-   * @return The last time the event was updated.
-   */
-  public Date getUpdatedTime() {
-    return toDateFromLongFormat(updatedTime);
-  }
+    /**
+     * The last time the event was updated.
+     *
+     * @return The last time the event was updated.
+     */
+    public Date getUpdatedTime() {
+        return toDateFromLongFormat(updatedTime);
+    }
 }

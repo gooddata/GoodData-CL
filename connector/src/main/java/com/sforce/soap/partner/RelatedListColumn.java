@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class RelatedListColumn  implements java.io.Serializable {
+public class RelatedListColumn implements java.io.Serializable {
     private java.lang.String field;
 
     private java.lang.String format;
@@ -20,20 +20,20 @@ public class RelatedListColumn  implements java.io.Serializable {
     }
 
     public RelatedListColumn(
-           java.lang.String field,
-           java.lang.String format,
-           java.lang.String label,
-           java.lang.String name) {
-           this.field = field;
-           this.format = format;
-           this.label = label;
-           this.name = name;
+            java.lang.String field,
+            java.lang.String format,
+            java.lang.String label,
+            java.lang.String name) {
+        this.field = field;
+        this.format = format;
+        this.label = label;
+        this.name = name;
     }
 
 
     /**
      * Gets the field value for this RelatedListColumn.
-     * 
+     *
      * @return field
      */
     public java.lang.String getField() {
@@ -43,7 +43,7 @@ public class RelatedListColumn  implements java.io.Serializable {
 
     /**
      * Sets the field value for this RelatedListColumn.
-     * 
+     *
      * @param field
      */
     public void setField(java.lang.String field) {
@@ -53,7 +53,7 @@ public class RelatedListColumn  implements java.io.Serializable {
 
     /**
      * Gets the format value for this RelatedListColumn.
-     * 
+     *
      * @return format
      */
     public java.lang.String getFormat() {
@@ -63,7 +63,7 @@ public class RelatedListColumn  implements java.io.Serializable {
 
     /**
      * Sets the format value for this RelatedListColumn.
-     * 
+     *
      * @param format
      */
     public void setFormat(java.lang.String format) {
@@ -73,7 +73,7 @@ public class RelatedListColumn  implements java.io.Serializable {
 
     /**
      * Gets the label value for this RelatedListColumn.
-     * 
+     *
      * @return label
      */
     public java.lang.String getLabel() {
@@ -83,7 +83,7 @@ public class RelatedListColumn  implements java.io.Serializable {
 
     /**
      * Sets the label value for this RelatedListColumn.
-     * 
+     *
      * @param label
      */
     public void setLabel(java.lang.String label) {
@@ -93,7 +93,7 @@ public class RelatedListColumn  implements java.io.Serializable {
 
     /**
      * Gets the name value for this RelatedListColumn.
-     * 
+     *
      * @return name
      */
     public java.lang.String getName() {
@@ -103,7 +103,7 @@ public class RelatedListColumn  implements java.io.Serializable {
 
     /**
      * Sets the name value for this RelatedListColumn.
-     * 
+     *
      * @param name
      */
     public void setName(java.lang.String name) {
@@ -111,6 +111,7 @@ public class RelatedListColumn  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof RelatedListColumn)) return false;
         RelatedListColumn other = (RelatedListColumn) obj;
@@ -121,24 +122,25 @@ public class RelatedListColumn  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.field==null && other.getField()==null) || 
-             (this.field!=null &&
-              this.field.equals(other.getField()))) &&
-            ((this.format==null && other.getFormat()==null) || 
-             (this.format!=null &&
-              this.format.equals(other.getFormat()))) &&
-            ((this.label==null && other.getLabel()==null) || 
-             (this.label!=null &&
-              this.label.equals(other.getLabel()))) &&
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName())));
+        _equals = true &&
+                ((this.field == null && other.getField() == null) ||
+                        (this.field != null &&
+                                this.field.equals(other.getField()))) &&
+                ((this.format == null && other.getFormat() == null) ||
+                        (this.format != null &&
+                                this.format.equals(other.getFormat()))) &&
+                ((this.label == null && other.getLabel() == null) ||
+                        (this.label != null &&
+                                this.label.equals(other.getLabel()))) &&
+                ((this.name == null && other.getName() == null) ||
+                        (this.name != null &&
+                                this.name.equals(other.getName())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -163,7 +165,7 @@ public class RelatedListColumn  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RelatedListColumn.class, true);
+            new org.apache.axis.description.TypeDesc(RelatedListColumn.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "RelatedListColumn"));
@@ -204,24 +206,24 @@ public class RelatedListColumn  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

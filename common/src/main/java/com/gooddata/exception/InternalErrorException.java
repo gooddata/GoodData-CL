@@ -33,27 +33,30 @@ public class InternalErrorException extends GdcException {
 
     /**
      * Exception constructor
+     *
      * @param msg exception message
      */
     public InternalErrorException(String msg) {
         super(msg);
     }
-    
+
     /**
      * Exception constructor
+     *
      * @param cause root cause
      */
     public InternalErrorException(Throwable cause) {
-    	super(cause);
+        super(cause);
     }
-    
+
     /**
      * Exception constructor
-     * @param msg exception message
+     *
+     * @param msg   exception message
      * @param cause root cause
      */
     public InternalErrorException(String msg, Throwable cause) {
-    	super(msg, cause);
+        super(msg, cause);
     }
 
 }

@@ -1,25 +1,25 @@
 <!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
 
 <schema>
-  <name>data_ratata</name>
-  <columns>
-    <column>
-      <name>num_ber</name>
-      <title>Number</title>
-      <ldmType>FACT</ldmType>
-    </column>
-    <column>
-      <name>sta_te</name>
-      <title>State</title>
-      <ldmType>ATTRIBUTE</ldmType>
-    </column>
-    <column>
-      <name>da_te</name>
-      <title>Date</title>
-      <ldmType>DATE</ldmType>
-      <datetime>false</datetime>
-      <format>MM/dd/yyyy</format>
-      <schemaReference>Date</schemaReference>
-    </column>
-  </columns>
+    <name>data_ratata</name>
+    <columns>
+        <column>
+            <name>num_ber</name>
+            <title>Number</title>
+            <ldmType>FACT</ldmType>
+        </column>
+        <column>
+            <name>sta_te</name>
+            <title>State</title>
+            <ldmType>ATTRIBUTE</ldmType>
+        </column>
+        <column>
+            <name>da_te</name>
+            <title>Date</title>
+            <ldmType>DATE</ldmType>
+            <datetime>false</datetime>
+            <format>MM/dd/yyyy</format>
+            <schemaReference>Date</schemaReference>
+        </column>
+    </columns>
 </schema>

@@ -7,21 +7,21 @@
 
 package com.sforce.soap.partner;
 
-public class QueryOptions  implements java.io.Serializable {
+public class QueryOptions implements java.io.Serializable {
     private java.lang.Integer batchSize;
 
     public QueryOptions() {
     }
 
     public QueryOptions(
-           java.lang.Integer batchSize) {
-           this.batchSize = batchSize;
+            java.lang.Integer batchSize) {
+        this.batchSize = batchSize;
     }
 
 
     /**
      * Gets the batchSize value for this QueryOptions.
-     * 
+     *
      * @return batchSize
      */
     public java.lang.Integer getBatchSize() {
@@ -31,7 +31,7 @@ public class QueryOptions  implements java.io.Serializable {
 
     /**
      * Sets the batchSize value for this QueryOptions.
-     * 
+     *
      * @param batchSize
      */
     public void setBatchSize(java.lang.Integer batchSize) {
@@ -39,6 +39,7 @@ public class QueryOptions  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof QueryOptions)) return false;
         QueryOptions other = (QueryOptions) obj;
@@ -49,15 +50,16 @@ public class QueryOptions  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.batchSize==null && other.getBatchSize()==null) || 
-             (this.batchSize!=null &&
-              this.batchSize.equals(other.getBatchSize())));
+        _equals = true &&
+                ((this.batchSize == null && other.getBatchSize() == null) ||
+                        (this.batchSize != null &&
+                                this.batchSize.equals(other.getBatchSize())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -73,7 +75,7 @@ public class QueryOptions  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(QueryOptions.class, true);
+            new org.apache.axis.description.TypeDesc(QueryOptions.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">QueryOptions"));
@@ -97,24 +99,24 @@ public class QueryOptions  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

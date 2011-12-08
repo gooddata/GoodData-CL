@@ -23,25 +23,24 @@
 
 package com.gooddata.connector;
 
+import com.gooddata.modeling.model.SourceColumn;
+import com.gooddata.modeling.model.SourceSchema;
+import junit.framework.TestCase;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
-import junit.framework.TestCase;
-
-import com.gooddata.modeling.model.SourceColumn;
-import com.gooddata.modeling.model.SourceSchema;
 
 
 public class CsvConnectorTest extends TestCase {
 
     public void testGuessSourceSchema() throws IOException {
 
-        final InputStream incompleteConfig =  getClass().getResourceAsStream("/com/gooddata/connector/guess_incompleteConfig.xml");
+        final InputStream incompleteConfig = getClass().getResourceAsStream("/com/gooddata/connector/guess_incompleteConfig.xml");
         final InputStream expectedConfig = getClass().getResourceAsStream("/com/gooddata/connector/guess_expectedConfig.xml");
         final URL csvUrl = getClass().getResource("/com/gooddata/connector/guess_quotes.csv");
 
-        SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, new String[] { "INDUSTRY" }, null,',');
+        SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, new String[]{"INDUSTRY"}, null, ',');
         SourceSchema expected = SourceSchema.createSchema(expectedConfig);
 
         assertEquals(expected.getColumns().size(), guessed.getColumns().size());
@@ -58,11 +57,11 @@ public class CsvConnectorTest extends TestCase {
     }
 
     public void testSaveConfigTemplateDuplicity() throws IOException {
-        final InputStream incompleteConfig =  getClass().getResourceAsStream("/com/gooddata/connector/guess_incompleteConfig.xml");
+        final InputStream incompleteConfig = getClass().getResourceAsStream("/com/gooddata/connector/guess_incompleteConfig.xml");
         final InputStream expectedConfig = getClass().getResourceAsStream("/com/gooddata/connector/guess_expected_dups.xml");
         final URL csvUrl = getClass().getResource("/com/gooddata/connector/guess_dups.csv");
 
-        SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, null,',');
+        SourceSchema guessed = CsvConnector.guessSourceSchema(incompleteConfig, csvUrl, null, null, ',');
         SourceSchema expected = SourceSchema.createSchema(expectedConfig);
 
         assertEquals(expected.getColumns().size(), guessed.getColumns().size());

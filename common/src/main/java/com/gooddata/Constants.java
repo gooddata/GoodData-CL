@@ -28,21 +28,21 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class Constants {
 
-	// TODO native2ascii
-	public final static String[] DISCARD_CHARS = {"$", "%", ",", "(", ")", "?", "?", "?"};
+    // TODO native2ascii
+    public final static String[] DISCARD_CHARS = {"$", "%", ",", "(", ")", "?", "?", "?"};
 
-	public final static int MAX_TABLE_NAME_LENGTH = 44;
+    public final static int MAX_TABLE_NAME_LENGTH = 44;
     public final static int MAX_SCHEMA_NAME_LENGTH = 24;
 
     public final static String DEFAULT_INT_FMT_STRING = "###";
     public final static String DEFAULT_DEC_FMT_STRING = "###.00";
 
-	public final static String DEFAULT_DATE_FMT_STRING = "yyyy-MM-dd";
+    public final static String DEFAULT_DATE_FMT_STRING = "yyyy-MM-dd";
     public final static String DEFAULT_DATETIME_FMT_STRING = "yyyy-MM-dd HH:mm:ss";
     public final static String UNIX_DATE_FORMAT = "UNIXTIME";
 
     public final static String DEFAULT_TIME_LABEL = "label.time.second.of.day.";
-	public final static DateTimeFormatter DEFAULT_DATE_FMT = DateTimeFormat.forPattern(DEFAULT_DATE_FMT_STRING);
+    public final static DateTimeFormatter DEFAULT_DATE_FMT = DateTimeFormat.forPattern(DEFAULT_DATE_FMT_STRING);
     public final static DateTimeFormatter DEFAULT_DATETIME_FMT = DateTimeFormat.forPattern(DEFAULT_DATETIME_FMT_STRING);
 
     // default date label suffix

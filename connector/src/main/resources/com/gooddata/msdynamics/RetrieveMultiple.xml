@@ -4,9 +4,13 @@
                                     soapenv:mustUnderstand="false">
             <ns7:AuthenticationType xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes">1
             </ns7:AuthenticationType>
-            <ns7:CrmTicket xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes"><![CDATA[%CRMTICKET%]]></ns7:CrmTicket>
-            <ns7:OrganizationName xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes"><![CDATA[%ORGANIZATION%]]></ns7:OrganizationName>
-            <ns7:CallerId xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes">00000000-0000-0000-0000-000000000000</ns7:CallerId>
+            <ns7:CrmTicket xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes">
+                <![CDATA[%CRMTICKET%]]></ns7:CrmTicket>
+            <ns7:OrganizationName xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes">
+                <![CDATA[%ORGANIZATION%]]></ns7:OrganizationName>
+            <ns7:CallerId xmlns:ns7="http://schemas.microsoft.com/crm/2007/CoreTypes">
+                00000000-0000-0000-0000-000000000000
+            </ns7:CallerId>
         </ns8:CrmAuthenticationToken>
     </soapenv:Header>
     <soapenv:Body>

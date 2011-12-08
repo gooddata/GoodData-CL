@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DataCategoryGroupSobjectTypePair  implements java.io.Serializable {
+public class DataCategoryGroupSobjectTypePair implements java.io.Serializable {
     private java.lang.String dataCategoryGroupName;
 
     private java.lang.String sobject;
@@ -16,16 +16,16 @@ public class DataCategoryGroupSobjectTypePair  implements java.io.Serializable {
     }
 
     public DataCategoryGroupSobjectTypePair(
-           java.lang.String dataCategoryGroupName,
-           java.lang.String sobject) {
-           this.dataCategoryGroupName = dataCategoryGroupName;
-           this.sobject = sobject;
+            java.lang.String dataCategoryGroupName,
+            java.lang.String sobject) {
+        this.dataCategoryGroupName = dataCategoryGroupName;
+        this.sobject = sobject;
     }
 
 
     /**
      * Gets the dataCategoryGroupName value for this DataCategoryGroupSobjectTypePair.
-     * 
+     *
      * @return dataCategoryGroupName
      */
     public java.lang.String getDataCategoryGroupName() {
@@ -35,7 +35,7 @@ public class DataCategoryGroupSobjectTypePair  implements java.io.Serializable {
 
     /**
      * Sets the dataCategoryGroupName value for this DataCategoryGroupSobjectTypePair.
-     * 
+     *
      * @param dataCategoryGroupName
      */
     public void setDataCategoryGroupName(java.lang.String dataCategoryGroupName) {
@@ -45,7 +45,7 @@ public class DataCategoryGroupSobjectTypePair  implements java.io.Serializable {
 
     /**
      * Gets the sobject value for this DataCategoryGroupSobjectTypePair.
-     * 
+     *
      * @return sobject
      */
     public java.lang.String getSobject() {
@@ -55,7 +55,7 @@ public class DataCategoryGroupSobjectTypePair  implements java.io.Serializable {
 
     /**
      * Sets the sobject value for this DataCategoryGroupSobjectTypePair.
-     * 
+     *
      * @param sobject
      */
     public void setSobject(java.lang.String sobject) {
@@ -63,6 +63,7 @@ public class DataCategoryGroupSobjectTypePair  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DataCategoryGroupSobjectTypePair)) return false;
         DataCategoryGroupSobjectTypePair other = (DataCategoryGroupSobjectTypePair) obj;
@@ -73,18 +74,19 @@ public class DataCategoryGroupSobjectTypePair  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.dataCategoryGroupName==null && other.getDataCategoryGroupName()==null) || 
-             (this.dataCategoryGroupName!=null &&
-              this.dataCategoryGroupName.equals(other.getDataCategoryGroupName()))) &&
-            ((this.sobject==null && other.getSobject()==null) || 
-             (this.sobject!=null &&
-              this.sobject.equals(other.getSobject())));
+        _equals = true &&
+                ((this.dataCategoryGroupName == null && other.getDataCategoryGroupName() == null) ||
+                        (this.dataCategoryGroupName != null &&
+                                this.dataCategoryGroupName.equals(other.getDataCategoryGroupName()))) &&
+                ((this.sobject == null && other.getSobject() == null) ||
+                        (this.sobject != null &&
+                                this.sobject.equals(other.getSobject())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -103,7 +105,7 @@ public class DataCategoryGroupSobjectTypePair  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DataCategoryGroupSobjectTypePair.class, true);
+            new org.apache.axis.description.TypeDesc(DataCategoryGroupSobjectTypePair.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DataCategoryGroupSobjectTypePair"));
@@ -132,24 +134,24 @@ public class DataCategoryGroupSobjectTypePair  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

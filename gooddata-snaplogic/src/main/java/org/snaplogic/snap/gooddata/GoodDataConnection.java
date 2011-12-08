@@ -23,11 +23,11 @@
 
 package org.snaplogic.snap.gooddata;
 
+import com.gooddata.exception.HttpMethodException;
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
 import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
-import com.gooddata.exception.HttpMethodException;
 import org.snaplogic.cc.*;
 import org.snaplogic.cc.prop.SimpleProp;
 import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
@@ -85,11 +85,11 @@ public class GoodDataConnection extends ComponentAPI {
         // readability.
         return new Capabilities() {
             /**
-			 * 
-			 */
-			private static final long serialVersionUID = 7753750032102369960L;
+             *
+             */
+            private static final long serialVersionUID = 7753750032102369960L;
 
-			{
+            {
                 put(Capability.INPUT_VIEW_LOWER_LIMIT, 0);
                 put(Capability.INPUT_VIEW_UPPER_LIMIT, 0);
                 put(Capability.INPUT_VIEW_ALLOW_BINARY, false);
@@ -100,7 +100,7 @@ public class GoodDataConnection extends ComponentAPI {
             }
         };
     }
-    
+
     public static final String GOODDATA_CONNECTION_CATEGORY = "connection.gooddata";
 
     private static List<String> _CONNECTION_CATEGORIES = new ArrayList<String>();
@@ -122,27 +122,27 @@ public class GoodDataConnection extends ComponentAPI {
      * usage in the {@link GoodDataWizard} as well as in
      * {@link GoodDataConnection}. Care must be taken when implementing <A href="https://www.snaplogic.org/trac/wiki/Documentation/2.2/UserGuide/CreateComponentJava#Upgrade"
      * >upgrades</a>, however.
-     * 
-     * The reason it is refactored this way is that currently {@link AbstractGoodDataComponent} 
+     * <p/>
+     * The reason it is refactored this way is that currently {@link AbstractGoodDataComponent}
      * is intended to be an abstract implementation of components that are not connections (that
      * is, they all have a reference to the connection instead). The clearer way of doing this
      * of course, is to define one more level of inheritance - AbstractGoodDataComponent having
      * this method, and underneath, AbstractGoodDataWorkerComponent (or some such name) having
      * the connection reference. But this is not something I have time for at this point -
      * Greg grisha@snaplogic.com
-     * 
-     * @param comp Instance of {@link ComponentAPI} to set properties for. 
+     *
+     * @param comp Instance of {@link ComponentAPI} to set properties for.
      */
     static void createGDConnectionResourceTemplate(ComponentAPI comp) {
         comp.setPropertyDef(GoodDataConnection.PROP_USERNAME, new SimpleProp("Login", SimplePropType.SnapString,
                 "Username", true));
-        
+
         PropertyConstraint passwdConstraint = new PropertyConstraint(Type.OBFUSCATE, 0);
         SimpleProp passwdProp = new SimpleProp("Password", SimplePropType.SnapString, "Password", passwdConstraint,
                 true);
         comp.setPropertyDef(GoodDataConnection.PROP_PASSWORD, passwdProp);
 
-        PropertyConstraint protocolConstraint = new PropertyConstraint(Type.LOV, new String[] { "http", "https" });
+        PropertyConstraint protocolConstraint = new PropertyConstraint(Type.LOV, new String[]{"http", "https"});
         comp.setPropertyDef(GoodDataConnection.PROP_PROTOCOL, new SimpleProp("Protocol", SimplePropType.SnapString,
                 "Connection Protocol", protocolConstraint, true));
         comp.setPropertyValue(GoodDataConnection.PROP_PROTOCOL, "https");
@@ -156,7 +156,7 @@ public class GoodDataConnection extends ComponentAPI {
         comp.setPropertyValue(GoodDataConnection.PROP_HOSTNAME_FTP, "secure-di.gooddata.com");
 
         comp.setCategories(GoodDataConnection.CONNECTION_CATEGORIES, false);
-    
+
         // Remove for production
         comp.setPropertyValue(PROP_USERNAME, "username");
         comp.setPropertyValue(PROP_PASSWORD, "password");
@@ -166,8 +166,6 @@ public class GoodDataConnection extends ComponentAPI {
      * Attempt to connect to the database with current properties. If current
      * properties are not parameterized and connection cannot be made, then an
      * error is set.
-     *
-     *
      */
     @Override
     public void validate(ComponentResourceErr err) {
@@ -210,7 +208,7 @@ public class GoodDataConnection extends ComponentAPI {
 
         return restApi;
     }
-    
+
     public static GdcDataTransferAPI getFtpWrapper(ResDef goodDataCon, ComponentAPI comp) throws HttpMethodException {
         if (!goodDataCon.getComponentName().equals(GoodDataConnection.class.getName())) {
             throw new SnapComponentException("Incorrect ResDef for this operation: " + goodDataCon.getComponentName());
@@ -220,7 +218,7 @@ public class GoodDataConnection extends ComponentAPI {
         GdcDataTransferAPI restApi = new GdcFTPApiWrapper(config);
         return restApi;
     }
-    
+
     public static NamePasswordConfiguration getFtpConfiguration(ResDef goodDataCon) {
         String username = (String) goodDataCon.getPropertyValue(PROP_USERNAME);
         String passwd = (String) goodDataCon.getPropertyValue(PROP_PASSWORD);
@@ -229,7 +227,7 @@ public class GoodDataConnection extends ComponentAPI {
         NamePasswordConfiguration config = new NamePasswordConfiguration(protocol, hostname, username, passwd);
         return config;
     }
-    
+
     public static NamePasswordConfiguration getHttpConfiguration(ResDef goodDataCon) {
         String username = (String) goodDataCon.getPropertyValue(PROP_USERNAME);
         String passwd = (String) goodDataCon.getPropertyValue(PROP_PASSWORD);
@@ -238,5 +236,5 @@ public class GoodDataConnection extends ComponentAPI {
         NamePasswordConfiguration config = new NamePasswordConfiguration(protocol, hostname, username, passwd);
         return config;
     }
-    
+
 }

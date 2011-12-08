@@ -23,11 +23,11 @@
 
 package com.gooddata.connector;
 
-import com.gooddata.exception.*;
+import com.gooddata.exception.InvalidParameterException;
+import com.gooddata.exception.ProcessingException;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.SLI;
 import com.gooddata.modeling.generator.MaqlGenerator;
-import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.pivotal.PivotalApi;
 import com.gooddata.processor.CliParams;
@@ -37,14 +37,12 @@ import com.gooddata.transform.Transformer;
 import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
-import com.gooddata.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.joda.time.DateTime;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,10 +72,10 @@ public class PtConnector extends AbstractConnector implements Connector {
     protected PtConnector() {
     }
 
-     /**
-      * Creates a new Google Analytics Connector
-      * @return a new instance of the GA connector
-      *
+    /**
+     * Creates a new Google Analytics Connector
+     *
+     * @return a new instance of the GA connector
      */
     public static PtConnector createConnector() {
         return new PtConnector();
@@ -86,12 +84,13 @@ public class PtConnector extends AbstractConnector implements Connector {
 
     /**
      * Initializes schemas
-     * @param labelConfig label config file
-     * @param labelToStoryConfig  labelToStory config file
-     * @param storyConfig  story config file
+     *
+     * @param labelConfig        label config file
+     * @param labelToStoryConfig labelToStory config file
+     * @param storyConfig        story config file
      */
     public void initSchema(String labelConfig, String labelToStoryConfig, String storyConfig)
-        throws IOException {
+            throws IOException {
         labelSchema = SourceSchema.createSchema(new File(labelConfig));
         expandDates(labelSchema);
         labelToStorySchema = SourceSchema.createSchema(new File(labelToStoryConfig));
@@ -127,55 +126,55 @@ public class PtConnector extends AbstractConnector implements Connector {
         String[] row = cr.readNext();
         int rowCnt = 0;
         while (row != null) {
-                rowCnt++;
-                if(row.length == 1 && row[0].length() == 0) {
-                    row = cr.readNext();
-                    continue;
-                }
-                row = t.transformRow(row, 10);
-                cw.writeNext(row);
-                cw.flush();
+            rowCnt++;
+            if (row.length == 1 && row[0].length() == 0) {
                 row = cr.readNext();
+                continue;
+            }
+            row = t.transformRow(row, 10);
+            cw.writeNext(row);
+            cw.flush();
+            row = cr.readNext();
         }
         cw.close();
         cr.close();
-        l.debug("Extracted "+rowCnt+" rows of Pivotal data.");
+        l.debug("Extracted " + rowCnt + " rows of Pivotal data.");
     }
 
 
     private void transfer(SourceSchema schema, String inputFile, Command c, String pid,
-        boolean waitForFinish, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
+                          boolean waitForFinish, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
         File tmpDir = FileUtil.createTempDir();
         File tmpZipDir = FileUtil.createTempDir();
         String archiveName = tmpDir.getName();
-        MDC.put("GdcDataPackageDir",archiveName);
+        MDC.put("GdcDataPackageDir", archiveName);
         String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
-            archiveName + ".zip";
+                archiveName + ".zip";
 
         // get information about the data loading package
         String ssn = schema.getName();
         SLI sli = ctx.getRestApi(p).getSLIById("dataset." + ssn, pid);
         List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
         List<Column> columns = populateColumnsFromSchema(schema);
-        if(sliColumns.size() > columns.size())
+        if (sliColumns.size() > columns.size())
             throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");
         String incremental = c.getParam("incremental");
         c.paramsProcessed();
 
-        if(incremental != null && incremental.length() > 0 &&
+        if (incremental != null && incremental.length() > 0 &&
                 incremental.equalsIgnoreCase("true")) {
             l.debug("Using incremental mode.");
             setIncremental(columns);
         }
 
         // extract the data to the CSV that is going to be transferred to the server
-        extract(schema, inputFile ,tmpDir.getAbsolutePath());
+        extract(schema, inputFile, tmpDir.getAbsolutePath());
         this.deploy(sli, columns, tmpDir.getAbsolutePath(), archivePath);
         // transfer the data package to the GoodData server
         ctx.getFtpApi(p).transferDir(archivePath);
         // kick the GooDData server to load the data package to the project
         String taskUri = ctx.getRestApi(p).startLoading(pid, archiveName);
-        if(waitForFinish) {
+        if (waitForFinish) {
             checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
         }
         //cleanup
@@ -189,8 +188,8 @@ public class PtConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
 
-    public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
-    	throws IOException, InterruptedException {
+    public void extractAndTransfer(Command c, String pid, Connector cc, boolean waitForFinish, CliParams p, ProcessingContext ctx)
+            throws IOException, InterruptedException {
         l.debug("Extracting data.");
 
         File mainDir = FileUtil.createTempDir();
@@ -202,12 +201,12 @@ public class PtConnector extends AbstractConnector implements Connector {
         String sp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "stories.csv";
         String lp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "labels.csv";
         String ltsp = mainDir.getAbsolutePath() + System.getProperty("file.separator") + "labelsToStories.csv";
-        papi.parse(ptf.getAbsolutePath(), sp, lp, ltsp, new DateTime(),3);
+        papi.parse(ptf.getAbsolutePath(), sp, lp, ltsp, new DateTime(), 3);
 
         transfer(getStorySchema(), sp, c, pid, waitForFinish, p, ctx);
         transfer(getLabelSchema(), lp, c, pid, waitForFinish, p, ctx);
         transfer(getLabelToStorySchema(), ltsp, c, pid, waitForFinish, p, ctx);
-        
+
         //cleanup
         l.debug("Cleaning the temporary files.");
         FileUtil.recursiveDelete(mainDir);
@@ -218,26 +217,24 @@ public class PtConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
-        l.debug("Processing command "+c.getCommand());
+        l.debug("Processing command " + c.getCommand());
         try {
-            if(c.match("LoadPivotalTracker") || c.match("UsePivotalTracker")) {
+            if (c.match("LoadPivotalTracker") || c.match("UsePivotalTracker")) {
                 loadPivotalTracker(c, cli, ctx);
-            }
-            else {
-                l.debug("No match passing the command "+c.getCommand()+" further.");
+            } else {
+                l.debug("No match passing the command " + c.getCommand() + " further.");
                 return super.processCommand(c, cli, ctx);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
-        l.debug("Processed command "+c.getCommand());
+        l.debug("Processed command " + c.getCommand());
         return true;
     }
 
     public String generateMaqlCreate() {
         StringBuilder sb = new StringBuilder();
-    	MaqlGenerator mg = new MaqlGenerator(storySchema);
+        MaqlGenerator mg = new MaqlGenerator(storySchema);
         sb.append(mg.generateMaqlCreate());
         mg = new MaqlGenerator(labelSchema);
         sb.append(mg.generateMaqlCreate());
@@ -249,8 +246,9 @@ public class PtConnector extends AbstractConnector implements Connector {
 
     /**
      * Downloads the PT data
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws java.io.IOException in case of IO issues
      */
@@ -267,12 +265,12 @@ public class PtConnector extends AbstractConnector implements Connector {
         File lscf = new File(lsc);
         File scf = new File(sc);
 
-        initSchema(lcf.getAbsolutePath(),lscf.getAbsolutePath(), scf.getAbsolutePath());
+        initSchema(lcf.getAbsolutePath(), lscf.getAbsolutePath(), scf.getAbsolutePath());
 
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
-        
+
         l.info("Pivotal Tracker Connector Loaded (id: " + getPivotalProjectId() + ")");
     }
 

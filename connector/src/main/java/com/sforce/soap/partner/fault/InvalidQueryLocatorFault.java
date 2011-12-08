@@ -7,19 +7,20 @@
 
 package com.sforce.soap.partner.fault;
 
-public class InvalidQueryLocatorFault  extends com.sforce.soap.partner.fault.ApiFault  implements java.io.Serializable {
+public class InvalidQueryLocatorFault extends com.sforce.soap.partner.fault.ApiFault implements java.io.Serializable {
     public InvalidQueryLocatorFault() {
     }
 
     public InvalidQueryLocatorFault(
-           com.sforce.soap.partner.fault.ExceptionCode exceptionCode,
-           java.lang.String exceptionMessage) {
+            com.sforce.soap.partner.fault.ExceptionCode exceptionCode,
+            java.lang.String exceptionMessage) {
         super(
-            exceptionCode,
-            exceptionMessage);
+                exceptionCode,
+                exceptionMessage);
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof InvalidQueryLocatorFault)) return false;
         InvalidQueryLocatorFault other = (InvalidQueryLocatorFault) obj;
@@ -36,6 +37,7 @@ public class InvalidQueryLocatorFault  extends com.sforce.soap.partner.fault.Api
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -48,7 +50,7 @@ public class InvalidQueryLocatorFault  extends com.sforce.soap.partner.fault.Api
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(InvalidQueryLocatorFault.class, true);
+            new org.apache.axis.description.TypeDesc(InvalidQueryLocatorFault.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:fault.partner.soap.sforce.com", "InvalidQueryLocatorFault"));
@@ -65,24 +67,24 @@ public class InvalidQueryLocatorFault  extends com.sforce.soap.partner.fault.Api
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 

@@ -32,7 +32,6 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
-import org.jaxen.JaxenException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -43,12 +42,14 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.SOAPException;
 import javax.xml.xpath.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Java wrapper of selected MS Sugar CRM Online web services
@@ -109,11 +110,11 @@ public class ChargifyWrapper {
             String cookie = "";
             boolean hasNext = true;
             while (hasNext) {
-                List<Map<String,String>> ret = new ArrayList<Map<String,String>>();
+                List<Map<String, String>> ret = new ArrayList<Map<String, String>>();
                 getData(entity, pageNumber++, ret);
-                for(Map<String,String>  m : ret) {
+                for (Map<String, String> m : ret) {
                     String[] row = new String[fields.length];
-                    for(int i=0; i<fields.length; i++) {
+                    for (int i = 0; i < fields.length; i++) {
                         row[i] = m.get(fields[i]);
                     }
                     cw.writeNext(row);
@@ -121,11 +122,10 @@ public class ChargifyWrapper {
                 int count = ret.size();
                 cnt += count;
                 cw.flush();
-                if(count < PAGE_COUNT)
+                if (count < PAGE_COUNT)
                     hasNext = false;
             }
-        }
-        finally {
+        } finally {
             cw.close();
         }
         return cnt;
@@ -134,7 +134,7 @@ public class ChargifyWrapper {
 
     public void getData(String entity, int page, List<Map<String, String>> ret)
             throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
-        String path = HTTPS + getDomain() + "." + CHARGIFY_ENDPOINT + "/" + entity + ".xml?page="+page;
+        String path = HTTPS + getDomain() + "." + CHARGIFY_ENDPOINT + "/" + entity + ".xml?page=" + page;
         GetMethod m = createGetMethod(path);
         int rc = executeHttpMethod(m);
         if (rc == HttpStatus.SC_OK) {
@@ -145,52 +145,49 @@ public class ChargifyWrapper {
             DocumentBuilder builder = domFactory.newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(payload)));
             XPath xpath = XPathFactory.newInstance().newXPath();
-            XPathExpression expr = xpath.compile("//"+entity);
+            XPathExpression expr = xpath.compile("//" + entity);
             Object result = expr.evaluate(doc, XPathConstants.NODESET);
             NodeList nodes = (NodeList) result;
-            if(nodes != null && nodes.getLength() > 0) {
+            if (nodes != null && nodes.getLength() > 0) {
                 Node root = nodes.item(0);
                 NodeList rows = root.getChildNodes();
-                if(rows != null && rows.getLength() > 0) {
-                    for(int i=0; i < rows.getLength(); i++) {
+                if (rows != null && rows.getLength() > 0) {
+                    for (int i = 0; i < rows.getLength(); i++) {
                         Node row = rows.item(i);
-                        if(row != null && row instanceof Element) {
+                        if (row != null && row instanceof Element) {
                             NodeList columns = row.getChildNodes();
                             Map<String, String> r = new HashMap<String, String>();
-                            if(columns != null && columns.getLength() > 0) {
-                                for(int j=0; j < columns.getLength(); j++) {
+                            if (columns != null && columns.getLength() > 0) {
+                                for (int j = 0; j < columns.getLength(); j++) {
                                     Node name = columns.item(j);
                                     boolean isNested = false;
-                                    if(name != null && name instanceof Element) {
+                                    if (name != null && name instanceof Element) {
                                         NodeList nestedNodes = name.getChildNodes();
-                                        if(nestedNodes != null && nestedNodes.getLength() > 0) {
-                                            for(int k=0; k < nestedNodes.getLength(); k++) {
+                                        if (nestedNodes != null && nestedNodes.getLength() > 0) {
+                                            for (int k = 0; k < nestedNodes.getLength(); k++) {
                                                 Node nestedNode = nestedNodes.item(k);
-                                                if(nestedNode != null && nestedNode instanceof Element) {
+                                                if (nestedNode != null && nestedNode instanceof Element) {
                                                     isNested = true;
                                                     Node value = nestedNode.getFirstChild();
-                                                    if(value != null) {
-                                                        r.put(name.getNodeName()+"_"+nestedNode.getNodeName(), value.getNodeValue());
-                                                    }
-                                                    else {
-                                                        r.put(name.getNodeName()+"_"+nestedNode.getNodeName(), "");
+                                                    if (value != null) {
+                                                        r.put(name.getNodeName() + "_" + nestedNode.getNodeName(), value.getNodeValue());
+                                                    } else {
+                                                        r.put(name.getNodeName() + "_" + nestedNode.getNodeName(), "");
                                                     }
                                                 }
                                             }
                                         }
-                                        if(!isNested) {
+                                        if (!isNested) {
                                             Node value = name.getFirstChild();
-                                            if(value != null) {
+                                            if (value != null) {
                                                 r.put(name.getNodeName(), value.getNodeValue());
-                                            }
-                                            else {
+                                            } else {
                                                 r.put(name.getNodeName(), "");
                                             }
                                         }
                                     }
                                 }
-                            }
-                            else {
+                            } else {
                                 throw new IOException("getData: No columns in the row.");
                             }
                             ret.add(r);

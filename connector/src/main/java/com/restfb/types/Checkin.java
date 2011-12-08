@@ -22,200 +22,200 @@
 
 package com.restfb.types;
 
-import static com.restfb.util.DateUtils.toDateFromLongFormat;
-import static java.util.Collections.unmodifiableList;
+import com.restfb.Facebook;
+import com.restfb.util.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.restfb.Facebook;
-import com.restfb.util.ReflectionUtils;
+import static com.restfb.util.DateUtils.toDateFromLongFormat;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/checkin">Checkin
  * Graph API type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.6
  */
 public class Checkin extends FacebookType {
-  @Facebook
-  private String message;
-
-  @Facebook
-  private NamedFacebookType from;
-
-  @Facebook
-  private NamedFacebookType application;
-
-  @Facebook
-  private Place place;
-
-  @Facebook("created_time")
-  private String createdTime;
-
-  @Facebook
-  private List<Comment> comments = new ArrayList<Comment>();
-
-  /**
-   * Represents the <a
-   * href="http://developers.facebook.com/docs/reference/api/checkin">Place
-   * Graph API type</a>.
-   * 
-   * @author <a href="http://restfb.com">Mark Allen</a>
-   * @since 1.6
-   */
-  public static class Place extends NamedFacebookType {
     @Facebook
-    private Location location;
+    private String message;
+
+    @Facebook
+    private NamedFacebookType from;
+
+    @Facebook
+    private NamedFacebookType application;
+
+    @Facebook
+    private Place place;
+
+    @Facebook("created_time")
+    private String createdTime;
+
+    @Facebook
+    private List<Comment> comments = new ArrayList<Comment>();
 
     /**
      * Represents the <a
-     * href="http://developers.facebook.com/docs/reference/api/checkin">Location
+     * href="http://developers.facebook.com/docs/reference/api/checkin">Place
      * Graph API type</a>.
-     * 
+     *
      * @author <a href="http://restfb.com">Mark Allen</a>
      * @since 1.6
      */
-    public static class Location {
-      @Facebook
-      private Float latitude;
+    public static class Place extends NamedFacebookType {
+        @Facebook
+        private Location location;
 
-      @Facebook
-      private Float longitude;
+        /**
+         * Represents the <a
+         * href="http://developers.facebook.com/docs/reference/api/checkin">Location
+         * Graph API type</a>.
+         *
+         * @author <a href="http://restfb.com">Mark Allen</a>
+         * @since 1.6
+         */
+        public static class Location {
+            @Facebook
+            private Float latitude;
 
-      /**
-       * @see Object#hashCode()
-       */
-      @Override
-      public int hashCode() {
-        return ReflectionUtils.hashCode(this);
-      }
+            @Facebook
+            private Float longitude;
 
-      /**
-       * @see Object#equals(Object)
-       */
-      @Override
-      public boolean equals(Object that) {
-        return ReflectionUtils.equals(this, that);
-      }
+            /**
+             * @see Object#hashCode()
+             */
+            @Override
+            public int hashCode() {
+                return ReflectionUtils.hashCode(this);
+            }
 
-      /**
-       * @see Object#toString()
-       */
-      @Override
-      public String toString() {
-        return ReflectionUtils.toString(this);
-      }
+            /**
+             * @see Object#equals(Object)
+             */
+            @Override
+            public boolean equals(Object that) {
+                return ReflectionUtils.equals(this, that);
+            }
 
-      /**
-       * The latitude of the check-in.
-       * 
-       * @return The latitude of the check-in.
-       */
-      public Float getLatitude() {
-        return latitude;
-      }
+            /**
+             * @see Object#toString()
+             */
+            @Override
+            public String toString() {
+                return ReflectionUtils.toString(this);
+            }
 
-      /**
-       * The longitude of the check-in.
-       * 
-       * @return The longitude of the check-in.
-       */
-      public Float getLongitude() {
-        return longitude;
-      }
+            /**
+             * The latitude of the check-in.
+             *
+             * @return The latitude of the check-in.
+             */
+            public Float getLatitude() {
+                return latitude;
+            }
+
+            /**
+             * The longitude of the check-in.
+             *
+             * @return The longitude of the check-in.
+             */
+            public Float getLongitude() {
+                return longitude;
+            }
+        }
+
+        /**
+         * @see Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            return ReflectionUtils.hashCode(this);
+        }
+
+        /**
+         * @see Object#equals(Object)
+         */
+        @Override
+        public boolean equals(Object that) {
+            return ReflectionUtils.equals(this, that);
+        }
+
+        /**
+         * @see Object#toString()
+         */
+        @Override
+        public String toString() {
+            return ReflectionUtils.toString(this);
+        }
+
+        /**
+         * The latitude/longitude of the check-in.
+         *
+         * @return The latitude/longitude of the check-in.
+         */
+        public Location getLocation() {
+            return location;
+        }
     }
 
     /**
-     * @see Object#hashCode()
+     * The ID, name, and location of the Facebook Page that represents the
+     * location of the check-in.
+     *
+     * @return The ID, name, and location of the Facebook Page that represents the
+     *         location of the check-in.
      */
-    @Override
-    public int hashCode() {
-      return ReflectionUtils.hashCode(this);
+    public Place getPlace() {
+        return place;
     }
 
     /**
-     * @see Object#equals(Object)
+     * The ID and name of the application that made the check-in.
+     *
+     * @return The ID and name of the application that made the check-in.
      */
-    @Override
-    public boolean equals(Object that) {
-      return ReflectionUtils.equals(this, that);
+    public NamedFacebookType getApplication() {
+        return application;
     }
 
     /**
-     * @see Object#toString()
+     * The ID and name of the user who made the check-in.
+     *
+     * @return The ID and name of the user who made the check-in.
      */
-    @Override
-    public String toString() {
-      return ReflectionUtils.toString(this);
+    public NamedFacebookType getFrom() {
+        return from;
     }
 
     /**
-     * The latitude/longitude of the check-in.
-     * 
-     * @return The latitude/longitude of the check-in.
+     * The message the user added to the check-in.
+     *
+     * @return The message the user added to the check-in.
      */
-    public Location getLocation() {
-      return location;
+    public String getMessage() {
+        return message;
     }
-  }
 
-  /**
-   * The ID, name, and location of the Facebook Page that represents the
-   * location of the check-in.
-   * 
-   * @return The ID, name, and location of the Facebook Page that represents the
-   *         location of the check-in.
-   */
-  public Place getPlace() {
-    return place;
-  }
+    /**
+     * The time the check-in was created.
+     *
+     * @return The time the check-in was created.
+     */
+    public Date getCreatedTime() {
+        return toDateFromLongFormat(createdTime);
+    }
 
-  /**
-   * The ID and name of the application that made the check-in.
-   * 
-   * @return The ID and name of the application that made the check-in.
-   */
-  public NamedFacebookType getApplication() {
-    return application;
-  }
-
-  /**
-   * The ID and name of the user who made the check-in.
-   * 
-   * @return The ID and name of the user who made the check-in.
-   */
-  public NamedFacebookType getFrom() {
-    return from;
-  }
-
-  /**
-   * The message the user added to the check-in.
-   * 
-   * @return The message the user added to the check-in.
-   */
-  public String getMessage() {
-    return message;
-  }
-
-  /**
-   * The time the check-in was created.
-   * 
-   * @return The time the check-in was created.
-   */
-  public Date getCreatedTime() {
-    return toDateFromLongFormat(createdTime);
-  }
-
-  /**
-   * The comments for the check-in.
-   * 
-   * @return The comments for the check-in.
-   */
-  public List<Comment> getComments() {
-    return unmodifiableList(comments);
-  }
+    /**
+     * The comments for the check-in.
+     *
+     * @return The comments for the check-in.
+     */
+    public List<Comment> getComments() {
+        return unmodifiableList(comments);
+    }
 }

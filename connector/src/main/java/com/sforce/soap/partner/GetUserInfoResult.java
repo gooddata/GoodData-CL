@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class GetUserInfoResult  implements java.io.Serializable {
+public class GetUserInfoResult implements java.io.Serializable {
     private boolean accessibilityMode;
 
     private java.lang.String currencySymbol;
@@ -56,56 +56,56 @@ public class GetUserInfoResult  implements java.io.Serializable {
     }
 
     public GetUserInfoResult(
-           boolean accessibilityMode,
-           java.lang.String currencySymbol,
-           int orgAttachmentFileSizeLimit,
-           java.lang.String orgDefaultCurrencyIsoCode,
-           boolean orgDisallowHtmlAttachments,
-           boolean orgHasPersonAccounts,
-           java.lang.String organizationId,
-           boolean organizationMultiCurrency,
-           java.lang.String organizationName,
-           java.lang.String profileId,
-           java.lang.String roleId,
-           int sessionSecondsValid,
-           java.lang.String userDefaultCurrencyIsoCode,
-           java.lang.String userEmail,
-           java.lang.String userFullName,
-           java.lang.String userId,
-           java.lang.String userLanguage,
-           java.lang.String userLocale,
-           java.lang.String userName,
-           java.lang.String userTimeZone,
-           java.lang.String userType,
-           java.lang.String userUiSkin) {
-           this.accessibilityMode = accessibilityMode;
-           this.currencySymbol = currencySymbol;
-           this.orgAttachmentFileSizeLimit = orgAttachmentFileSizeLimit;
-           this.orgDefaultCurrencyIsoCode = orgDefaultCurrencyIsoCode;
-           this.orgDisallowHtmlAttachments = orgDisallowHtmlAttachments;
-           this.orgHasPersonAccounts = orgHasPersonAccounts;
-           this.organizationId = organizationId;
-           this.organizationMultiCurrency = organizationMultiCurrency;
-           this.organizationName = organizationName;
-           this.profileId = profileId;
-           this.roleId = roleId;
-           this.sessionSecondsValid = sessionSecondsValid;
-           this.userDefaultCurrencyIsoCode = userDefaultCurrencyIsoCode;
-           this.userEmail = userEmail;
-           this.userFullName = userFullName;
-           this.userId = userId;
-           this.userLanguage = userLanguage;
-           this.userLocale = userLocale;
-           this.userName = userName;
-           this.userTimeZone = userTimeZone;
-           this.userType = userType;
-           this.userUiSkin = userUiSkin;
+            boolean accessibilityMode,
+            java.lang.String currencySymbol,
+            int orgAttachmentFileSizeLimit,
+            java.lang.String orgDefaultCurrencyIsoCode,
+            boolean orgDisallowHtmlAttachments,
+            boolean orgHasPersonAccounts,
+            java.lang.String organizationId,
+            boolean organizationMultiCurrency,
+            java.lang.String organizationName,
+            java.lang.String profileId,
+            java.lang.String roleId,
+            int sessionSecondsValid,
+            java.lang.String userDefaultCurrencyIsoCode,
+            java.lang.String userEmail,
+            java.lang.String userFullName,
+            java.lang.String userId,
+            java.lang.String userLanguage,
+            java.lang.String userLocale,
+            java.lang.String userName,
+            java.lang.String userTimeZone,
+            java.lang.String userType,
+            java.lang.String userUiSkin) {
+        this.accessibilityMode = accessibilityMode;
+        this.currencySymbol = currencySymbol;
+        this.orgAttachmentFileSizeLimit = orgAttachmentFileSizeLimit;
+        this.orgDefaultCurrencyIsoCode = orgDefaultCurrencyIsoCode;
+        this.orgDisallowHtmlAttachments = orgDisallowHtmlAttachments;
+        this.orgHasPersonAccounts = orgHasPersonAccounts;
+        this.organizationId = organizationId;
+        this.organizationMultiCurrency = organizationMultiCurrency;
+        this.organizationName = organizationName;
+        this.profileId = profileId;
+        this.roleId = roleId;
+        this.sessionSecondsValid = sessionSecondsValid;
+        this.userDefaultCurrencyIsoCode = userDefaultCurrencyIsoCode;
+        this.userEmail = userEmail;
+        this.userFullName = userFullName;
+        this.userId = userId;
+        this.userLanguage = userLanguage;
+        this.userLocale = userLocale;
+        this.userName = userName;
+        this.userTimeZone = userTimeZone;
+        this.userType = userType;
+        this.userUiSkin = userUiSkin;
     }
 
 
     /**
      * Gets the accessibilityMode value for this GetUserInfoResult.
-     * 
+     *
      * @return accessibilityMode
      */
     public boolean isAccessibilityMode() {
@@ -115,7 +115,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the accessibilityMode value for this GetUserInfoResult.
-     * 
+     *
      * @param accessibilityMode
      */
     public void setAccessibilityMode(boolean accessibilityMode) {
@@ -125,7 +125,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the currencySymbol value for this GetUserInfoResult.
-     * 
+     *
      * @return currencySymbol
      */
     public java.lang.String getCurrencySymbol() {
@@ -135,7 +135,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the currencySymbol value for this GetUserInfoResult.
-     * 
+     *
      * @param currencySymbol
      */
     public void setCurrencySymbol(java.lang.String currencySymbol) {
@@ -145,7 +145,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the orgAttachmentFileSizeLimit value for this GetUserInfoResult.
-     * 
+     *
      * @return orgAttachmentFileSizeLimit
      */
     public int getOrgAttachmentFileSizeLimit() {
@@ -155,7 +155,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the orgAttachmentFileSizeLimit value for this GetUserInfoResult.
-     * 
+     *
      * @param orgAttachmentFileSizeLimit
      */
     public void setOrgAttachmentFileSizeLimit(int orgAttachmentFileSizeLimit) {
@@ -165,7 +165,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the orgDefaultCurrencyIsoCode value for this GetUserInfoResult.
-     * 
+     *
      * @return orgDefaultCurrencyIsoCode
      */
     public java.lang.String getOrgDefaultCurrencyIsoCode() {
@@ -175,7 +175,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the orgDefaultCurrencyIsoCode value for this GetUserInfoResult.
-     * 
+     *
      * @param orgDefaultCurrencyIsoCode
      */
     public void setOrgDefaultCurrencyIsoCode(java.lang.String orgDefaultCurrencyIsoCode) {
@@ -185,7 +185,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the orgDisallowHtmlAttachments value for this GetUserInfoResult.
-     * 
+     *
      * @return orgDisallowHtmlAttachments
      */
     public boolean isOrgDisallowHtmlAttachments() {
@@ -195,7 +195,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the orgDisallowHtmlAttachments value for this GetUserInfoResult.
-     * 
+     *
      * @param orgDisallowHtmlAttachments
      */
     public void setOrgDisallowHtmlAttachments(boolean orgDisallowHtmlAttachments) {
@@ -205,7 +205,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the orgHasPersonAccounts value for this GetUserInfoResult.
-     * 
+     *
      * @return orgHasPersonAccounts
      */
     public boolean isOrgHasPersonAccounts() {
@@ -215,7 +215,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the orgHasPersonAccounts value for this GetUserInfoResult.
-     * 
+     *
      * @param orgHasPersonAccounts
      */
     public void setOrgHasPersonAccounts(boolean orgHasPersonAccounts) {
@@ -225,7 +225,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the organizationId value for this GetUserInfoResult.
-     * 
+     *
      * @return organizationId
      */
     public java.lang.String getOrganizationId() {
@@ -235,7 +235,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the organizationId value for this GetUserInfoResult.
-     * 
+     *
      * @param organizationId
      */
     public void setOrganizationId(java.lang.String organizationId) {
@@ -245,7 +245,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the organizationMultiCurrency value for this GetUserInfoResult.
-     * 
+     *
      * @return organizationMultiCurrency
      */
     public boolean isOrganizationMultiCurrency() {
@@ -255,7 +255,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the organizationMultiCurrency value for this GetUserInfoResult.
-     * 
+     *
      * @param organizationMultiCurrency
      */
     public void setOrganizationMultiCurrency(boolean organizationMultiCurrency) {
@@ -265,7 +265,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the organizationName value for this GetUserInfoResult.
-     * 
+     *
      * @return organizationName
      */
     public java.lang.String getOrganizationName() {
@@ -275,7 +275,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the organizationName value for this GetUserInfoResult.
-     * 
+     *
      * @param organizationName
      */
     public void setOrganizationName(java.lang.String organizationName) {
@@ -285,7 +285,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the profileId value for this GetUserInfoResult.
-     * 
+     *
      * @return profileId
      */
     public java.lang.String getProfileId() {
@@ -295,7 +295,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the profileId value for this GetUserInfoResult.
-     * 
+     *
      * @param profileId
      */
     public void setProfileId(java.lang.String profileId) {
@@ -305,7 +305,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the roleId value for this GetUserInfoResult.
-     * 
+     *
      * @return roleId
      */
     public java.lang.String getRoleId() {
@@ -315,7 +315,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the roleId value for this GetUserInfoResult.
-     * 
+     *
      * @param roleId
      */
     public void setRoleId(java.lang.String roleId) {
@@ -325,7 +325,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the sessionSecondsValid value for this GetUserInfoResult.
-     * 
+     *
      * @return sessionSecondsValid
      */
     public int getSessionSecondsValid() {
@@ -335,7 +335,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the sessionSecondsValid value for this GetUserInfoResult.
-     * 
+     *
      * @param sessionSecondsValid
      */
     public void setSessionSecondsValid(int sessionSecondsValid) {
@@ -345,7 +345,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userDefaultCurrencyIsoCode value for this GetUserInfoResult.
-     * 
+     *
      * @return userDefaultCurrencyIsoCode
      */
     public java.lang.String getUserDefaultCurrencyIsoCode() {
@@ -355,7 +355,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userDefaultCurrencyIsoCode value for this GetUserInfoResult.
-     * 
+     *
      * @param userDefaultCurrencyIsoCode
      */
     public void setUserDefaultCurrencyIsoCode(java.lang.String userDefaultCurrencyIsoCode) {
@@ -365,7 +365,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userEmail value for this GetUserInfoResult.
-     * 
+     *
      * @return userEmail
      */
     public java.lang.String getUserEmail() {
@@ -375,7 +375,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userEmail value for this GetUserInfoResult.
-     * 
+     *
      * @param userEmail
      */
     public void setUserEmail(java.lang.String userEmail) {
@@ -385,7 +385,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userFullName value for this GetUserInfoResult.
-     * 
+     *
      * @return userFullName
      */
     public java.lang.String getUserFullName() {
@@ -395,7 +395,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userFullName value for this GetUserInfoResult.
-     * 
+     *
      * @param userFullName
      */
     public void setUserFullName(java.lang.String userFullName) {
@@ -405,7 +405,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userId value for this GetUserInfoResult.
-     * 
+     *
      * @return userId
      */
     public java.lang.String getUserId() {
@@ -415,7 +415,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userId value for this GetUserInfoResult.
-     * 
+     *
      * @param userId
      */
     public void setUserId(java.lang.String userId) {
@@ -425,7 +425,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userLanguage value for this GetUserInfoResult.
-     * 
+     *
      * @return userLanguage
      */
     public java.lang.String getUserLanguage() {
@@ -435,7 +435,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userLanguage value for this GetUserInfoResult.
-     * 
+     *
      * @param userLanguage
      */
     public void setUserLanguage(java.lang.String userLanguage) {
@@ -445,7 +445,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userLocale value for this GetUserInfoResult.
-     * 
+     *
      * @return userLocale
      */
     public java.lang.String getUserLocale() {
@@ -455,7 +455,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userLocale value for this GetUserInfoResult.
-     * 
+     *
      * @param userLocale
      */
     public void setUserLocale(java.lang.String userLocale) {
@@ -465,7 +465,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userName value for this GetUserInfoResult.
-     * 
+     *
      * @return userName
      */
     public java.lang.String getUserName() {
@@ -475,7 +475,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userName value for this GetUserInfoResult.
-     * 
+     *
      * @param userName
      */
     public void setUserName(java.lang.String userName) {
@@ -485,7 +485,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userTimeZone value for this GetUserInfoResult.
-     * 
+     *
      * @return userTimeZone
      */
     public java.lang.String getUserTimeZone() {
@@ -495,7 +495,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userTimeZone value for this GetUserInfoResult.
-     * 
+     *
      * @param userTimeZone
      */
     public void setUserTimeZone(java.lang.String userTimeZone) {
@@ -505,7 +505,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userType value for this GetUserInfoResult.
-     * 
+     *
      * @return userType
      */
     public java.lang.String getUserType() {
@@ -515,7 +515,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userType value for this GetUserInfoResult.
-     * 
+     *
      * @param userType
      */
     public void setUserType(java.lang.String userType) {
@@ -525,7 +525,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Gets the userUiSkin value for this GetUserInfoResult.
-     * 
+     *
      * @return userUiSkin
      */
     public java.lang.String getUserUiSkin() {
@@ -535,7 +535,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     /**
      * Sets the userUiSkin value for this GetUserInfoResult.
-     * 
+     *
      * @param userUiSkin
      */
     public void setUserUiSkin(java.lang.String userUiSkin) {
@@ -543,6 +543,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GetUserInfoResult)) return false;
         GetUserInfoResult other = (GetUserInfoResult) obj;
@@ -553,66 +554,67 @@ public class GetUserInfoResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.accessibilityMode == other.isAccessibilityMode() &&
-            ((this.currencySymbol==null && other.getCurrencySymbol()==null) || 
-             (this.currencySymbol!=null &&
-              this.currencySymbol.equals(other.getCurrencySymbol()))) &&
-            this.orgAttachmentFileSizeLimit == other.getOrgAttachmentFileSizeLimit() &&
-            ((this.orgDefaultCurrencyIsoCode==null && other.getOrgDefaultCurrencyIsoCode()==null) || 
-             (this.orgDefaultCurrencyIsoCode!=null &&
-              this.orgDefaultCurrencyIsoCode.equals(other.getOrgDefaultCurrencyIsoCode()))) &&
-            this.orgDisallowHtmlAttachments == other.isOrgDisallowHtmlAttachments() &&
-            this.orgHasPersonAccounts == other.isOrgHasPersonAccounts() &&
-            ((this.organizationId==null && other.getOrganizationId()==null) || 
-             (this.organizationId!=null &&
-              this.organizationId.equals(other.getOrganizationId()))) &&
-            this.organizationMultiCurrency == other.isOrganizationMultiCurrency() &&
-            ((this.organizationName==null && other.getOrganizationName()==null) || 
-             (this.organizationName!=null &&
-              this.organizationName.equals(other.getOrganizationName()))) &&
-            ((this.profileId==null && other.getProfileId()==null) || 
-             (this.profileId!=null &&
-              this.profileId.equals(other.getProfileId()))) &&
-            ((this.roleId==null && other.getRoleId()==null) || 
-             (this.roleId!=null &&
-              this.roleId.equals(other.getRoleId()))) &&
-            this.sessionSecondsValid == other.getSessionSecondsValid() &&
-            ((this.userDefaultCurrencyIsoCode==null && other.getUserDefaultCurrencyIsoCode()==null) || 
-             (this.userDefaultCurrencyIsoCode!=null &&
-              this.userDefaultCurrencyIsoCode.equals(other.getUserDefaultCurrencyIsoCode()))) &&
-            ((this.userEmail==null && other.getUserEmail()==null) || 
-             (this.userEmail!=null &&
-              this.userEmail.equals(other.getUserEmail()))) &&
-            ((this.userFullName==null && other.getUserFullName()==null) || 
-             (this.userFullName!=null &&
-              this.userFullName.equals(other.getUserFullName()))) &&
-            ((this.userId==null && other.getUserId()==null) || 
-             (this.userId!=null &&
-              this.userId.equals(other.getUserId()))) &&
-            ((this.userLanguage==null && other.getUserLanguage()==null) || 
-             (this.userLanguage!=null &&
-              this.userLanguage.equals(other.getUserLanguage()))) &&
-            ((this.userLocale==null && other.getUserLocale()==null) || 
-             (this.userLocale!=null &&
-              this.userLocale.equals(other.getUserLocale()))) &&
-            ((this.userName==null && other.getUserName()==null) || 
-             (this.userName!=null &&
-              this.userName.equals(other.getUserName()))) &&
-            ((this.userTimeZone==null && other.getUserTimeZone()==null) || 
-             (this.userTimeZone!=null &&
-              this.userTimeZone.equals(other.getUserTimeZone()))) &&
-            ((this.userType==null && other.getUserType()==null) || 
-             (this.userType!=null &&
-              this.userType.equals(other.getUserType()))) &&
-            ((this.userUiSkin==null && other.getUserUiSkin()==null) || 
-             (this.userUiSkin!=null &&
-              this.userUiSkin.equals(other.getUserUiSkin())));
+        _equals = true &&
+                this.accessibilityMode == other.isAccessibilityMode() &&
+                ((this.currencySymbol == null && other.getCurrencySymbol() == null) ||
+                        (this.currencySymbol != null &&
+                                this.currencySymbol.equals(other.getCurrencySymbol()))) &&
+                this.orgAttachmentFileSizeLimit == other.getOrgAttachmentFileSizeLimit() &&
+                ((this.orgDefaultCurrencyIsoCode == null && other.getOrgDefaultCurrencyIsoCode() == null) ||
+                        (this.orgDefaultCurrencyIsoCode != null &&
+                                this.orgDefaultCurrencyIsoCode.equals(other.getOrgDefaultCurrencyIsoCode()))) &&
+                this.orgDisallowHtmlAttachments == other.isOrgDisallowHtmlAttachments() &&
+                this.orgHasPersonAccounts == other.isOrgHasPersonAccounts() &&
+                ((this.organizationId == null && other.getOrganizationId() == null) ||
+                        (this.organizationId != null &&
+                                this.organizationId.equals(other.getOrganizationId()))) &&
+                this.organizationMultiCurrency == other.isOrganizationMultiCurrency() &&
+                ((this.organizationName == null && other.getOrganizationName() == null) ||
+                        (this.organizationName != null &&
+                                this.organizationName.equals(other.getOrganizationName()))) &&
+                ((this.profileId == null && other.getProfileId() == null) ||
+                        (this.profileId != null &&
+                                this.profileId.equals(other.getProfileId()))) &&
+                ((this.roleId == null && other.getRoleId() == null) ||
+                        (this.roleId != null &&
+                                this.roleId.equals(other.getRoleId()))) &&
+                this.sessionSecondsValid == other.getSessionSecondsValid() &&
+                ((this.userDefaultCurrencyIsoCode == null && other.getUserDefaultCurrencyIsoCode() == null) ||
+                        (this.userDefaultCurrencyIsoCode != null &&
+                                this.userDefaultCurrencyIsoCode.equals(other.getUserDefaultCurrencyIsoCode()))) &&
+                ((this.userEmail == null && other.getUserEmail() == null) ||
+                        (this.userEmail != null &&
+                                this.userEmail.equals(other.getUserEmail()))) &&
+                ((this.userFullName == null && other.getUserFullName() == null) ||
+                        (this.userFullName != null &&
+                                this.userFullName.equals(other.getUserFullName()))) &&
+                ((this.userId == null && other.getUserId() == null) ||
+                        (this.userId != null &&
+                                this.userId.equals(other.getUserId()))) &&
+                ((this.userLanguage == null && other.getUserLanguage() == null) ||
+                        (this.userLanguage != null &&
+                                this.userLanguage.equals(other.getUserLanguage()))) &&
+                ((this.userLocale == null && other.getUserLocale() == null) ||
+                        (this.userLocale != null &&
+                                this.userLocale.equals(other.getUserLocale()))) &&
+                ((this.userName == null && other.getUserName() == null) ||
+                        (this.userName != null &&
+                                this.userName.equals(other.getUserName()))) &&
+                ((this.userTimeZone == null && other.getUserTimeZone() == null) ||
+                        (this.userTimeZone != null &&
+                                this.userTimeZone.equals(other.getUserTimeZone()))) &&
+                ((this.userType == null && other.getUserType() == null) ||
+                        (this.userType != null &&
+                                this.userType.equals(other.getUserType()))) &&
+                ((this.userUiSkin == null && other.getUserUiSkin() == null) ||
+                        (this.userUiSkin != null &&
+                                this.userUiSkin.equals(other.getUserUiSkin())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -679,7 +681,7 @@ public class GetUserInfoResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(GetUserInfoResult.class, true);
+            new org.apache.axis.description.TypeDesc(GetUserInfoResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "GetUserInfoResult"));
@@ -828,24 +830,24 @@ public class GetUserInfoResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

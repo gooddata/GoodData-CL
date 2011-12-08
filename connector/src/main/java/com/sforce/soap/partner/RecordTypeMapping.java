@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class RecordTypeMapping  implements java.io.Serializable {
+public class RecordTypeMapping implements java.io.Serializable {
     private boolean available;
 
     private boolean defaultRecordTypeMapping;
@@ -24,24 +24,24 @@ public class RecordTypeMapping  implements java.io.Serializable {
     }
 
     public RecordTypeMapping(
-           boolean available,
-           boolean defaultRecordTypeMapping,
-           java.lang.String layoutId,
-           java.lang.String name,
-           com.sforce.soap.partner.PicklistForRecordType[] picklistsForRecordType,
-           java.lang.String recordTypeId) {
-           this.available = available;
-           this.defaultRecordTypeMapping = defaultRecordTypeMapping;
-           this.layoutId = layoutId;
-           this.name = name;
-           this.picklistsForRecordType = picklistsForRecordType;
-           this.recordTypeId = recordTypeId;
+            boolean available,
+            boolean defaultRecordTypeMapping,
+            java.lang.String layoutId,
+            java.lang.String name,
+            com.sforce.soap.partner.PicklistForRecordType[] picklistsForRecordType,
+            java.lang.String recordTypeId) {
+        this.available = available;
+        this.defaultRecordTypeMapping = defaultRecordTypeMapping;
+        this.layoutId = layoutId;
+        this.name = name;
+        this.picklistsForRecordType = picklistsForRecordType;
+        this.recordTypeId = recordTypeId;
     }
 
 
     /**
      * Gets the available value for this RecordTypeMapping.
-     * 
+     *
      * @return available
      */
     public boolean isAvailable() {
@@ -51,7 +51,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Sets the available value for this RecordTypeMapping.
-     * 
+     *
      * @param available
      */
     public void setAvailable(boolean available) {
@@ -61,7 +61,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Gets the defaultRecordTypeMapping value for this RecordTypeMapping.
-     * 
+     *
      * @return defaultRecordTypeMapping
      */
     public boolean isDefaultRecordTypeMapping() {
@@ -71,7 +71,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Sets the defaultRecordTypeMapping value for this RecordTypeMapping.
-     * 
+     *
      * @param defaultRecordTypeMapping
      */
     public void setDefaultRecordTypeMapping(boolean defaultRecordTypeMapping) {
@@ -81,7 +81,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Gets the layoutId value for this RecordTypeMapping.
-     * 
+     *
      * @return layoutId
      */
     public java.lang.String getLayoutId() {
@@ -91,7 +91,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Sets the layoutId value for this RecordTypeMapping.
-     * 
+     *
      * @param layoutId
      */
     public void setLayoutId(java.lang.String layoutId) {
@@ -101,7 +101,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Gets the name value for this RecordTypeMapping.
-     * 
+     *
      * @return name
      */
     public java.lang.String getName() {
@@ -111,7 +111,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Sets the name value for this RecordTypeMapping.
-     * 
+     *
      * @param name
      */
     public void setName(java.lang.String name) {
@@ -121,7 +121,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Gets the picklistsForRecordType value for this RecordTypeMapping.
-     * 
+     *
      * @return picklistsForRecordType
      */
     public com.sforce.soap.partner.PicklistForRecordType[] getPicklistsForRecordType() {
@@ -131,7 +131,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Sets the picklistsForRecordType value for this RecordTypeMapping.
-     * 
+     *
      * @param picklistsForRecordType
      */
     public void setPicklistsForRecordType(com.sforce.soap.partner.PicklistForRecordType[] picklistsForRecordType) {
@@ -149,7 +149,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Gets the recordTypeId value for this RecordTypeMapping.
-     * 
+     *
      * @return recordTypeId
      */
     public java.lang.String getRecordTypeId() {
@@ -159,7 +159,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     /**
      * Sets the recordTypeId value for this RecordTypeMapping.
-     * 
+     *
      * @param recordTypeId
      */
     public void setRecordTypeId(java.lang.String recordTypeId) {
@@ -167,6 +167,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof RecordTypeMapping)) return false;
         RecordTypeMapping other = (RecordTypeMapping) obj;
@@ -177,26 +178,27 @@ public class RecordTypeMapping  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.available == other.isAvailable() &&
-            this.defaultRecordTypeMapping == other.isDefaultRecordTypeMapping() &&
-            ((this.layoutId==null && other.getLayoutId()==null) || 
-             (this.layoutId!=null &&
-              this.layoutId.equals(other.getLayoutId()))) &&
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName()))) &&
-            ((this.picklistsForRecordType==null && other.getPicklistsForRecordType()==null) || 
-             (this.picklistsForRecordType!=null &&
-              java.util.Arrays.equals(this.picklistsForRecordType, other.getPicklistsForRecordType()))) &&
-            ((this.recordTypeId==null && other.getRecordTypeId()==null) || 
-             (this.recordTypeId!=null &&
-              this.recordTypeId.equals(other.getRecordTypeId())));
+        _equals = true &&
+                this.available == other.isAvailable() &&
+                this.defaultRecordTypeMapping == other.isDefaultRecordTypeMapping() &&
+                ((this.layoutId == null && other.getLayoutId() == null) ||
+                        (this.layoutId != null &&
+                                this.layoutId.equals(other.getLayoutId()))) &&
+                ((this.name == null && other.getName() == null) ||
+                        (this.name != null &&
+                                this.name.equals(other.getName()))) &&
+                ((this.picklistsForRecordType == null && other.getPicklistsForRecordType() == null) ||
+                        (this.picklistsForRecordType != null &&
+                                java.util.Arrays.equals(this.picklistsForRecordType, other.getPicklistsForRecordType()))) &&
+                ((this.recordTypeId == null && other.getRecordTypeId() == null) ||
+                        (this.recordTypeId != null &&
+                                this.recordTypeId.equals(other.getRecordTypeId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -212,12 +214,12 @@ public class RecordTypeMapping  implements java.io.Serializable {
             _hashCode += getName().hashCode();
         }
         if (getPicklistsForRecordType() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getPicklistsForRecordType());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getPicklistsForRecordType());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getPicklistsForRecordType(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -231,7 +233,7 @@ public class RecordTypeMapping  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RecordTypeMapping.class, true);
+            new org.apache.axis.description.TypeDesc(RecordTypeMapping.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "RecordTypeMapping"));
@@ -286,24 +288,24 @@ public class RecordTypeMapping  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

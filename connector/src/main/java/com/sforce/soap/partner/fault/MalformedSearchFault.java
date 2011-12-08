@@ -7,23 +7,24 @@
 
 package com.sforce.soap.partner.fault;
 
-public class MalformedSearchFault  extends com.sforce.soap.partner.fault.ApiQueryFault  implements java.io.Serializable {
+public class MalformedSearchFault extends com.sforce.soap.partner.fault.ApiQueryFault implements java.io.Serializable {
     public MalformedSearchFault() {
     }
 
     public MalformedSearchFault(
-           com.sforce.soap.partner.fault.ExceptionCode exceptionCode,
-           java.lang.String exceptionMessage,
-           int row,
-           int column) {
+            com.sforce.soap.partner.fault.ExceptionCode exceptionCode,
+            java.lang.String exceptionMessage,
+            int row,
+            int column) {
         super(
-            exceptionCode,
-            exceptionMessage,
-            row,
-            column);
+                exceptionCode,
+                exceptionMessage,
+                row,
+                column);
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MalformedSearchFault)) return false;
         MalformedSearchFault other = (MalformedSearchFault) obj;
@@ -40,6 +41,7 @@ public class MalformedSearchFault  extends com.sforce.soap.partner.fault.ApiQuer
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -52,7 +54,7 @@ public class MalformedSearchFault  extends com.sforce.soap.partner.fault.ApiQuer
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(MalformedSearchFault.class, true);
+            new org.apache.axis.description.TypeDesc(MalformedSearchFault.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:fault.partner.soap.sforce.com", "MalformedSearchFault"));
@@ -69,24 +71,24 @@ public class MalformedSearchFault  extends com.sforce.soap.partner.fault.ApiQuer
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 

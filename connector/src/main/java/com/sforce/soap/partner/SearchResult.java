@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class SearchResult  implements java.io.Serializable {
+public class SearchResult implements java.io.Serializable {
     private com.sforce.soap.partner.SearchRecord[] searchRecords;
 
     private java.lang.String sforceReserved;
@@ -16,16 +16,16 @@ public class SearchResult  implements java.io.Serializable {
     }
 
     public SearchResult(
-           com.sforce.soap.partner.SearchRecord[] searchRecords,
-           java.lang.String sforceReserved) {
-           this.searchRecords = searchRecords;
-           this.sforceReserved = sforceReserved;
+            com.sforce.soap.partner.SearchRecord[] searchRecords,
+            java.lang.String sforceReserved) {
+        this.searchRecords = searchRecords;
+        this.sforceReserved = sforceReserved;
     }
 
 
     /**
      * Gets the searchRecords value for this SearchResult.
-     * 
+     *
      * @return searchRecords
      */
     public com.sforce.soap.partner.SearchRecord[] getSearchRecords() {
@@ -35,7 +35,7 @@ public class SearchResult  implements java.io.Serializable {
 
     /**
      * Sets the searchRecords value for this SearchResult.
-     * 
+     *
      * @param searchRecords
      */
     public void setSearchRecords(com.sforce.soap.partner.SearchRecord[] searchRecords) {
@@ -53,7 +53,7 @@ public class SearchResult  implements java.io.Serializable {
 
     /**
      * Gets the sforceReserved value for this SearchResult.
-     * 
+     *
      * @return sforceReserved
      */
     public java.lang.String getSforceReserved() {
@@ -63,7 +63,7 @@ public class SearchResult  implements java.io.Serializable {
 
     /**
      * Sets the sforceReserved value for this SearchResult.
-     * 
+     *
      * @param sforceReserved
      */
     public void setSforceReserved(java.lang.String sforceReserved) {
@@ -71,6 +71,7 @@ public class SearchResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SearchResult)) return false;
         SearchResult other = (SearchResult) obj;
@@ -81,18 +82,19 @@ public class SearchResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.searchRecords==null && other.getSearchRecords()==null) || 
-             (this.searchRecords!=null &&
-              java.util.Arrays.equals(this.searchRecords, other.getSearchRecords()))) &&
-            ((this.sforceReserved==null && other.getSforceReserved()==null) || 
-             (this.sforceReserved!=null &&
-              this.sforceReserved.equals(other.getSforceReserved())));
+        _equals = true &&
+                ((this.searchRecords == null && other.getSearchRecords() == null) ||
+                        (this.searchRecords != null &&
+                                java.util.Arrays.equals(this.searchRecords, other.getSearchRecords()))) &&
+                ((this.sforceReserved == null && other.getSforceReserved() == null) ||
+                        (this.sforceReserved != null &&
+                                this.sforceReserved.equals(other.getSforceReserved())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -100,12 +102,12 @@ public class SearchResult  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getSearchRecords() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getSearchRecords());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getSearchRecords());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getSearchRecords(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -119,7 +121,7 @@ public class SearchResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(SearchResult.class, true);
+            new org.apache.axis.description.TypeDesc(SearchResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "SearchResult"));
@@ -151,24 +153,24 @@ public class SearchResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

@@ -24,12 +24,11 @@
 package com.gooddata.processor;
 
 import com.gooddata.connector.Connector;
+import com.gooddata.exception.HttpMethodException;
 import com.gooddata.exception.InvalidArgumentException;
 import com.gooddata.exception.InvalidCommandException;
 import com.gooddata.exception.InvalidParameterException;
-import com.gooddata.exception.HttpMethodException;
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
-import com.gooddata.integration.ftp.GdcFTPApiWrapper;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.integration.webdav.GdcWebDavApiWrapper;
@@ -72,22 +71,24 @@ public class ProcessingContext {
 
     /**
      * Retrieves a connector and checks if it has been initialized
+     *
      * @return connector
      */
     public Connector getConnectorMandatory() {
         Connector cc = getConnector();
-        if(cc == null)
+        if (cc == null)
             throw new InvalidCommandException("No connector initialized. Please load connector using a UseXXX command.");
         return cc;
     }
 
     /**
      * Retrieves a project id and checks if it has been initialized
+     *
      * @return project id
      */
     public String getProjectIdMandatory() {
         String pid = getProjectId();
-        if(pid == null || pid.length()<=0)
+        if (pid == null || pid.length() <= 0)
             throw new InvalidCommandException("No active project. Please activate a project using CreateProject, " +
                     "OpenProject, or UseProject commands.");
         return pid;
@@ -95,32 +96,32 @@ public class ProcessingContext {
 
 
     public GdcRESTApiWrapper getRestApi(CliParams cliParams) throws HttpMethodException {
-    	if (_restApi == null) {
+        if (_restApi == null) {
             NamePasswordConfiguration httpConfig = cliParams.getHttpConfig();
             checkConfig(httpConfig);
             l.debug("Using the GoodData HTTP host '" + httpConfig.getGdcHost() + "'.");
             _restApi = new GdcRESTApiWrapper(httpConfig);
             _restApi.login();
-    	}
-    	return _restApi;
+        }
+        return _restApi;
     }
 
     public GdcDataTransferAPI getFtpApi(CliParams cliParams) {
-    	if (_ftpApi == null) {
+        if (_ftpApi == null) {
             NamePasswordConfiguration ftpConfig = cliParams.getFtpConfig();
             checkConfig(ftpConfig);
-	        l.debug("Using the GoodData data stage host '" + ftpConfig.getGdcHost() + "'.");
+            l.debug("Using the GoodData data stage host '" + ftpConfig.getGdcHost() + "'.");
             _ftpApi = new GdcWebDavApiWrapper(ftpConfig);
-    	}
-    	return _ftpApi;
+        }
+        return _ftpApi;
     }
 
     private static void checkConfig(NamePasswordConfiguration config) {
         if (config.getUsername() == null) {
-        	throw new InvalidArgumentException("Missing the 'username' commandline parameter.");
+            throw new InvalidArgumentException("Missing the 'username' commandline parameter.");
         }
         if (config.getPassword() == null) {
-        	throw new InvalidArgumentException("Missing the 'password' commandline parameter.");
+            throw new InvalidArgumentException("Missing the 'password' commandline parameter.");
         }
     }
 }

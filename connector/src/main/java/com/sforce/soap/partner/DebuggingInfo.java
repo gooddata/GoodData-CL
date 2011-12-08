@@ -7,21 +7,21 @@
 
 package com.sforce.soap.partner;
 
-public class DebuggingInfo  implements java.io.Serializable {
+public class DebuggingInfo implements java.io.Serializable {
     private java.lang.String debugLog;
 
     public DebuggingInfo() {
     }
 
     public DebuggingInfo(
-           java.lang.String debugLog) {
-           this.debugLog = debugLog;
+            java.lang.String debugLog) {
+        this.debugLog = debugLog;
     }
 
 
     /**
      * Gets the debugLog value for this DebuggingInfo.
-     * 
+     *
      * @return debugLog
      */
     public java.lang.String getDebugLog() {
@@ -31,7 +31,7 @@ public class DebuggingInfo  implements java.io.Serializable {
 
     /**
      * Sets the debugLog value for this DebuggingInfo.
-     * 
+     *
      * @param debugLog
      */
     public void setDebugLog(java.lang.String debugLog) {
@@ -39,6 +39,7 @@ public class DebuggingInfo  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DebuggingInfo)) return false;
         DebuggingInfo other = (DebuggingInfo) obj;
@@ -49,15 +50,16 @@ public class DebuggingInfo  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.debugLog==null && other.getDebugLog()==null) || 
-             (this.debugLog!=null &&
-              this.debugLog.equals(other.getDebugLog())));
+        _equals = true &&
+                ((this.debugLog == null && other.getDebugLog() == null) ||
+                        (this.debugLog != null &&
+                                this.debugLog.equals(other.getDebugLog())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -73,7 +75,7 @@ public class DebuggingInfo  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DebuggingInfo.class, true);
+            new org.apache.axis.description.TypeDesc(DebuggingInfo.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">DebuggingInfo"));
@@ -96,24 +98,24 @@ public class DebuggingInfo  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

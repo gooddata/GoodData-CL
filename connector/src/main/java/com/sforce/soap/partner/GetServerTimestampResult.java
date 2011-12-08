@@ -7,21 +7,21 @@
 
 package com.sforce.soap.partner;
 
-public class GetServerTimestampResult  implements java.io.Serializable {
+public class GetServerTimestampResult implements java.io.Serializable {
     private java.util.Calendar timestamp;
 
     public GetServerTimestampResult() {
     }
 
     public GetServerTimestampResult(
-           java.util.Calendar timestamp) {
-           this.timestamp = timestamp;
+            java.util.Calendar timestamp) {
+        this.timestamp = timestamp;
     }
 
 
     /**
      * Gets the timestamp value for this GetServerTimestampResult.
-     * 
+     *
      * @return timestamp
      */
     public java.util.Calendar getTimestamp() {
@@ -31,7 +31,7 @@ public class GetServerTimestampResult  implements java.io.Serializable {
 
     /**
      * Sets the timestamp value for this GetServerTimestampResult.
-     * 
+     *
      * @param timestamp
      */
     public void setTimestamp(java.util.Calendar timestamp) {
@@ -39,6 +39,7 @@ public class GetServerTimestampResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GetServerTimestampResult)) return false;
         GetServerTimestampResult other = (GetServerTimestampResult) obj;
@@ -49,15 +50,16 @@ public class GetServerTimestampResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.timestamp==null && other.getTimestamp()==null) || 
-             (this.timestamp!=null &&
-              this.timestamp.equals(other.getTimestamp())));
+        _equals = true &&
+                ((this.timestamp == null && other.getTimestamp() == null) ||
+                        (this.timestamp != null &&
+                                this.timestamp.equals(other.getTimestamp())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -73,7 +75,7 @@ public class GetServerTimestampResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(GetServerTimestampResult.class, true);
+            new org.apache.axis.description.TypeDesc(GetServerTimestampResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "GetServerTimestampResult"));
@@ -96,24 +98,24 @@ public class GetServerTimestampResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class SendEmailError  implements java.io.Serializable {
+public class SendEmailError implements java.io.Serializable {
     private java.lang.String[] fields;
 
     private java.lang.String message;
@@ -20,20 +20,20 @@ public class SendEmailError  implements java.io.Serializable {
     }
 
     public SendEmailError(
-           java.lang.String[] fields,
-           java.lang.String message,
-           com.sforce.soap.partner.StatusCode statusCode,
-           java.lang.String targetObjectId) {
-           this.fields = fields;
-           this.message = message;
-           this.statusCode = statusCode;
-           this.targetObjectId = targetObjectId;
+            java.lang.String[] fields,
+            java.lang.String message,
+            com.sforce.soap.partner.StatusCode statusCode,
+            java.lang.String targetObjectId) {
+        this.fields = fields;
+        this.message = message;
+        this.statusCode = statusCode;
+        this.targetObjectId = targetObjectId;
     }
 
 
     /**
      * Gets the fields value for this SendEmailError.
-     * 
+     *
      * @return fields
      */
     public java.lang.String[] getFields() {
@@ -43,7 +43,7 @@ public class SendEmailError  implements java.io.Serializable {
 
     /**
      * Sets the fields value for this SendEmailError.
-     * 
+     *
      * @param fields
      */
     public void setFields(java.lang.String[] fields) {
@@ -61,7 +61,7 @@ public class SendEmailError  implements java.io.Serializable {
 
     /**
      * Gets the message value for this SendEmailError.
-     * 
+     *
      * @return message
      */
     public java.lang.String getMessage() {
@@ -71,7 +71,7 @@ public class SendEmailError  implements java.io.Serializable {
 
     /**
      * Sets the message value for this SendEmailError.
-     * 
+     *
      * @param message
      */
     public void setMessage(java.lang.String message) {
@@ -81,7 +81,7 @@ public class SendEmailError  implements java.io.Serializable {
 
     /**
      * Gets the statusCode value for this SendEmailError.
-     * 
+     *
      * @return statusCode
      */
     public com.sforce.soap.partner.StatusCode getStatusCode() {
@@ -91,7 +91,7 @@ public class SendEmailError  implements java.io.Serializable {
 
     /**
      * Sets the statusCode value for this SendEmailError.
-     * 
+     *
      * @param statusCode
      */
     public void setStatusCode(com.sforce.soap.partner.StatusCode statusCode) {
@@ -101,7 +101,7 @@ public class SendEmailError  implements java.io.Serializable {
 
     /**
      * Gets the targetObjectId value for this SendEmailError.
-     * 
+     *
      * @return targetObjectId
      */
     public java.lang.String getTargetObjectId() {
@@ -111,7 +111,7 @@ public class SendEmailError  implements java.io.Serializable {
 
     /**
      * Sets the targetObjectId value for this SendEmailError.
-     * 
+     *
      * @param targetObjectId
      */
     public void setTargetObjectId(java.lang.String targetObjectId) {
@@ -119,6 +119,7 @@ public class SendEmailError  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SendEmailError)) return false;
         SendEmailError other = (SendEmailError) obj;
@@ -129,24 +130,25 @@ public class SendEmailError  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.fields==null && other.getFields()==null) || 
-             (this.fields!=null &&
-              java.util.Arrays.equals(this.fields, other.getFields()))) &&
-            ((this.message==null && other.getMessage()==null) || 
-             (this.message!=null &&
-              this.message.equals(other.getMessage()))) &&
-            ((this.statusCode==null && other.getStatusCode()==null) || 
-             (this.statusCode!=null &&
-              this.statusCode.equals(other.getStatusCode()))) &&
-            ((this.targetObjectId==null && other.getTargetObjectId()==null) || 
-             (this.targetObjectId!=null &&
-              this.targetObjectId.equals(other.getTargetObjectId())));
+        _equals = true &&
+                ((this.fields == null && other.getFields() == null) ||
+                        (this.fields != null &&
+                                java.util.Arrays.equals(this.fields, other.getFields()))) &&
+                ((this.message == null && other.getMessage() == null) ||
+                        (this.message != null &&
+                                this.message.equals(other.getMessage()))) &&
+                ((this.statusCode == null && other.getStatusCode() == null) ||
+                        (this.statusCode != null &&
+                                this.statusCode.equals(other.getStatusCode()))) &&
+                ((this.targetObjectId == null && other.getTargetObjectId() == null) ||
+                        (this.targetObjectId != null &&
+                                this.targetObjectId.equals(other.getTargetObjectId())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -154,12 +156,12 @@ public class SendEmailError  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getFields() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getFields());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getFields());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getFields(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -179,7 +181,7 @@ public class SendEmailError  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(SendEmailError.class, true);
+            new org.apache.axis.description.TypeDesc(SendEmailError.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "SendEmailError"));
@@ -222,24 +224,24 @@ public class SendEmailError  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

@@ -23,12 +23,11 @@
 
 package com.gooddata.integration.model;
 
-import java.util.List;
-
+import com.gooddata.Constants;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import com.gooddata.Constants;
+import java.util.List;
 
 /**
  * GoodData Data Loading Interface (SLI)
@@ -100,10 +99,10 @@ public class SLI {
     }
 
 
-
     /**
      * Returns the SLI manifest that determines how the data are loaded to the GDC platform.
      * The manifest must replace the default manifest in the template.
+     *
      * @param columns SLI columns
      * @return the SLI manifest content.
      */
@@ -111,22 +110,22 @@ public class SLI {
         JSONObject omf = new JSONObject();
         JSONObject oDataSetManifest = new JSONObject();
         JSONArray oParts = new JSONArray();
-        for(Column column : columns) {
+        for (Column column : columns) {
             JSONObject oPart = new JSONObject();
             oPart.put("columnName", column.getName());
             oPart.put("mode", column.getMode());
             oPart.put("populates", column.getPopulates());
             String fmt = column.getFormat();
-            if(fmt != null && fmt.length()>0) {
+            if (fmt != null && fmt.length() > 0) {
                 JSONObject constraints = new JSONObject();
-                if(Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
+                if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
                     fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
                 }
-                constraints.put("date",fmt);
-                oPart.put("constraints",constraints);
+                constraints.put("date", fmt);
+                oPart.put("constraints", constraints);
             }
             int referenceKey = column.getReferenceKey();
-            if(referenceKey > 0)
+            if (referenceKey > 0)
                 oPart.put("referenceKey", referenceKey);
 
             oParts.add(oPart);
@@ -135,10 +134,10 @@ public class SLI {
         oDataSetManifest.put("file", "data.csv");
         oDataSetManifest.put("dataSet", id);
         JSONObject params = new JSONObject();
-        params.put("quoteChar","\"");
-        params.put("escapeChar","\"");
-        params.put("separatorChar",",");
-        params.put("endOfLine","\n");
+        params.put("quoteChar", "\"");
+        params.put("escapeChar", "\"");
+        params.put("separatorChar", ",");
+        params.put("endOfLine", "\n");
         oDataSetManifest.put("csvParams", params);
         omf.put("dataSetSLIManifest", oDataSetManifest);
         return omf.toString(2);

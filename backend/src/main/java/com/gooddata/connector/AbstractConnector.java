@@ -23,15 +23,6 @@
 
 package com.gooddata.connector;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-
 import com.gooddata.Constants;
 import com.gooddata.exception.GdcIntegrationErrorException;
 import com.gooddata.exception.InvalidParameterException;
@@ -50,6 +41,14 @@ import com.gooddata.transform.Transformer;
 import com.gooddata.util.CSVReader;
 import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * GoodData abstract connector implements functionality that can be reused in several connectors.
@@ -95,7 +94,6 @@ public abstract class AbstractConnector implements Connector {
     }
 
 
-
     /**
      * {@inheritDoc}
      */
@@ -114,8 +112,9 @@ public abstract class AbstractConnector implements Connector {
 
     /**
      * Copies the extracted data and transform them
-     * @param cr - reader
-     * @param cw - writer
+     *
+     * @param cr         - reader
+     * @param cw         - writer
      * @param transform  - perform transformations?
      * @param dateLength - cuts the fate to first dateLength chars
      * @return number of extracted rows
@@ -129,16 +128,15 @@ public abstract class AbstractConnector implements Connector {
         int rowCnt = 0;
         while (row != null) {
             rowCnt++;
-            if(row.length == 1 && row[0].length() == 0) {
+            if (row.length == 1 && row[0].length() == 0) {
                 row = cr.readNext();
                 continue;
             }
-            if(transform) {
+            if (transform) {
                 try {
                     row = t.transformRow(row, dateLength);
-                }
-                catch (InvalidParameterException e) {
-                    throw new InvalidParameterException(e.getMessage()+" Error occured at row "+rowCnt);
+                } catch (InvalidParameterException e) {
+                    throw new InvalidParameterException(e.getMessage() + " Error occured at row " + rowCnt);
                 }
             }
             cw.writeNext(row);
@@ -152,7 +150,8 @@ public abstract class AbstractConnector implements Connector {
 
     /**
      * Extract rows
-     * @param file name of the target file
+     *
+     * @param file      name of the target file
      * @param transform perform transformations
      * @throws IOException
      */
@@ -167,12 +166,13 @@ public abstract class AbstractConnector implements Connector {
                 GdcRESTApiWrapper.DLI_MANIFEST_FILENAME;
         String cn = sli.getSLIManifest(columns);
         FileUtil.writeStringToFile(cn, fn);
-        l.debug("Manifest file written to file '"+fn+"'. Content: "+cn);
+        l.debug("Manifest file written to file '" + fn + "'. Content: " + cn);
         FileUtil.compressDir(dir, archiveName);
     }
 
     /**
      * Initializes the source and PDM schemas from the config file
+     *
      * @param configFileName the config file
      * @throws IOException in cas the config file doesn't exists
      */
@@ -183,33 +183,32 @@ public abstract class AbstractConnector implements Connector {
 
     public static void expandDates(SourceSchema s) {
         List<SourceColumn> dates = s.getDates();
-        if(dates != null && dates.size()>0) {
-            for(SourceColumn d : dates) {
+        if (dates != null && dates.size() > 0) {
+            for (SourceColumn d : dates) {
                 String scid = d.getName();
-                SourceColumn dateFact = new SourceColumn(scid + N.DT_SLI_SFX, SourceColumn.LDM_TYPE_FACT, d.getTitle()+" (Date)");
+                SourceColumn dateFact = new SourceColumn(scid + N.DT_SLI_SFX, SourceColumn.LDM_TYPE_FACT, d.getTitle() + " (Date)");
                 String fmt = d.getFormat();
-                if(fmt == null || fmt.length()<=0) {
-                    if(d.isDatetime()) {
+                if (fmt == null || fmt.length() <= 0) {
+                    if (d.isDatetime()) {
                         fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
-                    }
-                    else {
+                    } else {
                         fmt = Constants.DEFAULT_DATE_FMT_STRING;
                     }
                 }
                 dateFact.setDateFact(true);
                 dateFact.setDataType("INT");
-                dateFact.setTransformation("GdcDateArithmetics.computeDateFact("+ scid +",\""+fmt+"\")");
+                dateFact.setTransformation("GdcDateArithmetics.computeDateFact(" + scid + ",\"" + fmt + "\")");
                 s.addColumn(dateFact);
-                if(d.isDatetime()) {
-                    SourceColumn timeFact = new SourceColumn(scid + N.TM_SLI_SFX, SourceColumn.LDM_TYPE_FACT, d.getTitle()+" (Time)");
+                if (d.isDatetime()) {
+                    SourceColumn timeFact = new SourceColumn(scid + N.TM_SLI_SFX, SourceColumn.LDM_TYPE_FACT, d.getTitle() + " (Time)");
                     timeFact.setTimeFact(true);
                     timeFact.setDataType("INT");
-                    timeFact.setTransformation("GdcDateArithmetics.computeTimeFact("+ scid + ",\""+fmt+"\")");
+                    timeFact.setTransformation("GdcDateArithmetics.computeTimeFact(" + scid + ",\"" + fmt + "\")");
                     s.addColumn(timeFact);
-                    SourceColumn timeAttr = new SourceColumn(scid +"_"+N.ID, SourceColumn.LDM_TYPE_REFERENCE, d.getTitle()+" (Time)");
+                    SourceColumn timeAttr = new SourceColumn(scid + "_" + N.ID, SourceColumn.LDM_TYPE_REFERENCE, d.getTitle() + " (Time)");
                     timeAttr.setTimeFact(true);
                     timeAttr.setSchemaReference(d.getSchemaReference());
-                    timeAttr.setTransformation("GdcDateArithmetics.computeTimeAttribute("+scid + ",\""+fmt+"\")");
+                    timeAttr.setTransformation("GdcDateArithmetics.computeTimeAttribute(" + scid + ",\"" + fmt + "\")");
                     s.addColumn(timeAttr);
                 }
             }
@@ -225,43 +224,37 @@ public abstract class AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
-        l.debug("Processing command "+c.getCommand());
+        l.debug("Processing command " + c.getCommand());
         try {
-            if(c.match("GenerateMaql")) {
+            if (c.match("GenerateMaql")) {
                 generateMAQL(c, cli, ctx);
-            }
-            else if(c.match("ExecuteMaql")) {
+            } else if (c.match("ExecuteMaql")) {
                 executeMAQL(c, cli, ctx);
-            }
-            else if(c.match("TransferData") || c.match("TransferAllSnapshots") || c.match("TransferLastSnapshot") ||
+            } else if (c.match("TransferData") || c.match("TransferAllSnapshots") || c.match("TransferLastSnapshot") ||
                     c.match("TransferSnapshots")) {
                 transferData(c, cli, ctx);
-            }
-            else if(c.match("Dump")) {
+            } else if (c.match("Dump")) {
                 dumpData(c, cli, ctx);
-            }
-            else if (c.match( "GenerateUpdateMaql")) {
+            } else if (c.match("GenerateUpdateMaql")) {
                 generateUpdateMaql(c, cli, ctx);
-            }
-            else {
-                l.debug("No match for command "+c.getCommand());
+            } else {
+                l.debug("No match for command " + c.getCommand());
                 return false;
             }
-            l.debug("Command "+c.getCommand()+" processed.");
+            l.debug("Command " + c.getCommand() + " processed.");
             return true;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new ProcessingException(e);
         }
     }
 
     /**
      * Generates the MAQL
-     * @param c command
-     * @param p cli parameters
+     *
+     * @param c   command
+     * @param p   cli parameters
      * @param ctx current context
      * @throws IOException IO issues
      */
@@ -272,16 +265,17 @@ public abstract class AbstractConnector implements Connector {
 
         l.debug("Executing maql generation.");
         String maql = cc.generateMaqlCreate();
-        l.debug("Finished maql generation maql:\n"+maql);
+        l.debug("Finished maql generation maql:\n" + maql);
 
         FileUtil.writeStringToFile(maql, maqlFile);
-        l.info("MAQL script successfully generated into "+maqlFile);
+        l.info("MAQL script successfully generated into " + maqlFile);
     }
 
     /**
      * Executes MAQL
-     * @param c command
-     * @param p cli parameters
+     *
+     * @param c   command
+     * @param p   cli parameters
      * @param ctx current context
      * @throws IOException IO issues
      */
@@ -299,15 +293,16 @@ public abstract class AbstractConnector implements Connector {
             ctx.getRestApi(p).executeMAQL(pid, maql);
         }
         l.debug("Finished MAQL execution.");
-        l.info("MAQL script "+maqlFile+" successfully executed.");
+        l.info("MAQL script " + maqlFile + " successfully executed.");
     }
 
     /**
      * Transfers the data to GoodData project
-     * @param c command
-     * @param p cli parameters
+     *
+     * @param c   command
+     * @param p   cli parameters
      * @param ctx current context
-     * @throws IOException IO issues
+     * @throws IOException          IO issues
      * @throws InterruptedException internal problem with making file writable
      */
     protected void transferData(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
@@ -316,9 +311,9 @@ public abstract class AbstractConnector implements Connector {
         String pid = ctx.getProjectIdMandatory();
 
         boolean waitForFinish = true;
-        if(c.checkParam("waitForFinish")) {
-            String w = c.getParam( "waitForFinish");
-            if(w != null && w.equalsIgnoreCase("false"))
+        if (c.checkParam("waitForFinish")) {
+            String w = c.getParam("waitForFinish");
+            if (w != null && w.equalsIgnoreCase("false"))
                 waitForFinish = false;
         }
 
@@ -329,10 +324,11 @@ public abstract class AbstractConnector implements Connector {
 
     /**
      * Dumps the data to CSV
-     * @param c command
-     * @param p cli parameters
+     *
+     * @param c   command
+     * @param p   cli parameters
      * @param ctx current context
-     * @throws IOException IO issues
+     * @throws IOException          IO issues
      * @throws InterruptedException internal problem with making file writable
      */
     protected void dumpData(Command c, CliParams p, ProcessingContext ctx) throws IOException, InterruptedException {
@@ -342,82 +338,76 @@ public abstract class AbstractConnector implements Connector {
         c.paramsProcessed();
 
         cc.dump(csvFile);
-        l.info("Data dump finished. Data dumped into the file '"+csvFile+"'");
+        l.info("Data dump finished. Data dumped into the file '" + csvFile + "'");
     }
 
     public static List<Column> populateColumnsFromSchema(SourceSchema schema) {
         List<Column> columns = new ArrayList<Column>();
         String ssn = schema.getName();
-        for(SourceColumn sc : schema.getColumns()) {
+        for (SourceColumn sc : schema.getColumns()) {
             String scn = sc.getName();
-            if(!sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_IGNORE)) {
+            if (!sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_IGNORE)) {
                 String schemaName = (sc.getSchemaReference() == null) ? ssn : sc.getSchemaReference();
                 Column c = new Column(sc.getName());
                 c.setMode(Column.LM_FULL);
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
+                if (sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
                         sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
                         sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
                         sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
                     c.setReferenceKey(1);
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE))
-                    c.setPopulates(new String[] {"label." + schemaName + "." + scn});
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT))
-                    c.setPopulates(new String[] {"label." + ssn + "." + scn});
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE)) {
-                    if(sc.isTimeFact()) {
+                if (sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE))
+                    c.setPopulates(new String[]{"label." + schemaName + "." + scn});
+                if (sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT))
+                    c.setPopulates(new String[]{"label." + ssn + "." + scn});
+                if (sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE)) {
+                    if (sc.isTimeFact()) {
                         c.setName(sc.getName());
-                        c.setPopulates(new String[] {Constants.DEFAULT_TIME_LABEL+sc.getSchemaReference()});
+                        c.setPopulates(new String[]{Constants.DEFAULT_TIME_LABEL + sc.getSchemaReference()});
 
-                    }
-                    else
-                        c.setPopulates(new String[] {"label." + sc.getSchemaReference() +
+                    } else
+                        c.setPopulates(new String[]{"label." + sc.getSchemaReference() +
                                 "." + sc.getReference()});
                 }
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL) ||
+                if (sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL) ||
                         sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_HYPERLINK))
-                    c.setPopulates(new String[] {"label." + ssn + "." + sc.getReference() +
+                    c.setPopulates(new String[]{"label." + ssn + "." + sc.getReference() +
                             "." + scn});
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
+                if (sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
                     String fmt = sc.getFormat();
-                    if(fmt != null && fmt.length() > 0) {
+                    if (fmt != null && fmt.length() > 0) {
                         c.setFormat(fmt);
-                    }
-                    else {
-                        if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
+                    } else {
+                        if (sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE))
                             c.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
-                        else if(sc.isDatetime())
+                        else if (sc.isDatetime())
                             c.setFormat(Constants.DEFAULT_DATETIME_FMT_STRING);
                     }
                     String sr = sc.getSchemaReference();
-                    if(sr != null && sr.length() > 0) {
+                    if (sr != null && sr.length() > 0) {
 
                         String r = sc.getReference();
-                        if(r != null && r.length() > 0) {
+                        if (r != null && r.length() > 0) {
                             // fix for the fiscal date dimension
-                            c.setPopulates(new String[] {sr + "." + r +
+                            c.setPopulates(new String[]{sr + "." + r +
+                                    Constants.DEFAULT_DATE_LABEL_SUFFIX});
+                        } else {
+                            c.setPopulates(new String[]{sr + "." + Constants.DEFAULT_DATE_LABEL +
                                     Constants.DEFAULT_DATE_LABEL_SUFFIX});
                         }
-                        else {
-                            c.setPopulates(new String[] {sr + "." + Constants.DEFAULT_DATE_LABEL +
-                                    Constants.DEFAULT_DATE_LABEL_SUFFIX});
-                        }
-                    }
-                    else {
-                        c.setPopulates(new String[] {"label." + ssn + "." + scn});
+                    } else {
+                        c.setPopulates(new String[]{"label." + ssn + "." + scn});
                     }
 
                 }
-                if(sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT)) {
-                    if(sc.isDateFact()) {
+                if (sc.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT)) {
+                    if (sc.isDateFact()) {
                         c.setName(sc.getName());
-                        c.setPopulates(new String[] {N.DT + "." + ssn + "." + scn.replace(N.DT_SLI_SFX,"")});
-                    }
-                    else if(sc.isTimeFact()) {
+                        c.setPopulates(new String[]{N.DT + "." + ssn + "." + scn.replace(N.DT_SLI_SFX, "")});
+                    } else if (sc.isTimeFact()) {
                         c.setName(sc.getName());
-                        c.setPopulates(new String[] {N.TM + "." + N.DT + "." + ssn + "." + scn.replace(N.TM_SLI_SFX,"")});
-                    }
-                    else {
-                        c.setPopulates(new String[] {"fact." + ssn + "." + scn});
+                        c.setPopulates(new String[]{N.TM + "." + N.DT + "." + ssn + "." + scn.replace(N.TM_SLI_SFX, "")});
+                    } else {
+                        c.setPopulates(new String[]{"fact." + ssn + "." + scn});
                     }
                 }
                 columns.add(c);
@@ -429,16 +419,15 @@ public abstract class AbstractConnector implements Connector {
     /**
      * {@inheritDoc}
      */
-    public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
-            throws IOException, InterruptedException
-            {
+    public void extractAndTransfer(Command c, String pid, Connector cc, boolean waitForFinish, CliParams p, ProcessingContext ctx)
+            throws IOException, InterruptedException {
         // connector's schema name
         String ssn = cc.getSchema().getName();
         l.debug("Extracting data.");
         File tmpDir = FileUtil.createTempDir();
         File tmpZipDir = FileUtil.createTempDir();
         String archiveName = tmpDir.getName();
-        MDC.put("GdcDataPackageDir",archiveName);
+        MDC.put("GdcDataPackageDir", archiveName);
         String archivePath = tmpZipDir.getAbsolutePath() + System.getProperty("file.separator") +
                 archiveName + ".zip";
 
@@ -447,14 +436,14 @@ public abstract class AbstractConnector implements Connector {
         List<Column> sliColumns = ctx.getRestApi(p).getSLIColumns(sli.getUri());
         List<Column> columns = populateColumnsFromSchema(cc.getSchema());
 
-        if(sliColumns.size() > columns.size())
+        if (sliColumns.size() > columns.size())
             throw new InvalidParameterException("The GoodData data loading interface (SLI) expects more columns.");
 
 
         String incremental = c.getParam("incremental");
         c.paramsProcessed();
 
-        if(incremental != null && incremental.length() > 0 &&
+        if (incremental != null && incremental.length() > 0 &&
                 incremental.equalsIgnoreCase("true")) {
             l.debug("Using incremental mode.");
             setIncremental(columns);
@@ -468,7 +457,7 @@ public abstract class AbstractConnector implements Connector {
         ctx.getFtpApi(p).transferDir(archivePath);
         // kick the GooDData server to load the data package to the project
         String taskUri = ctx.getRestApi(p).startLoading(pid, archiveName);
-        if(waitForFinish) {
+        if (waitForFinish) {
             checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
         }
         //cleanup
@@ -477,14 +466,15 @@ public abstract class AbstractConnector implements Connector {
         FileUtil.recursiveDelete(tmpZipDir);
         MDC.remove("GdcDataPackageDir");
         l.debug("Data extract finished.");
-            }
+    }
 
     /**
      * Sets the incremental loading status for a part
+     *
      * @param cols SLI columns
      */
     protected void setIncremental(List<Column> cols) {
-        for(Column col : cols) {
+        for (Column col : cols) {
             col.setMode(Column.LM_INCREMENTAL);
         }
     }
@@ -492,47 +482,46 @@ public abstract class AbstractConnector implements Connector {
 
     /**
      * Checks the status of data integration process in the GoodData platform
+     *
      * @param taskUri the uri where the task status is determined
-     * @param tmpDir temporary dir where the temporary data reside. This directory will be deleted.
-     * @param p cli parameters
-     * @param ctx current context
-     * @throws IOException IO issues
+     * @param tmpDir  temporary dir where the temporary data reside. This directory will be deleted.
+     * @param p       cli parameters
+     * @param ctx     current context
+     * @throws IOException          IO issues
      * @throws InterruptedException internal problem with making file writable
      */
-    protected void checkLoadingStatus(String taskUri, String tmpDir, CliParams p, ProcessingContext ctx) throws InterruptedException,IOException {
+    protected void checkLoadingStatus(String taskUri, String tmpDir, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
         l.debug("Checking data transfer status.");
         String status = "";
-        while(!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
+        while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
             status = ctx.getRestApi(p).getLoadingStatus(taskUri);
-            l.debug("Loading status = "+status);
+            l.debug("Loading status = " + status);
             Thread.sleep(500);
         }
-        l.debug("Data transfer finished with status "+status);
-        if("OK".equalsIgnoreCase(status)) {
+        l.debug("Data transfer finished with status " + status);
+        if ("OK".equalsIgnoreCase(status)) {
             l.info("Data successfully loaded.");
-        }
-        else if("WARNING".equalsIgnoreCase(status)) {
-            l.info("Data loading succeeded with warnings. Status: "+status);
-            Map<String,String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
-            for(String file : result.keySet()) {
-                if(file.endsWith(".json"))
-                    l.info(file+":\n"+result.get(file));
+        } else if ("WARNING".equalsIgnoreCase(status)) {
+            l.info("Data loading succeeded with warnings. Status: " + status);
+            Map<String, String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
+            for (String file : result.keySet()) {
+                if (file.endsWith(".json"))
+                    l.info(file + ":\n" + result.get(file));
             }
-            for(String file : result.keySet()) {
-                if(!file.endsWith(".json"))
-                    l.info(file+":\n"+result.get(file));
+            for (String file : result.keySet()) {
+                if (!file.endsWith(".json"))
+                    l.info(file + ":\n" + result.get(file));
             }
-        }
-        else {
-            l.info("Data loading failed. Status: "+status);
-            Map<String,String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
-            for(String file : result.keySet()) {
-                if(file.endsWith(".json"))
-                    l.info(file+":\n"+result.get(file));
+        } else {
+            l.info("Data loading failed. Status: " + status);
+            Map<String, String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
+            for (String file : result.keySet()) {
+                if (file.endsWith(".json"))
+                    l.info(file + ":\n" + result.get(file));
             }
-            for(String file : result.keySet()) {
-                if(!file.endsWith(".json"))
-                    l.info(file+":\n"+result.get(file));
+            for (String file : result.keySet()) {
+                if (!file.endsWith(".json"))
+                    l.info(file + ":\n" + result.get(file));
             }
             throw new GdcIntegrationErrorException("Data successfully transferred but failed to load to the analytical project. " +
                     "This is usually due to issues with data integrity (rows with different number of columns etc.).");
@@ -541,11 +530,11 @@ public abstract class AbstractConnector implements Connector {
     }
 
 
-
     /**
      * Generate the MAQL for new columns
-     * @param c command
-     * @param p cli parameters
+     *
+     * @param c   command
+     * @param p   cli parameters
      * @param ctx current context
      * @throws IOException IO issue
      */
@@ -556,10 +545,10 @@ public abstract class AbstractConnector implements Connector {
         final Connector cc = ctx.getConnectorMandatory();
         final SourceSchema schema = cc.getSchema();
 
-        if(schema != null) {
+        if (schema != null) {
 
             final String pid = ctx.getProjectIdMandatory();
-            final String maqlFile = c.getParamMandatory( "maqlFile");
+            final String maqlFile = c.getParamMandatory("maqlFile");
             c.paramsProcessed();
 
             final String dataset = schema.getDatasetName();
@@ -592,8 +581,7 @@ public abstract class AbstractConnector implements Connector {
                 l.debug("MAQL update successfully finished - no changes detected.");
                 l.info("MAQL update successfully finished - no changes detected.");
             }
-        }
-        else {
+        } else {
             l.debug("MAQL update ran on a connector with no schema file (e.g. the default GDC Date dimension). This has no effect.");
             l.debug("MAQL update successfully finished - no changes detected.");
             l.info("MAQL update ran on a connector with no schema file (e.g. the default GDC Date dimension). This has no effect.");
@@ -612,12 +600,13 @@ public abstract class AbstractConnector implements Connector {
 
     /**
      * Sets the project id from context
+     *
      * @param ctx process context
      * @throws InvalidParameterException if the project id isn't initialized
      */
     protected void setProjectId(ProcessingContext ctx) throws InvalidParameterException {
         String pid = ctx.getProjectIdMandatory();
-        if(pid != null && pid.length() > 0)
+        if (pid != null && pid.length() > 0)
             setProjectId(pid);
     }
 

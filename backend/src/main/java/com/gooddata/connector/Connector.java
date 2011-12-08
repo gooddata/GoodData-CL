@@ -45,57 +45,62 @@ public interface Connector extends Executor {
 
     /**
      * Generates the MAQL for the data source
+     *
      * @return the MAQL in string format
      */
     public String generateMaqlCreate();
 
     /**
      * LDM schema getter
+     *
      * @return LDM schema
      */
     public SourceSchema getSchema();
 
     /**
      * Extracts the source data CSV to the database where it is going to be transformed
+     *
      * @param dir target directory where the data package will be stored
-
      * @throws IOException in case of IO issues
      */
     public void extract(String dir) throws IOException;
 
     /**
      * Dumps the source data CSV to a file
+     *
      * @param file target file
-
      * @throws IOException in case of IO issues
      */
     public void dump(String file) throws IOException;
 
     /**
      * Extract data from the internal database and transfer them to a GoodData project
-     * @param c command
-     * @param pid project id
-     * @param cc connector
-     * @param p cli parameters
-     * @param ctx current context
+     *
+     * @param c             command
+     * @param pid           project id
+     * @param cc            connector
+     * @param p             cli parameters
+     * @param ctx           current context
      * @param waitForFinish synchronous execution flag
-     * @throws IOException IO issues
+     * @throws IOException          IO issues
      * @throws InterruptedException internal problem with making file writable
      */
-    public void extractAndTransfer(Command c, String pid, Connector cc,  boolean waitForFinish, CliParams p, ProcessingContext ctx)
-    	throws IOException, InterruptedException;
+    public void extractAndTransfer(Command c, String pid, Connector cc, boolean waitForFinish, CliParams p, ProcessingContext ctx)
+            throws IOException, InterruptedException;
 
     /**
      * LDM schema setter
+     *
      * @param schema LDM schema
      */
     public void setSchema(SourceSchema schema);
 
     /**
      * Create the GoodData data package with the ALL snapshots data
-     * @param sli the SLI interface
-     * @param columns the SLI columns
-     * @param dir target directory where the data package will be stored
+     *
+     * @param sli         the SLI interface
+     * @param columns     the SLI columns
+     * @param dir         target directory where the data package will be stored
      * @param archiveName the name of the target ZIP archive
      * @throws IOException IO issues
      */

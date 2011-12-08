@@ -22,142 +22,142 @@
 
 package com.restfb.types;
 
-import static com.restfb.util.DateUtils.toDateFromLongFormat;
-import static java.util.Collections.unmodifiableList;
+import com.restfb.Facebook;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.restfb.Facebook;
+import static com.restfb.util.DateUtils.toDateFromLongFormat;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/video">Video Graph
  * API type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.5
  */
 public class Video extends FacebookType {
-  @Facebook
-  private CategorizedFacebookType from;
+    @Facebook
+    private CategorizedFacebookType from;
 
-  @Facebook
-  private String message;
+    @Facebook
+    private String message;
 
-  @Facebook
-  private String description;
+    @Facebook
+    private String description;
 
-  @Facebook
-  private String picture;
+    @Facebook
+    private String picture;
 
-  @Facebook
-  private String icon;
+    @Facebook
+    private String icon;
 
-  @Facebook("embed_html")
-  private String embedHtml;
+    @Facebook("embed_html")
+    private String embedHtml;
 
-  @Facebook
-  private Integer length;
+    @Facebook
+    private Integer length;
 
-  @Facebook("created_time")
-  private String createdTime;
+    @Facebook("created_time")
+    private String createdTime;
 
-  @Facebook("updated_time")
-  private String updatedTime;
+    @Facebook("updated_time")
+    private String updatedTime;
 
-  @Facebook
-  private List<Comment> comments = new ArrayList<Comment>();
+    @Facebook
+    private List<Comment> comments = new ArrayList<Comment>();
 
-  /**
-   * An object containing the name and ID of the user who posted the video.
-   * 
-   * @return An object containing the name and ID of the user who posted the
-   *         video.
-   */
-  public CategorizedFacebookType getFrom() {
-    return from;
-  }
+    /**
+     * An object containing the name and ID of the user who posted the video.
+     *
+     * @return An object containing the name and ID of the user who posted the
+     *         video.
+     */
+    public CategorizedFacebookType getFrom() {
+        return from;
+    }
 
-  /**
-   * The video title / caption.
-   * 
-   * @return The video title / caption.
-   */
-  public String getMessage() {
-    return message;
-  }
+    /**
+     * The video title / caption.
+     *
+     * @return The video title / caption.
+     */
+    public String getMessage() {
+        return message;
+    }
 
-  /**
-   * The long-form HTML description of the video.
-   * 
-   * @return The long-form HTML description of the video.
-   */
-  public String getDescription() {
-    return description;
-  }
+    /**
+     * The long-form HTML description of the video.
+     *
+     * @return The long-form HTML description of the video.
+     */
+    public String getDescription() {
+        return description;
+    }
 
-  /**
-   * The length of the video, in seconds.
-   * 
-   * @return The length of the video, in seconds.
-   */
-  public Integer getLength() {
-    return length;
-  }
+    /**
+     * The length of the video, in seconds.
+     *
+     * @return The length of the video, in seconds.
+     */
+    public Integer getLength() {
+        return length;
+    }
 
-  /**
-   * A picture URL which represents the video.
-   * 
-   * @return A picture URL which represents the video.
-   */
-  public String getPicture() {
-    return picture;
-  }
+    /**
+     * A picture URL which represents the video.
+     *
+     * @return A picture URL which represents the video.
+     */
+    public String getPicture() {
+        return picture;
+    }
 
-  /**
-   * An icon URL which represents the video.
-   * 
-   * @return An icon URL which represents the video.
-   */
-  public String getIcon() {
-    return icon;
-  }
+    /**
+     * An icon URL which represents the video.
+     *
+     * @return An icon URL which represents the video.
+     */
+    public String getIcon() {
+        return icon;
+    }
 
-  /**
-   * HTML that may be used to embed the video on another website.
-   * 
-   * @return HTML that may be used to embed the video on another website.
-   */
-  public String getEmbedHtml() {
-    return embedHtml;
-  }
+    /**
+     * HTML that may be used to embed the video on another website.
+     *
+     * @return HTML that may be used to embed the video on another website.
+     */
+    public String getEmbedHtml() {
+        return embedHtml;
+    }
 
-  /**
-   * Comments for the video.
-   * 
-   * @return Comments for the video.
-   */
-  public List<Comment> getComments() {
-    return unmodifiableList(comments);
-  }
+    /**
+     * Comments for the video.
+     *
+     * @return Comments for the video.
+     */
+    public List<Comment> getComments() {
+        return unmodifiableList(comments);
+    }
 
-  /**
-   * The time the video was initially published.
-   * 
-   * @return The time the video was initially published.
-   */
-  public Date getCreatedTime() {
-    return toDateFromLongFormat(createdTime);
-  }
+    /**
+     * The time the video was initially published.
+     *
+     * @return The time the video was initially published.
+     */
+    public Date getCreatedTime() {
+        return toDateFromLongFormat(createdTime);
+    }
 
-  /**
-   * The last time the video or its caption were updated.
-   * 
-   * @return The last time the video or its caption were updated.
-   */
-  public Date getUpdatedTime() {
-    return toDateFromLongFormat(updatedTime);
-  }
+    /**
+     * The last time the video or its caption were updated.
+     *
+     * @return The last time the video or its caption were updated.
+     */
+    public Date getUpdatedTime() {
+        return toDateFromLongFormat(updatedTime);
+    }
 }

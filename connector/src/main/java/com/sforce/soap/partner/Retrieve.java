@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class Retrieve  implements java.io.Serializable {
+public class Retrieve implements java.io.Serializable {
     private java.lang.String fieldList;
 
     private java.lang.String sObjectType;
@@ -18,18 +18,18 @@ public class Retrieve  implements java.io.Serializable {
     }
 
     public Retrieve(
-           java.lang.String fieldList,
-           java.lang.String sObjectType,
-           java.lang.String[] ids) {
-           this.fieldList = fieldList;
-           this.sObjectType = sObjectType;
-           this.ids = ids;
+            java.lang.String fieldList,
+            java.lang.String sObjectType,
+            java.lang.String[] ids) {
+        this.fieldList = fieldList;
+        this.sObjectType = sObjectType;
+        this.ids = ids;
     }
 
 
     /**
      * Gets the fieldList value for this Retrieve.
-     * 
+     *
      * @return fieldList
      */
     public java.lang.String getFieldList() {
@@ -39,7 +39,7 @@ public class Retrieve  implements java.io.Serializable {
 
     /**
      * Sets the fieldList value for this Retrieve.
-     * 
+     *
      * @param fieldList
      */
     public void setFieldList(java.lang.String fieldList) {
@@ -49,7 +49,7 @@ public class Retrieve  implements java.io.Serializable {
 
     /**
      * Gets the sObjectType value for this Retrieve.
-     * 
+     *
      * @return sObjectType
      */
     public java.lang.String getSObjectType() {
@@ -59,7 +59,7 @@ public class Retrieve  implements java.io.Serializable {
 
     /**
      * Sets the sObjectType value for this Retrieve.
-     * 
+     *
      * @param sObjectType
      */
     public void setSObjectType(java.lang.String sObjectType) {
@@ -69,7 +69,7 @@ public class Retrieve  implements java.io.Serializable {
 
     /**
      * Gets the ids value for this Retrieve.
-     * 
+     *
      * @return ids
      */
     public java.lang.String[] getIds() {
@@ -79,7 +79,7 @@ public class Retrieve  implements java.io.Serializable {
 
     /**
      * Sets the ids value for this Retrieve.
-     * 
+     *
      * @param ids
      */
     public void setIds(java.lang.String[] ids) {
@@ -95,6 +95,7 @@ public class Retrieve  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Retrieve)) return false;
         Retrieve other = (Retrieve) obj;
@@ -105,21 +106,22 @@ public class Retrieve  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.fieldList==null && other.getFieldList()==null) || 
-             (this.fieldList!=null &&
-              this.fieldList.equals(other.getFieldList()))) &&
-            ((this.sObjectType==null && other.getSObjectType()==null) || 
-             (this.sObjectType!=null &&
-              this.sObjectType.equals(other.getSObjectType()))) &&
-            ((this.ids==null && other.getIds()==null) || 
-             (this.ids!=null &&
-              java.util.Arrays.equals(this.ids, other.getIds())));
+        _equals = true &&
+                ((this.fieldList == null && other.getFieldList() == null) ||
+                        (this.fieldList != null &&
+                                this.fieldList.equals(other.getFieldList()))) &&
+                ((this.sObjectType == null && other.getSObjectType() == null) ||
+                        (this.sObjectType != null &&
+                                this.sObjectType.equals(other.getSObjectType()))) &&
+                ((this.ids == null && other.getIds() == null) ||
+                        (this.ids != null &&
+                                java.util.Arrays.equals(this.ids, other.getIds())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -133,12 +135,12 @@ public class Retrieve  implements java.io.Serializable {
             _hashCode += getSObjectType().hashCode();
         }
         if (getIds() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getIds());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getIds());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getIds(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -149,7 +151,7 @@ public class Retrieve  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(Retrieve.class, true);
+            new org.apache.axis.description.TypeDesc(Retrieve.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">retrieve"));
@@ -186,24 +188,24 @@ public class Retrieve  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

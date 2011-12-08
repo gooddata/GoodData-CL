@@ -27,19 +27,22 @@ import java.io.IOException;
 
 /**
  * Filters the duplicate messages.
- * @version 1.0
+ *
  * @author zd@gooddata.com
+ * @version 1.0
  */
 public interface MessageFilter {
 
     /**
      * Save the filter config
+     *
      * @throws IOException
      */
     public void save() throws IOException;
 
     /**
      * Returns the filter decision
+     *
      * @param message
      * @return
      */
@@ -47,6 +50,7 @@ public interface MessageFilter {
 
     /**
      * Updates the DB with new message
+     *
      * @param message - the message content
      * @return
      */

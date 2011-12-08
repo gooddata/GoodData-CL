@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeLayoutRow  implements java.io.Serializable {
+public class DescribeLayoutRow implements java.io.Serializable {
     private com.sforce.soap.partner.DescribeLayoutItem[] layoutItems;
 
     private int numItems;
@@ -16,16 +16,16 @@ public class DescribeLayoutRow  implements java.io.Serializable {
     }
 
     public DescribeLayoutRow(
-           com.sforce.soap.partner.DescribeLayoutItem[] layoutItems,
-           int numItems) {
-           this.layoutItems = layoutItems;
-           this.numItems = numItems;
+            com.sforce.soap.partner.DescribeLayoutItem[] layoutItems,
+            int numItems) {
+        this.layoutItems = layoutItems;
+        this.numItems = numItems;
     }
 
 
     /**
      * Gets the layoutItems value for this DescribeLayoutRow.
-     * 
+     *
      * @return layoutItems
      */
     public com.sforce.soap.partner.DescribeLayoutItem[] getLayoutItems() {
@@ -35,7 +35,7 @@ public class DescribeLayoutRow  implements java.io.Serializable {
 
     /**
      * Sets the layoutItems value for this DescribeLayoutRow.
-     * 
+     *
      * @param layoutItems
      */
     public void setLayoutItems(com.sforce.soap.partner.DescribeLayoutItem[] layoutItems) {
@@ -53,7 +53,7 @@ public class DescribeLayoutRow  implements java.io.Serializable {
 
     /**
      * Gets the numItems value for this DescribeLayoutRow.
-     * 
+     *
      * @return numItems
      */
     public int getNumItems() {
@@ -63,7 +63,7 @@ public class DescribeLayoutRow  implements java.io.Serializable {
 
     /**
      * Sets the numItems value for this DescribeLayoutRow.
-     * 
+     *
      * @param numItems
      */
     public void setNumItems(int numItems) {
@@ -71,6 +71,7 @@ public class DescribeLayoutRow  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutRow)) return false;
         DescribeLayoutRow other = (DescribeLayoutRow) obj;
@@ -81,16 +82,17 @@ public class DescribeLayoutRow  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.layoutItems==null && other.getLayoutItems()==null) || 
-             (this.layoutItems!=null &&
-              java.util.Arrays.equals(this.layoutItems, other.getLayoutItems()))) &&
-            this.numItems == other.getNumItems();
+        _equals = true &&
+                ((this.layoutItems == null && other.getLayoutItems() == null) ||
+                        (this.layoutItems != null &&
+                                java.util.Arrays.equals(this.layoutItems, other.getLayoutItems()))) &&
+                this.numItems == other.getNumItems();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -98,12 +100,12 @@ public class DescribeLayoutRow  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getLayoutItems() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getLayoutItems());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getLayoutItems());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getLayoutItems(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -115,7 +117,7 @@ public class DescribeLayoutRow  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeLayoutRow.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeLayoutRow.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeLayoutRow"));
@@ -145,24 +147,24 @@ public class DescribeLayoutRow  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

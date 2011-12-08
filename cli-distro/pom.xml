@@ -23,18 +23,18 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.gooddata.cl</groupId>
-		<artifactId>gooddata-cl</artifactId>
-		<version>1.2.45</version>
-	</parent>
+    <parent>
+        <groupId>com.gooddata.cl</groupId>
+        <artifactId>gooddata-cl</artifactId>
+        <version>1.2.45</version>
+    </parent>
 
-	<artifactId>gooddata-cli</artifactId>
-	<description>Builds the GoodData CL command line tool distribution.</description>
-	<name>gooddata-cli</name>
+    <artifactId>gooddata-cli</artifactId>
+    <description>Builds the GoodData CL command line tool distribution.</description>
+    <name>gooddata-cli</name>
 
     <licenses>
         <license>
@@ -45,21 +45,21 @@
         </license>
     </licenses>
 
-	<dependencies>
+    <dependencies>
         <!-- GoodData CL modules -->
-		<dependency>
-			<groupId>com.gooddata.cl</groupId>
-			<artifactId>gooddata-cl-cli</artifactId>			
-		</dependency>
+        <dependency>
+            <groupId>com.gooddata.cl</groupId>
+            <artifactId>gooddata-cl-cli</artifactId>
+        </dependency>
         <!-- 3rd party dependencies  -->
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.jtds</groupId>
-			<artifactId>jtds</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jtds</groupId>
+            <artifactId>jtds</artifactId>
+        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -68,62 +68,62 @@
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
         </dependency>
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/cli.xml</descriptor>
-					</descriptors>
-					<archive>
-						<manifest>
-						    <addClasspath>true</addClasspath>
-						    <mainClass>com.gooddata.processor.GdcDI</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin> 
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-						<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-						<outputDirectory>${project.build.directory}/lib</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-						<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2</version>
-				<executions>
-					<execution>
-						<id>exec</id>
-						<goals>
-							<goal>java</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>com.gooddata.processor.GdcDI</mainClass>
-					<arguments>
-						<argument>examples/quotes/quotes.txt</argument>
-					</arguments>
-					<systemProperties>
-						<systemProperty>
-							<key>log4j.configuration</key>
-							<value>log4j.configuration</value>
-						</systemProperty>
-					</systemProperties>
-				</configuration>
-			</plugin>				   
-		</plugins>
-	</build>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/cli.xml</descriptor>
+                    </descriptors>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.gooddata.processor.GdcDI</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>exec</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.gooddata.processor.GdcDI</mainClass>
+                    <arguments>
+                        <argument>examples/quotes/quotes.txt</argument>
+                    </arguments>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>log4j.configuration</key>
+                            <value>log4j.configuration</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

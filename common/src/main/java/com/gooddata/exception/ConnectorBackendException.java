@@ -41,9 +41,9 @@ public class ConnectorBackendException extends GdcException {
     public ConnectorBackendException(Throwable cause) {
         super(cause);
     }
-    
+
     public ConnectorBackendException(String msg, Throwable cause) {
-    	super(msg, cause);
+        super(msg, cause);
     }
 
 }

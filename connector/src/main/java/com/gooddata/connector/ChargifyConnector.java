@@ -23,31 +23,21 @@
 
 package com.gooddata.connector;
 
+import com.gooddata.chargify.ChargifyWrapper;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
-import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.processor.CliParams;
 import com.gooddata.processor.Command;
 import com.gooddata.processor.ProcessingContext;
-import com.gooddata.chargify.ChargifyWrapper;
-import com.gooddata.transform.Transformer;
-import com.gooddata.util.CSVReader;
-import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
-import org.jaxen.JaxenException;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.SOAPException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * GoodData Chargify Connector
@@ -76,8 +66,9 @@ public class ChargifyConnector extends AbstractConnector implements Connector {
         super();
     }
 
-   /**
+    /**
      * Creates a new Chargify connector
+     *
      * @return a new instance of the Chargify connector
      */
     public static ChargifyConnector createConnector() {
@@ -92,28 +83,24 @@ public class ChargifyConnector extends AbstractConnector implements Connector {
         l.debug("Extracting Chargify data.");
         try {
             ChargifyWrapper m = new ChargifyWrapper(getDomain(), getApiToken());
-            l.debug("Executing Chargify query entity: "+getEntity()+" fields: "+getFields());
-            if(fields != null && fields.length() > 0) {
+            l.debug("Executing Chargify query entity: " + getEntity() + " fields: " + getFields());
+            if (fields != null && fields.length() > 0) {
                 String[] fs = fields.split(",");
-                for(int i=0; i<fs.length; i++)
+                for (int i = 0; i < fs.length; i++)
                     fs[i] = fs[i].trim();
                 File dt = FileUtil.getTempFile();
                 m.getAllData(getEntity(), fs, dt.getAbsolutePath());
                 int rowCnt = copyAndTransform(FileUtil.createUtf8CsvReader(dt), FileUtil.createUtf8CsvWriter(new File(file)), transform, 10);
-                l.info("Finished Chargify query execution. Retrieved "+rowCnt+" rows of data.");
-            }
-            else {
+                l.info("Finished Chargify query execution. Retrieved " + rowCnt + " rows of data.");
+            } else {
                 throw new InvalidParameterException("The Chargify fields parameter must contain the comma separated list " +
                         "of the entity fields.");
             }
-        }
-        catch (SAXException e) {
+        } catch (SAXException e) {
             throw new IOException(e);
-        }
-        catch (XPathExpressionException e) {
+        } catch (XPathExpressionException e) {
             throw new IOException(e);
-        }
-        catch (ParserConfigurationException e) {
+        } catch (ParserConfigurationException e) {
             throw new IOException(e);
         }
     }
@@ -137,33 +124,32 @@ public class ChargifyConnector extends AbstractConnector implements Connector {
      * {@inheritDoc}
      */
     public boolean processCommand(Command c, CliParams cli, ProcessingContext ctx) throws ProcessingException {
-        l.debug("Processing command "+c.getCommand());
+        l.debug("Processing command " + c.getCommand());
         try {
-            if(c.match("LoadChargify") || c.match("UseChargify")) {
+            if (c.match("LoadChargify") || c.match("UseChargify")) {
                 loadChargify(c, cli, ctx);
-            }
-            else {
-                l.debug("No match passing the command "+c.getCommand()+" further.");
+            } else {
+                l.debug("No match passing the command " + c.getCommand() + " further.");
                 return super.processCommand(c, cli, ctx);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new ProcessingException(e);
         }
-        l.debug("Processed command "+c.getCommand());
+        l.debug("Processed command " + c.getCommand());
         return true;
     }
 
     /**
      * Loads Chargify data command processor
-     * @param c command
-     * @param p command line arguments
+     *
+     * @param c   command
+     * @param p   command line arguments
      * @param ctx current processing context
      * @throws java.io.IOException in case of IO issues
      */
     private void loadChargify(Command c, CliParams p, ProcessingContext ctx) throws IOException {
         String configFile = c.getParamMandatory("configFile");
-        String apiKey = c.getParamMandatory( "apiKey");
+        String apiKey = c.getParamMandatory("apiKey");
         String e = c.getParamMandatory("entity");
         String f = c.getParamMandatory("fields");
         String domain = c.getParamMandatory("domain");
@@ -177,7 +163,7 @@ public class ChargifyConnector extends AbstractConnector implements Connector {
         setDomain(domain);
         ctx.setConnector(this);
         setProjectId(ctx);
-        l.info("Chargify Connector successfully loaded (entity: " + e + " fields: "+StringUtil.previewString(f, 256)+").");
+        l.info("Chargify Connector successfully loaded (entity: " + e + " fields: " + StringUtil.previewString(f, 256) + ").");
     }
 
     public String getFields() {

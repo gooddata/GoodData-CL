@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class RelatedListSort  implements java.io.Serializable {
+public class RelatedListSort implements java.io.Serializable {
     private boolean ascending;
 
     private java.lang.String column;
@@ -16,16 +16,16 @@ public class RelatedListSort  implements java.io.Serializable {
     }
 
     public RelatedListSort(
-           boolean ascending,
-           java.lang.String column) {
-           this.ascending = ascending;
-           this.column = column;
+            boolean ascending,
+            java.lang.String column) {
+        this.ascending = ascending;
+        this.column = column;
     }
 
 
     /**
      * Gets the ascending value for this RelatedListSort.
-     * 
+     *
      * @return ascending
      */
     public boolean isAscending() {
@@ -35,7 +35,7 @@ public class RelatedListSort  implements java.io.Serializable {
 
     /**
      * Sets the ascending value for this RelatedListSort.
-     * 
+     *
      * @param ascending
      */
     public void setAscending(boolean ascending) {
@@ -45,7 +45,7 @@ public class RelatedListSort  implements java.io.Serializable {
 
     /**
      * Gets the column value for this RelatedListSort.
-     * 
+     *
      * @return column
      */
     public java.lang.String getColumn() {
@@ -55,7 +55,7 @@ public class RelatedListSort  implements java.io.Serializable {
 
     /**
      * Sets the column value for this RelatedListSort.
-     * 
+     *
      * @param column
      */
     public void setColumn(java.lang.String column) {
@@ -63,6 +63,7 @@ public class RelatedListSort  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof RelatedListSort)) return false;
         RelatedListSort other = (RelatedListSort) obj;
@@ -73,16 +74,17 @@ public class RelatedListSort  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.ascending == other.isAscending() &&
-            ((this.column==null && other.getColumn()==null) || 
-             (this.column!=null &&
-              this.column.equals(other.getColumn())));
+        _equals = true &&
+                this.ascending == other.isAscending() &&
+                ((this.column == null && other.getColumn() == null) ||
+                        (this.column != null &&
+                                this.column.equals(other.getColumn())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -99,7 +101,7 @@ public class RelatedListSort  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(RelatedListSort.class, true);
+            new org.apache.axis.description.TypeDesc(RelatedListSort.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "RelatedListSort"));
@@ -128,24 +130,24 @@ public class RelatedListSort  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

@@ -7,21 +7,21 @@
 
 package com.sforce.soap.partner;
 
-public class QueryAll  implements java.io.Serializable {
+public class QueryAll implements java.io.Serializable {
     private java.lang.String queryString;
 
     public QueryAll() {
     }
 
     public QueryAll(
-           java.lang.String queryString) {
-           this.queryString = queryString;
+            java.lang.String queryString) {
+        this.queryString = queryString;
     }
 
 
     /**
      * Gets the queryString value for this QueryAll.
-     * 
+     *
      * @return queryString
      */
     public java.lang.String getQueryString() {
@@ -31,7 +31,7 @@ public class QueryAll  implements java.io.Serializable {
 
     /**
      * Sets the queryString value for this QueryAll.
-     * 
+     *
      * @param queryString
      */
     public void setQueryString(java.lang.String queryString) {
@@ -39,6 +39,7 @@ public class QueryAll  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof QueryAll)) return false;
         QueryAll other = (QueryAll) obj;
@@ -49,15 +50,16 @@ public class QueryAll  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.queryString==null && other.getQueryString()==null) || 
-             (this.queryString!=null &&
-              this.queryString.equals(other.getQueryString())));
+        _equals = true &&
+                ((this.queryString == null && other.getQueryString() == null) ||
+                        (this.queryString != null &&
+                                this.queryString.equals(other.getQueryString())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -73,7 +75,7 @@ public class QueryAll  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(QueryAll.class, true);
+            new org.apache.axis.description.TypeDesc(QueryAll.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">queryAll"));
@@ -96,24 +98,24 @@ public class QueryAll  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

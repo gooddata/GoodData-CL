@@ -22,90 +22,90 @@
 
 package com.restfb.types;
 
-import static com.restfb.util.DateUtils.toDateFromLongFormat;
+import com.restfb.Facebook;
 
 import java.util.Date;
 
-import com.restfb.Facebook;
+import static com.restfb.util.DateUtils.toDateFromLongFormat;
 
 /**
  * Represents the <a
  * href="http://developers.facebook.com/docs/reference/api/note">Note Graph API
  * type</a>.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  * @since 1.5
  */
 public class Note extends FacebookType {
-  @Facebook
-  private NamedFacebookType from;
+    @Facebook
+    private NamedFacebookType from;
 
-  @Facebook
-  private String subject;
+    @Facebook
+    private String subject;
 
-  @Facebook
-  private String message;
+    @Facebook
+    private String message;
 
-  @Facebook
-  private String icon;
+    @Facebook
+    private String icon;
 
-  @Facebook("created_time")
-  private String createdTime;
+    @Facebook("created_time")
+    private String createdTime;
 
-  @Facebook("updated_time")
-  private String updatedTime;
+    @Facebook("updated_time")
+    private String updatedTime;
 
-  /**
-   * The ID of the user who posted the note.
-   * 
-   * @return The ID of the user who posted the note.
-   */
-  public NamedFacebookType getFrom() {
-    return from;
-  }
+    /**
+     * The ID of the user who posted the note.
+     *
+     * @return The ID of the user who posted the note.
+     */
+    public NamedFacebookType getFrom() {
+        return from;
+    }
 
-  /**
-   * The title of the note.
-   * 
-   * @return The title of the note.
-   */
-  public String getSubject() {
-    return subject;
-  }
+    /**
+     * The title of the note.
+     *
+     * @return The title of the note.
+     */
+    public String getSubject() {
+        return subject;
+    }
 
-  /**
-   * The note content, an HTML string.
-   * 
-   * @return The note content, an HTML string.
-   */
-  public String getMessage() {
-    return message;
-  }
+    /**
+     * The note content, an HTML string.
+     *
+     * @return The note content, an HTML string.
+     */
+    public String getMessage() {
+        return message;
+    }
 
-  /**
-   * The note icon.
-   * 
-   * @return The note icon.
-   */
-  public String getIcon() {
-    return icon;
-  }
+    /**
+     * The note icon.
+     *
+     * @return The note icon.
+     */
+    public String getIcon() {
+        return icon;
+    }
 
-  /**
-   * The time the note was initially published.
-   * 
-   * @return The time the note was initially published.
-   */
-  public Date getCreatedTime() {
-    return toDateFromLongFormat(createdTime);
-  }
+    /**
+     * The time the note was initially published.
+     *
+     * @return The time the note was initially published.
+     */
+    public Date getCreatedTime() {
+        return toDateFromLongFormat(createdTime);
+    }
 
-  /**
-   * The time the note was last updated.
-   * 
-   * @return The time the note was last updated.
-   */
-  public Date getUpdatedTime() {
-    return toDateFromLongFormat(updatedTime);
-  }
+    /**
+     * The time the note was last updated.
+     *
+     * @return The time the note was last updated.
+     */
+    public Date getUpdatedTime() {
+        return toDateFromLongFormat(updatedTime);
+    }
 }

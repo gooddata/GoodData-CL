@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class GetDeletedResult  implements java.io.Serializable {
+public class GetDeletedResult implements java.io.Serializable {
     private com.sforce.soap.partner.DeletedRecord[] deletedRecords;
 
     private java.util.Calendar earliestDateAvailable;
@@ -20,20 +20,20 @@ public class GetDeletedResult  implements java.io.Serializable {
     }
 
     public GetDeletedResult(
-           com.sforce.soap.partner.DeletedRecord[] deletedRecords,
-           java.util.Calendar earliestDateAvailable,
-           java.util.Calendar latestDateCovered,
-           java.lang.String sforceReserved) {
-           this.deletedRecords = deletedRecords;
-           this.earliestDateAvailable = earliestDateAvailable;
-           this.latestDateCovered = latestDateCovered;
-           this.sforceReserved = sforceReserved;
+            com.sforce.soap.partner.DeletedRecord[] deletedRecords,
+            java.util.Calendar earliestDateAvailable,
+            java.util.Calendar latestDateCovered,
+            java.lang.String sforceReserved) {
+        this.deletedRecords = deletedRecords;
+        this.earliestDateAvailable = earliestDateAvailable;
+        this.latestDateCovered = latestDateCovered;
+        this.sforceReserved = sforceReserved;
     }
 
 
     /**
      * Gets the deletedRecords value for this GetDeletedResult.
-     * 
+     *
      * @return deletedRecords
      */
     public com.sforce.soap.partner.DeletedRecord[] getDeletedRecords() {
@@ -43,7 +43,7 @@ public class GetDeletedResult  implements java.io.Serializable {
 
     /**
      * Sets the deletedRecords value for this GetDeletedResult.
-     * 
+     *
      * @param deletedRecords
      */
     public void setDeletedRecords(com.sforce.soap.partner.DeletedRecord[] deletedRecords) {
@@ -61,7 +61,7 @@ public class GetDeletedResult  implements java.io.Serializable {
 
     /**
      * Gets the earliestDateAvailable value for this GetDeletedResult.
-     * 
+     *
      * @return earliestDateAvailable
      */
     public java.util.Calendar getEarliestDateAvailable() {
@@ -71,7 +71,7 @@ public class GetDeletedResult  implements java.io.Serializable {
 
     /**
      * Sets the earliestDateAvailable value for this GetDeletedResult.
-     * 
+     *
      * @param earliestDateAvailable
      */
     public void setEarliestDateAvailable(java.util.Calendar earliestDateAvailable) {
@@ -81,7 +81,7 @@ public class GetDeletedResult  implements java.io.Serializable {
 
     /**
      * Gets the latestDateCovered value for this GetDeletedResult.
-     * 
+     *
      * @return latestDateCovered
      */
     public java.util.Calendar getLatestDateCovered() {
@@ -91,7 +91,7 @@ public class GetDeletedResult  implements java.io.Serializable {
 
     /**
      * Sets the latestDateCovered value for this GetDeletedResult.
-     * 
+     *
      * @param latestDateCovered
      */
     public void setLatestDateCovered(java.util.Calendar latestDateCovered) {
@@ -101,7 +101,7 @@ public class GetDeletedResult  implements java.io.Serializable {
 
     /**
      * Gets the sforceReserved value for this GetDeletedResult.
-     * 
+     *
      * @return sforceReserved
      */
     public java.lang.String getSforceReserved() {
@@ -111,7 +111,7 @@ public class GetDeletedResult  implements java.io.Serializable {
 
     /**
      * Sets the sforceReserved value for this GetDeletedResult.
-     * 
+     *
      * @param sforceReserved
      */
     public void setSforceReserved(java.lang.String sforceReserved) {
@@ -119,6 +119,7 @@ public class GetDeletedResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GetDeletedResult)) return false;
         GetDeletedResult other = (GetDeletedResult) obj;
@@ -129,24 +130,25 @@ public class GetDeletedResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.deletedRecords==null && other.getDeletedRecords()==null) || 
-             (this.deletedRecords!=null &&
-              java.util.Arrays.equals(this.deletedRecords, other.getDeletedRecords()))) &&
-            ((this.earliestDateAvailable==null && other.getEarliestDateAvailable()==null) || 
-             (this.earliestDateAvailable!=null &&
-              this.earliestDateAvailable.equals(other.getEarliestDateAvailable()))) &&
-            ((this.latestDateCovered==null && other.getLatestDateCovered()==null) || 
-             (this.latestDateCovered!=null &&
-              this.latestDateCovered.equals(other.getLatestDateCovered()))) &&
-            ((this.sforceReserved==null && other.getSforceReserved()==null) || 
-             (this.sforceReserved!=null &&
-              this.sforceReserved.equals(other.getSforceReserved())));
+        _equals = true &&
+                ((this.deletedRecords == null && other.getDeletedRecords() == null) ||
+                        (this.deletedRecords != null &&
+                                java.util.Arrays.equals(this.deletedRecords, other.getDeletedRecords()))) &&
+                ((this.earliestDateAvailable == null && other.getEarliestDateAvailable() == null) ||
+                        (this.earliestDateAvailable != null &&
+                                this.earliestDateAvailable.equals(other.getEarliestDateAvailable()))) &&
+                ((this.latestDateCovered == null && other.getLatestDateCovered() == null) ||
+                        (this.latestDateCovered != null &&
+                                this.latestDateCovered.equals(other.getLatestDateCovered()))) &&
+                ((this.sforceReserved == null && other.getSforceReserved() == null) ||
+                        (this.sforceReserved != null &&
+                                this.sforceReserved.equals(other.getSforceReserved())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -154,12 +156,12 @@ public class GetDeletedResult  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getDeletedRecords() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getDeletedRecords());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getDeletedRecords());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getDeletedRecords(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -179,7 +181,7 @@ public class GetDeletedResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(GetDeletedResult.class, true);
+            new org.apache.axis.description.TypeDesc(GetDeletedResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "GetDeletedResult"));
@@ -223,24 +225,24 @@ public class GetDeletedResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

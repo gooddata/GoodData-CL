@@ -33,6 +33,7 @@ public class InitializationException extends GdcException {
 
     /**
      * Exception constructor
+     *
      * @param msg exception message
      */
     public InitializationException(String msg) {

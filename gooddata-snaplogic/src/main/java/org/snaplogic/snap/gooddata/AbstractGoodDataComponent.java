@@ -23,21 +23,15 @@
 
 package org.snaplogic.snap.gooddata;
 
-import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
-import com.gooddata.integration.ftp.GdcFTPApiWrapper;
-import com.gooddata.integration.model.Project;
-import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.exception.HttpMethodException;
+import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
+import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import org.snaplogic.cc.ComponentAPI;
 import org.snaplogic.cc.InputView;
 import org.snaplogic.cc.OutputView;
-import org.snaplogic.cc.prop.SimpleProp;
-import org.snaplogic.cc.prop.SimpleProp.SimplePropType;
 import org.snaplogic.common.ComponentResourceErr;
 import org.snaplogic.common.exceptions.SnapComponentException;
-import org.snaplogic.snapi.PropertyConstraint;
 import org.snaplogic.snapi.ResDef;
-import org.snaplogic.snapi.PropertyConstraint.Type;
 
 import java.util.Map;
 
@@ -52,7 +46,6 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
     public static final String GOODDATA_CONNECTION_REF = "gooddata_connection_ref";
 
 
-
     @Override
     public void createResourceTemplate() {
         super.createResourceTemplate();
@@ -63,7 +56,7 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
     protected GdcRESTApiWrapper login() {
         return login(null);
     }
-    
+
     protected GdcDataTransferAPI ftpLogin() {
         return ftpLogin(null);
     }
@@ -86,8 +79,8 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
     }
 
 
-	protected ResDef getConnectionReference(ComponentResourceErr err) {
-		ResDef conResDef = getReferencedResDef(GOODDATA_CONNECTION_REF);
+    protected ResDef getConnectionReference(ComponentResourceErr err) {
+        ResDef conResDef = getReferencedResDef(GOODDATA_CONNECTION_REF);
         if (conResDef == null) {
             if (err == null) {
                 throw new SnapComponentException("Could not find connection reference");
@@ -96,9 +89,9 @@ public abstract class AbstractGoodDataComponent extends ComponentAPI {
                 return null;
             }
         }
-		return conResDef;
-	}
-    
+        return conResDef;
+    }
+
     protected GdcDataTransferAPI ftpLogin(ComponentResourceErr err) {
         ResDef conResDef = getConnectionReference(err);
         try {

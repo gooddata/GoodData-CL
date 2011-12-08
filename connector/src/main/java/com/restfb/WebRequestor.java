@@ -22,120 +22,109 @@
 
 package com.restfb;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import static com.restfb.util.StringUtils.isBlank;
 import static com.restfb.util.StringUtils.trimToEmpty;
 import static java.lang.String.format;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
  * Specifies how a class that sends {@code HTTP} requests to the Facebook API
  * endpoint must operate.
- * 
+ *
  * @author <a href="http://restfb.com">Mark Allen</a>
  */
 public interface WebRequestor {
-  /**
-   * Encapsulates an HTTP response body and status code.
-   * 
-   * @author <a href="http://restfb.com">Mark Allen</a>
-   */
-  public static class Response {
     /**
-     * HTTP response status code (e.g. 200).
+     * Encapsulates an HTTP response body and status code.
+     *
+     * @author <a href="http://restfb.com">Mark Allen</a>
      */
-    private Integer statusCode;
+    public static class Response {
+        /**
+         * HTTP response status code (e.g. 200).
+         */
+        private Integer statusCode;
 
-    /**
-     * HTTP response body as text.
-     */
-    private String body;
+        /**
+         * HTTP response body as text.
+         */
+        private String body;
 
-    /**
-     * Creates a response with the given HTTP status code and response body as
-     * text.
-     * 
-     * @param statusCode
-     *          The HTTP status code of the response.
-     * @param body
-     *          The response body as text.
-     */
-    public Response(Integer statusCode, String body) {
-      this.statusCode = statusCode;
-      this.body = trimToEmpty(body);
+        /**
+         * Creates a response with the given HTTP status code and response body as
+         * text.
+         *
+         * @param statusCode The HTTP status code of the response.
+         * @param body       The response body as text.
+         */
+        public Response(Integer statusCode, String body) {
+            this.statusCode = statusCode;
+            this.body = trimToEmpty(body);
+        }
+
+        /**
+         * Gets the HTTP status code.
+         *
+         * @return The HTTP status code.
+         */
+        public Integer getStatusCode() {
+            return statusCode;
+        }
+
+        /**
+         * Gets the HTTP response body as text.
+         *
+         * @return The HTTP response body as text.
+         */
+        public String getBody() {
+            return body;
+        }
+
+        /**
+         * @see Object#toString()
+         */
+        @Override
+        public String toString() {
+            if (isBlank(getBody()))
+                return format("HTTP status code %d and an empty response body.", getStatusCode());
+            return format("HTTP status code %d and response body: %s", getStatusCode(), getBody());
+        }
     }
 
     /**
-     * Gets the HTTP status code.
-     * 
-     * @return The HTTP status code.
+     * Given a Facebook API endpoint URL, execute a {@code GET} against it.
+     *
+     * @param url The URL to make a {@code GET} request for, including URL
+     *            parameters.
+     * @return HTTP response data.
+     * @throws java.io.IOException If an error occurs while performing the {@code GET} operation.
+     * @since 1.5
      */
-    public Integer getStatusCode() {
-      return statusCode;
-    }
+    Response executeGet(String url) throws IOException;
 
     /**
-     * Gets the HTTP response body as text.
-     * 
-     * @return The HTTP response body as text.
+     * Given a Facebook API endpoint URL and parameter string, execute a
+     * {@code POST} to the endpoint URL.
+     *
+     * @param url        The URL to {@code POST} to.
+     * @param parameters The parameters to be {@code POST}ed.
+     * @return HTTP response data.
+     * @throws java.io.IOException If an error occurs while performing the {@code POST}.
      */
-    public String getBody() {
-      return body;
-    }
+    Response executePost(String url, String parameters) throws IOException;
 
     /**
-     * @see Object#toString()
+     * Given a Facebook API endpoint URL and parameter string, execute a
+     * {@code POST} to the endpoint URL.
+     *
+     * @param url              The URL to {@code POST} to.
+     * @param parameters       The parameters to be {@code POST}ed.
+     * @param binaryAttachment A binary attachment to be included in the {@code POST} body (e.g.
+     *                         a photo).
+     * @return HTTP response data.
+     * @throws java.io.IOException If an error occurs while performing the {@code POST}.
      */
-    @Override
-    public String toString() {
-      if (isBlank(getBody()))
-        return format("HTTP status code %d and an empty response body.", getStatusCode());
-      return format("HTTP status code %d and response body: %s", getStatusCode(), getBody());
-    }
-  }
-
-  /**
-   * Given a Facebook API endpoint URL, execute a {@code GET} against it.
-   * 
-   * @param url
-   *          The URL to make a {@code GET} request for, including URL
-   *          parameters.
-   * @return HTTP response data.
-   * @throws java.io.IOException
-   *           If an error occurs while performing the {@code GET} operation.
-   * @since 1.5
-   */
-  Response executeGet(String url) throws IOException;
-
-  /**
-   * Given a Facebook API endpoint URL and parameter string, execute a
-   * {@code POST} to the endpoint URL.
-   * 
-   * @param url
-   *          The URL to {@code POST} to.
-   * @param parameters
-   *          The parameters to be {@code POST}ed.
-   * @return HTTP response data.
-   * @throws java.io.IOException
-   *           If an error occurs while performing the {@code POST}.
-   */
-  Response executePost(String url, String parameters) throws IOException;
-
-  /**
-   * Given a Facebook API endpoint URL and parameter string, execute a
-   * {@code POST} to the endpoint URL.
-   * 
-   * @param url
-   *          The URL to {@code POST} to.
-   * @param parameters
-   *          The parameters to be {@code POST}ed.
-   * @param binaryAttachment
-   *          A binary attachment to be included in the {@code POST} body (e.g.
-   *          a photo).
-   * @return HTTP response data.
-   * @throws java.io.IOException
-   *           If an error occurs while performing the {@code POST}.
-   */
-  Response executePost(String url, String parameters, InputStream binaryAttachment) throws IOException;
+    Response executePost(String url, String parameters, InputStream binaryAttachment) throws IOException;
 }

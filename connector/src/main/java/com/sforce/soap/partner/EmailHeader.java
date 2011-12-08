@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class EmailHeader  implements java.io.Serializable {
+public class EmailHeader implements java.io.Serializable {
     private boolean triggerAutoResponseEmail;
 
     private boolean triggerOtherEmail;
@@ -18,18 +18,18 @@ public class EmailHeader  implements java.io.Serializable {
     }
 
     public EmailHeader(
-           boolean triggerAutoResponseEmail,
-           boolean triggerOtherEmail,
-           boolean triggerUserEmail) {
-           this.triggerAutoResponseEmail = triggerAutoResponseEmail;
-           this.triggerOtherEmail = triggerOtherEmail;
-           this.triggerUserEmail = triggerUserEmail;
+            boolean triggerAutoResponseEmail,
+            boolean triggerOtherEmail,
+            boolean triggerUserEmail) {
+        this.triggerAutoResponseEmail = triggerAutoResponseEmail;
+        this.triggerOtherEmail = triggerOtherEmail;
+        this.triggerUserEmail = triggerUserEmail;
     }
 
 
     /**
      * Gets the triggerAutoResponseEmail value for this EmailHeader.
-     * 
+     *
      * @return triggerAutoResponseEmail
      */
     public boolean isTriggerAutoResponseEmail() {
@@ -39,7 +39,7 @@ public class EmailHeader  implements java.io.Serializable {
 
     /**
      * Sets the triggerAutoResponseEmail value for this EmailHeader.
-     * 
+     *
      * @param triggerAutoResponseEmail
      */
     public void setTriggerAutoResponseEmail(boolean triggerAutoResponseEmail) {
@@ -49,7 +49,7 @@ public class EmailHeader  implements java.io.Serializable {
 
     /**
      * Gets the triggerOtherEmail value for this EmailHeader.
-     * 
+     *
      * @return triggerOtherEmail
      */
     public boolean isTriggerOtherEmail() {
@@ -59,7 +59,7 @@ public class EmailHeader  implements java.io.Serializable {
 
     /**
      * Sets the triggerOtherEmail value for this EmailHeader.
-     * 
+     *
      * @param triggerOtherEmail
      */
     public void setTriggerOtherEmail(boolean triggerOtherEmail) {
@@ -69,7 +69,7 @@ public class EmailHeader  implements java.io.Serializable {
 
     /**
      * Gets the triggerUserEmail value for this EmailHeader.
-     * 
+     *
      * @return triggerUserEmail
      */
     public boolean isTriggerUserEmail() {
@@ -79,7 +79,7 @@ public class EmailHeader  implements java.io.Serializable {
 
     /**
      * Sets the triggerUserEmail value for this EmailHeader.
-     * 
+     *
      * @param triggerUserEmail
      */
     public void setTriggerUserEmail(boolean triggerUserEmail) {
@@ -87,6 +87,7 @@ public class EmailHeader  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof EmailHeader)) return false;
         EmailHeader other = (EmailHeader) obj;
@@ -97,15 +98,16 @@ public class EmailHeader  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.triggerAutoResponseEmail == other.isTriggerAutoResponseEmail() &&
-            this.triggerOtherEmail == other.isTriggerOtherEmail() &&
-            this.triggerUserEmail == other.isTriggerUserEmail();
+        _equals = true &&
+                this.triggerAutoResponseEmail == other.isTriggerAutoResponseEmail() &&
+                this.triggerOtherEmail == other.isTriggerOtherEmail() &&
+                this.triggerUserEmail == other.isTriggerUserEmail();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -121,7 +123,7 @@ public class EmailHeader  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(EmailHeader.class, true);
+            new org.apache.axis.description.TypeDesc(EmailHeader.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">EmailHeader"));
@@ -156,24 +158,24 @@ public class EmailHeader  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

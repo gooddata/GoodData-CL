@@ -31,7 +31,7 @@ import java.io.StringWriter;
  * texts produced strictly conform to JSON syntax rules. No whitespace is added,
  * so the results are ready for transmission or storage. Each instance of
  * JsonStringer can produce one JSON text.
- * <p>
+ * <p/>
  * A JsonStringer instance provides a <code>value</code> method for appending
  * values to the text, and a <code>key</code> method for adding keys before
  * values in objects. There are <code>array</code> and <code>endArray</code>
@@ -39,44 +39,44 @@ import java.io.StringWriter;
  * <code>endObject</code> methods which make and bound object values. All of
  * these methods return the JsonWriter instance, permitting cascade style. For
  * example,
- * 
+ * <p/>
  * <pre>
  * myString = new JsonStringer().object().key(&quot;JSON&quot;).value(&quot;Hello, World!&quot;).endObject().toString();
  * </pre>
- * 
+ * <p/>
  * which produces the string
- * 
+ * <p/>
  * <pre>
  * {&quot;JSON&quot;:&quot;Hello, World!&quot;}
  * </pre>
- * <p>
+ * <p/>
  * The first method called must be <code>array</code> or <code>object</code>.
  * There are no methods for adding commas or colons. JsonStringer adds them for
  * you. Objects and arrays can be nested up to 20 levels deep.
- * <p>
+ * <p/>
  * This can sometimes be easier than using a JsonObject to build a string.
- * 
+ *
  * @author JSON.org
  * @version 2008-09-18
  */
 public class JsonStringer extends JsonWriter {
-  /**
-   * Make a fresh JsonStringer. It can be used to build one JSON text.
-   */
-  public JsonStringer() {
-    super(new StringWriter());
-  }
+    /**
+     * Make a fresh JsonStringer. It can be used to build one JSON text.
+     */
+    public JsonStringer() {
+        super(new StringWriter());
+    }
 
-  /**
-   * Return the JSON text. This method is used to obtain the product of the
-   * JsonStringer instance. It will return <code>null</code> if there was a
-   * problem in the construction of the JSON text (such as the calls to
-   * <code>array</code> were not properly balanced with calls to
-   * <code>endArray</code>).
-   * 
-   * @return The JSON text.
-   */
-  public String toString() {
-    return this.mode == 'd' ? this.writer.toString() : null;
-  }
+    /**
+     * Return the JSON text. This method is used to obtain the product of the
+     * JsonStringer instance. It will return <code>null</code> if there was a
+     * problem in the construction of the JSON text (such as the calls to
+     * <code>array</code> were not properly balanced with calls to
+     * <code>endArray</code>).
+     *
+     * @return The JSON text.
+     */
+    public String toString() {
+        return this.mode == 'd' ? this.writer.toString() : null;
+    }
 }

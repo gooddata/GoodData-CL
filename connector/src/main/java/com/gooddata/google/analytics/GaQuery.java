@@ -41,6 +41,7 @@ public class GaQuery extends DataQuery {
 
     /**
      * Constructor
+     *
      * @throws MalformedURLException internal error
      */
     public GaQuery() throws MalformedURLException {

@@ -30,7 +30,9 @@ import com.gooddata.util.CSVWriter;
 import com.gooddata.util.FileUtil;
 import com.gooddata.util.NetUtil;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -97,9 +99,10 @@ public class PivotalApi {
 
     /**
      * The Pivotal API wrapper constructor
-     * @param usr - PT username
-     * @param psw - PT password
-     * @param prjId  - PT project ID (integer)
+     *
+     * @param usr   - PT username
+     * @param psw   - PT password
+     * @param prjId - PT project ID (integer)
      */
     public PivotalApi(String usr, String psw, String prjId) {
         this.setUserName(usr);
@@ -116,28 +119,28 @@ public class PivotalApi {
         RECORD_STORIES.addAll(Arrays.asList(new String[]{"Id", "Labels", "Story", "Iteration", "Iteration Start",
                 "Iteration End", "Story Type", "Estimate", "Current State", "Created at", "Accepted at", "Deadline",
                 "Requested By", "Owned By", "URL"}));
-        DATE_COLUMNS.addAll(Arrays.asList(new String[] {"Iteration Start", "Iteration End", "Created at", "Accepted at",
+        DATE_COLUMNS.addAll(Arrays.asList(new String[]{"Iteration Start", "Iteration End", "Created at", "Accepted at",
                 "Deadline"}));
     }
 
 
     /**
      * Get token
+     *
      * @throws Exception in case of an IO error
      */
     public void getToken() throws IOException {
         PostMethod m = new PostMethod("/services/tokens/active");
         m.getParams().setCookiePolicy(CookiePolicy.NETSCAPE);
-        m.setParameter("username",getUserName());
-        m.setParameter("password",getPassword());
+        m.setParameter("username", getUserName());
+        m.setParameter("password", getPassword());
         try {
             client.executeMethod(m);
             System.err.println(m.getResponseBodyAsString());
             if (m.getStatusCode() != HttpStatus.SC_OK && m.getStatusCode() != HttpStatus.SC_MOVED_TEMPORARILY) {
-                throw new InvalidParameterException("Invalid PT credentials. HTTP reply code "+m.getStatusCode());
+                throw new InvalidParameterException("Invalid PT credentials. HTTP reply code " + m.getStatusCode());
             }
-        }
-        finally {
+        } finally {
             m.releaseConnection();
         }
     }
@@ -146,55 +149,56 @@ public class PivotalApi {
 
     /**
      * Sign into the PT
+     *
      * @throws Exception in case of an IO error
      */
     public void signin() throws IOException {
-        PostMethod m = new PostMethod(PIVOTAL_URL+"/signin");
+        PostMethod m = new PostMethod(PIVOTAL_URL + "/signin");
         m.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-        m.addParameter("credentials[username]",getUserName());
-        m.addParameter("credentials[password]",getPassword());
+        m.addParameter("credentials[username]", getUserName());
+        m.addParameter("credentials[password]", getPassword());
         try {
             client.executeMethod(m);
             if (m.getStatusCode() != HttpStatus.SC_OK && m.getStatusCode() != HttpStatus.SC_MOVED_TEMPORARILY) {
-                throw new InvalidParameterException("Invalid PT credentials. HTTP reply code "+m.getStatusCode());
+                throw new InvalidParameterException("Invalid PT credentials. HTTP reply code " + m.getStatusCode());
             }
             Header[] cookies = m.getResponseHeaders("Set-Cookie");
-            for(int i=0; i < cookies.length; i++) {
+            for (int i = 0; i < cookies.length; i++) {
                 String value = cookies[i].getValue();
-                if(i==0)
+                if (i == 0)
                     authCookie += value.split(";")[0];
                 else
-                    authCookie += "; "+value.split(";")[0];
+                    authCookie += "; " + value.split(";")[0];
             }
             Header l = m.getResponseHeader("Location");
             String location = l.getValue();
             GetMethod gm = new GetMethod(location);
             gm.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-            gm.setRequestHeader("Cookie",authCookie);
+            gm.setRequestHeader("Cookie", authCookie);
             client.executeMethod(gm);
             if (gm.getStatusCode() != HttpStatus.SC_OK && gm.getStatusCode() != HttpStatus.SC_MOVED_TEMPORARILY) {
-                throw new InvalidParameterException("Invalid PT credentials. HTTP reply code "+m.getStatusCode());
+                throw new InvalidParameterException("Invalid PT credentials. HTTP reply code " + m.getStatusCode());
             }
-        }
-        finally {
+        } finally {
             m.releaseConnection();
         }
     }
 
     /**
      * Retrieves the PT data in the CSV format
+     *
      * @param ptCsv - the filename to store the PT CSV data
      * @throws Exception in case of an IO error
      */
     public void getCsvData(String ptCsv) throws IOException {
-        String url = PIVOTAL_URL+"/projects/"+getProjectId()+"/export/";
+        String url = PIVOTAL_URL + "/projects/" + getProjectId() + "/export/";
         PostMethod m = new PostMethod(url);
-      
+
         m.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-        m.setRequestHeader("Cookie",authCookie);
-        m.addParameter("options[include_current_backlog_stories]","1");
-        m.addParameter("options[include_icebox_stories]","1");
-        m.addParameter("options[include_done_stories]","1");
+        m.setRequestHeader("Cookie", authCookie);
+        m.addParameter("options[include_current_backlog_stories]", "1");
+        m.addParameter("options[include_icebox_stories]", "1");
+        m.addParameter("options[include_done_stories]", "1");
 
         try {
             client.executeMethod(m);
@@ -203,31 +207,30 @@ public class PivotalApi {
                 byte[] buf = new byte[BUFLEN];
                 BufferedInputStream is = new BufferedInputStream(m.getResponseBodyAsStream());
                 BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(ptCsv));
-                int cnt = is.read(buf,0,BUFLEN);
-                while(cnt >0) {
+                int cnt = is.read(buf, 0, BUFLEN);
+                while (cnt > 0) {
                     os.write(buf, 0, cnt);
-                    cnt = is.read(buf,0,BUFLEN);
+                    cnt = is.read(buf, 0, BUFLEN);
                 }
                 is.close();
                 os.flush();
                 os.close();
+            } else {
+                throw new InvalidParameterException("Error retrieving the PT data. HTTP reply code " + m.getStatusCode());
             }
-            else {
-                throw new InvalidParameterException("Error retrieving the PT data. HTTP reply code "+m.getStatusCode());
-            }
-        }
-        finally {
+        } finally {
             m.releaseConnection();
         }
     }
 
     /**
      * Writes a record to CSV writer
-     * @param cw CSV writer
+     *
+     * @param cw  CSV writer
      * @param rec record as a list
      */
     private void writeRecord(CSVWriter cw, List<String> rec) {
-        cw.writeNext(rec.toArray(new String[] {}));
+        cw.writeNext(rec.toArray(new String[]{}));
     }
 
     private DateTimeFormatter reader = DateTimeFormat.forPattern("MMM dd, yyyy");
@@ -235,26 +238,25 @@ public class PivotalApi {
 
     /**
      * Converts the date format (if needed)
+     *
      * @param header the CSV column header
-     * @param value the value
+     * @param value  the value
      * @return the converted date
      */
     private String convertDate(String header, String value) {
-        if(DATE_COLUMNS.contains(header)) {
-            if(value != null && value.length()>0) {
+        if (DATE_COLUMNS.contains(header)) {
+            if (value != null && value.length() > 0) {
                 DateTime dt = null;
                 try {
                     dt = reader.parseDateTime(value);
                 } catch (IllegalArgumentException e) {
-                    l.debug("Error parsing PT date value '"+value+"'");
+                    l.debug("Error parsing PT date value '" + value + "'");
                 }
                 return writer.print(dt);
-            }
-            else {
+            } else {
                 return "";
             }
-        }
-        else
+        } else
             return value;
     }
 
@@ -265,18 +267,19 @@ public class PivotalApi {
 
     /**
      * Computes the iteration velocity
-     * @param csvFile the incoming PT CSV file
+     *
+     * @param csvFile                the incoming PT CSV file
      * @param velocityIterationCount the number of iterations that the velocity is computed from
-     * @param velocities returned velocities
-     * @param releaseInfo releases
+     * @param velocities             returned velocities
+     * @param releaseInfo            releases
      * @throws Exception in case of an IO issue
      */
     public void computeIterationVelocity(String csvFile, int velocityIterationCount,
-                                         Map<Integer,String> velocities, Map<String,String> releaseInfo) throws IOException {
-        Map<Integer,Integer> estimates = new HashMap<Integer,Integer>();
+                                         Map<Integer, String> velocities, Map<String, String> releaseInfo) throws IOException {
+        Map<Integer, Integer> estimates = new HashMap<Integer, Integer>();
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
         String[] header = cr.readNext();
-        if(header != null && header.length>0) {
+        if (header != null && header.length > 0) {
             List<String> headerList = Arrays.asList(header);
 
             int iterIdx = headerList.indexOf("Iteration");
@@ -284,56 +287,51 @@ public class PivotalApi {
             int idIdx = headerList.indexOf("Id");
             int typeIdx = headerList.indexOf("Story Type");
             int nameIdx = headerList.indexOf("Story");
-            if(iterIdx >=0 && estIdx>=0 && idIdx>=0 && typeIdx>=0 && nameIdx>=0) {
+            if (iterIdx >= 0 && estIdx >= 0 && idIdx >= 0 && typeIdx >= 0 && nameIdx >= 0) {
                 List<String> releaseBuffer = new ArrayList<String>();
                 String[] row = cr.readNext();
-                while(row != null && row.length > 0) {
+                while (row != null && row.length > 0) {
                     try {
                         String id = row[idIdx];
                         String type = row[typeIdx];
                         String name = row[nameIdx];
-                        if(id != null && id.length()>0) {
-                            if(type != null && type.length()>0) {
-                                if("release".equalsIgnoreCase(type)) {
-                                    if(name != null && name.length()>0) {
-                                        for(String story : releaseBuffer) {
-                                            releaseInfo.put(story,name);
+                        if (id != null && id.length() > 0) {
+                            if (type != null && type.length() > 0) {
+                                if ("release".equalsIgnoreCase(type)) {
+                                    if (name != null && name.length() > 0) {
+                                        for (String story : releaseBuffer) {
+                                            releaseInfo.put(story, name);
                                         }
-                                        releaseInfo.put(id,name);
+                                        releaseInfo.put(id, name);
                                         releaseBuffer.clear();
-                                    }
-                                    else {
+                                    } else {
                                         cr.close();
                                         throw new IOException("Release with no name.");
                                     }
-                                }
-                                else {
+                                } else {
                                     releaseBuffer.add(id);
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             cr.close();
                             throw new IOException("Story with empty Id.");
                         }
                         String iterTxt = row[iterIdx];
                         String estTxt = row[estIdx];
-                        if(iterTxt != null && iterTxt.length()>0) {
+                        if (iterTxt != null && iterTxt.length() > 0) {
                             Integer iter = Integer.parseInt(iterTxt);
                             Integer est = new Integer(0);
-                            if(estTxt!=null && estTxt.length()>0)
+                            if (estTxt != null && estTxt.length() > 0)
                                 est = Integer.parseInt(estTxt);
-                            if(estimates.containsKey(iter))  {
+                            if (estimates.containsKey(iter)) {
                                 Integer estimate = estimates.get(iter);
                                 estimate = new Integer(estimate.intValue() + est.intValue());
-                                estimates.put(iter,estimate);
-                            }
-                            else {
-                                estimates.put(iter,new Integer(est));
+                                estimates.put(iter, estimate);
+                            } else {
+                                estimates.put(iter, new Integer(est));
                             }
                         }
-                    }
-                    catch (ArrayIndexOutOfBoundsException e) {
+                    } catch (ArrayIndexOutOfBoundsException e) {
                         cr.close();
                         throw new IOException("Iteration velocity computation failed: data row doesn't contain Id or Type or Iteration or Estimate fields.");
                     }
@@ -343,26 +341,24 @@ public class PivotalApi {
                 for (Integer iteration : estimates.keySet()) {
                     int cnt = 0;
                     int estimate = 0;
-                    for(int i = 1; i <= velocityIterationCount; i++) {
-                        if(estimates.containsKey(new Integer(iteration.intValue() - i))) {
+                    for (int i = 1; i <= velocityIterationCount; i++) {
+                        if (estimates.containsKey(new Integer(iteration.intValue() - i))) {
                             cnt++;
                             estimate += estimates.get(new Integer(iteration.intValue() - i));
                         }
                     }
                     double velocity = 0;
-                    if(cnt>0)
-                        velocity = (double)estimate / (double)cnt;
+                    if (cnt > 0)
+                        velocity = (double) estimate / (double) cnt;
                     String vs = decf.format(velocity);
                     velocities.put(iteration, vs);
 
                 }
-            }
-            else {
+            } else {
                 cr.close();
                 throw new IOException("Iteration velocity computation failed: no Iteration or Estimate or Id or Type fields in header.");
             }
-        }
-        else {
+        } else {
             cr.close();
             throw new IOException("Iteration velocity computation failed: empty PT input.");
         }
@@ -372,21 +368,22 @@ public class PivotalApi {
 
     /**
      * Parses the PT CSV file into the STORY, LABEL, and LABEL_TO_STORY CSV files
-     * @param csvFile the incoming PT CSV file
-     * @param storiesCsv the output STORY CSV file
-     * @param labelsCsv the output LABEL CSV file
-     * @param labelsToStoriesCsv  the output LABEL_TO_STORY CSV file
+     *
+     * @param csvFile                the incoming PT CSV file
+     * @param storiesCsv             the output STORY CSV file
+     * @param labelsCsv              the output LABEL CSV file
+     * @param labelsToStoriesCsv     the output LABEL_TO_STORY CSV file
      * @param velocityIterationCount the number of iterations that the velocity is computed from
      * @throws Exception in case of an IO issue
      */
     public void parse(String csvFile, String storiesCsv, String labelsCsv, String labelsToStoriesCsv, DateTime t, int velocityIterationCount) throws IOException {
         String today = writer.print(t);
-        Map<Integer,String> velocities = new HashMap<Integer,String>();
-        Map<String,String> releases = new HashMap<String,String>();
+        Map<Integer, String> velocities = new HashMap<Integer, String>();
+        Map<String, String> releases = new HashMap<String, String>();
         computeIterationVelocity(csvFile, velocityIterationCount, velocities, releases);
         CSVReader cr = FileUtil.createUtf8CsvReader(new File(csvFile));
         String[] row = cr.readNext();
-        if(row != null && row.length > 0) {
+        if (row != null && row.length > 0) {
             List<String> headers = Arrays.asList(row);
             List<String> storiesRecord = new ArrayList<String>();
             List<String> labelsRecord = new ArrayList<String>();
@@ -404,14 +401,14 @@ public class PivotalApi {
             labelsToStoriesRecord.add("Label Id");
 
 
-            for(String header : headers) {
-                if(RECORD_STORIES.contains(header)) {
+            for (String header : headers) {
+                if (RECORD_STORIES.contains(header)) {
                     storiesRecord.add(header);
-                    if(header.equalsIgnoreCase("Iteration")) {
+                    if (header.equalsIgnoreCase("Iteration")) {
                         storiesRecord.add("IterationFact");
                         storiesRecord.add("IterationVelocity");
                     }
-                    if(header.equalsIgnoreCase("Id")) {
+                    if (header.equalsIgnoreCase("Id")) {
                         storiesRecord.add("Release");
                     }
                 }
@@ -422,41 +419,40 @@ public class PivotalApi {
             writeRecord(labelsWriter, labelsRecord);
             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
 
-            Map<String,String> labels = new HashMap<String, String>();
+            Map<String, String> labels = new HashMap<String, String>();
             row = cr.readNext();
-            while(row != null && row.length > 1) {
+            while (row != null && row.length > 1) {
                 storiesRecord.clear();
                 labelsRecord.clear();
                 labelsToStoriesRecord.clear();
                 String storyId = "";
                 String label = "";
-                String key = today+"|";
-                for(int i=0; i < headers.size(); i++) {
+                String key = today + "|";
+                for (int i = 0; i < headers.size(); i++) {
                     String header = headers.get(i);
-                    if(RECORD_STORIES.contains(header)) {
+                    if (RECORD_STORIES.contains(header)) {
                         key += row[i] + "|";
                         storiesRecord.add(convertDate(header, row[i]));
-                        if(header.equalsIgnoreCase("Id")) {
+                        if (header.equalsIgnoreCase("Id")) {
                             String id = row[i];
                             String release = "";
-                            if(releases.containsKey(id)) {
+                            if (releases.containsKey(id)) {
                                 release = releases.get(id);
                             }
                             storiesRecord.add(release);
                         }
-                        if(header.equalsIgnoreCase("Iteration")) {
+                        if (header.equalsIgnoreCase("Iteration")) {
                             storiesRecord.add(convertDate(header, row[i]));
-                            if(row[i] != null && row[i].length()>0) {
+                            if (row[i] != null && row[i].length() > 0) {
                                 Integer iteration = Integer.parseInt(row[i]);
 
                                 storiesRecord.add(convertDate(header, velocities.get(iteration)));
-                            }
-                            else {
+                            } else {
                                 storiesRecord.add(convertDate(header, "0"));
                             }
                         }
                     }
-                    if(HEADER_LABEL.equals(header)) {
+                    if (HEADER_LABEL.equals(header)) {
                         label = row[i];
                     }
                 }
@@ -464,17 +460,16 @@ public class PivotalApi {
                 storiesRecord.add(0, today);
                 storiesRecord.add(0, storyId);
                 String[] lbls = label.split(",");
-                for(String lbl : lbls) {
+                for (String lbl : lbls) {
                     lbl = lbl.trim();
-                    if(lbl.length() > 0) {
-                        if(labels.containsKey(lbl)) {
+                    if (lbl.length() > 0) {
+                        if (labels.containsKey(lbl)) {
                             String lblId = labels.get(lbl);
                             labelsToStoriesRecord.add(storyId);
                             labelsToStoriesRecord.add(lblId);
                             labelsToStoriesRecord.add(0, DigestUtils.md5Hex(storyId + "|" + lblId));
                             writeRecord(labelsToStoriesWriter, labelsToStoriesRecord);
-                        }
-                        else {
+                        } else {
                             String id = DigestUtils.md5Hex(lbl);
                             labels.put(lbl, id);
                             labelsRecord.add(lbl);
@@ -487,7 +482,7 @@ public class PivotalApi {
                         }
                     }
                     labelsRecord.clear();
-                    labelsToStoriesRecord.clear();                   
+                    labelsToStoriesRecord.clear();
                 }
                 writeRecord(storiesWriter, storiesRecord);
                 row = cr.readNext();
@@ -498,11 +493,9 @@ public class PivotalApi {
             labelsWriter.close();
             labelsToStoriesWriter.flush();
             labelsToStoriesWriter.close();
-        }
-        else {
+        } else {
             throw new InvalidParameterException("The Pivotal extract doesn't contain any row.");
         }
-
 
 
     }

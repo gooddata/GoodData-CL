@@ -33,6 +33,7 @@ public class MetadataFormatException extends GdcException {
 
     /**
      * Exception constructor
+     *
      * @param msg exception message
      */
     public MetadataFormatException(String msg) {

@@ -7,21 +7,21 @@
 
 package com.sforce.soap.partner;
 
-public class SetPasswordResponse  implements java.io.Serializable {
+public class SetPasswordResponse implements java.io.Serializable {
     private com.sforce.soap.partner.SetPasswordResult result;
 
     public SetPasswordResponse() {
     }
 
     public SetPasswordResponse(
-           com.sforce.soap.partner.SetPasswordResult result) {
-           this.result = result;
+            com.sforce.soap.partner.SetPasswordResult result) {
+        this.result = result;
     }
 
 
     /**
      * Gets the result value for this SetPasswordResponse.
-     * 
+     *
      * @return result
      */
     public com.sforce.soap.partner.SetPasswordResult getResult() {
@@ -31,7 +31,7 @@ public class SetPasswordResponse  implements java.io.Serializable {
 
     /**
      * Sets the result value for this SetPasswordResponse.
-     * 
+     *
      * @param result
      */
     public void setResult(com.sforce.soap.partner.SetPasswordResult result) {
@@ -39,6 +39,7 @@ public class SetPasswordResponse  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SetPasswordResponse)) return false;
         SetPasswordResponse other = (SetPasswordResponse) obj;
@@ -49,15 +50,16 @@ public class SetPasswordResponse  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.result==null && other.getResult()==null) || 
-             (this.result!=null &&
-              this.result.equals(other.getResult())));
+        _equals = true &&
+                ((this.result == null && other.getResult() == null) ||
+                        (this.result != null &&
+                                this.result.equals(other.getResult())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -73,7 +75,7 @@ public class SetPasswordResponse  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(SetPasswordResponse.class, true);
+            new org.apache.axis.description.TypeDesc(SetPasswordResponse.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", ">setPasswordResponse"));
@@ -96,24 +98,24 @@ public class SetPasswordResponse  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

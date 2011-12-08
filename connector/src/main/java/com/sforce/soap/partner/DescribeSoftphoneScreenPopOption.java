@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
+public class DescribeSoftphoneScreenPopOption implements java.io.Serializable {
     private java.lang.String matchType;
 
     private java.lang.String screenPopData;
@@ -18,18 +18,18 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
     }
 
     public DescribeSoftphoneScreenPopOption(
-           java.lang.String matchType,
-           java.lang.String screenPopData,
-           java.lang.String screenPopType) {
-           this.matchType = matchType;
-           this.screenPopData = screenPopData;
-           this.screenPopType = screenPopType;
+            java.lang.String matchType,
+            java.lang.String screenPopData,
+            java.lang.String screenPopType) {
+        this.matchType = matchType;
+        this.screenPopData = screenPopData;
+        this.screenPopType = screenPopType;
     }
 
 
     /**
      * Gets the matchType value for this DescribeSoftphoneScreenPopOption.
-     * 
+     *
      * @return matchType
      */
     public java.lang.String getMatchType() {
@@ -39,7 +39,7 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
 
     /**
      * Sets the matchType value for this DescribeSoftphoneScreenPopOption.
-     * 
+     *
      * @param matchType
      */
     public void setMatchType(java.lang.String matchType) {
@@ -49,7 +49,7 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
 
     /**
      * Gets the screenPopData value for this DescribeSoftphoneScreenPopOption.
-     * 
+     *
      * @return screenPopData
      */
     public java.lang.String getScreenPopData() {
@@ -59,7 +59,7 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
 
     /**
      * Sets the screenPopData value for this DescribeSoftphoneScreenPopOption.
-     * 
+     *
      * @param screenPopData
      */
     public void setScreenPopData(java.lang.String screenPopData) {
@@ -69,7 +69,7 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
 
     /**
      * Gets the screenPopType value for this DescribeSoftphoneScreenPopOption.
-     * 
+     *
      * @return screenPopType
      */
     public java.lang.String getScreenPopType() {
@@ -79,7 +79,7 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
 
     /**
      * Sets the screenPopType value for this DescribeSoftphoneScreenPopOption.
-     * 
+     *
      * @param screenPopType
      */
     public void setScreenPopType(java.lang.String screenPopType) {
@@ -87,6 +87,7 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeSoftphoneScreenPopOption)) return false;
         DescribeSoftphoneScreenPopOption other = (DescribeSoftphoneScreenPopOption) obj;
@@ -97,21 +98,22 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.matchType==null && other.getMatchType()==null) || 
-             (this.matchType!=null &&
-              this.matchType.equals(other.getMatchType()))) &&
-            ((this.screenPopData==null && other.getScreenPopData()==null) || 
-             (this.screenPopData!=null &&
-              this.screenPopData.equals(other.getScreenPopData()))) &&
-            ((this.screenPopType==null && other.getScreenPopType()==null) || 
-             (this.screenPopType!=null &&
-              this.screenPopType.equals(other.getScreenPopType())));
+        _equals = true &&
+                ((this.matchType == null && other.getMatchType() == null) ||
+                        (this.matchType != null &&
+                                this.matchType.equals(other.getMatchType()))) &&
+                ((this.screenPopData == null && other.getScreenPopData() == null) ||
+                        (this.screenPopData != null &&
+                                this.screenPopData.equals(other.getScreenPopData()))) &&
+                ((this.screenPopType == null && other.getScreenPopType() == null) ||
+                        (this.screenPopType != null &&
+                                this.screenPopType.equals(other.getScreenPopType())));
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -133,7 +135,7 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeSoftphoneScreenPopOption.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeSoftphoneScreenPopOption.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeSoftphoneScreenPopOption"));
@@ -168,24 +170,24 @@ public class DescribeSoftphoneScreenPopOption  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

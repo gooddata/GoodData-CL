@@ -48,7 +48,7 @@ public class GdcRestApiException extends GdcException {
     }
 
     public GdcRestApiException(String msg, Throwable cause) {
-    	super(msg, cause);
+        super(msg, cause);
     }
 
     @Override

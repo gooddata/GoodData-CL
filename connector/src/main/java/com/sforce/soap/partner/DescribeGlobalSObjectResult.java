@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeGlobalSObjectResult  implements java.io.Serializable {
+public class DescribeGlobalSObjectResult implements java.io.Serializable {
     private boolean activateable;
 
     private boolean createable;
@@ -52,52 +52,52 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
     }
 
     public DescribeGlobalSObjectResult(
-           boolean activateable,
-           boolean createable,
-           boolean custom,
-           boolean customSetting,
-           boolean deletable,
-           boolean deprecatedAndHidden,
-           boolean feedEnabled,
-           java.lang.String keyPrefix,
-           java.lang.String label,
-           java.lang.String labelPlural,
-           boolean layoutable,
-           boolean mergeable,
-           java.lang.String name,
-           boolean queryable,
-           boolean replicateable,
-           boolean retrieveable,
-           boolean searchable,
-           boolean triggerable,
-           boolean undeletable,
-           boolean updateable) {
-           this.activateable = activateable;
-           this.createable = createable;
-           this.custom = custom;
-           this.customSetting = customSetting;
-           this.deletable = deletable;
-           this.deprecatedAndHidden = deprecatedAndHidden;
-           this.feedEnabled = feedEnabled;
-           this.keyPrefix = keyPrefix;
-           this.label = label;
-           this.labelPlural = labelPlural;
-           this.layoutable = layoutable;
-           this.mergeable = mergeable;
-           this.name = name;
-           this.queryable = queryable;
-           this.replicateable = replicateable;
-           this.retrieveable = retrieveable;
-           this.searchable = searchable;
-           this.triggerable = triggerable;
-           this.undeletable = undeletable;
-           this.updateable = updateable;
+            boolean activateable,
+            boolean createable,
+            boolean custom,
+            boolean customSetting,
+            boolean deletable,
+            boolean deprecatedAndHidden,
+            boolean feedEnabled,
+            java.lang.String keyPrefix,
+            java.lang.String label,
+            java.lang.String labelPlural,
+            boolean layoutable,
+            boolean mergeable,
+            java.lang.String name,
+            boolean queryable,
+            boolean replicateable,
+            boolean retrieveable,
+            boolean searchable,
+            boolean triggerable,
+            boolean undeletable,
+            boolean updateable) {
+        this.activateable = activateable;
+        this.createable = createable;
+        this.custom = custom;
+        this.customSetting = customSetting;
+        this.deletable = deletable;
+        this.deprecatedAndHidden = deprecatedAndHidden;
+        this.feedEnabled = feedEnabled;
+        this.keyPrefix = keyPrefix;
+        this.label = label;
+        this.labelPlural = labelPlural;
+        this.layoutable = layoutable;
+        this.mergeable = mergeable;
+        this.name = name;
+        this.queryable = queryable;
+        this.replicateable = replicateable;
+        this.retrieveable = retrieveable;
+        this.searchable = searchable;
+        this.triggerable = triggerable;
+        this.undeletable = undeletable;
+        this.updateable = updateable;
     }
 
 
     /**
      * Gets the activateable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return activateable
      */
     public boolean isActivateable() {
@@ -107,7 +107,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the activateable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param activateable
      */
     public void setActivateable(boolean activateable) {
@@ -117,7 +117,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the createable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return createable
      */
     public boolean isCreateable() {
@@ -127,7 +127,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the createable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param createable
      */
     public void setCreateable(boolean createable) {
@@ -137,7 +137,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the custom value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return custom
      */
     public boolean isCustom() {
@@ -147,7 +147,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the custom value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param custom
      */
     public void setCustom(boolean custom) {
@@ -157,7 +157,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the customSetting value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return customSetting
      */
     public boolean isCustomSetting() {
@@ -167,7 +167,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the customSetting value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param customSetting
      */
     public void setCustomSetting(boolean customSetting) {
@@ -177,7 +177,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the deletable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return deletable
      */
     public boolean isDeletable() {
@@ -187,7 +187,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the deletable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param deletable
      */
     public void setDeletable(boolean deletable) {
@@ -197,7 +197,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the deprecatedAndHidden value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return deprecatedAndHidden
      */
     public boolean isDeprecatedAndHidden() {
@@ -207,7 +207,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the deprecatedAndHidden value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param deprecatedAndHidden
      */
     public void setDeprecatedAndHidden(boolean deprecatedAndHidden) {
@@ -217,7 +217,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the feedEnabled value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return feedEnabled
      */
     public boolean isFeedEnabled() {
@@ -227,7 +227,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the feedEnabled value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param feedEnabled
      */
     public void setFeedEnabled(boolean feedEnabled) {
@@ -237,7 +237,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the keyPrefix value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return keyPrefix
      */
     public java.lang.String getKeyPrefix() {
@@ -247,7 +247,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the keyPrefix value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param keyPrefix
      */
     public void setKeyPrefix(java.lang.String keyPrefix) {
@@ -257,7 +257,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the label value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return label
      */
     public java.lang.String getLabel() {
@@ -267,7 +267,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the label value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param label
      */
     public void setLabel(java.lang.String label) {
@@ -277,7 +277,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the labelPlural value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return labelPlural
      */
     public java.lang.String getLabelPlural() {
@@ -287,7 +287,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the labelPlural value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param labelPlural
      */
     public void setLabelPlural(java.lang.String labelPlural) {
@@ -297,7 +297,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the layoutable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return layoutable
      */
     public boolean isLayoutable() {
@@ -307,7 +307,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the layoutable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param layoutable
      */
     public void setLayoutable(boolean layoutable) {
@@ -317,7 +317,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the mergeable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return mergeable
      */
     public boolean isMergeable() {
@@ -327,7 +327,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the mergeable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param mergeable
      */
     public void setMergeable(boolean mergeable) {
@@ -337,7 +337,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the name value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return name
      */
     public java.lang.String getName() {
@@ -347,7 +347,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the name value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param name
      */
     public void setName(java.lang.String name) {
@@ -357,7 +357,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the queryable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return queryable
      */
     public boolean isQueryable() {
@@ -367,7 +367,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the queryable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param queryable
      */
     public void setQueryable(boolean queryable) {
@@ -377,7 +377,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the replicateable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return replicateable
      */
     public boolean isReplicateable() {
@@ -387,7 +387,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the replicateable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param replicateable
      */
     public void setReplicateable(boolean replicateable) {
@@ -397,7 +397,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the retrieveable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return retrieveable
      */
     public boolean isRetrieveable() {
@@ -407,7 +407,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the retrieveable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param retrieveable
      */
     public void setRetrieveable(boolean retrieveable) {
@@ -417,7 +417,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the searchable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return searchable
      */
     public boolean isSearchable() {
@@ -427,7 +427,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the searchable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param searchable
      */
     public void setSearchable(boolean searchable) {
@@ -437,7 +437,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the triggerable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return triggerable
      */
     public boolean isTriggerable() {
@@ -447,7 +447,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the triggerable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param triggerable
      */
     public void setTriggerable(boolean triggerable) {
@@ -457,7 +457,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the undeletable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return undeletable
      */
     public boolean isUndeletable() {
@@ -467,7 +467,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the undeletable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param undeletable
      */
     public void setUndeletable(boolean undeletable) {
@@ -477,7 +477,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Gets the updateable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @return updateable
      */
     public boolean isUpdateable() {
@@ -487,7 +487,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     /**
      * Sets the updateable value for this DescribeGlobalSObjectResult.
-     * 
+     *
      * @param updateable
      */
     public void setUpdateable(boolean updateable) {
@@ -495,6 +495,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeGlobalSObjectResult)) return false;
         DescribeGlobalSObjectResult other = (DescribeGlobalSObjectResult) obj;
@@ -505,40 +506,41 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.activateable == other.isActivateable() &&
-            this.createable == other.isCreateable() &&
-            this.custom == other.isCustom() &&
-            this.customSetting == other.isCustomSetting() &&
-            this.deletable == other.isDeletable() &&
-            this.deprecatedAndHidden == other.isDeprecatedAndHidden() &&
-            this.feedEnabled == other.isFeedEnabled() &&
-            ((this.keyPrefix==null && other.getKeyPrefix()==null) || 
-             (this.keyPrefix!=null &&
-              this.keyPrefix.equals(other.getKeyPrefix()))) &&
-            ((this.label==null && other.getLabel()==null) || 
-             (this.label!=null &&
-              this.label.equals(other.getLabel()))) &&
-            ((this.labelPlural==null && other.getLabelPlural()==null) || 
-             (this.labelPlural!=null &&
-              this.labelPlural.equals(other.getLabelPlural()))) &&
-            this.layoutable == other.isLayoutable() &&
-            this.mergeable == other.isMergeable() &&
-            ((this.name==null && other.getName()==null) || 
-             (this.name!=null &&
-              this.name.equals(other.getName()))) &&
-            this.queryable == other.isQueryable() &&
-            this.replicateable == other.isReplicateable() &&
-            this.retrieveable == other.isRetrieveable() &&
-            this.searchable == other.isSearchable() &&
-            this.triggerable == other.isTriggerable() &&
-            this.undeletable == other.isUndeletable() &&
-            this.updateable == other.isUpdateable();
+        _equals = true &&
+                this.activateable == other.isActivateable() &&
+                this.createable == other.isCreateable() &&
+                this.custom == other.isCustom() &&
+                this.customSetting == other.isCustomSetting() &&
+                this.deletable == other.isDeletable() &&
+                this.deprecatedAndHidden == other.isDeprecatedAndHidden() &&
+                this.feedEnabled == other.isFeedEnabled() &&
+                ((this.keyPrefix == null && other.getKeyPrefix() == null) ||
+                        (this.keyPrefix != null &&
+                                this.keyPrefix.equals(other.getKeyPrefix()))) &&
+                ((this.label == null && other.getLabel() == null) ||
+                        (this.label != null &&
+                                this.label.equals(other.getLabel()))) &&
+                ((this.labelPlural == null && other.getLabelPlural() == null) ||
+                        (this.labelPlural != null &&
+                                this.labelPlural.equals(other.getLabelPlural()))) &&
+                this.layoutable == other.isLayoutable() &&
+                this.mergeable == other.isMergeable() &&
+                ((this.name == null && other.getName() == null) ||
+                        (this.name != null &&
+                                this.name.equals(other.getName()))) &&
+                this.queryable == other.isQueryable() &&
+                this.replicateable == other.isReplicateable() &&
+                this.retrieveable == other.isRetrieveable() &&
+                this.searchable == other.isSearchable() &&
+                this.triggerable == other.isTriggerable() &&
+                this.undeletable == other.isUndeletable() &&
+                this.updateable == other.isUpdateable();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -579,7 +581,7 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeGlobalSObjectResult.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeGlobalSObjectResult.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeGlobalSObjectResult"));
@@ -716,24 +718,24 @@ public class DescribeGlobalSObjectResult  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

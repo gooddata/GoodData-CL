@@ -7,7 +7,7 @@
 
 package com.sforce.soap.partner;
 
-public class DescribeLayoutSection  implements java.io.Serializable {
+public class DescribeLayoutSection implements java.io.Serializable {
     private int columns;
 
     private java.lang.String heading;
@@ -24,24 +24,24 @@ public class DescribeLayoutSection  implements java.io.Serializable {
     }
 
     public DescribeLayoutSection(
-           int columns,
-           java.lang.String heading,
-           com.sforce.soap.partner.DescribeLayoutRow[] layoutRows,
-           int rows,
-           boolean useCollapsibleSection,
-           boolean useHeading) {
-           this.columns = columns;
-           this.heading = heading;
-           this.layoutRows = layoutRows;
-           this.rows = rows;
-           this.useCollapsibleSection = useCollapsibleSection;
-           this.useHeading = useHeading;
+            int columns,
+            java.lang.String heading,
+            com.sforce.soap.partner.DescribeLayoutRow[] layoutRows,
+            int rows,
+            boolean useCollapsibleSection,
+            boolean useHeading) {
+        this.columns = columns;
+        this.heading = heading;
+        this.layoutRows = layoutRows;
+        this.rows = rows;
+        this.useCollapsibleSection = useCollapsibleSection;
+        this.useHeading = useHeading;
     }
 
 
     /**
      * Gets the columns value for this DescribeLayoutSection.
-     * 
+     *
      * @return columns
      */
     public int getColumns() {
@@ -51,7 +51,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Sets the columns value for this DescribeLayoutSection.
-     * 
+     *
      * @param columns
      */
     public void setColumns(int columns) {
@@ -61,7 +61,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Gets the heading value for this DescribeLayoutSection.
-     * 
+     *
      * @return heading
      */
     public java.lang.String getHeading() {
@@ -71,7 +71,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Sets the heading value for this DescribeLayoutSection.
-     * 
+     *
      * @param heading
      */
     public void setHeading(java.lang.String heading) {
@@ -81,7 +81,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Gets the layoutRows value for this DescribeLayoutSection.
-     * 
+     *
      * @return layoutRows
      */
     public com.sforce.soap.partner.DescribeLayoutRow[] getLayoutRows() {
@@ -91,7 +91,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Sets the layoutRows value for this DescribeLayoutSection.
-     * 
+     *
      * @param layoutRows
      */
     public void setLayoutRows(com.sforce.soap.partner.DescribeLayoutRow[] layoutRows) {
@@ -109,7 +109,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Gets the rows value for this DescribeLayoutSection.
-     * 
+     *
      * @return rows
      */
     public int getRows() {
@@ -119,7 +119,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Sets the rows value for this DescribeLayoutSection.
-     * 
+     *
      * @param rows
      */
     public void setRows(int rows) {
@@ -129,7 +129,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Gets the useCollapsibleSection value for this DescribeLayoutSection.
-     * 
+     *
      * @return useCollapsibleSection
      */
     public boolean isUseCollapsibleSection() {
@@ -139,7 +139,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Sets the useCollapsibleSection value for this DescribeLayoutSection.
-     * 
+     *
      * @param useCollapsibleSection
      */
     public void setUseCollapsibleSection(boolean useCollapsibleSection) {
@@ -149,7 +149,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Gets the useHeading value for this DescribeLayoutSection.
-     * 
+     *
      * @return useHeading
      */
     public boolean isUseHeading() {
@@ -159,7 +159,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     /**
      * Sets the useHeading value for this DescribeLayoutSection.
-     * 
+     *
      * @param useHeading
      */
     public void setUseHeading(boolean useHeading) {
@@ -167,6 +167,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
     }
 
     private java.lang.Object __equalsCalc = null;
+
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DescribeLayoutSection)) return false;
         DescribeLayoutSection other = (DescribeLayoutSection) obj;
@@ -177,22 +178,23 @@ public class DescribeLayoutSection  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            this.columns == other.getColumns() &&
-            ((this.heading==null && other.getHeading()==null) || 
-             (this.heading!=null &&
-              this.heading.equals(other.getHeading()))) &&
-            ((this.layoutRows==null && other.getLayoutRows()==null) || 
-             (this.layoutRows!=null &&
-              java.util.Arrays.equals(this.layoutRows, other.getLayoutRows()))) &&
-            this.rows == other.getRows() &&
-            this.useCollapsibleSection == other.isUseCollapsibleSection() &&
-            this.useHeading == other.isUseHeading();
+        _equals = true &&
+                this.columns == other.getColumns() &&
+                ((this.heading == null && other.getHeading() == null) ||
+                        (this.heading != null &&
+                                this.heading.equals(other.getHeading()))) &&
+                ((this.layoutRows == null && other.getLayoutRows() == null) ||
+                        (this.layoutRows != null &&
+                                java.util.Arrays.equals(this.layoutRows, other.getLayoutRows()))) &&
+                this.rows == other.getRows() &&
+                this.useCollapsibleSection == other.isUseCollapsibleSection() &&
+                this.useHeading == other.isUseHeading();
         __equalsCalc = null;
         return _equals;
     }
 
     private boolean __hashCodeCalc = false;
+
     public synchronized int hashCode() {
         if (__hashCodeCalc) {
             return 0;
@@ -204,12 +206,12 @@ public class DescribeLayoutSection  implements java.io.Serializable {
             _hashCode += getHeading().hashCode();
         }
         if (getLayoutRows() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getLayoutRows());
+            for (int i = 0;
+                 i < java.lang.reflect.Array.getLength(getLayoutRows());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getLayoutRows(), i);
                 if (obj != null &&
-                    !obj.getClass().isArray()) {
+                        !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
@@ -223,7 +225,7 @@ public class DescribeLayoutSection  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(DescribeLayoutSection.class, true);
+            new org.apache.axis.description.TypeDesc(DescribeLayoutSection.class, true);
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("urn:partner.soap.sforce.com", "DescribeLayoutSection"));
@@ -277,24 +279,24 @@ public class DescribeLayoutSection  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanSerializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
     /**
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+            java.lang.String mechType,
+            java.lang.Class _javaType,
+            javax.xml.namespace.QName _xmlType) {
+        return
+                new org.apache.axis.encoding.ser.BeanDeserializer(
+                        _javaType, _xmlType, typeDesc);
     }
 
 }

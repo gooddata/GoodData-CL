@@ -28,10 +28,12 @@ import com.gooddata.util.FileUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import javax.xml.soap.*;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,8 +83,8 @@ public class SugarCrmWrapper {
         SugarCrmWrapper s = new SugarCrmWrapper("trial.sugarcrm.com/dcowhv3912/", "jim", "jim");
         s.connect();
         s.getAllEntries("Opportunities",
-                new String[] {},
-                new String[] {},
+                new String[]{},
+                new String[]{},
                 "",
                 "/Users/zdenek/temp/sugar_opps.csv");
     }
@@ -94,23 +96,22 @@ public class SugarCrmWrapper {
         CSVWriter cw = FileUtil.createUtf8CsvEscapingWriter(new File(csvFile));
         try {
             int nextIndex = 0;
-            while (nextIndex >=0) {
-                List<Map<String,String>> ret = new ArrayList<Map<String,String>>();
+            while (nextIndex >= 0) {
+                List<Map<String, String>> ret = new ArrayList<Map<String, String>>();
                 nextIndex = getEntries(module, fields, linked_fields, query, nextIndex, ret);
-                for(Map<String,String>  m : ret) {
+                for (Map<String, String> m : ret) {
                     String[] row = null;
-                    if(linked_fields != null && linked_fields.length>0) {
+                    if (linked_fields != null && linked_fields.length > 0) {
                         row = new String[fields.length + linked_fields.length];
-                    }
-                    else {
+                    } else {
                         row = new String[fields.length];
                     }
-                    for(int i=0; i<fields.length; i++) {
+                    for (int i = 0; i < fields.length; i++) {
                         row[i] = m.get(fields[i]);
                     }
-                    if(linked_fields != null && linked_fields.length>0) {
-                        for(int i=0; i<linked_fields.length; i++) {
-                            row[fields.length+i] = m.get(linked_fields[i]);
+                    if (linked_fields != null && linked_fields.length > 0) {
+                        for (int i = 0; i < linked_fields.length; i++) {
+                            row[fields.length + i] = m.get(linked_fields[i]);
                         }
                     }
                     cw.writeNext(row);
@@ -118,8 +119,7 @@ public class SugarCrmWrapper {
                 cnt += ret.size();
                 cw.flush();
             }
-        }
-        finally {
+        } finally {
             cw.close();
         }
         return cnt;
@@ -128,8 +128,9 @@ public class SugarCrmWrapper {
 
     /**
      * Constructor
+     *
      * @param hostName Sugar CRM Online host
-     * @param user Sugar CRM Online username
+     * @param user     Sugar CRM Online username
      * @param password Sugar CRM Online password
      */
     public SugarCrmWrapper(String hostName, String user, String password) {
@@ -141,8 +142,9 @@ public class SugarCrmWrapper {
 
     /**
      * Connects the Sugar CRM Online
-     * @throws org.jaxen.JaxenException issue with the response format
-     * @throws java.io.IOException generic IO issue
+     *
+     * @throws org.jaxen.JaxenException     issue with the response format
+     * @throws java.io.IOException          generic IO issue
      * @throws javax.xml.soap.SOAPException issue with SOAP invocation
      */
     public void connect() throws JaxenException, IOException, SOAPException {
@@ -153,9 +155,10 @@ public class SugarCrmWrapper {
 
     /**
      * Logs into the MS Sugar CRM Online
+     *
      * @return the session token
-     * @throws org.jaxen.JaxenException issue with the response format
-     * @throws java.io.IOException generic IO issue
+     * @throws org.jaxen.JaxenException     issue with the response format
+     * @throws java.io.IOException          generic IO issue
      * @throws javax.xml.soap.SOAPException issue with SOAP invocation
      */
     public String login() throws IOException, SOAPException, JaxenException {
@@ -165,28 +168,27 @@ public class SugarCrmWrapper {
         String endpoint = PROTOCOL + getHost() + SUGAR_ENDPOINT;
         SOAPMessage response = soap.execute(endpoint, msg);
         XPath xp = soap.createXPath("//id/text()", response);
-        Node result = (Node)xp.selectSingleNode(response.getSOAPBody());
+        Node result = (Node) xp.selectSingleNode(response.getSOAPBody());
         return result.getNodeValue();
     }
 
-    public int getEntries(String module, String[] fields,  String[] linked_fields,
-                          String query, int offset, List<Map<String,String>> ret)
+    public int getEntries(String module, String[] fields, String[] linked_fields,
+                          String query, int offset, List<Map<String, String>> ret)
             throws IOException, SOAPException, JaxenException {
-        if(module != null && module.length() > 0) {
+        if (module != null && module.length() > 0) {
             String msg = FileUtil.readStringFromClasspath("/com/gooddata/sugar/GetEntryList.xml", SugarCrmWrapper.class);
             msg = msg.replaceAll(SESSION_PLACEHOLDER, getSessionToken());
             msg = msg.replaceAll(MODULE_PLACEHOLDER, module);
             msg = msg.replaceAll(FIELDS_COUNT_PLACEHOLDER, Integer.toString(fields.length));
             String fieldsXml = "";
-            if(linked_fields != null && linked_fields.length > 0) {
-                fieldsXml += "<link_name_to_fields_array xsi:type='SOAP-ENC:Array' SOAP-ENC:arrayType='tns:link_name_to_fields_array["+
-                        linked_fields.length+"]'>";
-                for(int i=0; i<linked_fields.length; i++) {
+            if (linked_fields != null && linked_fields.length > 0) {
+                fieldsXml += "<link_name_to_fields_array xsi:type='SOAP-ENC:Array' SOAP-ENC:arrayType='tns:link_name_to_fields_array[" +
+                        linked_fields.length + "]'>";
+                for (int i = 0; i < linked_fields.length; i++) {
                     String[] components = linked_fields[i].split("\\.");
-                    if(components != null && components.length == 2) {
-                        fieldsXml += "<item><name>"+components[0].toLowerCase()+"</name><value><item>"+components[1]+"</item></value></item>";
-                    }
-                    else {
+                    if (components != null && components.length == 2) {
+                        fieldsXml += "<item><name>" + components[0].toLowerCase() + "</name><value><item>" + components[1] + "</item></value></item>";
+                    } else {
                         throw new SOAPException("getEntries: the linked fields must have format module.field .");
                     }
                 }
@@ -197,9 +199,9 @@ public class SugarCrmWrapper {
             msg = msg.replaceAll(MAX_ROWS_PLACEHOLDER, Integer.toString(MAX_ROWS));
             msg = msg.replaceAll(OFFSET_PLACEHOLDER, Integer.toString(offset));
             fieldsXml = "";
-            if(fields != null && fields.length > 0) {
-                for(int i=0; i < fields.length; i++) {
-                    fieldsXml += "<item xsi:type='xsd:string'>"+fields[i]+"</item>";
+            if (fields != null && fields.length > 0) {
+                for (int i = 0; i < fields.length; i++) {
+                    fieldsXml += "<item xsi:type='xsd:string'>" + fields[i] + "</item>";
                 }
             }
             msg = msg.replaceAll(FIELDS_PLACEHOLDER, fieldsXml);
@@ -209,106 +211,93 @@ public class SugarCrmWrapper {
             //System.err.println(soap.dumpSoapMessage(response));
             XPath xp = soap.createXPath("//entry_list/item", response);
             List result = xp.selectNodes(response.getSOAPBody());
-            if(result != null && result.size()>0) {
-                for(int j=0; j<result.size(); j++) {
-                    SOAPElement e = (SOAPElement)result.get(j);
+            if (result != null && result.size() > 0) {
+                for (int j = 0; j < result.size(); j++) {
+                    SOAPElement e = (SOAPElement) result.get(j);
                     NodeList ids = e.getElementsByTagName("id");
-                    if(ids != null && ids.getLength() > 0) {
+                    if (ids != null && ids.getLength() > 0) {
                         Node id = ids.item(0);
                         Node text = id.getFirstChild();
-                        if(text != null) {
-                            Map<String,String> record = new HashMap<String,String>();
+                        if (text != null) {
+                            Map<String, String> record = new HashMap<String, String>();
                             record.put("id", text.getNodeValue());
-                            XPath xpd = soap.createXPath("//entry_list/item["+(j+1)+"]/name_value_list/item", response);
+                            XPath xpd = soap.createXPath("//entry_list/item[" + (j + 1) + "]/name_value_list/item", response);
                             List dataResult = xpd.selectNodes(response.getSOAPBody());
-                            if(dataResult != null && dataResult.size()>0) {
-                                for(int i = 0; i<dataResult.size(); i++) {
-                                    SOAPElement dataNode = (SOAPElement)dataResult.get(i);
+                            if (dataResult != null && dataResult.size() > 0) {
+                                for (int i = 0; i < dataResult.size(); i++) {
+                                    SOAPElement dataNode = (SOAPElement) dataResult.get(i);
                                     NodeList names = dataNode.getElementsByTagName("name");
                                     NodeList values = dataNode.getElementsByTagName("value");
-                                    if(names != null && names.getLength()>0 && values != null && values.getLength()>0) {
+                                    if (names != null && names.getLength() > 0 && values != null && values.getLength() > 0) {
                                         Node name = names.item(0).getFirstChild();
                                         Node value = values.item(0).getFirstChild();
-                                        if(name != null) {
-                                            if(value != null) {
+                                        if (name != null) {
+                                            if (value != null) {
                                                 record.put(name.getNodeValue(), value.getNodeValue());
-                                            }
-                                            else {
+                                            } else {
                                                 record.put(name.getNodeValue(), "");
                                             }
-                                        }
-                                        else {
+                                        } else {
                                             throw new SOAPException("getEntries: No name texts in the result row.");
                                         }
-                                    }
-                                    else {
+                                    } else {
                                         throw new SOAPException("getEntries: No name/value pair in the result row.");
                                     }
                                 }
-                            }
-                            else {
+                            } else {
                                 throw new SOAPException("getEntries: No record items in the result row.");
                             }
-                            if(linked_fields != null && linked_fields.length > 0) {
-                                for(int k=0; k<linked_fields.length; k++) {
+                            if (linked_fields != null && linked_fields.length > 0) {
+                                for (int k = 0; k < linked_fields.length; k++) {
                                     // take only the first item
-                                    xpd = soap.createXPath("//relationship_list/item["+(j+1)+"]/item["+(k+1)+"]/records/item/item[1]", response);
+                                    xpd = soap.createXPath("//relationship_list/item[" + (j + 1) + "]/item[" + (k + 1) + "]/records/item/item[1]", response);
                                     Object res = xpd.selectSingleNode(response.getSOAPBody());
-                                    if(res != null) {
-                                        SOAPElement dataNode = (SOAPElement)res;
+                                    if (res != null) {
+                                        SOAPElement dataNode = (SOAPElement) res;
                                         NodeList names = dataNode.getElementsByTagName("name");
                                         NodeList values = dataNode.getElementsByTagName("value");
-                                        if(names != null && names.getLength()>0 && values != null && values.getLength()>0) {
+                                        if (names != null && names.getLength() > 0 && values != null && values.getLength() > 0) {
                                             Node name = names.item(0).getFirstChild();
                                             Node value = values.item(0).getFirstChild();
-                                            if(name != null) {
-                                                if(value != null) {
+                                            if (name != null) {
+                                                if (value != null) {
                                                     record.put(linked_fields[k], value.getNodeValue());
-                                                }
-                                                else {
+                                                } else {
                                                     record.put(linked_fields[k], "");
                                                 }
-                                            }
-                                            else {
+                                            } else {
                                                 throw new SOAPException("getEntries: No linked module name texts in the result row.");
                                             }
-                                        }
-                                        else {
+                                        } else {
                                             throw new SOAPException("getEntries: No name/value pair in the result row.");
                                         }
                                     }
                                 }
                             }
                             ret.add(record);
-                        }
-                        else {
+                        } else {
                             throw new SOAPException("getEntries: No text in the id element.");
                         }
-                    }
-                    else {
+                    } else {
                         throw new SOAPException("getEntries: No row id in the result.");
                     }
                 }
                 XPath xpn = soap.createXPath("//next_offset/text()", response);
-                Node nr = (Node)xpn.selectSingleNode(response.getSOAPBody());
-                if(nr != null) {
+                Node nr = (Node) xpn.selectSingleNode(response.getSOAPBody());
+                if (nr != null) {
                     String v = nr.getNodeValue();
-                    if(v != null) {
+                    if (v != null) {
                         return Integer.parseInt(nr.getNodeValue());
-                    }
-                    else {
+                    } else {
                         return -1;
                     }
-                }
-                else {
+                } else {
                     return -1;
                 }
-            }
-            else {
+            } else {
                 return -1;
             }
-        }
-        else {
+        } else {
             throw new SOAPException("The getEntries module parameter can't be empty.");
         }
     }

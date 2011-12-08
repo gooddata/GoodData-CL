@@ -39,19 +39,19 @@ public class DateUtil {
     private static Map<String, DateTimeFormatter> formatters = new HashMap<String, DateTimeFormatter>();
 
     public static synchronized DateTimeFormatter getDateFormatter(String fmt, boolean isDateTime) {
-        if(fmt == null || fmt.length() <= 0) {
-            if(isDateTime)
+        if (fmt == null || fmt.length() <= 0) {
+            if (isDateTime)
                 fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
             else
                 fmt = Constants.DEFAULT_DATE_FMT_STRING;
         }
         // in case of UNIX TIME we don't format but create the date from the UNIX time number
-        if(Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
+        if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
             fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
         }
 
         DateTimeFormatter frmtr = formatters.get(fmt);
-        if(frmtr == null) {
+        if (frmtr == null) {
             frmtr = DateTimeFormat.forPattern(fmt);
             formatters.put(fmt, frmtr);
         }
@@ -66,9 +66,8 @@ public class DateUtil {
         DateTime dt;
         try {
             long l = Long.parseLong(value);
-            dt = new DateTime(l*1000);
-        }
-        catch (NumberFormatException e) {
+            dt = new DateTime(l * 1000);
+        } catch (NumberFormatException e) {
             return "";
         }
         return baseFmt.print(dt);
@@ -78,14 +77,12 @@ public class DateUtil {
         DateTime dt;
         try {
             long l = value.longValue();
-            dt = new DateTime(l*1000);
-        }
-        catch (NumberFormatException e) {
+            dt = new DateTime(l * 1000);
+        } catch (NumberFormatException e) {
             return "";
         }
         return baseFmt.print(dt);
     }
-
 
 
 }

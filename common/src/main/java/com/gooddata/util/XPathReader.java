@@ -23,17 +23,19 @@
 
 package com.gooddata.util;
 
-import javax.xml.xpath.XPathExpressionException;
-
-import java.io.IOException;
-import java.io.StringReader;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.*;
-import javax.xml.xpath.*;
-
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * GoodData XPath processor
@@ -54,7 +56,7 @@ public class XPathReader {
 
     private void initObjects() {
         try {
-            
+
             xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(xmlContent)));
             xPath = XPathFactory.newInstance().newXPath();
         } catch (IOException ex) {
