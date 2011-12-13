@@ -28,11 +28,12 @@
 
 package com.gooddata.exception;
 
+import java.util.Formatter;
+
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
-import org.apache.commons.httpclient.HttpMethod;
 
-import java.util.Formatter;
+import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * @author jiri.zaloudek
@@ -72,8 +73,7 @@ public class HttpMethodException extends GdcRestApiException {
                 /* Error structure sometimes lacks the tag... */
                 if (error.has("error"))
                     error = error.getJSONObject("error");
-                msg = new Formatter().format(error.getString("message"),
-                        error.getJSONArray("parameters")).toString();
+                msg = formatErrorMessage(error);
             } catch (JSONException jsone) {
                 /* Do not worry about the non-standard or broken
                  * error JSON. The msg is already meaningful enough.*/
@@ -83,6 +83,21 @@ public class HttpMethodException extends GdcRestApiException {
     }
 
     /**
+     * Returns formatted error message if the message contains parameters
+     * placeholder (%s)
+     *
+     * @param error
+     * @return
+     */
+    private static String formatErrorMessage(JSONObject error) {
+    	final String orig = error.getString("message");
+    	if (!orig.contains("%s")) {
+    		return orig;
+    	}
+	    return new Formatter().format(orig, error.getJSONArray("parameters").toArray()).toString();
+	}
+
+	/**
      * Returns the request id for <code>HttpMethodException</code> that was constructed
      * from a response to HTTP method call.
      */
