@@ -865,7 +865,7 @@ public class GdcDI implements Executor {
         GdcRESTApiWrapper.GdcUser user = new GdcRESTApiWrapper.GdcUser();
         user.setLogin(c.getParamMandatory("username"));
         user.setPassword(c.getParamMandatory("password"));
-        user.setVerifyPassword(c.getParamMandatory("password"));
+        user.setVerifyPassword(user.getPassword());
         user.setFirstName(c.getParamMandatory("firstName"));
         user.setLastName(c.getParamMandatory("lastName"));
         user.setCompanyName(c.getParam("company"));
