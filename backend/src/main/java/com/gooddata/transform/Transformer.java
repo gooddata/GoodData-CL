@@ -211,7 +211,15 @@ public class Transformer {
             else if (o instanceof Number)
                 return DateUtil.convertUnixTimeToString((Number) o);
             else
-                throw new InvalidParameterException("Can't convert UNIX time to date.");
+                throw new InvalidParameterException("Can't convert GOODDATA time to date.");
+        }
+        if (Constants.GOODDATA_DATE_FORMAT.equalsIgnoreCase(c.getFormat())) {
+            if (o instanceof String)
+                return DateUtil.convertGoodDataDateToString((String) o);
+            else if (o instanceof Number)
+                return DateUtil.convertGoodDataDateToString((Number) o);
+            else
+                throw new InvalidParameterException("Can't convert GOODDATA time to date.");
         }
         return o;
     }

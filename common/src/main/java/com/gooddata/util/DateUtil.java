@@ -46,7 +46,7 @@ public class DateUtil {
                 fmt = Constants.DEFAULT_DATE_FMT_STRING;
         }
         // in case of UNIX TIME we don't format but create the date from the UNIX time number
-        if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
+        if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt) || Constants.GOODDATA_DATE_FORMAT.equalsIgnoreCase(fmt)) {
             fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
         }
 
@@ -84,5 +84,27 @@ public class DateUtil {
         return baseFmt.print(dt);
     }
 
+
+    public static String convertGoodDataDateToString(String value) {
+        DateTime dt;
+        try {
+            int l = Integer.parseInt(value);
+            dt = base.plusDays(l-1);
+        } catch (NumberFormatException e) {
+            return "";
+        }
+        return baseFmt.print(dt);
+    }
+
+    public static String convertGoodDataDateToString(Number value) {
+        DateTime dt;
+        try {
+            int l = value.intValue();
+            dt = base.plusDays(l-1);
+        } catch (NumberFormatException e) {
+            return "";
+        }
+        return baseFmt.print(dt);
+    }
 
 }

@@ -65,7 +65,7 @@ public class DateColumnsExtender {
                     fmt = Constants.DEFAULT_DATE_FMT_STRING;
             }
             // in case of UNIX TIME we don't format but create the date from the UNIX time number
-            if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
+            if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt) || Constants.GOODDATA_DATE_FORMAT.equalsIgnoreCase(fmt)) {
                 fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
             }
             dateColumnFormats.add(DateTimeFormat.forPattern(fmt));

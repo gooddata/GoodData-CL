@@ -118,7 +118,7 @@ public class SLI {
             String fmt = column.getFormat();
             if (fmt != null && fmt.length() > 0) {
                 JSONObject constraints = new JSONObject();
-                if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt)) {
+                if (Constants.UNIX_DATE_FORMAT.equalsIgnoreCase(fmt) || Constants.GOODDATA_DATE_FORMAT.equalsIgnoreCase(fmt)) {
                     fmt = Constants.DEFAULT_DATETIME_FMT_STRING;
                 }
                 constraints.put("date", fmt);

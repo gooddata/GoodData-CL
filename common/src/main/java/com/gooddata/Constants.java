@@ -40,6 +40,7 @@ public class Constants {
     public final static String DEFAULT_DATE_FMT_STRING = "yyyy-MM-dd";
     public final static String DEFAULT_DATETIME_FMT_STRING = "yyyy-MM-dd HH:mm:ss";
     public final static String UNIX_DATE_FORMAT = "UNIXTIME";
+    public final static String GOODDATA_DATE_FORMAT = "GOODDATA";
 
     public final static String DEFAULT_TIME_LABEL = "label.time.second.of.day.";
     public final static DateTimeFormatter DEFAULT_DATE_FMT = DateTimeFormat.forPattern(DEFAULT_DATE_FMT_STRING);
