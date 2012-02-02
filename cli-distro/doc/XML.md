@@ -45,6 +45,9 @@ In each `<column>` entry, following tags can be used:
     * mm -- minutes (00 - 59)
     * ss -- seconds (00 - 59)
     * kk/kkkk -- microseconds or fractions of seconds (00-99, 000-999, 0000-9999)
+    There are few special formats:
+    * UNIXTIME - this is the epoch format (number of seconds since 1970-01-01). Please note that the epoch is in the UTC by default and will be converted to the CL tool's timezone automatically.
+    * GOODDATA - this is the GoodData format (number of days since 1900-01-01).
 5. `<reference>` - used with LABEL columns for pointing to the primary column; used with CONNECTION_POINT column and `<schemaReference>`
 6. `<schemaReference>` - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column. When connecting to a date dimension, use the same value as in the `name` parameter of the `LoadDateDimension` command (see also [the CLI commands documentation](http://developer.gooddata.com/gooddata-cl/cli-commands.html#time_dimension_connector_commands)).
 7. `<folder>` allows to specify what folder this column is organized into (on UI level). 
