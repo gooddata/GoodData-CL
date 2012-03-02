@@ -508,7 +508,7 @@ public abstract class AbstractConnector implements Connector {
         if ("OK".equalsIgnoreCase(status)) {
             l.info("Data successfully loaded.");
         } else if ("WARNING".equalsIgnoreCase(status)) {
-            l.info("Data loading succeeded with warnings. Status: " + status);
+            l.warn("Data loading succeeded with warnings. Status: " + status);
             Map<String, String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
             for (String file : result.keySet()) {
                 if (file.endsWith(".json"))
@@ -519,7 +519,7 @@ public abstract class AbstractConnector implements Connector {
                     l.info(file + ":\n" + result.get(file));
             }
         } else {
-            l.info("Data loading failed. Status: " + status);
+            l.error("Data loading failed. Status: " + status);
             Map<String, String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
             for (String file : result.keySet()) {
                 if (file.endsWith(".json"))
