@@ -320,7 +320,7 @@ public class GdcDI implements Executor {
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.48" +
+            l.info("GoodData CL version 1.2.49" +
                     ((BUILD_NUMBER.length() > 0) ? ", build " + BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -984,13 +984,14 @@ public class GdcDI implements Executor {
     private void createProject(Command c, CliParams p, ProcessingContext ctx) {
         try {
             String name = c.getParamMandatory("name");
+            String driver = c.getParamMandatory("driver");
             String desc = c.getParam("desc");
             String pTempUri = c.getParam("templateUri");
             c.paramsProcessed();
 
             if (desc == null || desc.length() <= 0)
                 desc = name;
-            ctx.setProjectId(ctx.getRestApi(p).createProject(StringUtil.toTitle(name), StringUtil.toTitle(desc), pTempUri));
+            ctx.setProjectId(ctx.getRestApi(p).createProject(StringUtil.toTitle(name), StringUtil.toTitle(desc), pTempUri, driver));
             String pid = ctx.getProjectIdMandatory();
             checkProjectCreationStatus(pid, p, ctx);
             l.info("Project id = '" + pid + "' created.");

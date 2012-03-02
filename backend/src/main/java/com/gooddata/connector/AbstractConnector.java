@@ -204,10 +204,16 @@ public abstract class AbstractConnector implements Connector {
                     timeFact.setTimeFact(true);
                     timeFact.setDataType("INT");
                     timeFact.setTransformation("GdcDateArithmetics.computeTimeFact(" + scid + ",\"" + fmt + "\")");
-                    s.addColumn(timeFact);
-                    SourceColumn timeAttr = new SourceColumn(scid + "_" + N.ID, SourceColumn.LDM_TYPE_REFERENCE, d.getTitle() + " (Time)");
+                    s.addColumn(timeFact);                    
+                    SourceColumn timeAttr;
+                    if(d.getSchemaReference()!= null) {
+                        timeAttr = new SourceColumn(scid + "_" + N.ID, SourceColumn.LDM_TYPE_REFERENCE, d.getTitle() + " (Time)");
+                        timeAttr.setSchemaReference(d.getSchemaReference());
+                    }
+                    else {
+                        timeAttr = new SourceColumn(scid + "_" + N.ID, SourceColumn.LDM_TYPE_ATTRIBUTE, d.getTitle() + " (Time)");
+                    }
                     timeAttr.setTimeFact(true);
-                    timeAttr.setSchemaReference(d.getSchemaReference());
                     timeAttr.setTransformation("GdcDateArithmetics.computeTimeAttribute(" + scid + ",\"" + fmt + "\")");
                     s.addColumn(timeAttr);
                 }

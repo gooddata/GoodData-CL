@@ -7,6 +7,10 @@ log4j.logger.org.apache.axis=info, D, stdout
 # and javax.mail.internet.MimeMultipart. Attachment support is not required.
 log4j.logger.org.apache.axis.utils.JavaUtils=error, H
 
+# Prevent logging the wire HTTP content
+# Adds performance and prevents logging passwords to the log
+log4j.logger.httpclient.wire=INFO,F
+
 log4j.additivity.com.gooddata.util.JdbcUtil=false
 log4j.additivity.org.apache.commons.httpclient=false
 

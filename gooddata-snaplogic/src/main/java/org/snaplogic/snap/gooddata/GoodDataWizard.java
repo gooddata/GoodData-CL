@@ -741,7 +741,7 @@ public class GoodDataWizard extends AbstractGoodDataComponent {
                 String newProjectName = getStringPropertyValue(PROP_NEW_PROJECT_NAME);
                 String newProjectDescr = getStringPropertyValue(PROP_NEW_PROJECT_DESCR);
                 info("Creating new project in GoodData: " + newProjectName);
-                projectId = restApi.createProject(newProjectName, newProjectDescr, null);
+                projectId = restApi.createProject(newProjectName, newProjectDescr, null,"mysql");
                 info("Project " + newProjectName + " created, its ID is " + projectId);
                 // We will need this later
                 projectName = newProjectName;

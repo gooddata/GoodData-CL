@@ -1308,10 +1308,10 @@ public class GdcRESTApiWrapper {
      * @return the project Id
      * @throws GdcRestApiException
      */
-    public String createProject(String name, String desc, String templateUri) throws GdcRestApiException {
+    public String createProject(String name, String desc, String templateUri, String driver) throws GdcRestApiException {
         l.debug("Creating project name=" + name);
         PostMethod createProjectPost = createPostMethod(getServerUrl() + PROJECTS_URI);
-        JSONObject createProjectStructure = getCreateProject(name, desc, templateUri);
+        JSONObject createProjectStructure = getCreateProject(name, desc, templateUri, driver);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 createProjectStructure.toString().getBytes()));
         createProjectPost.setRequestEntity(request);
@@ -1344,7 +1344,7 @@ public class GdcRESTApiWrapper {
      * @param templateUri project template uri
      * @return the create project JSON structure
      */
-    private JSONObject getCreateProject(String name, String desc, String templateUri) {
+    private JSONObject getCreateProject(String name, String desc, String templateUri, String driver) {
         JSONObject meta = new JSONObject();
         meta.put("title", name);
         meta.put("summary", desc);
@@ -1354,6 +1354,12 @@ public class GdcRESTApiWrapper {
         JSONObject content = new JSONObject();
         //content.put("state", "ENABLED");
         content.put("guidedNavigation", "1");
+        if(driver != null && driver.length()>0) {
+            content.put("driver", driver);
+        }
+        else {
+            content.put("driver", "Pg");
+        }
         JSONObject project = new JSONObject();
         project.put("meta", meta);
         project.put("content", content);
@@ -2934,7 +2940,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.48");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.49");
         return request;
     }
 
