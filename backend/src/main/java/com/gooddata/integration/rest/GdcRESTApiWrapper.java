@@ -1358,7 +1358,7 @@ public class GdcRESTApiWrapper {
             content.put("driver", driver);
         }
         else {
-            content.put("driver", "Pg");
+            content.put("driver", "mysql");
         }
         JSONObject project = new JSONObject();
         project.put("meta", meta);
