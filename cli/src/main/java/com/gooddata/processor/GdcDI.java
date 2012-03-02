@@ -984,9 +984,9 @@ public class GdcDI implements Executor {
     private void createProject(Command c, CliParams p, ProcessingContext ctx) {
         try {
             String name = c.getParamMandatory("name");
-            String driver = c.getParamMandatory("driver");
             String desc = c.getParam("desc");
             String pTempUri = c.getParam("templateUri");
+            String driver = c.getParam("driver");
             c.paramsProcessed();
 
             if (desc == null || desc.length() <= 0)

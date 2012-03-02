@@ -89,6 +89,7 @@ public class DateUtil {
         DateTime dt;
         try {
             int l = Integer.parseInt(value);
+            if(l==0) return "";
             dt = base.plusDays(l-1);
         } catch (NumberFormatException e) {
             return "";
@@ -100,6 +101,7 @@ public class DateUtil {
         DateTime dt;
         try {
             int l = value.intValue();
+            if(l==0) return "";
             dt = base.plusDays(l-1);
         } catch (NumberFormatException e) {
             return "";
