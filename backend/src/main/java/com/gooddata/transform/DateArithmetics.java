@@ -56,8 +56,7 @@ public class DateArithmetics {
                 Days ds = Days.daysBetween(base, dt);
                 ret = Integer.toString(ds.getDays() + 1);
             } catch (IllegalArgumentException e) {
-                l.info("Can't parse date " + dateValue);
-
+                l.info("Can't parse date " + dateValue + ", format = '" + format + "' for a date fact: " + e.getMessage());
             }
         }
         return ret;
@@ -76,7 +75,7 @@ public class DateArithmetics {
                 int ts = dt.getSecondOfDay();
                 ret = Integer.toString(ts);
             } catch (IllegalArgumentException e) {
-                l.debug("Can't parse date " + dateValue);
+                l.info("Can't parse date " + dateValue + ", format = '" + format + "' for a time fact: " + e.getMessage());
             }
         }
         return ret;
@@ -92,7 +91,7 @@ public class DateArithmetics {
                 String scs = Integer.toString(ts);
                 ret = (scs.length() > 1) ? (scs) : ("0" + scs);
             } catch (IllegalArgumentException e) {
-                l.debug("Can't parse date " + dateValue);
+                l.info("Can't parse date " + dateValue + ", format = '" + format + "' for a time attribute: " + e.getMessage());
             }
         }
         return ret;

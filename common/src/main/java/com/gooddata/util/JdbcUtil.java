@@ -140,7 +140,7 @@ public class JdbcUtil {
         try {
             st = c.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
                     java.sql.ResultSet.CONCUR_READ_ONLY);
-            l.debug("Executing SQL: statement='" + st.toString() + "'");
+            l.debug("Executing SQL: statement='" + st.toString() + "', fetchSize=" + fetchSize);
             rs = executeQuery(st, sql, fetchSize);
             while (rs.next() && limit-- > 0) {
                 handler.handle(rs);
