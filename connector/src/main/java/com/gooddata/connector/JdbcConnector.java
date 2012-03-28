@@ -63,8 +63,10 @@ public class JdbcConnector extends AbstractConnector implements Connector {
     private String jdbcUsername;
     private String jdbcPassword;
     private String sqlQuery;
+    private int fetchSize = FETCH_SIZE;
 
-    protected static int FETCH_SIZE = 256;
+
+	protected static int FETCH_SIZE = 256;
 
 
     /**
@@ -268,7 +270,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
 
             ResultSetCsvWriter rw = new ResultSetCsvWriter(cw);
 
-            JdbcUtil.executeQuery(con, getSqlQuery(), rw, FETCH_SIZE);
+            JdbcUtil.executeQuery(con, getSqlQuery(), rw, fetchSize);
             l.debug("Finished retrieving JDBC data. Retrieved " + rw.rowCnt + " rows.");
             cw.close();
         } catch (SQLException e) {
@@ -380,6 +382,14 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         this.jdbcUrl = jdbcUrl;
     }
 
+    public int getFetchSize() {
+		return fetchSize;
+	}
+
+	public void setFetchSize(int fetchSize) {
+		this.fetchSize = fetchSize;
+	}
+
     /**
      * {@inheritDoc}
      */
@@ -441,6 +451,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         String url = c.getParamMandatory("url");
         String q = c.getParam("query");
         String qf = c.getParam("queryFile");
+        String fs = c.getParam("fetchSize");
         c.paramsProcessed();
 
         if (q != null && qf != null) {
@@ -454,6 +465,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             l.error("The UseJdbc command requires either query or queryFIle parameter.");
             throw new InvalidParameterException("The UseJdbc command requires either query or queryFIle parameter.");
         }
+
         loadDriver(drv);
         // Fix for the MySQL driver OutOfMemory error
         if (drv.equals("com.mysql.jdbc.Driver"))
@@ -465,6 +477,15 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         setJdbcPassword(psw);
         setJdbcUrl(url);
         setSqlQuery(q);
+        if (fs != null) {
+        	try {
+        		final int fetchSize = Integer.parseInt(fs);
+                setFetchSize(fetchSize);
+        	} catch (NumberFormatException e) {
+        		l.error("The fetchSize parameter must be an integer");
+        		throw new InvalidParameterException("The fetchSize parameter must be an integer");
+        	}
+        }
         // sets the current connector
         ctx.setConnector(this);
         setProjectId(ctx);
