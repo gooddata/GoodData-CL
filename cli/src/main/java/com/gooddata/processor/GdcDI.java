@@ -40,6 +40,7 @@ import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.joda.time.DateTimeZone;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -76,6 +77,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_HTTP_PROXY_PORT = {"proxyport", "L"};
     public static String[] CLI_PARAM_HTTP_PROXY_USERNAME = {"proxyusername", "U"};
     public static String[] CLI_PARAM_HTTP_PROXY_PASSWORD = {"proxypassword", "P"};
+    public static String[] CLI_PARAM_TIMEZONE = {"timezone", "T"};
     public static String CLI_PARAM_SCRIPT = "script";
 
     private static String DEFAULT_PROPERTIES = "gdi.properties";
@@ -96,6 +98,7 @@ public class GdcDI implements Executor {
             new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
             new Option(CLI_PARAM_INSECURE[1], CLI_PARAM_INSECURE[0], false, "Disable encryption"),
             new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version."),
+            new Option(CLI_PARAM_TIMEZONE[1], CLI_PARAM_TIMEZONE[0], true, "Specify the default timezone (the computer timezone is the default)."),
             new Option(CLI_PARAM_EXECUTE[1], CLI_PARAM_EXECUTE[0], true, "Commands and params to execute before the commands in provided files"),
             new Option(CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY[1], CLI_PARAM_DEFAULT_DATE_FOREIGN_KEY[0], true, "Foreign key to represent an 'unknown' date")
     };
@@ -114,6 +117,16 @@ public class GdcDI implements Executor {
     private GdcDI(CommandLine ln, Properties defaults) {
         try {
             cliParams = parse(ln, defaults);
+
+            if(cliParams.containsKey(CLI_PARAM_TIMEZONE[0])) {
+                String timezone = cliParams.get(CLI_PARAM_TIMEZONE[0]);
+                if(timezone != null && timezone.length()>0) {
+                    DateTimeZone.setDefault(DateTimeZone.forID("Europe/London"));
+                }
+                else {
+                    throw new InvalidArgumentException("Invalid timezone: '" + timezone+"'.");
+                }
+            }
 
             cliParams.setHttpConfig(new NamePasswordConfiguration(
                     cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
@@ -320,7 +333,7 @@ public class GdcDI implements Executor {
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.50" +
+            l.info("GoodData CL version 1.2.51" +
                     ((BUILD_NUMBER.length() > 0) ? ", build " + BUILD_NUMBER : "."));
             System.exit(0);
 

@@ -211,7 +211,6 @@ public class JdbcConnector extends AbstractConnector implements Connector {
      */
     public void extract(String file, final boolean transform) throws IOException {
         Connection con = null;
-        Statement s = null;
         ResultSet rs = null;
         try {
             con = connect();
@@ -223,7 +222,6 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             final Transformer t = Transformer.create(schema);
             String[] header = t.getHeader(true);
             cw.writeNext(header);
-            s = con.createStatement();
 
             class ResultSetCsvWriter implements ResultSetHandler {
 
@@ -280,8 +278,6 @@ public class JdbcConnector extends AbstractConnector implements Connector {
             try {
                 if (rs != null)
                     rs.close();
-                if (s != null)
-                    s.close();
                 if (con != null && !con.isClosed())
                     con.close();
             } catch (SQLException e) {

@@ -25,6 +25,7 @@ package com.gooddata.connector;
 
 import com.gooddata.Constants;
 import com.gooddata.exception.GdcIntegrationErrorException;
+import com.gooddata.exception.HttpMethodException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
 import com.gooddata.integration.model.Column;
@@ -499,10 +500,20 @@ public abstract class AbstractConnector implements Connector {
     protected void checkLoadingStatus(String taskUri, String tmpDir, CliParams p, ProcessingContext ctx) throws InterruptedException, IOException {
         l.debug("Checking data transfer status.");
         String status = "";
+        int retryCount = 0;
         while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
-            status = ctx.getRestApi(p).getLoadingStatus(taskUri);
-            l.debug("Loading status = " + status);
-            Thread.sleep(500);
+            try {
+                status = ctx.getRestApi(p).getLoadingStatus(taskUri);
+                l.debug("Loading status = " + status);
+                Thread.sleep(500);
+            }
+            catch (HttpMethodException e) {
+                retryCount++;
+                l.debug("Loading status call failed with: '" + e.getMessage()+"' Retry #"+retryCount+".");
+                Thread.sleep(retryCount*100);
+                if(retryCount > 10000)
+                    throw e;
+            }
         }
         l.debug("Data transfer finished with status " + status);
         if ("OK".equalsIgnoreCase(status)) {
