@@ -163,7 +163,7 @@ echo 'Droping cross_schema_attribute test'
 drop "`cat tests/cross_schema_attribute/pid`"
 
 echo 'Running timezone test'
-bin/gdi.sh -T UTC tests/timeozne/cmd.txt
+bin/gdi.sh -T UTC tests/timeozne/forex.txt
 
 echo 'Droping timezone test'
 drop "`cat tests/timeozne/pid`"

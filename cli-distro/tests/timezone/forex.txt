@@ -5,29 +5,29 @@
 CreateProject(name="Forex");
 
 # Store the project ID to file for possible other scripts
-RememberProject(fileName="tests/timeozne/pid");
+RememberProject(fileName="tests/timezone/pid");
 
 # Loads time dimension to the project
 UseDateDimension(name="Forex", includeTime="true");
 
 # Generate the MAQL script describing the data model for the date dimension
-GenerateMaql(maqlFile="tests/timeozne/forex_date.maql");
+GenerateMaql(maqlFile="tests/timezone/forex_date.maql");
 
 # Execute the date dimension MAQL script
-ExecuteMaql(maqlFile="tests/timeozne/forex_date.maql");
+ExecuteMaql(maqlFile="tests/timezone/forex_date.maql");
 
 # transfer the time dimension data
 TransferData();
 
 # load the Forex data file
 # the data file config has been generated
-UseCsv(csvDataFile="tests/timeozne/forex.csv",hasHeader="true",configFile="tests/timeozne/forex.xml");
+UseCsv(csvDataFile="tests/timezone/forex.csv",hasHeader="true",configFile="tests/timezone/forex.xml");
 
 # generate the Forex MAQL
-GenerateMaql(maqlFile="tests/timeozne/forex.maql");
+GenerateMaql(maqlFile="tests/timezone/forex.maql");
 
 # execute the Forex MAQL
-ExecuteMaql(maqlFile="tests/timeozne/forex.maql");
+ExecuteMaql(maqlFile="tests/timezone/forex.maql");
 
 # transfer the Forex data
 TransferData();
