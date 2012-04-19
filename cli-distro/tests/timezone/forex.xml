@@ -1,0 +1,57 @@
+<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+
+<schema>
+    <name>forex</name>
+    <columns>
+        <column>
+            <name>id</name>
+            <title>Id</title>
+            <ldmType>CONNECTION_POINT</ldmType>
+            <transformation>IDENTITY</transformation>
+        </column>
+        <column>
+            <name>time</name>
+            <title>TIME</title>
+            <ldmType>DATE</ldmType>
+            <datetime>true</datetime>
+            <folder>Forex</folder>
+            <schemaReference>Forex</schemaReference>
+            <format>dd-MM-yyyy HH:mm:ss</format>
+        </column>
+        <column>
+            <name>volume</name>
+            <title>VOLUME</title>
+            <ldmType>FACT</ldmType>
+            <folder>Forex</folder>
+            <dataType>DECIMAL(8,4)</dataType>
+        </column>
+        <column>
+            <name>open</name>
+            <title>OPEN</title>
+            <ldmType>FACT</ldmType>
+            <folder>Forex</folder>
+            <dataType>DECIMAL(8,4)</dataType>
+        </column>
+        <column>
+            <name>close</name>
+            <title>CLOSE</title>
+            <ldmType>FACT</ldmType>
+            <folder>Forex</folder>
+            <dataType>DECIMAL(8,4)</dataType>
+        </column>
+        <column>
+            <name>min</name>
+            <title>MIN</title>
+            <ldmType>FACT</ldmType>
+            <folder>Forex</folder>
+            <dataType>DECIMAL(8,4)</dataType>
+        </column>
+        <column>
+            <name>max</name>
+            <title>MAX</title>
+            <ldmType>FACT</ldmType>
+            <folder>Forex</folder>
+            <dataType>DECIMAL(8,4)</dataType>
+        </column>
+    </columns>
+</schema>
