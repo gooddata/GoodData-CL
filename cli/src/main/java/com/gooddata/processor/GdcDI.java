@@ -291,8 +291,10 @@ public class GdcDI implements Executor {
             }
             finishedSucessfuly = false;
         } finally {
+            /*
             if (cliParams != null)
                 context.getRestApi(cliParams).logout();
+                */
         }
     }
 

@@ -126,7 +126,7 @@ public class GdcRESTApiWrapper {
      * @throws HttpMethodException
      */
     public void login() throws HttpMethodException {
-        logout();
+        //logout();
         l.debug("Logging into GoodData.");
         JSONObject loginStructure = getLoginStructure();
         PostMethod loginPost = createPostMethod(getServerUrl() + LOGIN_URI);
@@ -2946,7 +2946,7 @@ public class GdcRESTApiWrapper {
 
     protected void finalize() throws Throwable {
         try {
-            logout();
+           // logout();
         } finally {
             super.finalize();
         }
