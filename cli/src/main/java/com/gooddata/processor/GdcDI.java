@@ -132,31 +132,47 @@ public class GdcDI implements Executor {
                 }
             }
 
-            String httpPortString = cliParams.get(CLI_PARAM_HTTP_PORT[0]);
-            int httpPort = 0;
-            try {
-                httpPort = Integer.parseInt(httpPortString);
+            if(cliParams.containsKey(CLI_PARAM_HTTP_PORT)) {
+                String httpPortString = cliParams.get(CLI_PARAM_HTTP_PORT[0]);
+                int httpPort = 0;
+                try {
+                    httpPort = Integer.parseInt(httpPortString);
+                }
+                catch(NumberFormatException e) {
+                    throw new InvalidArgumentException("Invalid HTTP port value: '" + httpPortString+"'.");
+                }
+                cliParams.setHttpConfig(new NamePasswordConfiguration(
+                        cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
+                        cliParams.get(CLI_PARAM_HOST[0]),
+                        cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0]), httpPort));
             }
-            catch(NumberFormatException e) {
-                throw new InvalidArgumentException("Invalid HTTP port value: '" + httpPortString+"'.");
+            else {
+                cliParams.setHttpConfig(new NamePasswordConfiguration(
+                        cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
+                        cliParams.get(CLI_PARAM_HOST[0]),
+                        cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
             }
 
-            cliParams.setHttpConfig(new NamePasswordConfiguration(
-                    cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
-                    cliParams.get(CLI_PARAM_HOST[0]),
-                    cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0]), httpPort));
-            String ftpPortString = cliParams.get(CLI_PARAM_FTP_PORT[0]);
-            int ftpPort = 0;
-            try {
-                ftpPort = Integer.parseInt(ftpPortString);
+            if(cliParams.containsKey(CLI_PARAM_FTP_PORT)) {
+                String ftpPortString = cliParams.get(CLI_PARAM_FTP_PORT[0]);
+                int ftpPort = 0;
+                try {
+                    ftpPort = Integer.parseInt(ftpPortString);
+                }
+                catch(NumberFormatException e) {
+                    throw new InvalidArgumentException("Invalid WebDav port value: '" + ftpPortString+"'.");
+                }
+                cliParams.setFtpConfig(new NamePasswordConfiguration(
+                        cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
+                        cliParams.get(CLI_PARAM_FTP_HOST[0]),
+                        cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0]),ftpPort));
             }
-            catch(NumberFormatException e) {
-                throw new InvalidArgumentException("Invalid FTP port value: '" + ftpPortString+"'.");
+            else {
+                cliParams.setFtpConfig(new NamePasswordConfiguration(
+                        cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
+                        cliParams.get(CLI_PARAM_FTP_HOST[0]),
+                        cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
             }
-            cliParams.setFtpConfig(new NamePasswordConfiguration(
-                    cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
-                    cliParams.get(CLI_PARAM_FTP_HOST[0]),
-                    cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0]),ftpPort));
             connectors = instantiateConnectors();
             String execute = cliParams.get(CLI_PARAM_EXECUTE[0]);
             String scripts = cliParams.get(CLI_PARAM_SCRIPT);
