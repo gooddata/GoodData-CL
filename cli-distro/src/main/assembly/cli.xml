@@ -63,7 +63,7 @@
             <directory>${project.basedir}</directory>
             <includes>
                 <include>build.*</include>
-                <include>log4j.configuration</include>
+                <include>logback.xml</include>
             </includes>
         </fileSet>
         <fileSet>
