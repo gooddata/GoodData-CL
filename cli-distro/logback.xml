@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+  <appender name="S" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>sql.log</File>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} %-4r [%t] %-5p %c - %m%n</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>sql%i.log</fileNamePattern>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>10000KB</MaxFileSize>
+    </triggeringPolicy>
+  </appender>
+  <appender name="D" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>debug.log</File>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} %-4r [%t] %-5p %c - %m%n</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>debug%i.log</fileNamePattern>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>10000KB</MaxFileSize>
+    </triggeringPolicy>
+  </appender>
+  <appender name="H" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
+    <File>http.log</File>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} %-4r [%t] %-5p %c - %m%n</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>http%i.log</fileNamePattern>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>10000KB</MaxFileSize>
+    </triggeringPolicy>
+  </appender>
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} %-4r [%t] %-5p %c - %m%n</pattern>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+  </appender>
+  <logger name="com.gooddata.util.JdbcUtil" additivity="false" level="debug">
+    <appender-ref ref="S"/>
+    <appender-ref ref="D"/>
+  </logger>
+  <logger name="httpclient.wire" level="INFO">
+    <appender-ref ref="H"/>
+  </logger>
+  <logger name="org.apache.axis.utils.JavaUtils" level="error">
+    <appender-ref ref="H"/>
+  </logger>
+  <logger name="org.apache.commons.httpclient" additivity="false" level="debug">
+    <appender-ref ref="H"/>
+    <appender-ref ref="D"/>
+  </logger>
+  <logger name="org.apache.axis" level="info">
+    <appender-ref ref="D"/>
+    <appender-ref ref="stdout"/>
+  </logger>
+  <root level="debug">
+    <appender-ref ref="D"/>
+    <appender-ref ref="stdout"/>
+  </root>
+</configuration>
