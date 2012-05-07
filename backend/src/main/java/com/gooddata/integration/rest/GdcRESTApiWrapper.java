@@ -1566,7 +1566,6 @@ public class GdcRESTApiWrapper {
         private String phoneNumber;
         private String password;
         private String verifyPassword;
-        private String settings;
         private String ssoProvider;
         private String status;
         private String uri;
@@ -1733,13 +1732,6 @@ public class GdcRESTApiWrapper {
             this.verifyPassword = verifyPassword;
         }
 
-        public String getSettings() {
-            return settings;
-        }
-
-        public void setSettings(String settings) {
-            this.settings = settings;
-        }
 
         public String getSsoProvider() {
             return ssoProvider;
