@@ -49,6 +49,26 @@ public class NamePasswordConfiguration {
     private String username;
     // GDC password
     private String password;
+    // GDC port
+    private int port = 0;
+
+    /**
+     * Constructor
+     *
+     * @param protocol GoodData protocol (HTTP | FTP)
+     * @param gdcHost  GoodData host (e.g. secure.gooddata.com)
+     * @param username GoodData username
+     * @param password GoodData password
+     * @param port GoodData port
+     */
+    public NamePasswordConfiguration(String protocol, String gdcHost, String username, String password, int port) {
+        super();
+        this.protocol = protocol;
+        this.gdcHost = gdcHost;
+        this.username = username;
+        this.password = password;
+        this.port = port;
+    }
 
     /**
      * Constructor
@@ -59,11 +79,7 @@ public class NamePasswordConfiguration {
      * @param password GoodData password
      */
     public NamePasswordConfiguration(String protocol, String gdcHost, String username, String password) {
-        super();
-        this.protocol = protocol;
-        this.gdcHost = gdcHost;
-        this.username = username;
-        this.password = password;
+        this(protocol,gdcHost,username,password,0);
     }
 
     /**
@@ -73,7 +89,13 @@ public class NamePasswordConfiguration {
      */
     public String getUrl() {
         try {
-            URL url = new URL(protocol, gdcHost, "");
+            URL url;
+            if(port > 0) {
+                url = new URL(protocol, gdcHost, port, "");
+            }
+            else {
+                url = new URL(protocol, gdcHost, "");
+            }
             return url.toString();
         } catch (MalformedURLException ex) {
             return null;
