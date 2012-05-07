@@ -514,32 +514,21 @@ public class GdcDI implements Executor {
     public static void main(String[] args) {
 
         checkJavaVersion();
-        String logConfig = System.getProperty("log4j.configuration");
-        if (logConfig != null && logConfig.length() > 0) {
-            File lc = new File(logConfig);
-            if (lc.exists()) {
-                PropertyConfigurator.configure(logConfig);
-                Properties defaults = loadDefaults();
+        Properties defaults = loadDefaults();
 
-                for (Option o : Options)
-                    ops.addOption(o);
+        for (Option o : Options)
+            ops.addOption(o);
 
-                try {
-                    CommandLineParser parser = new GnuParser();
-                    CommandLine cmdline = parser.parse(ops, args);
-                    GdcDI gdi = new GdcDI(cmdline, defaults);
-                    if (!gdi.finishedSucessfuly) {
-                        System.exit(1);
-                    }
-                } catch (org.apache.commons.cli.ParseException e) {
-                    l.error("Error parsing command line parameters: ", e);
-                    l.debug("Error parsing command line parameters", e);
-                }
-            } else {
-                l.error("Can't find the logging config. Please configure the logging via the log4j.configuration.");
+        try {
+            CommandLineParser parser = new GnuParser();
+            CommandLine cmdline = parser.parse(ops, args);
+            GdcDI gdi = new GdcDI(cmdline, defaults);
+            if (!gdi.finishedSucessfuly) {
+                System.exit(1);
             }
-        } else {
-            l.error("Can't find the logging config. Please configure the logging via the log4j.configuration.");
+        } catch (org.apache.commons.cli.ParseException e) {
+            l.error("Error parsing command line parameters: ", e);
+            l.debug("Error parsing command line parameters", e);
         }
     }
 
