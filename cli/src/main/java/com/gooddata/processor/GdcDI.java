@@ -132,7 +132,7 @@ public class GdcDI implements Executor {
                 }
             }
 
-            if(cliParams.containsKey(CLI_PARAM_HTTP_PORT)) {
+            if(cliParams.containsKey(CLI_PARAM_HTTP_PORT[0])) {
                 String httpPortString = cliParams.get(CLI_PARAM_HTTP_PORT[0]);
                 int httpPort = 0;
                 try {
@@ -153,7 +153,7 @@ public class GdcDI implements Executor {
                         cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
             }
 
-            if(cliParams.containsKey(CLI_PARAM_FTP_PORT)) {
+            if(cliParams.containsKey(CLI_PARAM_FTP_PORT[0])) {
                 String ftpPortString = cliParams.get(CLI_PARAM_FTP_PORT[0]);
                 int ftpPort = 0;
                 try {
