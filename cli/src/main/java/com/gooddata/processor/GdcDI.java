@@ -118,7 +118,8 @@ public class GdcDI implements Executor {
 
     private final static String BUILD_NUMBER = "";
 
-    private GdcDI(CommandLine ln, Properties defaults) {
+
+    public GdcDI(CommandLine ln, Properties defaults) {
         try {
             cliParams = parse(ln, defaults);
 
