@@ -7672,7 +7672,7 @@ ID,COMPANY,SYMBOL,SECTOR,INDUSTRY,MARKET,QUOTE_DATE,OPEN_PRICE,HIGH_PRICE,LOW_PR
 569686,"Access Integrated Technologies, Inc.","AIXD","Services","Business Services","NASDAQ","2008-02-14 00:00:00",2.55,2.55,2.46,2.46,83200,2.46
 569687,"Access Integrated Technologies, Inc.","AIXD","Services","Business Services","NASDAQ","2008-02-13 00:00:00",2.51,2.53,2.37,2.48,266900,2.48
 569688,"Access Integrated Technologies, Inc.","AIXD","Services","Business Services","NASDAQ","2008-02-12 00:00:00",2.52,2.7,2.46,2.5,126700,2.5
-569689,"Access Integrated Technologies, Inc.","AIXD","Services","Business Services","NASDAQ","2008-02-11 00:00:00",2.77,2.78,2.51.2.53,153500,2.52
+569689,"Access Integrated Technologies, Inc.","AIXD","Services","Business Services","NASDAQ","2008-02-11 00:00:00",2.77,2.78,2.51,2.53,153500,2.52
 569690,"Access Integrated Technologies, Inc.","AIXD","Services","Business Services","NASDAQ","2008-02-08 00:00:00",2.85,3.4,2.63,2.78,270700,2.78
 569691,"Access Integrated Technologies, Inc.","AIXD","Services","Business Services","NASDAQ","2008-02-07 00:00:00",2.8,2.99,2.65,2.79,174800,2.79
 569692,"Access Integrated Technologies, Inc.","AIXD","Services","Business Services","NASDAQ","2008-02-06 00:00:00",3,3.07,2.85,2.88,265300,2.88
@@ -8385,7 +8385,7 @@ ID,COMPANY,SYMBOL,SECTOR,INDUSTRY,MARKET,QUOTE_DATE,OPEN_PRICE,HIGH_PRICE,LOW_PR
 239399,"Accuride Corporation","ACW","Consumer Goods","Trucks & Other Vehicles","NYSE","2008-08-15 00:00:00",2.01,2.3,2.01,2.24,129500,2.24
 239400,"Accuride Corporation","ACW","Consumer Goods","Trucks & Other Vehicles","NYSE","2008-08-14 00:00:00",2.2,2.37,2.2,2.24,472300,2.24
 239401,"Accuride Corporation","ACW","Consumer Goods","Trucks & Other Vehicles","NYSE","2008-08-13 00:00:00",2.47,2.55,2.2,2.21,336100,2.21
-239402,"Accuride Corporation","ACW","Consumer Goods","Trucks & Other Vehicles","NYSE","2008-08-12 00:00:00",2.31.2.53,2.3,2.48,761700,2.48
+239402,"Accuride Corporation","ACW","Consumer Goods","Trucks & Other Vehicles","NYSE","2008-08-12 00:00:00",2.31,2.53,2.3,2.48,761700,2.48
 239403,"Accuride Corporation","ACW","Consumer Goods","Trucks & Other Vehicles","NYSE","2008-08-11 00:00:00",2.28,2.3,2.18,2.3,423700,2.3
 239404,"Accuride Corporation","ACW","Consumer Goods","Trucks & Other Vehicles","NYSE","2008-08-08 00:00:00",2.25,2.28,2.15,2.27,231000,2.27
 239405,"Accuride Corporation","ACW","Consumer Goods","Trucks & Other Vehicles","NYSE","2008-08-07 00:00:00",2.26,2.28,2.19,2.19,244800,2.19
