@@ -266,19 +266,25 @@ public class MaqlGenerator {
         for (SourceColumn column : columns) {
             String folder = column.getFolder();
             if (folder != null && folder.length() > 0) {
-                if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_HYPERLINK) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
-                    if (!attributeFolders.contains(folder))
-                        attributeFolders.add(folder);
+                String ldmType = column.getLdmType();
+                if(ldmType != null && ldmType.length()>0) {
+                    if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_ATTRIBUTE) ||
+                            column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_LABEL) ||
+                            column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_HYPERLINK) ||
+                            column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_CONNECTION_POINT) ||
+                            column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_REFERENCE) ||
+                            column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
+                        if (!attributeFolders.contains(folder))
+                            attributeFolders.add(folder);
+                    }
+                    if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT) ||
+                            column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
+                        if (!factFolders.contains(folder))
+                            factFolders.add(folder);
+                    }
                 }
-                if (column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_FACT) ||
-                        column.getLdmType().equalsIgnoreCase(SourceColumn.LDM_TYPE_DATE)) {
-                    if (!factFolders.contains(folder))
-                        factFolders.add(folder);
+                else {
+                    throw new IllegalArgumentException("Column " + column.getName()+ " doesn't contain the LDM type specification.");
                 }
             }
         }
