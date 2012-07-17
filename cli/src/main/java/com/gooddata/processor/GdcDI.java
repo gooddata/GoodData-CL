@@ -920,6 +920,7 @@ public class GdcDI implements Executor {
         user.setCountry(c.getParam("country"));
         user.setPhoneNumber(c.getParam("phone"));
         user.setSsoProvider(c.getParam("ssoProvider"));
+        user.setEmail(c.getParam("email"));
         String usersFile = c.getParam("usersFile");
         String appnd = c.getParam("append");
         c.paramsProcessed();
