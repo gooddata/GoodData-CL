@@ -1556,6 +1556,7 @@ public class GdcRESTApiWrapper {
 
     public static class GdcUser {
         private String login;
+        private String email;
         private String licence;
         private String firstName;
         private String lastName;
@@ -1599,6 +1600,10 @@ public class GdcRESTApiWrapper {
             if (v != null && v.trim().length() > 0) {
                 this.setLastName(v);
             }
+            v = c.getString("email");
+            if (v != null && v.trim().length() > 0) {
+                this.setEmail(v);
+            }
             v = c.getString("phonenumber");
             if (v != null && v.trim().length() > 0) {
                 this.setPhoneNumber(v);
@@ -1623,7 +1628,7 @@ public class GdcRESTApiWrapper {
                     && getPassword().length() > 0 && getVerifyPassword() != null
                     && getVerifyPassword().length() > 0 && getFirstName() != null
                     && getFirstName().length() > 0 && getLastName() != null
-                    && getLastName().length() > 0)
+                    && getLastName().length() > 0) // email is not mandatory
                 return true;
             return false;
         }
@@ -1741,6 +1746,14 @@ public class GdcRESTApiWrapper {
             this.ssoProvider = ssoProvider;
         }
 
+		public String getEmail() {
+			return email;
+		}
+
+		public void setEmail(String email) {
+			this.email = email;
+		}
+
     }
 
     /**
@@ -1800,6 +1813,8 @@ public class GdcRESTApiWrapper {
             accountSetting.put("phoneNumber", user.getPhoneNumber());
         if (user.getSsoProvider() != null && user.getSsoProvider().length() > 0)
             accountSetting.put("ssoProvider", user.getSsoProvider());
+        if (user.getEmail() != null && user.getEmail().length() > 0)
+            accountSetting.put("email", user.getEmail());
         param.put("accountSetting", accountSetting);
         return param;
     }
