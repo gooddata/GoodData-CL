@@ -138,4 +138,19 @@ public class NamePasswordConfiguration {
         return password;
     }
 
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setGdcHost(String gdcHost) {
+        this.gdcHost = gdcHost;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
 }

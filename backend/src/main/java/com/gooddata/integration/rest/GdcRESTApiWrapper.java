@@ -45,6 +45,8 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,6 +64,7 @@ public class GdcRESTApiWrapper {
     /**
      * GDC URIs
      */
+    private static final String PLATFORM_URI = "/gdc/";
     private static final String MD_URI = "/gdc/md/";
     private static final String LOGIN_URI = "/gdc/account/login";
     private static final String DOMAIN_URI = "/gdc/account/domains";
@@ -89,6 +92,7 @@ public class GdcRESTApiWrapper {
     public static final String OBJ_URI = "/obj";
     public static final String ETL_MODE_DLI = "DLI";
     public static final String ETL_MODE_VOID = "VOID";
+    public static final String LINKS_UPLOADS_KEY = "uploads";
 
     public static final String DLI_MANIFEST_FILENAME = "upload_info.json";
 
@@ -281,6 +285,59 @@ public class GdcRESTApiWrapper {
         } finally {
             req.releaseConnection();
         }
+    }
+
+    /**
+     * Returns the global platform links
+     *
+     * @return accessible platform links
+     * @throws com.gooddata.exception.HttpMethodException
+     *
+     */
+    @SuppressWarnings("unchecked")
+    private Iterator<JSONObject> getPlatformLinks() throws HttpMethodException {
+        l.debug("Getting project links.");
+        HttpMethod req = createGetMethod(getServerUrl() + PLATFORM_URI);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            JSONObject about = parsedResp.getJSONObject("about");
+            JSONArray links = about.getJSONArray("links");
+            l.debug("Got platform links " + links);
+            return links.iterator();
+        } finally {
+            req.releaseConnection();
+        }
+    }
+
+    /**
+     *
+     *
+     * @return the WebDav URL from the platform configuration
+     */
+    public URL getWebDavURL() {
+        Iterator<JSONObject> links = getPlatformLinks();
+        while(links.hasNext()) {
+            JSONObject link = links.next();
+            if(link != null && !link.isEmpty() && !link.isNullObject()) {
+                String category = link.getString("category");
+                if(category != null && category.length() > 0 && category.equalsIgnoreCase(LINKS_UPLOADS_KEY)) {
+                    try {
+                        String uri = link.getString("link");
+                        if(uri != null && uri.length()>0) {
+                            return new URL(uri);
+                        }
+                        else {
+                            throw new InvalidArgumentException("No uploads URL configured for the server: "+category);
+                        }
+                    }
+                    catch (MalformedURLException e) {
+                        throw new InvalidArgumentException("Invalid uploads URL configured for the server: "+category);
+                    }
+                }
+            }
+        }
+        throw new InvalidArgumentException("No uploads platform link configured for the GoodData cluster.");
     }
 
     /**
@@ -1305,13 +1362,15 @@ public class GdcRESTApiWrapper {
      * @param name        project name
      * @param desc        project description
      * @param templateUri project template uri
+     * @param driver underlying database driver
+     * @param accessToken access token
      * @return the project Id
      * @throws GdcRestApiException
      */
-    public String createProject(String name, String desc, String templateUri, String driver) throws GdcRestApiException {
+    public String createProject(String name, String desc, String templateUri, String driver, String accessToken) throws GdcRestApiException {
         l.debug("Creating project name=" + name);
         PostMethod createProjectPost = createPostMethod(getServerUrl() + PROJECTS_URI);
-        JSONObject createProjectStructure = getCreateProject(name, desc, templateUri, driver);
+        JSONObject createProjectStructure = getCreateProject(name, desc, templateUri, driver, accessToken);
         InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
                 createProjectStructure.toString().getBytes()));
         createProjectPost.setRequestEntity(request);
@@ -1342,9 +1401,11 @@ public class GdcRESTApiWrapper {
      * @param name        project name
      * @param desc        project description
      * @param templateUri project template uri
+     * @param driver underlying database driver
+     * @param accessToken access token
      * @return the create project JSON structure
      */
-    private JSONObject getCreateProject(String name, String desc, String templateUri, String driver) {
+    private JSONObject getCreateProject(String name, String desc, String templateUri, String driver, String accessToken) {
         JSONObject meta = new JSONObject();
         meta.put("title", name);
         meta.put("summary", desc);
@@ -1357,8 +1418,8 @@ public class GdcRESTApiWrapper {
         if(driver != null && driver.length()>0) {
             content.put("driver", driver);
         }
-        else {
-            content.put("driver", "mysql");
+        if(accessToken != null && accessToken.length()>0) {
+            content.put("pgroup_name", accessToken);
         }
         JSONObject project = new JSONObject();
         project.put("meta", meta);
@@ -2947,7 +3008,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.56");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.57");
         return request;
     }
 

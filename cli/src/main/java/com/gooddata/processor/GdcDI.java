@@ -179,6 +179,7 @@ public class GdcDI implements Executor {
                         cliParams.get(CLI_PARAM_FTP_HOST[0]),
                         cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
             }
+
             connectors = instantiateConnectors();
             String execute = cliParams.get(CLI_PARAM_EXECUTE[0]);
             String scripts = cliParams.get(CLI_PARAM_SCRIPT);
@@ -378,7 +379,7 @@ public class GdcDI implements Executor {
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.56" +
+            l.info("GoodData CL version 1.2.57" +
                     ((BUILD_NUMBER.length() > 0) ? ", build " + BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -393,6 +394,7 @@ public class GdcDI implements Executor {
         l.debug("Using host " + cp.get(CLI_PARAM_HOST[0]));
 
         // create default FTP host if there is no host in the CLI params
+        /*
         if (!cp.containsKey(CLI_PARAM_FTP_HOST[0])) {
             String[] hcs = cp.get(CLI_PARAM_HOST[0]).split("\\.");
             if (hcs != null && hcs.length > 0) {
@@ -411,7 +413,9 @@ public class GdcDI implements Executor {
 
         }
 
+
         l.debug("Using FTP host " + cp.get(CLI_PARAM_FTP_HOST[0]));
+        */
 
         // Default to secure protocol if there is no host in the CLI params
         // Assume insecure protocol if user specifies "HTTPS", for backwards compatibility
@@ -1035,11 +1039,12 @@ public class GdcDI implements Executor {
             String desc = c.getParam("desc");
             String pTempUri = c.getParam("templateUri");
             String driver = c.getParam("driver");
+            String token = c.getParam("accessToken");
             c.paramsProcessed();
 
             if (desc == null || desc.length() <= 0)
                 desc = name;
-            ctx.setProjectId(ctx.getRestApi(p).createProject(StringUtil.toTitle(name), StringUtil.toTitle(desc), pTempUri, driver));
+            ctx.setProjectId(ctx.getRestApi(p).createProject(StringUtil.toTitle(name), StringUtil.toTitle(desc), pTempUri, driver, token));
             String pid = ctx.getProjectIdMandatory();
             checkProjectCreationStatus(pid, p, ctx);
             l.info("Project id = '" + pid + "' created.");

@@ -35,6 +35,8 @@ import com.gooddata.integration.webdav.GdcWebDavApiWrapper;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
+import java.net.URL;
+
 /**
  * GoodData
  *
@@ -109,6 +111,15 @@ public class ProcessingContext {
     public GdcDataTransferAPI getFtpApi(CliParams cliParams) {
         if (_ftpApi == null) {
             NamePasswordConfiguration ftpConfig = cliParams.getFtpConfig();
+            String host = ftpConfig.getGdcHost();
+            int port = ftpConfig.getPort();
+            if(host == null || host.length() <= 0) {
+                GdcRESTApiWrapper rest = getRestApi(cliParams);
+                URL url = rest.getWebDavURL();
+                ftpConfig.setGdcHost(url.getHost());
+                ftpConfig.setProtocol(url.getProtocol());
+                ftpConfig.setPort(url.getPort());
+            }
             checkConfig(ftpConfig);
             l.debug("Using the GoodData data stage host '" + ftpConfig.getGdcHost() + "'.");
             _ftpApi = new GdcWebDavApiWrapper(ftpConfig);
