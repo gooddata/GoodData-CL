@@ -76,14 +76,6 @@ if [ -z "$JAVA_HOME" ] ; then
   echo "Warning: JAVA_HOME environment variable is not set."
 fi
 
-# For Cygwin, switch paths to Windows format before running java
-if $cygwin; then
-  [ -n "$JAVA_HOME" ] &&
-    JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
-  [ -n "$HOME" ] &&
-    HOME=`cygpath --path --windows "$HOME"`
-fi
-
 CLSPTH="$PROJECT_DIR"
 for i in "$PROJECT_DIR/lib/"*.jar
 do
@@ -92,6 +84,20 @@ done
 
 if [ -z "$TMPDIR" ] ; then
   TMPDIR=/tmp
+fi
+
+# For Cygwin, switch paths to Windows format before running java
+if $cygwin; then
+  [ -n "$JAVA_HOME" ] &&
+    JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
+  [ -n "$HOME" ] &&
+    HOME=`cygpath --path --windows "$HOME"`
+  [ -n "$PROJECT_DIR" ] &&
+    PROJECT_DIR=`cygpath --path --windows "$PROJECT_DIR"`
+  [ -n "$CLSPTH" ] &&
+    CLSPTH=`cygpath --path --windows "$CLSPTH"`
+  [ -n "$TMPDIR" ] &&
+    TMPDIR==`cygpath --path --windows "$TMPDIR"`
 fi
 
 "$JAVACMD" -Xmx1024M -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:CMSInitiatingOccupancyFraction=50 -Dlog4j.configuration="$PROJECT_DIR/log4j.configuration" -Djava.io.tmpdir="$TMPDIR" -cp "${CLSPTH}" com.gooddata.processor.GdcDI "$@"
