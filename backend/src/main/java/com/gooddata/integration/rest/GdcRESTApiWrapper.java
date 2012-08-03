@@ -90,6 +90,8 @@ public class GdcRESTApiWrapper {
     public static final String INVITATION_URI = "/invitations";
     public static final String ETL_MODE_URI = "/etl/mode";
     public static final String OBJ_URI = "/obj";
+    public static final String ROLES_URI = "/roles";
+    public static final String USERS_URI = "/users";
     public static final String ETL_MODE_DLI = "DLI";
     public static final String ETL_MODE_VOID = "VOID";
     public static final String LINKS_UPLOADS_KEY = "uploads";
@@ -1615,6 +1617,119 @@ public class GdcRESTApiWrapper {
         return param;
     }
 
+    private GdcRole getRoleFromUri(String roleUri) {
+        l.debug("Getting role from uri: " + roleUri);
+        HttpMethod req = createGetMethod( getServerUrl() + roleUri);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if (parsedResp == null || parsedResp.isNullObject() || parsedResp.isEmpty()) {
+                l.debug("Can't getRoleFromUri for uri " + roleUri + ". Invalid response.");
+                throw new GdcRestApiException("Can't getRoleFromUri for uri " + roleUri + ". Invalid response.");
+            }
+            return new GdcRole(parsedResp);
+        } catch (HttpMethodException ex) {
+            l.debug("Error getRoleFromUri.", ex);
+            throw new GdcRestApiException("Error getRoleFromUri", ex);
+        } finally {
+            req.releaseConnection();
+        }
+    }
+
+    private GdcUser getUserFromUri(String userUri) {
+        l.debug("Getting user from uri: " + userUri);
+        HttpMethod req = createGetMethod( getServerUrl() + userUri);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if (parsedResp == null || parsedResp.isNullObject() || parsedResp.isEmpty()) {
+                l.debug("Can't getUserFromUri for uri " + userUri + ". Invalid response.");
+                throw new GdcRestApiException("Can't getUserFromUri for uri " + userUri + ". Invalid response.");
+            }
+            return new GdcUser(parsedResp);
+        } catch (HttpMethodException ex) {
+            l.debug("Error getUserFromUri.", ex);
+            throw new GdcRestApiException("Error getUserFromUri", ex);
+        } finally {
+            req.releaseConnection();
+        }
+    }
+
+    public static class GdcRole{
+
+        private String name;
+        private String identifier;
+        private String uri;
+
+        public GdcRole() {
+        }
+
+        public GdcRole(JSONObject role) {
+            if (role == null || role.isEmpty() || role.isNullObject()) {
+                throw new GdcRestApiException("Can't extract role from JSON. The JSON is empty.");
+            }
+            JSONObject pr = role.getJSONObject("projectRole");
+            if (pr == null || pr.isEmpty() || pr.isNullObject()) {
+                throw new GdcRestApiException("Can't extract role from JSON. No projectRole key in the JSON.");
+            }
+            JSONObject m = pr.getJSONObject("meta");
+            if (m == null || m.isEmpty() || m.isNullObject()) {
+                throw new GdcRestApiException("Can't extract role from JSON. No meta key in the JSON.");
+            }
+            JSONObject l = pr.getJSONObject("links");
+            if (l == null || l.isEmpty() || l.isNullObject()) {
+                throw new GdcRestApiException("Can't extract role from JSON. No links key in the JSON.");
+            }
+            String title = m.getString("title");
+            if (title == null || title.trim().length() <= 0) {
+                throw new GdcRestApiException("Can't extract user from JSON. No email key in the JSON.");
+            }
+            this.setName(title);
+            String u = l.getString("roleUsers");
+            if (u == null || u.trim().length() <= 0) {
+                throw new GdcRestApiException("Can't extract role from JSON. No roleUsers key in the JSON.");
+            }
+            this.setUri(u.replace(USERS_URI,""));
+            String i = m.getString("identifier");
+            if (i == null || i.trim().length() <= 0) {
+                throw new GdcRestApiException("Can't extract user from JSON. No email key in the JSON.");
+            }
+            this.setIdentifier(i);
+
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getIdentifier() {
+            return identifier;
+        }
+
+        public void setIdentifier(String identifier) {
+            this.identifier = identifier;
+        }
+
+        public String getUri() {
+            return uri;
+        }
+
+        public void setUri(String uri) {
+            this.uri = uri;
+        }
+
+        public boolean validate() {
+            if (getName() != null && getIdentifier().length() > 0 && getUri() != null) // email is not mandatory
+                return true;
+            return false;
+        }
+    }
+
+
     public static class GdcUser {
         private String login;
         private String email;
@@ -1930,6 +2045,40 @@ public class GdcRESTApiWrapper {
         }
     }
 
+    public void addUsersToProjectWithRoleUri(String projectId, List<String> uris, String roleUri)
+            throws GdcRestApiException {
+
+        l.debug("Adding users " + uris + " to project " + projectId);
+        String projectsUrl = getProjectUrl(projectId);
+
+        PostMethod req = createPostMethod(projectsUrl + PROJECT_USERS_SUFFIX);
+        JSONObject param = getAddUsersToProjectStructure(uris, roleUri);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                param.toString().getBytes()));
+        req.setRequestEntity(request);
+        String result = null;
+        try {
+            String response = executeMethodOk(req);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            JSONObject projectUsersUpdateResult = responseObject.getJSONObject("projectUsersUpdateResult");
+            JSONArray failed = projectUsersUpdateResult.getJSONArray("failed");
+            if (!failed.isEmpty()) {
+                String errMsg = "Following users can't be added to the project:";
+                for (Object uri : failed.toArray()) {
+                    errMsg += " " + uris.toString();
+                }
+                l.debug(errMsg);
+                throw new GdcRestApiException(errMsg);
+            }
+            //JSONArray successful = projectUsersUpdateResult.getJSONArray("successful");
+        } catch (HttpMethodException ex) {
+            l.debug("Error adding users " + uris + " to project", ex);
+            throw new GdcRestApiException("Error adding users " + uris + " to project ", ex);
+        } finally {
+            req.releaseConnection();
+        }
+    }
+
     private JSONObject getAddUsersToProjectStructure(List<String> uris, String roleUri) {
         JSONObject param = new JSONObject();
         JSONArray users = new JSONArray();
@@ -2014,6 +2163,87 @@ public class GdcRESTApiWrapper {
         }
         param.put("users", users);
         return param;
+    }
+
+    /**
+     * Returns the selected project's roles
+     *
+     * @param pid             project ID
+     * @return array of the project's users
+     */
+    public ArrayList<GdcRole> getProjectRoles(String pid) {
+        ArrayList<GdcRole> ret = new ArrayList<GdcRole>();
+        l.debug("Executing getProjectRoles for project id=" + pid);
+        HttpMethod req = createGetMethod(getProjectUrl(pid) + ROLES_URI);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if (parsedResp == null || parsedResp.isNullObject() || parsedResp.isEmpty()) {
+                l.debug("Can't getProjectRoles for project id=" + pid + ". Invalid response.");
+                throw new GdcRestApiException("Can't getProjectRoles for project id=" + pid + ". Invalid response.");
+            }
+            JSONObject projectRoles = parsedResp.getJSONObject("projectRoles");
+            if (projectRoles == null || projectRoles.isNullObject() || projectRoles.isEmpty()) {
+                l.debug("Can't getProjectRoles for project id=" + pid + ". No projectRoles key in the response.");
+                throw new GdcRestApiException("Can't getProjectRoles for project id=" + pid + ". No projectRoles key in the response.");
+            }
+            JSONArray roles = projectRoles.getJSONArray("roles");
+            if (roles == null) {
+                l.debug("Can't getRoleUsers. No getProjectRoles key in the response.");
+                throw new GdcRestApiException("Can't getProjectRoles. No roles key in the response.");
+            }
+            for (Object o : roles) {
+                String role = (String) o;
+                GdcRole g = getRoleFromUri(role);
+                ret.add(g);
+            }
+            return ret;
+        } finally {
+            req.releaseConnection();
+        }
+    }
+
+
+
+    /**
+     * Returns the selected project's roles
+     *
+     * @return array of the project's users
+     */
+    public ArrayList<String> getRoleUsers(GdcRole role, boolean activeUsersOnly) {
+        ArrayList<String> ret = new ArrayList<String>();
+        if(role == null || role.getIdentifier() == null || role.getIdentifier().length() == 0 || role.getUri() == null
+                || role.getUri().length() == 0 || role.getName() == null || role.getName().length() == 0) {
+            l.debug("Can't getRoleUsers . Invalid role object passed.");
+            throw new GdcRestApiException("Can't getRoleUsers. Invalid role object passed.");
+        }
+        l.debug("Executing getRoleUsers for role "+role.getIdentifier());
+        HttpMethod req = createGetMethod(getServerUrl() + role.getUri() + USERS_URI);
+        try {
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            if (parsedResp == null || parsedResp.isNullObject() || parsedResp.isEmpty()) {
+                l.debug("Can't getRoleUsers. Invalid response.");
+                throw new GdcRestApiException("Can't getRoleUsers. Invalid response.");
+            }
+            JSONObject associatedUsers = parsedResp.getJSONObject("associatedUsers");
+            if (associatedUsers == null || associatedUsers.isNullObject() || associatedUsers.isEmpty()) {
+                l.debug("Can't getRoleUsers. Invalid response. No associatedUsers key.");
+                throw new GdcRestApiException("Can't getRoleUsers. Invalid response. No associatedUsers key.");
+            }
+            JSONArray users = associatedUsers.getJSONArray("users");
+            if (users == null) {
+                l.debug("Can't getRoleUsers. No users key in the response.");
+                throw new GdcRestApiException("Can't getRoleUsers. No users key in the response.");
+            }
+            for (Object o : users) {
+                String user = (String) o;
+                ret.add(user);
+            }
+            return ret;
+        } finally {
+            req.releaseConnection();
+        }
     }
 
     /**
