@@ -39,9 +39,11 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * The GoodData Data Integration CLI processor.
+ * Utility that creates a new Zendesk V3 project for every V1 Zendesk project.
+ * The utility copies all users from the old V1 project to the new V3 project.
+ * It needs to be executed under the bear@gooddata.com, as adding users to projects is only allowed to the admin of the
+ * domain where the user has been created. We assume that all Zendesk users are in the default GoodData domain.
  *
- * @author jiri.zaloudek
  * @author Zdenek Svoboda <zd@gooddata.org>
  * @version 1.0
  */
@@ -64,16 +66,22 @@ public class CreateZendeskV3Projects {
 
     // Command line options
     private static Options ops = new Options();
-    public static Option[] Options = {
-            new Option(CLI_PARAM_HELP[1], CLI_PARAM_HELP[0], false, "Print command reference"),
+    public static Option[] mandatoryOptions = {
             new Option(CLI_PARAM_USERNAME[1], CLI_PARAM_USERNAME[0], true, "GoodData username"),
             new Option(CLI_PARAM_PASSWORD[1], CLI_PARAM_PASSWORD[0], true, "GoodData password"),
-            new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host"),
-            new Option(CLI_PARAM_LIST[1], CLI_PARAM_LIST[0], true, "List of the V1 projects (single column)"),
+            new Option(CLI_PARAM_LIST[1], CLI_PARAM_LIST[0], true, "List of the V1 projects that needs to be converted (single column CSV with the V1 project hash)"),
             new Option(CLI_PARAM_OUTPUT[1], CLI_PARAM_OUTPUT[0], true, "List that associates the old V1 project and the new V3 project (two columns: [old hash,new hash])."),
-            new Option(CLI_PARAM_TEMPLATE[1], CLI_PARAM_TEMPLATE[0], true, "The template to create the V3 projects from"),
-            new Option(CLI_PARAM_TOKEN[1], CLI_PARAM_TOKEN[0], true, "Create project access token."),
-            new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version."),
+            new Option(CLI_PARAM_TEMPLATE[1], CLI_PARAM_TEMPLATE[0], true, "The template to create the new V3 projects from"),
+            new Option(CLI_PARAM_TOKEN[1], CLI_PARAM_TOKEN[0], true, "Create project access token.")
+    };
+
+    public static Option[] optionalOptions = {
+            new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host (default secure.gooddata.com)")
+    };
+
+    public static Option[] helpOptions = {
+            new Option(CLI_PARAM_HELP[1], CLI_PARAM_HELP[0], false, "Print command reference"),
+            new Option(CLI_PARAM_VERSION[1], CLI_PARAM_VERSION[0], false, "Prints the tool version.")
     };
 
     private CliParams cliParams = null;
@@ -191,6 +199,15 @@ public class CreateZendeskV3Projects {
         }
     }
 
+    /**
+     * Creates a new V3 projects from the template identified by the templateUri for the V1 project that is passed in
+     * the oldProjectHash parameter
+     * Copies all users from the V1 to the V3 project with appropriate roles
+     * @param oldProjectHash the old V1 project hash
+     * @param templateUri the new V3 project template URI
+     * @param token project creation token (redirects the new projects to the correct DWH server)
+     * @return the new V3 project hash
+     */
     private String processProject(String oldProjectHash, String templateUri, String token) throws InterruptedException {
         Project project = ctx.getRestApi(cliParams).getProjectById(oldProjectHash);
         Map<String,GdcRESTApiWrapper.GdcUser> activeUsers = new HashMap<String,GdcRESTApiWrapper.GdcUser>();
@@ -246,17 +263,31 @@ public class CreateZendeskV3Projects {
         l.debug("Parsing cli " + ln);
         CliParams cp = new CliParams();
 
-        for (Option o : Options) {
-            String name = o.getLongOpt();
-            if (ln.hasOption(name))
-                cp.put(name, ln.getOptionValue(name));
-        }
-
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
             l.info("GoodData CL version 1.2.57");
             System.exit(0);
         }
 
+        if (ln.hasOption(CLI_PARAM_HELP[1])) {
+            printHelp();
+        }
+
+        for (Option o : mandatoryOptions) {
+            String name = o.getLongOpt();
+            if (ln.hasOption(name))
+                cp.put(name, ln.getOptionValue(name));
+            else {
+                l.info("Please specify the mandatory option "+name+"("+o.getOpt()+")");
+                printHelp();
+                System.exit(0);
+            }
+        }
+
+        for (Option o : optionalOptions) {
+            String name = o.getLongOpt();
+            if (ln.hasOption(name))
+                cp.put(name, ln.getOptionValue(name));
+        }
 
         // use default host if there is no host in the CLI params
         if (!cp.containsKey(CLI_PARAM_HOST[0])) {
@@ -266,6 +297,11 @@ public class CreateZendeskV3Projects {
         l.debug("Using host " + cp.get(CLI_PARAM_HOST[0]));
 
         return cp;
+    }
+
+    private void printHelp() {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("createZendeskProjects [<options> ...]", ops);
     }
 
     private static boolean checkJavaVersion() {
@@ -287,7 +323,11 @@ public class CreateZendeskV3Projects {
 
         checkJavaVersion();
 
-        for (Option o : Options)
+        for (Option o : mandatoryOptions)
+            ops.addOption(o);
+        for (Option o : optionalOptions)
+            ops.addOption(o);
+        for (Option o : helpOptions)
             ops.addOption(o);
 
         try {
