@@ -40,6 +40,11 @@ import java.util.List;
 public class StringUtil {
 
     /**
+     * Transliterator for identifiers
+     */
+    private static final Transliterator IDENTIFIER_TRANSLITERATOR = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
+
+    /**
      * Formats a string as identifier
      * Currently only converts to the lowercase and replace spaces
      *
@@ -69,8 +74,7 @@ public class StringUtil {
     private static String convertToIdentifier(String s) {
         if (s == null)
             return s;
-        Transliterator t = Transliterator.getInstance("Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC");
-        s = t.transliterate(s);
+        s = IDENTIFIER_TRANSLITERATOR.transliterate(s);
         s = s.replaceAll("[^a-zA-Z0-9_]", "");
         s = s.replaceAll("^[0-9_]*", "");
         //s = s.replaceAll("[_]*$", "");
