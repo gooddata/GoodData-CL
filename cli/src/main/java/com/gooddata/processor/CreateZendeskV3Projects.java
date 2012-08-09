@@ -71,12 +71,12 @@ public class CreateZendeskV3Projects {
             new Option(CLI_PARAM_PASSWORD[1], CLI_PARAM_PASSWORD[0], true, "GoodData password"),
             new Option(CLI_PARAM_LIST[1], CLI_PARAM_LIST[0], true, "List of the V1 projects that needs to be converted (single column CSV with the V1 project hash)"),
             new Option(CLI_PARAM_OUTPUT[1], CLI_PARAM_OUTPUT[0], true, "List that associates the old V1 project and the new V3 project (two columns: [old hash,new hash])."),
-            new Option(CLI_PARAM_TEMPLATE[1], CLI_PARAM_TEMPLATE[0], true, "The template to create the new V3 projects from"),
-            new Option(CLI_PARAM_TOKEN[1], CLI_PARAM_TOKEN[0], true, "Create project access token.")
+            new Option(CLI_PARAM_TEMPLATE[1], CLI_PARAM_TEMPLATE[0], true, "The template to create the new V3 projects from")
     };
 
     public static Option[] optionalOptions = {
-            new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host (default secure.gooddata.com)")
+            new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host (default secure.gooddata.com)"),
+            new Option(CLI_PARAM_TOKEN[1], CLI_PARAM_TOKEN[0], true, "Create project access token.")
     };
 
     public static Option[] helpOptions = {
@@ -104,7 +104,9 @@ public class CreateZendeskV3Projects {
 
             CSVReader reader = FileUtil.createUtf8CsvReader(new File(input));
             CSVWriter writer = FileUtil.createUtf8CsvWriter(new File(output));
+            CSVWriter tool = FileUtil.createUtf8CsvWriter(new File(output+".tool"));
 
+            tool.writeNext(new String[] {"login","project","role","project-state","user-state"});
             int rowCnt = 1;
             String[] row = reader.readNext();
             while(row != null && row.length > 0) {
@@ -112,13 +114,21 @@ public class CreateZendeskV3Projects {
                     throw new InvalidArgumentException("The row "+rowCnt+" of the '"+input+"' contains more than one column!");
                 }
                 String oldProjectHash = row[0];
-                String newProjectHash = processProject(oldProjectHash, template, token);
+                String newProjectHash = "ERROR: Failed to access the corresponding V1 project.";
+                try {
+                    newProjectHash = processProject(oldProjectHash, template, token, tool);
+                }
+                catch (GdcProjectAccessException e) {
+                    l.info("The project "+oldProjectHash+" either doesn't exist, is disabled, or can't be accessed by the user that invoked this tool.");
+                }
                 writer.writeNext(new String[] {oldProjectHash,newProjectHash});
                 writer.flush();
+                tool.flush();
                 row = reader.readNext();
                 rowCnt++;
             }
             writer.close();
+            tool.close();
             reader.close();
             finishedSucessfuly = true;
         } catch (InterruptedException e) {
@@ -208,19 +218,10 @@ public class CreateZendeskV3Projects {
      * @param token project creation token (redirects the new projects to the correct DWH server)
      * @return the new V3 project hash
      */
-    private String processProject(String oldProjectHash, String templateUri, String token) throws InterruptedException {
+    private String processProject(String oldProjectHash, String templateUri, String token, CSVWriter tool) throws InterruptedException {
         Project project = ctx.getRestApi(cliParams).getProjectById(oldProjectHash);
         Map<String,GdcRESTApiWrapper.GdcUser> activeUsers = new HashMap<String,GdcRESTApiWrapper.GdcUser>();
-        Map<String,GdcRESTApiWrapper.GdcRole> newProjectRoles = new HashMap<String,GdcRESTApiWrapper.GdcRole>();
 
-        String newName = project.getName()+" (new)";
-        String newProjectHash = ctx.getRestApi(cliParams).createProject(StringUtil.toTitle(newName), StringUtil.toTitle(newName), templateUri, "Pg", token);
-        checkProjectCreationStatus(newProjectHash, cliParams, ctx);
-        l.info("New V3 project created: " + newProjectHash);
-        List<GdcRESTApiWrapper.GdcRole> roles = ctx.getRestApi(cliParams).getProjectRoles(newProjectHash);
-        for(GdcRESTApiWrapper.GdcRole role : roles) {
-            newProjectRoles.put(role.getIdentifier(), role);
-        }
         l.info("Getting users from project " + oldProjectHash);
         List<GdcRESTApiWrapper.GdcUser> users = ctx.getRestApi(cliParams).getProjectUsers(oldProjectHash, true);
         for(GdcRESTApiWrapper.GdcUser user : users) {
@@ -228,26 +229,28 @@ public class CreateZendeskV3Projects {
         }
         l.info(users.size() + " users retrieved from project " + oldProjectHash);
         l.info("Getting roles from project " + oldProjectHash);
-        roles = ctx.getRestApi(cliParams).getProjectRoles(oldProjectHash);
+        List<GdcRESTApiWrapper.GdcRole> roles  = ctx.getRestApi(cliParams).getProjectRoles(oldProjectHash);
         l.info(roles.size() + " roles retrieved from project " + oldProjectHash);
+
+        String newName = project.getName()+" (new)";
+        String newProjectHash = ctx.getRestApi(cliParams).createProject(StringUtil.toTitle(newName), StringUtil.toTitle(newName), templateUri, "Pg", token);
+        checkProjectCreationStatus(newProjectHash, cliParams, ctx);
+        l.info("New V3 project created: " + newProjectHash);
+
         for(GdcRESTApiWrapper.GdcRole role : roles) {
             l.info("Getting users from role " + role.getIdentifier());
             List<String> userUris = ctx.getRestApi(cliParams).getRoleUsers(role, true);
             l.info(userUris.size() + " users retrieved from role " + role.getIdentifier());
-            List<String> uris = new ArrayList<String>();
             for(String userUri : userUris) {
                 GdcRESTApiWrapper.GdcUser user = activeUsers.get(userUri);
                 if(user != null) {
-                    l.info("Collecting user " + userUri + "("+user.getLogin()+").");
-                    uris.add(userUri);
+                    l.info("Adding user "+user.getLogin()+" to the new V3 project " + newProjectHash+ " with role "+role.getIdentifier());
+                    tool.writeNext(new String[] {user.getLogin(),newProjectHash,role.getIdentifier(),"ENABLED","ENABLED"});
                 }
                 else {
                     l.info("Detected suspended user " + userUri);
                 }
             }
-            GdcRESTApiWrapper.GdcRole newProjectRole = newProjectRoles.get(role.getIdentifier());
-            l.info("Adding users "+uris+" to the new V3 project " + newProjectHash+ " with role "+newProjectRole.getUri());
-            ctx.getRestApi(cliParams).addUsersToProjectWithRoleUri(newProjectHash, uris, newProjectRole.getUri());
         }
         return newProjectHash;
     }

@@ -100,7 +100,6 @@ public class GdcRESTApiWrapper {
 
     protected HttpClient client;
     protected NamePasswordConfiguration config;
-    private String ssToken;
     private JSONObject userLogin = null;
     private JSONObject profile;
 
@@ -211,34 +210,6 @@ public class GdcRESTApiWrapper {
         }
     }
 
-
-    /**
-     * Retrieves the project info by the project's name
-     *
-     * @param name the project name
-     * @return the GoodDataProjectInfo populated with the project's information
-     * @throws HttpMethodException
-     * @throws GdcProjectAccessException
-     */
-    public Project getProjectByName(String name) throws HttpMethodException, GdcProjectAccessException {
-        l.debug("Getting project by name=" + name);
-        for (Iterator<JSONObject> linksIter = getProjectsLinks(); linksIter.hasNext(); ) {
-            JSONObject link = linksIter.next();
-            String cat = link.getString("category");
-            if (!"project".equalsIgnoreCase(cat)) {
-                continue;
-            }
-            String title = link.getString("title");
-            if (title.equals(name)) {
-                Project proj = new Project(link);
-                l.debug("Got project by name=" + name);
-                return proj;
-            }
-        }
-        l.debug("The project name=" + name + " doesn't exists.");
-        throw new GdcProjectAccessException("The project name=" + name + " doesn't exists.");
-    }
-
     /**
      * Retrieves the project info by the project's ID
      *
@@ -249,47 +220,35 @@ public class GdcRESTApiWrapper {
      */
     public Project getProjectById(String id) throws HttpMethodException, GdcProjectAccessException {
         l.debug("Getting project by id=" + id);
-        for (Iterator<JSONObject> linksIter = getProjectsLinks(); linksIter.hasNext(); ) {
-            JSONObject link = linksIter.next();
-            String cat = link.getString("category");
-            if (!"project".equalsIgnoreCase(cat)) {
-                continue;
-            }
-            String name = link.getString("identifier");
-            if (name.equals(id)) {
-                Project proj = new Project(link);
-                l.debug("Got project by id=" + id);
-                return proj;
-            }
-        }
-        l.debug("The project id=" + id + " doesn't exists.");
-        throw new GdcProjectAccessException("The project id=" + id + " doesn't exists.");
-    }
-
-    /**
-     * Returns the existing projects links
-     *
-     * @return accessible projects links
-     * @throws com.gooddata.exception.HttpMethodException
-     *
-     */
-    @SuppressWarnings("unchecked")
-    private Iterator<JSONObject> getProjectsLinks() throws HttpMethodException {
-        l.debug("Getting project links.");
-        HttpMethod req = createGetMethod(getServerUrl() + MD_URI);
+        HttpMethod req = createGetMethod(getServerUrl() + PROJECTS_URI + "/" + id);
         try {
             String resp = executeMethodOk(req);
             JSONObject parsedResp = JSONObject.fromObject(resp);
-            JSONObject about = parsedResp.getJSONObject("about");
-            JSONArray links = about.getJSONArray("links");
-            l.debug("Got project links " + links);
-            return links.iterator();
+            if(parsedResp != null && !parsedResp.isEmpty() && !parsedResp.isNullObject()) {
+                JSONObject project = parsedResp.getJSONObject("project");
+                if(project != null && !project.isEmpty() && !project.isNullObject()) {
+                    JSONObject meta = project.getJSONObject("meta");
+                    String title = meta.getString("title");
+                    if(title != null && title.length() > 0)
+                        return new Project(MD_URI + "/" + id, id, title);
+                    else
+                        throw new InvalidArgumentException("getProjectById: The project structure doesn't contain the title key.");
+                }
+                else {
+                    throw new InvalidArgumentException("getProjectById: The project structure doesn't contain the project key.");
+                }
+            } else {
+                throw new InvalidArgumentException("getProjectById: Invalid response.");
+            }
+        } catch (HttpMethodException e) {
+            l.debug("The project id=" + id + " doesn't exists.");
+            throw new GdcProjectAccessException("The project id=" + id + " doesn't exists.");
         } finally {
             req.releaseConnection();
         }
     }
 
-    /**
+   /**
      * Returns the global platform links
      *
      * @return accessible platform links
@@ -327,6 +286,9 @@ public class GdcRESTApiWrapper {
                     try {
                         String uri = link.getString("link");
                         if(uri != null && uri.length()>0) {
+                            if(uri.startsWith("/")) {
+                                uri = getServerUrl() + uri;
+                            }
                             return new URL(uri);
                         }
                         else {
@@ -340,28 +302,6 @@ public class GdcRESTApiWrapper {
             }
         }
         throw new InvalidArgumentException("No uploads platform link configured for the GoodData cluster.");
-    }
-
-    /**
-     * Returns the List of GoodDataProjectInfo structures for the accessible projects
-     *
-     * @return the List of GoodDataProjectInfo structures for the accessible projects
-     * @throws HttpMethodException
-     */
-    public List<Project> listProjects() throws HttpMethodException {
-        l.debug("Listing projects.");
-        List<Project> list = new ArrayList<Project>();
-        for (Iterator<JSONObject> linksIter = getProjectsLinks(); linksIter.hasNext(); ) {
-            JSONObject link = linksIter.next();
-            String cat = link.getString("category");
-            if (!"project".equalsIgnoreCase(cat)) {
-                continue;
-            }
-            Project proj = new Project(link);
-            list.add(proj);
-        }
-        l.debug("Found projects " + list);
-        return list;
     }
 
     /**
@@ -496,29 +436,6 @@ public class GdcRESTApiWrapper {
         }
     }
 
-
-    /**
-     * Finds a project SLI by it's name
-     *
-     * @param name      the SLI name
-     * @param projectId the project id
-     * @return the SLI
-     * @throws GdcProjectAccessException if the SLI doesn't exist
-     * @throws HttpMethodException       if there is a communication issue with the GDC platform
-     */
-    public SLI getSLIByName(String name, String projectId) throws GdcProjectAccessException, HttpMethodException {
-        l.debug("Get SLI by name=" + name + " project id=" + projectId);
-        List<SLI> slis = getSLIs(projectId);
-        for (SLI sli : slis) {
-            if (name.equals(sli.getName())) {
-                l.debug("Got SLI by name=" + name + " project id=" + projectId);
-                return sli;
-            }
-        }
-        l.debug("The SLI name=" + name + " doesn't exist in the project id=" + projectId);
-        throw new GdcProjectAccessException("The SLI name=" + name + " doesn't exist in the project id=" + projectId);
-    }
-
     /**
      * Finds a project SLI by it's id
      *
@@ -553,10 +470,6 @@ public class GdcRESTApiWrapper {
         }
         l.debug("The SLI id=" + id + " doesn't exist in the project id=" + projectId);
         throw new GdcProjectAccessException("The SLI id=" + id + " doesn't exist in the project id=" + projectId);
-    }
-
-    public String getToken() {
-        return ssToken;
     }
 
     /**
@@ -1421,7 +1334,7 @@ public class GdcRESTApiWrapper {
             content.put("driver", driver);
         }
         if(accessToken != null && accessToken.length()>0) {
-            content.put("pgroup_name", accessToken);
+            content.put("opportunityId", accessToken);
         }
         JSONObject project = new JSONObject();
         project.put("meta", meta);
@@ -1434,23 +1347,25 @@ public class GdcRESTApiWrapper {
     /**
      * Returns the project status
      *
-     * @param projectId project ID
+     * @param id project ID
      * @return current project status
      */
-    public String getProjectStatus(String projectId) {
-        l.debug("Getting project status for project " + projectId);
-        String uri = getProjectDeleteUri(projectId);
-        HttpMethod ptm = createGetMethod(getServerUrl() + uri);
+    public String getProjectStatus(String id) {
+        l.debug("Getting project status for project " + id);
+
+        HttpMethod req = createGetMethod(getServerUrl() + PROJECTS_URI + "/" + id);
         try {
-            String response = executeMethodOk(ptm);
-            JSONObject jresp = JSONObject.fromObject(response);
-            JSONObject project = jresp.getJSONObject("project");
+            String resp = executeMethodOk(req);
+            JSONObject parsedResp = JSONObject.fromObject(resp);
+            JSONObject project = parsedResp.getJSONObject("project");
             JSONObject content = project.getJSONObject("content");
-            String status = content.getString("state");
-            l.debug("Project " + projectId + " status=" + status);
-            return status;
+            String state = content.getString("state");
+            return state;
+        } catch (HttpMethodException e) {
+            l.debug("The project id=" + id + " doesn't exists.");
+            throw new GdcProjectAccessException("The project id=" + id + " doesn't exists.");
         } finally {
-            ptm.releaseConnection();
+            req.releaseConnection();
         }
     }
 
@@ -1462,7 +1377,7 @@ public class GdcRESTApiWrapper {
      */
     public void dropProject(String projectId) throws GdcRestApiException {
         l.debug("Dropping project id=" + projectId);
-        DeleteMethod dropProjectDelete = createDeleteMethod(getServerUrl() + getProjectDeleteUri(projectId));
+        DeleteMethod dropProjectDelete = createDeleteMethod(getServerUrl() + PROJECTS_URI + "/"+projectId);
         try {
             executeMethodOk(dropProjectDelete);
         } catch (HttpMethodException ex) {
@@ -1483,37 +1398,15 @@ public class GdcRESTApiWrapper {
      */
     protected String getProjectId(String uri) throws GdcRestApiException {
         l.debug("Getting project id by uri=" + uri);
-        HttpMethod req = createGetMethod(getServerUrl() + uri);
-        try {
-            String resp = executeMethodOk(req);
-            JSONObject parsedResp = JSONObject.fromObject(resp);
-            if (parsedResp.isNullObject()) {
-                l.debug("Can't get project from " + uri);
-                throw new GdcRestApiException("Can't get project from " + uri);
+        if (uri != null && uri.length() > 0) {
+            String[] cs = uri.split("/");
+            if (cs != null && cs.length > 0) {
+                l.debug("Got project id=" + cs[cs.length - 1] + " by uri=" + uri);
+                return cs[cs.length - 1];
             }
-            JSONObject project = parsedResp.getJSONObject("project");
-            if (project.isNullObject()) {
-                l.debug("Can't get project from " + uri);
-                throw new GdcRestApiException("Can't get project from " + uri);
-            }
-            JSONObject links = project.getJSONObject("links");
-            if (links.isNullObject()) {
-                l.debug("Can't get project from " + uri);
-                throw new GdcRestApiException("Can't get project from " + uri);
-            }
-            String mdUrl = links.getString("metadata");
-            if (mdUrl != null && mdUrl.length() > 0) {
-                String[] cs = mdUrl.split("/");
-                if (cs != null && cs.length > 0) {
-                    l.debug("Got project id=" + cs[cs.length - 1] + " by uri=" + uri);
-                    return cs[cs.length - 1];
-                }
-            }
-            l.debug("Can't get project from " + uri);
-            throw new GdcRestApiException("Can't get project from " + uri);
-        } finally {
-            req.releaseConnection();
         }
+        l.debug("Can't get project from " + uri);
+        throw new GdcRestApiException("Can't get project from " + uri);
     }
 
     /**
@@ -2560,6 +2453,8 @@ public class GdcRESTApiWrapper {
                 }
                 executeMethodOkOnly(method, false, retries);
                 return;
+            } else if (method.getStatusCode() == HttpStatus.SC_GONE) {
+                throw new GdcProjectAccessException("Invalid project.");
             } else if (method.getStatusCode() >= HttpStatus.SC_BAD_REQUEST
                     && method.getStatusCode() < 600) {
                 throw new HttpMethodException(method);
@@ -2643,72 +2538,8 @@ public class GdcRESTApiWrapper {
      * @param projectId project ID
      * @return the project delete URI
      */
-    protected String getProjectDeleteUri(String projectId) {
-        if (profile != null) {
-            JSONObject as = profile.getJSONObject("accountSetting");
-            if (as != null) {
-                JSONObject lnks = as.getJSONObject("links");
-                if (lnks != null) {
-                    String projectsUri = lnks.getString("projects");
-                    if (projectsUri != null && projectsUri.length() > 0) {
-                        HttpMethod req = createGetMethod(getServerUrl() + projectsUri);
-                        try {
-                            String resp = executeMethodOk(req);
-                            JSONObject rsp = JSONObject.fromObject(resp);
-                            if (rsp != null) {
-                                JSONArray projects = rsp.getJSONArray("projects");
-                                for (Object po : projects) {
-                                    JSONObject p = (JSONObject) po;
-                                    JSONObject project = p.getJSONObject("project");
-                                    if (project != null) {
-                                        JSONObject links = project.getJSONObject("links");
-                                        if (links != null) {
-                                            String uri = links.getString("metadata");
-                                            if (uri != null && uri.length() > 0) {
-                                                String id = getProjectIdFromUri(uri);
-                                                if (projectId.equals(id)) {
-                                                    String sf = links.getString("self");
-                                                    if (sf != null && sf.length() > 0)
-                                                        return sf;
-                                                }
-                                            } else {
-                                                l.debug("Project with no metadata uri.");
-                                                throw new GdcRestApiException("Project with no metadata uri.");
-                                            }
-                                        } else {
-                                            l.debug("Project with no links.");
-                                            throw new GdcRestApiException("Project with no links.");
-                                        }
-                                    } else {
-                                        l.debug("No project in the project list.");
-                                        throw new GdcRestApiException("No project in the project list.");
-                                    }
-                                }
-                            } else {
-                                l.debug("Can't get project from " + projectsUri);
-                                throw new GdcRestApiException("Can't get projects from uri=" + projectsUri);
-                            }
-                        } finally {
-                            req.releaseConnection();
-                        }
-                    } else {
-                        l.debug("No projects link in the account settings.");
-                        throw new GdcRestApiException("No projects link in the account settings.");
-                    }
-                } else {
-                    l.debug("No links in the account settings.");
-                    throw new GdcRestApiException("No links in the account settings.");
-                }
-            } else {
-                l.debug("No account settings.");
-                throw new GdcRestApiException("No account settings.");
-            }
-        } else {
-            l.debug("No active account profile found. Perhaps you are not connected to the GoodData anymore.");
-            throw new GdcRestApiException("No active account profile found. Perhaps you are not connected to the GoodData anymore.");
-        }
-        l.debug("Project " + projectId + " not found in the current account profile.");
-        throw new GdcRestApiException("Project " + projectId + " not found in the current account profile.");
+    public String getProjectDeleteUri(String projectId) {
+        return PROJECTS_URI + projectId;
     }
 
     /**

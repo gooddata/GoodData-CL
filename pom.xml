@@ -48,8 +48,6 @@
         <module>web</module>
         <module>notification</module>
         <module>sfdc</module>
-        <module>gooddata-snaplogic</module>
-        <module>snaplogic</module>
         <module>backend</module>
         <module>connector</module>
         <module>common</module>

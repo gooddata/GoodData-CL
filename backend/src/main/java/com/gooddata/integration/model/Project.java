@@ -49,6 +49,13 @@ public class Project {
         title = obj.getString("title");
     }
 
+    public Project(String l, String i, String t) {
+        super();
+        link = l;
+        id = i;
+        title = t;
+    }
+
     /**
      * Returns the project's URI
      *

@@ -300,7 +300,12 @@ public class GdcDI implements Executor {
                         "portal (http://support.gooddata.com) may help you.\n\n" +
                         "Show them this error ID: " + requestId;
             }
-            l.error(msg);
+            if(msg.contains("503 Service Unavailable")) {
+                l.error("GoodData platform is undergoing maintenance. For information regarding this outage:\n" +
+                        "Support Portal\n" +
+                        "(415) 200-0194");
+            } else
+                l.error(msg);
             finishedSucessfuly = false;
         } catch (GdcRestApiException e) {
             l.error("REST API invocation error: " + e.getMessage());
