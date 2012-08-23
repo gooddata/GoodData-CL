@@ -231,12 +231,17 @@ public class MaqlGenerator {
 
         // labels last
         boolean cpDefLabelSet = false;
+        boolean cpSortSet = false;
         for (final Column c : state.labels) {
             script += c.generateMaqlDdlAdd();
             Label l = (Label) c;
             if (!cpDefLabelSet && (connectionPoint != null) && l.attr.identifier.equals(connectionPoint.identifier)) {
                 script += l.generateMaqlDdlDefaultLabel();
                 cpDefLabelSet = true;
+            }
+            if (!cpSortSet && l.column.getName().equals(StringUtil.toIdentifier(l.attr.column.getSortLabel()))) {
+                script += l.generateMaqlSortLabel(l.attr.column.getSortOrder());
+                cpSortSet = true;
             }
         }
 
@@ -613,6 +618,19 @@ public class MaqlGenerator {
                 // TODO why is this different than this.identifier?
                 final String labelId = getLabelId();
                 return "ALTER ATTRIBUTE  {" + attr.identifier + "} DEFAULT LABEL {" + labelId + "};\n";
+            }
+
+            public String generateMaqlSortLabel(String sortOrder) {
+                attr = attributes.get(scnPk);
+                if (attr == null) {
+                    throw new IllegalArgumentException("Label " + columnName + " points to non-existing attribute " + scnPk);
+                }
+                final String labelId = getLabelId();
+                if(sortOrder == null || sortOrder.length() <=0 || !(SourceColumn.LDM_SORT_ORDER_ASC.equals(sortOrder) &&
+                        SourceColumn.LDM_SORT_ORDER_DESC.equals(sortOrder)))
+                    sortOrder = SourceColumn.LDM_SORT_ORDER_ASC;
+                return "ALTER ATTRIBUTE  {" + attr.identifier + "} ORDER BY {" + labelId + "} "+sortOrder+";\n";
+
             }
 
             protected String getLabelId() {

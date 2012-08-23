@@ -62,3 +62,7 @@ In each `<column>` entry, following tags can be used:
     * INT -- min(-2147483648) max(2147483647)
     * BIGINT -- min(-1e+15) max(1e+15)
     * DATE -- 'YYYY-MM-DD'
+
+11. `<sortLabel>` - used with ATTRIBUTE columns for pointing to the LABEL by which the ATTRIBUTE is sorted
+
+12. `<sortOrder>` - specifies the <sortLabel> sorting order (ASC | DESC). Default is ASC.

@@ -43,6 +43,10 @@ public class SourceColumn {
     public static final String LDM_TYPE_REFERENCE = "REFERENCE";
     public static final String LDM_TYPE_HYPERLINK = "HYPERLINK";
 
+    public static final String LDM_SORT_ORDER_ASC = "ASC";
+
+    public static final String LDM_SORT_ORDER_DESC = "DESC";
+
     public static final String LDM_TYPE_IGNORE = "IGNORE";
 
     public static final String LDM_IDENTITY = "IDENTITY";
@@ -72,6 +76,10 @@ public class SourceColumn {
     private boolean isDateFact;
 
     private boolean isTimeFact;
+
+    private String sortLabel;
+
+    private String sortOrder = LDM_SORT_ORDER_ASC;
 
 
     /**
@@ -300,6 +308,22 @@ public class SourceColumn {
         this.dataType = dataType;
     }
 
+    public String getSortLabel() {
+        return sortLabel;
+    }
+
+    public void setSortLabel(String sortLabel) {
+        this.sortLabel = sortLabel;
+    }
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
     /**
      * Include time
      */
@@ -331,6 +355,10 @@ public class SourceColumn {
         if(StringUtil.containsInvvalidIdentifierChar(name))
             throw new ModelException("Column name "+name+" contains invalid characters");
          */
+        if(getName() == null || getName().length() <=0)
+            throw new ModelException("Column has no name.");
+        if(getTitle() == null || getTitle().length() <=0)
+            throw new ModelException("Column " + getName() + " has no title.");
         if (!LDM_TYPE_ATTRIBUTE.equals(getLdmType()) &&
                 !LDM_TYPE_CONNECTION_POINT.equals(getLdmType()) &&
                 !LDM_TYPE_DATE.equals(getLdmType()) &&
@@ -347,6 +375,10 @@ public class SourceColumn {
             throw new ModelException("Column " + getName() + " has type REFERENCE but doesn't contain any schema reference.");
         if (LDM_TYPE_DATE.equals(getLdmType()) && (getFormat() == null || getFormat().length() <= 0))
             throw new ModelException("Column " + getName() + " has type DATE but doesn't contain any date format.");
+        if (getSortLabel()!= null && (getSortOrder() == null || getSortOrder().length() <= 0))
+            throw new ModelException("Column " + getName() + " has sort label but no sort order.");
+        if (getSortOrder()!= null && !(getSortOrder().equals(LDM_SORT_ORDER_ASC) || getSortOrder().equals(LDM_SORT_ORDER_DESC)))
+            throw new ModelException("Column " + getName() + " has invalid sort order '"+getSortOrder()+"'. Only 'ASC' or 'DESC' values are allowed.");
     }
 
     /* (non-Javadoc)
