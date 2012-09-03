@@ -48,6 +48,7 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.jackrabbit.webdav.client.methods.DeleteMethod;
 
 /**
  * GoodData Webdav API Java wrapper
@@ -93,6 +94,19 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
         put.setRequestEntity(requestEntity);
         executeMethodOk(put);
         l.debug("Transferred archive "+archiveName);
+    }
+    
+    public void removeDir(final String archiveName) {
+        final File file = new File(archiveName);
+        final String dir = file.getName().split("\\.")[0];
+        final String remoteDir = this.config.getUrl() + WEBDAV_URI + dir + '/';
+        
+        l.debug("Removing remote dir " + remoteDir);
+        
+        final DeleteMethod delete = new DeleteMethod(remoteDir);
+        this.executeMethodOk(delete);
+        
+        l.debug("Remote dir removed: " + remoteDir);
     }
 
     /**
