@@ -59,4 +59,6 @@ public interface GdcDataTransferAPI {
      * @throws IOException in case of IO issues
      */
     public Map<String, String> getTransferLogs(String remoteDir) throws IOException;
+    
+    public void removeDir(String archiveName);
 }
