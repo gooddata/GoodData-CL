@@ -23,17 +23,17 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.gooddata.cl</groupId>
-		<artifactId>gooddata-cl</artifactId>
-		<version>1.1.16-BETA</version>
-	</parent>
+    <parent>
+        <groupId>com.gooddata.cl</groupId>
+        <artifactId>gooddata-cl</artifactId>
+        <version>1.1.16-CONNECTORS</version>
+    </parent>
 
-	<artifactId>gooddata-cl-common</artifactId>
-	<description>GoodData CL common module. Implements the common utils.</description>
-	<name>gooddata-cl-common</name>
+    <artifactId>gooddata-cl-common</artifactId>
+    <description>GoodData CL common module. Implements the common utils.</description>
+    <name>gooddata-cl-common</name>
 
     <licenses>
         <license>
@@ -44,21 +44,21 @@
         </license>
     </licenses>
 
-	<dependencies>
+    <dependencies>
         <!-- 3rd party dependencies  -->
-		<dependency>
-			<groupId>net.sf.json-lib</groupId>
-			<artifactId>json-lib</artifactId>
-	        <classifier>jdk15</classifier>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <classifier>jdk15</classifier>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
         </dependency>
 
-	</dependencies>    
+    </dependencies>    
 </project>
