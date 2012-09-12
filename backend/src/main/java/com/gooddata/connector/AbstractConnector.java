@@ -463,6 +463,14 @@ public abstract class AbstractConnector implements Connector {
         if(waitForFinish) {
             checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
         }
+        
+        try {
+            ctx.getFtpApi(p).removeDir(archivePath);
+        }
+        catch (final Exception e) {
+            l.warn("Cannot remove " + archivePath + ". Nevermind, let's continue...");
+        }
+        
         //cleanup
         l.debug("Cleaning the temporary files.");
         FileUtil.recursiveDelete(tmpDir);

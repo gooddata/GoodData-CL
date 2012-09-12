@@ -239,4 +239,9 @@ public class GdcFTPApiWrapper implements GdcDataTransferAPI {
     private String clientReply(FTPClient client) {
     	return client.getReplyString() + " (code: " + client.getReplyCode() + ")";
     }
+
+    public void removeDir(String archiveName) {
+          //not supported, implemented in the webdaw wrapper only
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
