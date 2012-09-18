@@ -103,15 +103,17 @@ public class GdcRESTApiWrapper {
     private JSONObject userLogin = null;
     private JSONObject profile;
 
-    private static HashMap<String, Integer> ROLES = new HashMap<String, Integer>();
+    private static HashMap<String, String> ROLES = new HashMap<String, String>();
 
     /* TODO This is fragile and may not work for all projects and/or future versions.
      * Use /gdc/projects/{projectId}/roles to retrieve roles for a particular project.
      */
     static {
-        ROLES.put("ADMIN", new Integer(1));
-        ROLES.put("EDITOR", new Integer(2));
-        ROLES.put("DASHBOARD ONLY", new Integer(3));
+        ROLES.put("ADMIN", "adminRole");
+        ROLES.put("EDITOR", "editorRole");
+        ROLES.put("DASHBOARD ONLY", "dashboardOnlyRole");
+        ROLES.put("UNVERIFIED ADMIN", "unverifiedAdminRole");
+        ROLES.put("READONLY", "readOnlyUserRole");
     }
 
     /**
@@ -1888,6 +1890,26 @@ public class GdcRESTApiWrapper {
         return param;
     }
 
+    private String getRoleUri(String projectId, String role) {
+
+        String roleUri = null;
+
+        // for backward compatibility
+
+        if(ROLES.containsKey(role.toUpperCase()))  {
+            role = ROLES.get(role.toUpperCase());
+        }
+
+        List<GdcRole> roles = getProjectRoles(projectId);
+        for(GdcRole r : roles) {
+            String identifier = r.getIdentifier();
+            if(identifier.equalsIgnoreCase(role)) {
+                roleUri = r.getUri();
+            }
+        }
+        return roleUri;
+    }
+
     /**
      * Create a new user
      *
@@ -1900,48 +1922,18 @@ public class GdcRESTApiWrapper {
     public void addUsersToProject(String projectId, List<String> uris, String role)
             throws GdcRestApiException {
 
-        l.debug("Adding users " + uris + " to project " + projectId);
+        l.debug("Adding users " + uris + " to project " + projectId + " in role "+ role);
         String projectsUrl = getProjectUrl(projectId);
 
-        String roleUri = null;
-        if (role != null && role.length() > 0) {
-            Integer roleId = ROLES.get(role.toUpperCase());
-            if (roleId == null)
-                throw new InvalidParameterException("The role '" + role + "' is not recognized by the GoodData platform.");
-            roleUri = PROJECTS_URI + "/" + projectId + PROJECT_ROLES_SUFFIX + "/" + roleId.toString();
-        }
-        PostMethod req = createPostMethod(projectsUrl + PROJECT_USERS_SUFFIX);
-        JSONObject param = getAddUsersToProjectStructure(uris, roleUri);
-        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                param.toString().getBytes()));
-        req.setRequestEntity(request);
-        String result = null;
-        try {
-            String response = executeMethodOk(req);
-            JSONObject responseObject = JSONObject.fromObject(response);
-            JSONObject projectUsersUpdateResult = responseObject.getJSONObject("projectUsersUpdateResult");
-            JSONArray failed = projectUsersUpdateResult.getJSONArray("failed");
-            if (!failed.isEmpty()) {
-                String errMsg = "Following users can't be added to the project:";
-                for (Object uri : failed.toArray()) {
-                    errMsg += " " + uris.toString();
-                }
-                l.debug(errMsg);
-                throw new GdcRestApiException(errMsg);
-            }
-            //JSONArray successful = projectUsersUpdateResult.getJSONArray("successful");
-        } catch (HttpMethodException ex) {
-            l.debug("Error adding users " + uris + " to project", ex);
-            throw new GdcRestApiException("Error adding users " + uris + " to project ", ex);
-        } finally {
-            req.releaseConnection();
-        }
+        String roleUri = getRoleUri(projectId, role);
+
+        addUsersToProjectWithRoleUri(projectId, uris, roleUri);
     }
 
     public void addUsersToProjectWithRoleUri(String projectId, List<String> uris, String roleUri)
             throws GdcRestApiException {
 
-        l.debug("Adding users " + uris + " to project " + projectId);
+        l.debug("Adding users " + uris + " to project " + projectId + " with roleUri "+ roleUri);
         String projectsUrl = getProjectUrl(projectId);
 
         PostMethod req = createPostMethod(projectsUrl + PROJECT_USERS_SUFFIX);
@@ -2599,12 +2591,11 @@ public class GdcRESTApiWrapper {
         content.put("firstname", "");
         content.put("lastname", "");
         content.put("email", eMail);
-        String puri = getServerUrl() + getProjectDeleteUri(pid);
         if (role != null && role.length() > 0) {
-            Integer roleId = ROLES.get(role.toUpperCase());
-            if (roleId == null)
+            String roleUri = getRoleUri(pid, role);
+            if (roleUri == null)
                 throw new InvalidParameterException("The role '" + role + "' is not recognized by the GoodData platform.");
-            content.put("role", puri + "/" + roleId);
+            content.put("role", roleUri);
         }
         JSONObject action = new JSONObject();
         action.put("setMessage", msg);
@@ -3069,7 +3060,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.58");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.59");
         return request;
     }
 
