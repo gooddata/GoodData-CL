@@ -29,7 +29,7 @@
     <parent>
         <groupId>com.gooddata.cl</groupId>
         <artifactId>gooddata-cl</artifactId>
-        <version>1.2.36-CONNECTORS</version>
+        <version>1.2.37-CONNECTORS</version>
     </parent>
 
     <artifactId>gooddata-sfdc-lib</artifactId>
