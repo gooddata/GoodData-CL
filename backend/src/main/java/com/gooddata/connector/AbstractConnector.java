@@ -459,7 +459,7 @@ public abstract class AbstractConnector implements Connector {
         // transfer the data package to the GoodData server
         ctx.getFtpApi(p).transferDir(archivePath);
         // kick the GooDData server to load the data package to the project
-        String taskUri = ctx.getRestApi(p).startLoading(pid, archiveName);
+        String taskUri = ctx.getRestApi(p).startLoading(pid, archiveName.substring(0, 2) + "/" + archiveName);
         if(waitForFinish) {
             checkLoadingStatus(taskUri, tmpDir.getName(), p, ctx);
         }
