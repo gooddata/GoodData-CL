@@ -87,9 +87,14 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
         l.debug("Transfering archive "+archiveName);
         File file = new File(archiveName);
         String dir = file.getName().split("\\.")[0];
-        MkColMethod mkdir = new MkColMethod(this.config.getUrl()+WEBDAV_URI+dir);
+        final String prefixedPath = this.config.getUrl() + WEBDAV_URI + dir.substring(0, 2) + "/";
+        MkColMethod mkDirPrefix = new MkColMethod(prefixedPath);
+        executeMethodOk(mkDirPrefix);
+
+        final String dirPath = prefixedPath + dir + "/";
+        MkColMethod mkdir = new MkColMethod(dirPath);
         executeMethodOk(mkdir);
-        PutMethod put = new PutMethod(this.config.getUrl()+WEBDAV_URI+dir+"/"+DEFAULT_ARCHIVE_NAME);
+        PutMethod put = new PutMethod(dirPath+DEFAULT_ARCHIVE_NAME);
         RequestEntity requestEntity = new InputStreamRequestEntity(new FileInputStream(file));
         put.setRequestEntity(requestEntity);
         executeMethodOk(put);
@@ -99,7 +104,7 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
     public void removeDir(final String archiveName) {
         final File file = new File(archiveName);
         final String dir = file.getName().split("\\.")[0];
-        final String remoteDir = this.config.getUrl() + WEBDAV_URI + dir + '/';
+        final String remoteDir = this.config.getUrl() + WEBDAV_URI + dir.substring(0, 2) + "/" + dir + '/';
         
         l.debug("Removing remote dir " + remoteDir);
         
@@ -118,7 +123,7 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
     public Map<String, String> getTransferLogs(String remoteDir) throws IOException {
         l.debug("Retrieveing transfer logs.");
         Map<String,String> result = new HashMap<String,String>();
-        PropFindMethod ls = new PropFindMethod(this.config.getUrl()+WEBDAV_URI+remoteDir+"/", DavConstants.PROPFIND_PROPERTY_NAMES, 1);
+        PropFindMethod ls = new PropFindMethod(this.config.getUrl()+WEBDAV_URI+remoteDir.substring(0, 2)+"/"+remoteDir+"/", DavConstants.PROPFIND_PROPERTY_NAMES, 1);
         String ret = executeMethodOk(ls);
         String[] files = ret.split(",");
         for(String file : files) {
@@ -150,6 +155,8 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
                 return method.getResponseBodyAsString();
             } else if (method.getStatusCode() == HttpStatus.SC_ACCEPTED) {
                 throw new HttpMethodNotFinishedYetException(method.getResponseBodyAsString());
+            } else if(method.getStatusCode() == HttpStatus.SC_METHOD_NOT_ALLOWED && method instanceof MkColMethod) {
+                return "";
             } else if (method.getStatusCode() == HttpStatus.SC_MULTI_STATUS) {
                 if(method instanceof PropFindMethod) {
                     PropFindMethod ls = (PropFindMethod)method;
