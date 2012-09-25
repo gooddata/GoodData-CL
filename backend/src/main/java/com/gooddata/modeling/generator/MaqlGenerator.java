@@ -23,6 +23,16 @@
 
 package com.gooddata.modeling.generator;
 
+import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_ATTRIBUTE;
+import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_CONNECTION_POINT;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
 import com.gooddata.modeling.generator.MaqlGenerator.State.Attribute;
 import com.gooddata.modeling.generator.MaqlGenerator.State.Column;
 import com.gooddata.modeling.generator.MaqlGenerator.State.ConnectionPoint;
@@ -31,15 +41,6 @@ import com.gooddata.modeling.model.SourceColumn;
 import com.gooddata.modeling.model.SourceSchema;
 import com.gooddata.naming.N;
 import com.gooddata.util.StringUtil;
-import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_ATTRIBUTE;
-import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_CONNECTION_POINT;
 
 /**
  * GoodData MAQL Generator generates the MAQL from the LDM schema object
@@ -257,6 +258,40 @@ public class MaqlGenerator {
         }
         return script;
     }
+    
+    /**
+     * Generate MAQL to alter titles of provided columns
+     * @param columns
+     * @return
+     */
+    public String generateMaqlUpdateTitles(Iterable<SourceColumn> columns) {
+    	StringBuffer maql = new StringBuffer("");
+    	State state = new State();
+    	for (final SourceColumn sc : columns) {
+    		state.processColumn(sc);
+    	}
+    	for (final Column c : state.getColumns()) {
+    		maql.append(c.generateMaqlAlterTitle());
+    	}
+    	return maql.toString();
+    }
+
+    /**
+     * Generate MAQL to alter specified data types of given columns
+     * @param columns
+     * @return
+     */
+    public String generateMaqlUpdateDataTypes(Iterable<SourceColumn> columns) {
+    	StringBuffer maql = new StringBuffer("");
+    	State state = new State();
+    	for (final SourceColumn sc : columns) {
+    		state.processColumn(sc);
+    	}
+    	for (final Column c : state.getColumns()) {
+    		maql.append(c.generateMaqlAlterDataType());
+    	}
+    	return maql.toString();
+    }
 
     /**
      * Generate MAQL folders for specified columns
@@ -404,6 +439,15 @@ public class MaqlGenerator {
                 attributes.put(connectionPoint.columnName, connectionPoint);
             }
         }
+        
+        private Iterable<Column> getColumns() {
+        	List<Column> result = new ArrayList<MaqlGenerator.State.Column>();
+        	result.addAll(attributes.values());
+        	result.addAll(facts);
+        	result.addAll(labels);
+        	result.addAll(dates);
+        	return result;
+        }
 
         // columns
 
@@ -428,10 +472,17 @@ public class MaqlGenerator {
 
             public abstract String generateMaqlDdlAdd();
 
+            public String generateMaqlAlterTitle() {
+            	return ""; // intentionally left blank - no applicable MAQL DDL
+            }
+
+            public String generateMaqlAlterDataType() {
+            	return ""; // intentionally left blank - no applicable MAQL DDL
+            }
+
             public String generateMaqlDdlDrop() {
                 return "DROP {" + identifier + "} CASCADE;\n\n";
             }
-
         }
 
 
@@ -491,6 +542,17 @@ public class MaqlGenerator {
 
                 return script;
             }
+            
+            public String generateMaqlAlterTitle() {
+            	return "ALTER ATTRIBUTE {" + identifier + "} VISUAL(TITLE \"" + lcn + "\");\n";
+            }
+
+            public String generateMaqlAlterDataType() {
+            	if (column.getDataType() != null) {
+            		return "ALTER DATATYPE {" + table + "." + N.NM_PFX + columnName + "} " + column.getDataType() + ";\n";
+            	}
+            	return "";
+            }
 
             @Override
             public String generateMaqlDdlDrop() {
@@ -519,9 +581,9 @@ public class MaqlGenerator {
 
         //facts
         private class Fact extends Column {
+        	private final String fcolname;
 
             Fact(SourceColumn column) {
-
                 super(column, "fact");
                 // unfortunate backward compatibility fix
                 // we have converted the date/time facts and the time attribute to explicit schema elements
@@ -533,6 +595,13 @@ public class MaqlGenerator {
                 if (column.isTimeFact()) {
                     this.identifier = N.TM + "." + N.DT + "." + schemaName + "." + columnName.replace(N.TM_SLI_SFX, "");
                 }
+
+                String _fcolname = N.FCT_PFX + columnName;
+                if (column.isDateFact())
+                    _fcolname = N.DT_PFX + columnName.replace(N.DT_SLI_SFX, "");
+                if (column.isTimeFact())
+                    _fcolname = N.TM_PFX + columnName.replace(N.TM_SLI_SFX, "");
+                fcolname = _fcolname;
 
             }
 
@@ -547,11 +616,6 @@ public class MaqlGenerator {
                 // unfortunate backward compatibility fix
                 // we have converted the date/time facts and the time attribute to explicit schema elements
                 // we needed to keep the dt_ and tm_ prefixes instead of the f_
-                String fcolname = N.FCT_PFX + columnName;
-                if (column.isDateFact())
-                    fcolname = N.DT_PFX + columnName.replace(N.DT_SLI_SFX, "");
-                if (column.isTimeFact())
-                    fcolname = N.TM_PFX + columnName.replace(N.TM_SLI_SFX, "");
                 String script = "CREATE FACT {" + identifier + "} VISUAL(TITLE \"" + lcn
                         + "\"" + folderStatement + ") AS {" + getFactTableName() + "." + fcolname + "};\n"
                         + "ALTER DATASET {" + schema.getDatasetName() + "} ADD {" + identifier + "};\n";
@@ -564,6 +628,17 @@ public class MaqlGenerator {
                     script += "\n";
                 }
                 return script;
+            }
+            
+            public String generateMaqlAlterTitle() {
+            	return "ALTER FACT {" + identifier + "} VISUAL(TITLE \"" + lcn + "\");\n";
+            }
+
+            public String generateMaqlAlterDataType() {
+            	if (column.getDataType() != null) {
+            		return "ALTER DATATYPE {" + getFactTableName() + "." + fcolname + "} " + column.getDataType() + ";\n";
+            	}
+            	return "";
             }
         }
 
@@ -630,7 +705,28 @@ public class MaqlGenerator {
                         SourceColumn.LDM_SORT_ORDER_DESC.equals(sortOrder)))
                     sortOrder = SourceColumn.LDM_SORT_ORDER_ASC;
                 return "ALTER ATTRIBUTE  {" + attr.identifier + "} ORDER BY {" + labelId + "} "+sortOrder+";\n";
+            }
 
+            public String generateMaqlAlterTitle() {
+                attr = attributes.get(scnPk);
+                if (attr == null) {
+                    throw new IllegalArgumentException("Label " + columnName + " points to non-existing attribute " + scnPk);
+                }
+                // TODO why is this different than this.identifier?
+                final String labelId = getLabelId();
+                return "ALTER ATTRIBUTE {attr." + schemaName + "." + scnPk + "} ALTER LABELS {label." + schemaName + "." + scnPk + "."
+                        + columnName + "} VISUAL(TITLE \"" + lcn + "\");\n";
+            }
+
+            public String generateMaqlAlterDataType() {
+            	attr = attributes.get(scnPk);
+                if (attr == null) {
+                    throw new IllegalArgumentException("Label " + columnName + " points to non-existing attribute " + scnPk);
+                }
+            	if (column.getDataType() != null) {
+            		return "ALTER DATATYPE {" + attr.table + "." + N.NM_PFX + columnName + "} " + column.getDataType() + ";\n";
+            	}
+            	return "";
             }
 
             protected String getLabelId() {

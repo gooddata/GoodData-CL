@@ -12,6 +12,7 @@
             <name>COMPANY</name>
             <title>Company</title>
             <ldmType>LABEL</ldmType>
+            <dataType>VARCHAR(254)</dataType>
             <reference>SYMBOL</reference>
             <folder>Quotes</folder>
         </column>
@@ -31,6 +32,7 @@
             <name>INDUSTRY</name>
             <title>Industry</title>
             <ldmType>ATTRIBUTE</ldmType>
+            <dataType>VARCHAR(255)</dataType>
             <folder>Quotes</folder>
         </column>
         <column>
@@ -51,6 +53,7 @@
             <name>OPEN_PRICE</name>
             <title>Open Price</title>
             <ldmType>FACT</ldmType>
+            <dataType>DECIMAL(18,3)</dataType>
             <folder>Quotes</folder>
         </column>
         <column>

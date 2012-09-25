@@ -566,6 +566,8 @@ public abstract class AbstractConnector implements Connector {
 
             final String pid = ctx.getProjectIdMandatory();
             final String maqlFile = c.getParamMandatory("maqlFile");
+            final String updateTitles = c.getParam("updateTitles");
+            final String updateDataTypes = c.getParam("updateDataTypes");
             c.paramsProcessed();
 
             final String dataset = schema.getDatasetName();
@@ -586,6 +588,12 @@ public abstract class AbstractConnector implements Connector {
             if (!newColumns.isEmpty()) {
                 mg.setSynchronize(false);
                 maql.append(mg.generateMaqlAdd(newColumns, diffMaker.getLocalColumns()));
+            }
+            if (updateTitles != null && !updateTitles.equalsIgnoreCase("false")) {
+            	maql.append(mg.generateMaqlUpdateTitles(diffMaker.getLocalColumns()));
+            }
+            if (updateDataTypes != null && !updateDataTypes.equalsIgnoreCase("false")) {
+            	maql.append(mg.generateMaqlUpdateDataTypes(diffMaker.getLocalColumns()));
             }
             if (maql.length() > 0) {
                 maql.append(mg.generateMaqlSynchronize());
