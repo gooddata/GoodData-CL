@@ -3313,4 +3313,136 @@ public class GdcRESTApiWrapper {
 	    ptm.releaseConnection();
 	}
     }
+    
+
+    /**
+     * Retrieves the project info by the project's name
+     * 
+     * @param name
+     *            the project name
+     * @return the GoodDataProjectInfo populated with the project's information
+     * @throws HttpMethodException
+     * @throws GdcProjectAccessException
+     */
+    @Deprecated
+    public Project getProjectByName(String name) throws HttpMethodException,
+	    GdcProjectAccessException {
+	l.debug("Getting project by name=" + name);
+	for (Iterator<JSONObject> linksIter = getProjectsLinks(); linksIter
+		.hasNext();) {
+	    JSONObject link = linksIter.next();
+	    String cat = link.getString("category");
+	    if (!"project".equalsIgnoreCase(cat)) {
+		continue;
+	    }
+	    String title = link.getString("title");
+	    if (title.equals(name)) {
+		Project proj = new Project(link);
+		l.debug("Got project by name=" + name);
+		return proj;
+	    }
+	}
+	l.debug("The project name=" + name + " doesn't exists.");
+	throw new GdcProjectAccessException("The project name=" + name
+		+ " doesn't exists.");
+    }
+
+    /**
+     * Returns the existing projects links
+     * 
+     * @return accessible projects links
+     * @throws com.gooddata.exception.HttpMethodException
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
+    private Iterator<JSONObject> getProjectsLinks() throws HttpMethodException {
+	l.debug("Getting project links.");
+	HttpMethod req = createGetMethod(getServerUrl() + MD_URI);
+	try {
+	    String resp = executeMethodOk(req);
+	    JSONObject parsedResp = JSONObject.fromObject(resp);
+	    JSONObject about = parsedResp.getJSONObject("about");
+	    JSONArray links = about.getJSONArray("links");
+	    l.debug("Got project links " + links);
+	    return links.iterator();
+	} finally {
+	    req.releaseConnection();
+	}
+    }
+
+    /**
+     * Create a new GoodData project
+     * 
+     * @param name
+     *            project name
+     * @param desc
+     *            project description
+     * @param templateUri
+     *            project template uri
+     * @return the project Id
+     * @throws GdcRestApiException
+     */
+    @Deprecated
+    public String createProject(String name, String desc, String templateUri)
+	    throws GdcRestApiException {
+	l.debug("Creating project name=" + name);
+	PostMethod createProjectPost = createPostMethod(getServerUrl()
+		+ PROJECTS_URI);
+	JSONObject createProjectStructure = getCreateProject(name, desc,
+		templateUri);
+	InputStreamRequestEntity request = new InputStreamRequestEntity(
+		new ByteArrayInputStream(createProjectStructure.toString()
+			.getBytes()));
+	createProjectPost.setRequestEntity(request);
+	String uri = null;
+	try {
+	    String response = executeMethodOk(createProjectPost);
+	    JSONObject responseObject = JSONObject.fromObject(response);
+	    uri = responseObject.getString("uri");
+	} catch (HttpMethodException ex) {
+	    l.debug("Creating project fails: ", ex);
+	    throw new GdcRestApiException("Creating project fails: ", ex);
+	} finally {
+	    createProjectPost.releaseConnection();
+	}
+
+	if (uri != null && uri.length() > 0) {
+	    String id = getProjectId(uri);
+	    l.debug("Created project id=" + id);
+	    return id;
+	}
+	l.debug("Error creating project.");
+	throw new GdcRestApiException("Error creating project.");
+    }
+
+    /**
+     * Returns the create project JSON structure
+     * 
+     * @param name
+     *            project name
+     * @param desc
+     *            project description
+     * @param templateUri
+     *            project template uri
+     * @return the create project JSON structure
+     */
+    @Deprecated
+    private JSONObject getCreateProject(String name, String desc,
+	    String templateUri) {
+	JSONObject meta = new JSONObject();
+	meta.put("title", name);
+	meta.put("summary", desc);
+	if (templateUri != null && templateUri.length() > 0) {
+	    meta.put("projectTemplate", templateUri);
+	}
+	JSONObject content = new JSONObject();
+	// content.put("state", "ENABLED");
+	content.put("guidedNavigation", "1");
+	JSONObject project = new JSONObject();
+	project.put("meta", meta);
+	project.put("content", content);
+	JSONObject createStructure = new JSONObject();
+	createStructure.put("project", project);
+	return createStructure;
+    }
 }
