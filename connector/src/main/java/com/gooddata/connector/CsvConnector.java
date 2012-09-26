@@ -132,8 +132,16 @@ public class CsvConnector extends AbstractConnector implements Connector {
      */
     static SourceSchema guessSourceSchema(String configFileName, String dataFileName, String defaultLdmType, String folder, char separator) throws IOException {
         File configFile = new File(configFileName);
-        InputStream configStream = configFile.exists() ? new FileInputStream(configFile) : null;
-        return guessSourceSchema(configStream, new File(dataFileName).toURI().toURL(), defaultLdmType, folder, separator);
+        // prevent unassigned resource leak
+        InputStream configStream = null;
+        if (configFile.exists() ){
+            configStream= new FileInputStream(configFile);
+        }
+        SourceSchema guessSourceSchema = guessSourceSchema(configStream, new File(dataFileName).toURI().toURL(), defaultLdmType, folder, separator);
+        if (configStream!=null){
+            configStream.close();
+        }
+        return guessSourceSchema;
     }
 
     /**
@@ -149,8 +157,16 @@ public class CsvConnector extends AbstractConnector implements Connector {
      */
     static SourceSchema guessSourceSchema(String configFileName, String dataFileName, String defaultLdmType, String[] factNames, String folder, char separator) throws IOException {
         File configFile = new File(configFileName);
-        InputStream configStream = configFile.exists() ? new FileInputStream(configFile) : null;
-        return guessSourceSchema(configStream, new File(dataFileName).toURI().toURL(), defaultLdmType, factNames, folder, separator);
+        // prevent unassigned resource leak
+        InputStream configStream = null;
+        if (configFile.exists() ){
+            configStream= new FileInputStream(configFile);
+        }
+        SourceSchema guessSourceSchema = guessSourceSchema(configStream, new File(dataFileName).toURI().toURL(), defaultLdmType, factNames, folder, separator);
+        if (configStream!=null){
+            configStream.close();
+        }
+        return guessSourceSchema;                        
     }
 
     static SourceSchema guessSourceSchema(InputStream configStream, URL dataUrl, String defaultLdmType, String folder, char separator) throws IOException {

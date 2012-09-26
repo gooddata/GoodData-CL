@@ -71,6 +71,7 @@ public abstract class AbstractConnector implements Connector {
      */
     protected String projectId;
 
+    private Map<String, String> result = null;
 
     public static final int DATE_LENGTH_UNRESTRICTED = -1;
 
@@ -520,7 +521,7 @@ public abstract class AbstractConnector implements Connector {
             l.info("Data successfully loaded.");
         } else if ("WARNING".equalsIgnoreCase(status)) {
             l.warn("Data loading succeeded with warnings. Status: " + status);
-            Map<String, String> result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
+            result = ctx.getFtpApi(p).getTransferLogs(tmpDir);
             for (String file : result.keySet()) {
                 if (file.endsWith(".json"))
                     l.info(file + ":\n" + result.get(file));
@@ -634,5 +635,8 @@ public abstract class AbstractConnector implements Connector {
         private List<SourceColumn> newColumns = new ArrayList<SourceColumn>();
         private List<SourceColumn> deletedColumns = new ArrayList<SourceColumn>();
     }
-
+    
+    public Map<String, String> getResult() {
+        return result;
+    }
 }

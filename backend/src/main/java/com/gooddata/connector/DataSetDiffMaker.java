@@ -15,14 +15,14 @@ import java.util.*;
 
 import static com.gooddata.modeling.model.SourceColumn.*;
 
-class DataSetDiffMaker {
+public class DataSetDiffMaker {
     private static Logger l = Logger.getLogger(DataSetDiffMaker.class);
 
     private final ColumnsSet remote = new ColumnsSet();
     private final ColumnsSet local = new ColumnsSet();
     private final List<SourceColumn> deletedColumns = new ArrayList<SourceColumn>();
 
-    DataSetDiffMaker(GdcRESTApiWrapper gd, SLI sli, SourceSchema ss) {
+    public DataSetDiffMaker(GdcRESTApiWrapper gd, SLI sli, SourceSchema ss) {
         SourceColumn sourceConnectionPoint = null;
         Map<String, SourceColumn> sourceDateColumns = new HashMap<String, SourceColumn>();
         String remoteConnectionPointName = null;
@@ -227,11 +227,11 @@ class DataSetDiffMaker {
         return sourceColumns.contains(column);
     }
 
-    List<SourceColumn> findNewColumns() {
+    public List<SourceColumn> findNewColumns() {
         return findDiff(local, remote);
     }
 
-    List<SourceColumn> findDeletedColumns() {
+    public List<SourceColumn> findDeletedColumns() {
         return deletedColumns;
     }
 
@@ -250,7 +250,7 @@ class DataSetDiffMaker {
         return result;
     }
 
-    Set<SourceColumn> getLocalColumns() {
+    public Set<SourceColumn> getLocalColumns() {
         return local.columns;
     }
 

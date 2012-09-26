@@ -23,15 +23,26 @@
 
 package com.gooddata.modeling.model;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.util.StringUtil;
 import com.thoughtworks.xstream.XStream;
-import org.apache.log4j.Logger;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import com.thoughtworks.xstream.converters.reflection.Sun14ReflectionProvider;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
  * GoodData source schema. Source schema describes the structure of the source data and its mapping to the LDM types
@@ -159,7 +170,8 @@ public class SourceSchema {
      * @throws IOException in case of an IO issue
      */
     protected static SourceSchema fromXml(InputStream is) throws IOException {
-        XStream xstream = new XStream();
+        // Java7 compatibility issue of Xstream
+        XStream xstream = new XStream(new Sun14ReflectionProvider( ), new DomDriver( ));
         xstream.alias("column", SourceColumn.class);
         xstream.alias("schema", SourceSchema.class);
         Reader r = new InputStreamReader(is, "utf8");

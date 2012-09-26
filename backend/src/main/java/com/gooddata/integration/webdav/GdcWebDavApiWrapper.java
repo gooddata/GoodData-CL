@@ -83,45 +83,78 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
 
     /**
      * WebDav transfers a local directory to the remote GDC WebDav server
-     *
-     * @param archiveName the name of the ZIP archive that is going to be transferred
-     * @throws java.io.IOException in case of IO issues
+     * 
+     * @param archiveName
+     *            the name of the ZIP archive that is going to be transferred
+     * @throws java.io.IOException
+     *             in case of IO issues
      */
     public void transferDir(String archiveName) throws IOException {
-        l.debug("Transfering archive " + archiveName);
-        File file = new File(archiveName);
-        String dir = file.getName().split("\\.")[0];
-        MkColMethod mkdir = new MkColMethod(this.config.getUrl() + WEBDAV_URI + dir);
-        executeMethodOk(mkdir);
-        PutMethod put = new PutMethod(this.config.getUrl() + WEBDAV_URI + dir + "/" + DEFAULT_ARCHIVE_NAME);
-        RequestEntity requestEntity = new InputStreamRequestEntity(new FileInputStream(file));
-        put.setRequestEntity(requestEntity);
-        executeMethodOk(put);
-        l.debug("Transferred archive " + archiveName);
+	l.debug("Transfering archive " + archiveName);
+	File file = new File(archiveName);
+	String dir = file.getName().split("\\.")[0];
+	MkColMethod mkdir = new MkColMethod(this.config.getUrl() + WEBDAV_URI
+		+ dir);
+	try {
+	    executeMethodOk(mkdir);
+	} catch (Exception e) {
+	    throw new IOException(e);
+	} finally {
+	    mkdir.releaseConnection();
+	}
+	PutMethod put = new PutMethod(this.config.getUrl() + WEBDAV_URI + dir
+		+ "/" + DEFAULT_ARCHIVE_NAME);
+	RequestEntity requestEntity = new InputStreamRequestEntity(
+		new FileInputStream(file));
+	put.setRequestEntity(requestEntity);
+	try {
+	    executeMethodOk(put);
+	} finally {
+	    put.releaseConnection();
+	}
+	l.debug("Transferred archive " + archiveName);
     }
 
     /**
      * GET the transfer logs from the FTP server
-     *
-     * @param remoteDir the primary transfer directory that contains the logs
+     * 
+     * @param remoteDir
+     *            the primary transfer directory that contains the logs
      * @return Map with the log name and content
-     * @throws java.io.IOException in case of IO issues
+     * @throws java.io.IOException
+     *             in case of IO issues
      */
-    public Map<String, String> getTransferLogs(String remoteDir) throws IOException {
-        l.debug("Retrieveing transfer logs.");
-        Map<String, String> result = new HashMap<String, String>();
-        PropFindMethod ls = new PropFindMethod(this.config.getUrl() + WEBDAV_URI + remoteDir + "/", DavConstants.PROPFIND_PROPERTY_NAMES, 1);
-        String ret = executeMethodOk(ls);
-        String[] files = ret.split(",");
-        for (String file : files) {
-            if (file.endsWith(".log") || file.endsWith(".json")) {
-                GetMethod get = new GetMethod(this.config.getUrl() + file);
-                String content = executeMethodOk(get);
-                result.put(file, content);
-            }
-        }
-        l.debug("Transfer logs retrieved.");
-        return result;
+    public Map<String, String> getTransferLogs(String remoteDir)
+	    throws IOException {
+	l.debug("Retrieveing transfer logs.");
+	Map<String, String> result = new HashMap<String, String>();
+	PropFindMethod ls = new PropFindMethod(this.config.getUrl()
+		+ WEBDAV_URI + remoteDir + "/",
+		DavConstants.PROPFIND_PROPERTY_NAMES, 1);
+	String ret = null;
+	try {
+	    ret = executeMethodOk(ls);
+	} catch (Exception e) {
+	    throw new IOException(e);
+	} finally {
+	    ls.releaseConnection();
+	}
+
+	String[] files = ret.split(",");
+	for (String file : files) {
+	    if (file.endsWith(".log") || file.endsWith(".json")) {
+
+		GetMethod get = new GetMethod(this.config.getUrl() + file);
+		try {
+		    String content = executeMethodOk(get);
+		    result.put(file, content);
+		} finally {
+		    get.releaseConnection();
+		}
+	    }
+	}
+	l.debug("Transfer logs retrieved.");
+	return result;
     }
 
     /**

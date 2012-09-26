@@ -44,6 +44,10 @@ public class NetUtil {
         final String proxyHost = System.getProperty("http.proxyHost");
         final int proxyPort = System.getProperty("http.proxyPort") == null
                 ? 8080 : Integer.parseInt(System.getProperty("http.proxyPort"));
+        // set proper timeouts
+        client.getParams().setConnectionManagerTimeout(30* 1000);
+        // increase timeout to 3 minutes
+        client.getParams().setSoTimeout(15 * 60 * 1000);
 
         if (proxyHost != null) {
             l.debug("Configuring HTTP client with proxyHost=" + proxyHost + ", proxyPort=" + proxyPort);

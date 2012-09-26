@@ -29,6 +29,7 @@ import com.gooddata.integration.model.Project;
 import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.util.NetUtil;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -97,6 +99,12 @@ public class GdcRESTApiWrapper {
     public static final String LINKS_UPLOADS_KEY = "uploads";
 
     public static final String DLI_MANIFEST_FILENAME = "upload_info.json";
+    
+    public static final String QUERY_PROJECTDASHBOARDS = "projectdashboards";
+    public static final String QUERY_FOLDERS = "folders";
+    public static final String QUERY_DATASETS = "datasets";
+    public static final String QUERY_DIMENSIONS = "dimensions";
+    public static final String QUERY_PREFIX = "/query/";
 
     protected HttpClient client;
     protected NamePasswordConfiguration config;
@@ -141,15 +149,29 @@ public class GdcRESTApiWrapper {
         loginPost.setRequestEntity(request);
         try {
             String resp = executeMethodOk(loginPost, false); // do not re-login on SC_UNAUTHORIZED
-
+            // enabling this prevents the following message:
+            // WARN org.apache.commons.httpclient.HttpMethodDirector -
+            // Unable to respond to any of these challenges:
+            // {gooddata=GoodData realm="GoodData API" cookie=GDCAuthTT}
+            // appearing always after those:
+            // DEBUG com.gooddata.integration.rest.GdcRESTApiWrapper -
+            // Logging into GoodData.
+            // DEBUG com.gooddata.integration.rest.GdcRESTApiWrapper -
+            // Successfully logged into GoodData.
+            setTokenCookie();
             l.debug("Successfully logged into GoodData.");
             JSONObject rsp = JSONObject.fromObject(resp);
             userLogin = rsp.getJSONObject("userLogin");
             String profileUri = userLogin.getString("profile");
             if (profileUri != null && profileUri.length() > 0) {
                 GetMethod gm = createGetMethod(getServerUrl() + profileUri);
-                resp = executeMethodOk(gm);
-                this.profile = JSONObject.fromObject(resp);
+                try {
+                	resp = executeMethodOk(gm);
+                	this.profile = JSONObject.fromObject(resp);
+                }
+                finally {
+                    gm.releaseConnection();
+                }
             } else {
                 l.debug("Empty account profile.");
                 throw new GdcRestApiException("Empty account profile.");
@@ -210,6 +232,8 @@ public class GdcRESTApiWrapper {
         } finally {
             logoutDelete.releaseConnection();
         }
+        this.client = new HttpClient();
+        NetUtil.configureHttpProxy( client );
     }
 
     /**
@@ -751,13 +775,12 @@ public class GdcRESTApiWrapper {
      * @return report definition
      */
     public String getReportDefinition(String reportUri) {
-        HttpMethod qGet = null;
+        l.debug( "Getting report definition for report uri=" + reportUri );
+        String qUri = getServerUrl() + reportUri;
+        HttpMethod qGet = createGetMethod( qUri );
         try {
-            l.debug("Getting report definition for report uri=" + reportUri);
-            String qUri = getServerUrl() + reportUri;
-            qGet = createGetMethod(qUri);
-            String qr = executeMethodOk(qGet);
-            JSONObject q = JSONObject.fromObject(qr);
+            String qr = executeMethodOk( qGet );
+            JSONObject q = JSONObject.fromObject( qr );
             if (q.isNullObject()) {
                 l.debug("Error getting report definition for report uri=" + reportUri);
                 throw new GdcProjectAccessException("Error getting report definition for report uri=" + reportUri);
@@ -781,7 +804,10 @@ public class GdcRESTApiWrapper {
                 String lastResultUri = results.getString(results.size() - 1);
                 qUri = getServerUrl() + lastResultUri;
                 qGet = createGetMethod(qUri);
-                qr = executeMethodOk(qGet);
+                GetMethod qGet2 = createGetMethod( qUri );
+                try
+                {
+                    qr = executeMethodOk( qGet2 );
                 q = JSONObject.fromObject(qr);
                 if (q.isNullObject()) {
                     l.debug("Error getting report definition for result uri=" + lastResultUri);
@@ -798,6 +824,11 @@ public class GdcRESTApiWrapper {
                     throw new GdcProjectAccessException("Error getting report definition for result uri=" + lastResultUri);
                 }
                 return content.getString("reportDefinition");
+                }
+                finally
+                {
+                    qGet2.releaseConnection();
+                }
             }
             // Here we haven't found any results. Let's try the defaultReportDefinition
             if (content.containsKey("defaultReportDefinition")) {
@@ -1824,6 +1855,16 @@ public class GdcRESTApiWrapper {
 		public void setEmail(String email) {
 			this.email = email;
 		}
+		
+		@Override
+        public String toString() {
+            return "DWGdcUser [getLogin()=" + getLogin() + ", getUri()=" + getUri() + ", getStatus()=" + getStatus()
+                + ", getLicence()=" + getLicence() + ", getFirstName()=" + getFirstName() + ", getLastName()="
+                + getLastName() + ", getCompanyName()=" + getCompanyName() + ", getPosition()=" + getPosition()
+                + ", getTimezone()=" + getTimezone() + ", getCountry()=" + getCountry() + ", getPhoneNumber()="
+                + getPhoneNumber() + ", getPassword()=" + getPassword() + ", getVerifyPassword()="
+                + getVerifyPassword() + ", getEmail()=" + getEmail() + "," +  " getSsoProvider()=" + getSsoProvider() + "]";
+        }
 
     }
 
@@ -2366,11 +2407,11 @@ public class GdcRESTApiWrapper {
         return maqlStructure;
     }
 
-    private String executeMethodOk(HttpMethod method) throws HttpMethodException {
+    protected String executeMethodOk(HttpMethod method) throws HttpMethodException {
         return executeMethodOk(method, true);
     }
 
-    private String executeMethodOk(HttpMethod method, boolean reloginOn401) throws HttpMethodException {
+    protected String executeMethodOk(HttpMethod method, boolean reloginOn401) throws HttpMethodException {
         return executeMethodOk(method, reloginOn401, 16);
     }
 
@@ -3071,5 +3112,205 @@ public class GdcRESTApiWrapper {
             super.finalize();
         }
     }
+    
+    /**
+     * API for querying users in a domain
+     * 
+     * @param domain
+     * @return
+     */
+    public Map<String, GdcUser> getUsers(String domain) {
+	Map<String, GdcUser> users = new HashMap<String, GdcUser>();
 
+	String url = "/gdc/account/domains/" + domain + "{}/users";
+	JSONObject jsonObject = getObjectByUri(url);
+	if (jsonObject == null) {
+	    return users;
+	}
+	JSONObject accountSettings = jsonObject
+		.getJSONObject("accountSettings");
+	if (accountSettings == null) {
+	    return users;
+	}
+	JSONArray items = (JSONArray) accountSettings.get("items");
+	if (items == null) {
+	    return users;
+	}
+	for (Object item : items) {
+	    JSONObject itemJSON = JSONObject.fromObject(item);
+	    if (itemJSON == null) {
+		continue;
+	    }
+	    JSONObject accountSetting = itemJSON
+		    .getJSONObject("accountSetting");
+	    if (accountSetting == null) {
+		continue;
+	    }
+	    GdcUser user = new GdcUser();
+	    user.setLogin(accountSetting.getString("login"));
+	    user.setFirstName(accountSetting.getString("firstName"));
+	    user.setLastName(accountSetting.getString("lastName"));
+	    user.setCompanyName(accountSetting.getString("companyName"));
+	    user.setPosition(accountSetting.getString("position"));
+	    user.setCountry(accountSetting.getString("country"));
+	    user.setTimezone(accountSetting.getString("timezone"));
+	    user.setPhoneNumber(accountSetting.getString("phoneNumber"));
+	    user.setEmail(accountSetting.getString("email"));
+	    JSONObject links = accountSetting.getJSONObject("links");
+	    if (links == null)
+		throw new GdcException(
+			"The URL link for a user cannot be null: "
+				+ user.getLogin());
+	    String uri = links.getString("self");
+	    if (uri == null)
+		throw new GdcException("The URL for a user cannot be null: "
+			+ user.getLogin());
+	    user.setUri(uri);
+	    users.put(user.getLogin(), user);
+	}
+	return users;
+    }
+
+    public List<String> enumerateDimensions(String projectId) {
+	return enumerateResource(projectId, QUERY_DIMENSIONS);
+    }
+
+    public List<String> enumerateDataSets(String projectId) {
+	return enumerateResource(projectId, QUERY_DATASETS);
+    }
+
+    public List<String> enumerateFolders(String projectId) {
+	return enumerateResource(projectId, QUERY_FOLDERS);
+    }
+
+    public List<String> enumerateDashboards(String projectId) {
+	return enumerateResource(projectId, QUERY_PROJECTDASHBOARDS);
+    }
+
+    protected List<String> enumerateResource(String projectId, String resource) {
+	l.debug("Enumerating attributes for project id=" + projectId);
+	List<String> list = new ArrayList<String>();
+	String qUri = getProjectMdUrl(projectId) + QUERY_PREFIX + resource;
+	HttpMethod qGet = createGetMethod(qUri);
+	try {
+	    String qr = executeMethodOk(qGet);
+	    JSONObject q = JSONObject.fromObject(qr);
+	    if (q.isNullObject()) {
+		l.debug("Enumerating {} for project id={} failed.");
+		throw new GdcException(
+			"Enumerating {} for project id={} failed.");
+	    }
+	    JSONObject qry = q.getJSONObject("query");
+	    if (qry.isNullObject()) {
+		l.debug("Enumerating {} for project id={} failed.");
+		throw new GdcException(
+			"Enumerating {} for project id={} failed.");
+	    }
+	    JSONArray entries = qry.getJSONArray("entries");
+	    if (entries == null) {
+		l.debug("Enumerating {} for project id={} failed.");
+		throw new GdcException(
+			"Enumerating {} for project id={} failed.");
+	    }
+	    for (Object oentry : entries) {
+		JSONObject entry = (JSONObject) oentry;
+		list.add(entry.getString("link"));
+	    }
+	} finally {
+	    qGet.releaseConnection();
+	}
+	return list;
+    }
+
+    public ProjectExportResult exportMDByUrl(String projectId, List<String> urls) {
+	l.debug("Exporting metadata objects with URls " + urls
+		+ " from project " + projectId);
+	PostMethod req = createPostMethod(getProjectMdUrl(projectId)
+		+ PROJECT_PARTIAL_EXPORT_URI);
+	JSONObject param = getMDExportStructureStrings(projectId, urls);
+	InputStreamRequestEntity request = new InputStreamRequestEntity(
+		new ByteArrayInputStream(param.toString().getBytes(
+			Charset.forName("UTF-8"))));
+	req.setRequestEntity(request);
+	ProjectExportResult result = null;
+	try {
+	    String response = executeMethodOk(req);
+	    result = new ProjectExportResult();
+	    JSONObject responseObject = JSONObject.fromObject(response);
+	    JSONObject exportArtifact = responseObject
+		    .getJSONObject("partialMDArtifact");
+	    JSONObject status = exportArtifact.getJSONObject("status");
+	    result.setTaskUri(status.getString("uri"));
+	    result.setExportToken(exportArtifact.getString("token"));
+	    return result;
+	} catch (HttpMethodException ex) {
+	    l.debug("Error exporting metadata objects with URls " + urls
+		    + " from project " + projectId, ex);
+	    throw new GdcRestApiException(
+		    "Error exporting metadata objects with URls " + urls
+			    + " from project " + projectId, ex);
+	} finally {
+	    req.releaseConnection();
+	}
+    }
+
+    protected JSONObject getMDExportStructureStrings(String projectId,
+	    List<String> urls) {
+	JSONObject param = new JSONObject();
+	JSONObject partialMDExport = new JSONObject();
+	JSONArray uris = new JSONArray();
+	for (String url : urls) {
+	    uris.add(url);
+	}
+	partialMDExport.put("uris", uris);
+	param.put("partialMDExport", partialMDExport);
+	return param;
+    }
+
+    public NamePasswordConfiguration getNamePasswordConfiguration() {
+	return config;
+    }
+
+    /**
+     * Checks if report copying is finished. Workaround implementation due to
+     * wrong handling of status code.
+     * 
+     * @param link
+     *            the link returned from the start loading
+     * @return the loading status
+     * @throws ReportingException
+     */
+    public String getCopyStatus(String link) {
+	l.debug("Getting Cloning Status status uri=" + link);
+	HttpMethod ptm = createGetMethod(getServerUrl() + link);
+
+	try {
+	    String response = executeMethodOk(ptm);
+	    if (response != null && !response.isEmpty()) {
+		JSONObject task = JSONObject.fromObject(response);
+		JSONObject state = task.getJSONObject("taskState");
+		if (state != null && !state.isNullObject() && !state.isEmpty()) {
+		    String status = state.getString("status");
+		    l.debug("TaskMan status=" + status);
+		    return status;
+		} else {
+		    l.debug("No wTaskStatus structure in the migration status!");
+		    throw new GdcRestApiException(
+			    "No wTaskStatus structure in the migration status!");
+		}
+	    }
+	    return "RUNNING";
+	} catch (HttpMethodException e) {
+	    // workaround implementation due to wrong handling (at least for
+	    // this status)
+	    if (e instanceof HttpMethodNotFinishedYetException
+		    || (e.getCause() != null && e.getCause() instanceof HttpMethodNotFinishedYetException)) {
+		l.debug("getTaskManStatus: Waiting for status");
+		return "RUNNING";
+	    }
+	    throw e;
+	} finally {
+	    ptm.releaseConnection();
+	}
+    }
 }

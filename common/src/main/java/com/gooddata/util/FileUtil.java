@@ -553,5 +553,14 @@ public class FileUtil {
     public static CSVWriter createUtf8CsvEscapingWriter(File file) throws IOException {
         return new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), "utf8"), ',', '"', '"');
     }
+    
+    public static String[] getCsvHeader( InputStream stream, char separator )
+                    throws IOException
+                {
+                    CSVReader csvIn = new CSVReader( createBufferedUtf8Reader( stream ), separator );
+                    String[] next = csvIn.readNext();
+                    csvIn.close();
+                    return next;
+                }
 
 }

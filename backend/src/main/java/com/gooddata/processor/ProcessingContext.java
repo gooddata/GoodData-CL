@@ -49,8 +49,8 @@ public class ProcessingContext {
 
     private String projectId;
     private Connector connector;
-    private GdcRESTApiWrapper _restApi = null;
-    private GdcDataTransferAPI _ftpApi = null;
+    protected GdcRESTApiWrapper _restApi = null;
+    protected GdcDataTransferAPI _ftpApi = null;
 
 
     public String getProjectId() throws InvalidParameterException {

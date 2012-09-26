@@ -51,9 +51,9 @@ public class MaqlGenerator {
 
     private static Logger l = Logger.getLogger(MaqlGenerator.class);
 
-    private final SourceSchema schema;
-    private final String schemaName, lsn;
-    private final String factsOfAttrMaqlDdl;
+    protected final SourceSchema schema;
+    protected final String schemaName, lsn;
+    protected final String factsOfAttrMaqlDdl;
 
     private boolean synchronize = true; // should generateMaql*() methods append SYNCHRONIZE commands?
 
@@ -155,7 +155,7 @@ public class MaqlGenerator {
         // finally
         if (synchronize) {
             script.append("# Synchronize the storage and data loading interfaces with the new logical model.\n");
-            script.append("SYNCHRONIZE {" + schema.getDatasetName() + "};\n\n");
+            script.append("SYNCHRONIZE {" + schema.getDatasetName() + "} PRESERVE DATA;\n\n");
         }
 
         return script.toString();
@@ -171,7 +171,7 @@ public class MaqlGenerator {
     public String generateMaqlSynchronize() {
         StringBuffer script = new StringBuffer();
         script.append("# Synchronize the storage and data loading interfaces with the new logical model.\n");
-        script.append("SYNCHRONIZE {" + schema.getDatasetName() + "};\n\n");
+        script.append("SYNCHRONIZE {" + schema.getDatasetName() + "} PRESERVE DATA;\n\n");
         return script.toString();
     }
 
@@ -182,7 +182,7 @@ public class MaqlGenerator {
      * @param createFactsOf create the facts of attribute
      * @return MAQL as String
      */
-    private String generateMaqlAdd(Iterable<SourceColumn> newColumns, Iterable<SourceColumn> knownColumns, boolean createFactsOf) {
+    protected String generateMaqlAdd(Iterable<SourceColumn> newColumns, Iterable<SourceColumn> knownColumns, boolean createFactsOf) {
 
         // generate attributes and facts
         State state = new State();
@@ -264,7 +264,7 @@ public class MaqlGenerator {
      * @param columns list of columns
      * @return MAQL as String
      */
-    private String generateFoldersMaqlDdl(List<SourceColumn> columns) {
+    protected String generateFoldersMaqlDdl(List<SourceColumn> columns) {
         final ArrayList<String> attributeFolders = new ArrayList<String>();
         final ArrayList<String> factFolders = new ArrayList<String>();
 

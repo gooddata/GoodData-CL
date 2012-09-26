@@ -271,7 +271,12 @@ public class CSVReader implements Closeable {
             } else if (openField.length() == 0) {
                 startQuotedField();
             } else {
-                throw new IllegalStateException("odd quote character at " + getPositionString());
+                // throw new IllegalStateException("odd quote character at " getPositionString());
+                // Escape handling of single quotes
+                // add odd " character and then the one to be added
+                // addCharacter('"');
+                // addCharacter(c);
+                addCharacter( ' ' );
             }
         }
 
