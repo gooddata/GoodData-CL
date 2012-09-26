@@ -3122,7 +3122,7 @@ public class GdcRESTApiWrapper {
     public Map<String, GdcUser> getUsers(String domain) {
 	Map<String, GdcUser> users = new HashMap<String, GdcUser>();
 
-	String url = "/gdc/account/domains/" + domain + "{}/users";
+	String url = "/gdc/account/domains/" + domain + "/users";
 	JSONObject jsonObject = getObjectByUri(url);
 	if (jsonObject == null) {
 	    return users;
@@ -3196,21 +3196,21 @@ public class GdcRESTApiWrapper {
 	    String qr = executeMethodOk(qGet);
 	    JSONObject q = JSONObject.fromObject(qr);
 	    if (q.isNullObject()) {
-		l.debug("Enumerating {} for project id={} failed.");
+		l.debug("Enumerating "+resource+" for project id="+projectId+" failed.");
 		throw new GdcException(
-			"Enumerating {} for project id={} failed.");
+			"Enumerating "+resource+" for project id="+projectId+" failed.");
 	    }
 	    JSONObject qry = q.getJSONObject("query");
 	    if (qry.isNullObject()) {
-		l.debug("Enumerating {} for project id={} failed.");
+		l.debug("Enumerating "+resource+" for project id="+projectId+" failed.");
 		throw new GdcException(
-			"Enumerating {} for project id={} failed.");
+			"Enumerating "+resource+" for project id="+projectId+" failed.");
 	    }
 	    JSONArray entries = qry.getJSONArray("entries");
 	    if (entries == null) {
-		l.debug("Enumerating {} for project id={} failed.");
+		l.debug("Enumerating "+resource+" for project id="+projectId+" failed.");
 		throw new GdcException(
-			"Enumerating {} for project id={} failed.");
+			"Enumerating "+resource+" for project id="+projectId+" failed.");
 	    }
 	    for (Object oentry : entries) {
 		JSONObject entry = (JSONObject) oentry;
