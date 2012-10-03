@@ -56,10 +56,6 @@
         </dependency>
         <!-- 3rd party dependencies -->
         <dependency>
-            <groupId>com.google.gdata</groupId>
-            <artifactId>gdata-java-client</artifactId>
-        </dependency>
-        <dependency>
             <groupId>net.sf.opencsv</groupId>
             <artifactId>opencsv</artifactId>
         </dependency>
@@ -88,10 +84,6 @@
         <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
     </dependencies>
 </project>
