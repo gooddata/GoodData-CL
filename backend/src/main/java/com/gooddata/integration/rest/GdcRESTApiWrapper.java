@@ -3445,4 +3445,30 @@ public class GdcRESTApiWrapper {
 	createStructure.put("project", project);
 	return createStructure;
     }
+    
+    /**
+     * Returns the List of GoodDataProjectInfo structures for the accessible
+     * projects
+     * 
+     * @return the List of GoodDataProjectInfo structures for the accessible
+     *         projects
+     * @throws HttpMethodException
+     */
+    @Deprecated
+    public List<Project> listProjects() throws HttpMethodException {
+    l.debug("Listing projects.");
+    List<Project> list = new ArrayList<Project>();
+    for (Iterator<JSONObject> linksIter = getProjectsLinks(); linksIter
+        .hasNext();) {
+        JSONObject link = linksIter.next();
+        String cat = link.getString("category");
+        if (!"project".equalsIgnoreCase(cat)) {
+        continue;
+        }
+        Project proj = new Project(link);
+        list.add(proj);
+    }
+    l.debug("Found projects " + list);
+    return list;
+    }
 }
