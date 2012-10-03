@@ -48,11 +48,12 @@
         <artifactId>project-pom</artifactId>
         <version>13.1.0.1</version>
     </parent>
-    
+
 	<scm>
-        <connection>scm:svn:svn://triumph.svc1.demandware.net/arch3/3rdparty/gooddata-cl/trunk</connection>
-        <developerConnection>scm:svn:svn://triumph.svc1.demandware.net/arch3/3rdparty/gooddata-cl/trunk</developerConnection>
-    </scm>
+		<connection>scm:git:git@github.com:chrbayer84/GoodData-CL.git</connection>
+		<url>scm:git:git@github.com:chrbayer84/GoodData-CL.git</url>
+		<developerConnection>scm:git:git@github.com:chrbayer84/GoodData-CL.git</developerConnection>
+	</scm>
 
     <modules>
         <module>backend</module>
