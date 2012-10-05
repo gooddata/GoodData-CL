@@ -46,7 +46,7 @@
    <parent>
         <groupId>dw.maventools</groupId>
         <artifactId>project-pom</artifactId>
-        <version>13.1.0.1</version>
+        <version>13.1.0.2</version>
     </parent>
 
 	<scm>
