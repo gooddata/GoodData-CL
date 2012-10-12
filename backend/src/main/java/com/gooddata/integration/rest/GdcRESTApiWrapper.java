@@ -2531,7 +2531,7 @@ public class GdcRESTApiWrapper {
      * @return the project delete URI
      */
     public String getProjectDeleteUri(String projectId) {
-        return PROJECTS_URI + projectId;
+        return PROJECTS_URI + "/" + projectId;
     }
 
     /**
@@ -3060,7 +3060,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.60");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.61");
         return request;
     }
 

@@ -384,7 +384,7 @@ public class GdcDI implements Executor {
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.60" +
+            l.info("GoodData CL version 1.2.61" +
                     ((BUILD_NUMBER.length() > 0) ? ", build " + BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -1044,7 +1044,9 @@ public class GdcDI implements Executor {
             String desc = c.getParam("desc");
             String pTempUri = c.getParam("templateUri");
             String driver = c.getParam("driver");
-            String token = c.getParam("accessToken");
+            String token = c.getParam("authorizationToken");
+            if(token == null || token.length() <= 0) // backward compatibility
+                token = c.getParam("accessToken");
             c.paramsProcessed();
 
             if (desc == null || desc.length() <= 0)
