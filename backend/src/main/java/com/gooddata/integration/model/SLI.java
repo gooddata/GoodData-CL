@@ -28,6 +28,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * GoodData Data Loading Interface (SLI)
@@ -143,5 +144,28 @@ public class SLI {
         return omf.toString(2);
     }
 
+    @Override
+    public String toString() {
+	return "SLI [id=" + id + ", name=" + name + ", link=" + link
+		+ ", format=" + format + "]";
+    }
 
+    @Override
+    public int hashCode() {
+	return Objects.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	return obj instanceof SLI && Objects.equals(((SLI) obj).id, id);
+    }
+
+    public static SLI getSli(List<SLI> slis, String id) {
+	for (SLI sli : slis) {
+	    if (id.equals(sli.getId())) {
+		return sli;
+	    }
+	}
+	return null;
+    }
 }
