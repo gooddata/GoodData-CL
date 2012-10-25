@@ -40,9 +40,9 @@ public class TestGdcRestApiWrapper extends TestCase {
 
     private static Logger l = Logger.getLogger(TestGdcRestApiWrapper.class);
 
-    //NamePasswordConfiguration config = null;
+    NamePasswordConfiguration config = null;
 
-    NamePasswordConfiguration config = new NamePasswordConfiguration("https","js-rrrrd-devel.getgooddata.com","bear@gooddata.com","jindrisska");
+    //NamePasswordConfiguration config = new NamePasswordConfiguration("https","js-rrrrd-devel.getgooddata.com","bear@gooddata.com","xxx");
 
     String[] checkUrls = {
             "/gdc/md/FoodMartDemo/obj/130003800",
