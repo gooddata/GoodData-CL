@@ -40,37 +40,60 @@ public class TestGdcRestApiWrapper extends TestCase {
 
     private static Logger l = Logger.getLogger(TestGdcRestApiWrapper.class);
 
-    NamePasswordConfiguration config = null;
+    //NamePasswordConfiguration config = null;
 
-    //NamePasswordConfiguration config = new NamePasswordConfiguration("https","secure.gooddata.com","zd@gooddata.com","xxx");
+    NamePasswordConfiguration config = new NamePasswordConfiguration("https","js-rrrrd-devel.getgooddata.com","bear@gooddata.com","jindrisska");
 
     String[] checkUrls = {
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4170",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/12238",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/5479",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13344",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/7261",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/12218",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/1788",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13928",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4148",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/8067",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/16843",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/3392",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4192",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4499",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13772",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/18799",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/10730",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/6833",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/12467",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/7456",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13785",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/4228",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/13876",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/3329",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/6826",
-            "/gdc/md/bd410owmaf3lks1qxtecwjpls340ckg5/obj/5138"
+            "/gdc/md/FoodMartDemo/obj/130003800",
+            "/gdc/md/FoodMartDemo/obj/130001937",
+            "/gdc/md/FoodMartDemo/obj/130002154",
+            "/gdc/md/FoodMartDemo/obj/130002361",
+            "/gdc/md/FoodMartDemo/obj/130002376",
+            "/gdc/md/FoodMartDemo/obj/130002297",
+            "/gdc/md/FoodMartDemo/obj/130002162",
+            "/gdc/md/FoodMartDemo/obj/130002654",
+            "/gdc/md/FoodMartDemo/obj/130002587",
+            "/gdc/md/FoodMartDemo/obj/130002121",
+            "/gdc/md/FoodMartDemo/obj/130002004",
+            "/gdc/md/FoodMartDemo/obj/130002614",
+            "/gdc/md/FoodMartDemo/obj/130002675",
+            "/gdc/md/FoodMartDemo/obj/130002632",
+            "/gdc/md/FoodMartDemo/obj/130002292",
+            "/gdc/md/FoodMartDemo/obj/130002187",
+            "/gdc/md/FoodMartDemo/obj/130002355",
+            "/gdc/md/FoodMartDemo/obj/130001832",
+            "/gdc/md/FoodMartDemo/obj/130002891",
+            "/gdc/md/FoodMartDemo/obj/130002151",
+            "/gdc/md/FoodMartDemo/obj/130002449",
+            "/gdc/md/FoodMartDemo/obj/130001911",
+            "/gdc/md/FoodMartDemo/obj/130001982",
+            "/gdc/md/FoodMartDemo/obj/130002111",
+            "/gdc/md/FoodMartDemo/obj/130002371",
+            "/gdc/md/FoodMartDemo/obj/130002310",
+            "/gdc/md/FoodMartDemo/obj/130002317",
+            "/gdc/md/FoodMartDemo/obj/130002188",
+            "/gdc/md/FoodMartDemo/obj/130002303",
+            "/gdc/md/FoodMartDemo/obj/130002024",
+            "/gdc/md/FoodMartDemo/obj/130002469",
+            "/gdc/md/FoodMartDemo/obj/130001892",
+            "/gdc/md/FoodMartDemo/obj/130002087",
+            "/gdc/md/FoodMartDemo/obj/130002505",
+            "/gdc/md/FoodMartDemo/obj/130001874",
+            "/gdc/md/FoodMartDemo/obj/130001844",
+            "/gdc/md/FoodMartDemo/obj/130002356",
+            "/gdc/md/FoodMartDemo/obj/130001858",
+            "/gdc/md/FoodMartDemo/obj/130002366",
+            "/gdc/md/FoodMartDemo/obj/130001967",
+            "/gdc/md/FoodMartDemo/obj/130002225",
+            "/gdc/md/FoodMartDemo/obj/130002209",
+            "/gdc/md/FoodMartDemo/obj/130002431",
+            "/gdc/md/FoodMartDemo/obj/130001900",
+            "/gdc/md/FoodMartDemo/obj/130002324",
+            "/gdc/md/FoodMartDemo/obj/130002567",
+            "/gdc/md/FoodMartDemo/obj/130002868",
+            "/gdc/md/FoodMartDemo/obj/130002036",
+            "/gdc/md/FoodMartDemo/obj/130002195"
     };
 
     public void testComputeMetric() throws Exception {
@@ -79,13 +102,8 @@ public class TestGdcRestApiWrapper extends TestCase {
                 GdcRESTApiWrapper rest = new GdcRESTApiWrapper(config);
                 rest.login();
                 for (String url : checkUrls) {
-                    List<JSONObject> deps = rest.usedBy(url);
-                    for (JSONObject d : deps) {
-                        if ("report".equalsIgnoreCase(d.getString("category"))) {
-                            System.out.println(d.getString("link") + " : " + d.getString("title"));
-                        }
-                    }
-
+                    String value = rest.getReportDefinition(url);
+                    System.out.println("Result "+value);
                 }
                 rest.logout();
             }

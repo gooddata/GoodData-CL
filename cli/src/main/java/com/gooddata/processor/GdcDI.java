@@ -384,7 +384,7 @@ public class GdcDI implements Executor {
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.61" +
+            l.info("GoodData CL version 1.2.62" +
                     ((BUILD_NUMBER.length() > 0) ? ", build " + BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -1382,12 +1382,11 @@ public class GdcDI implements Executor {
             String[] uris = result.split("\n");
             for (String uri : uris) {
                 try {
-                    String defUri = ctx.getRestApi(p).getReportDefinition(uri.trim());
-                    l.info("Executing report uri=" + defUri);
-                    String task = ctx.getRestApi(p).executeReportDefinition(defUri.trim());
-                    l.info("Report " + defUri + " execution finished: " + task);
+                    l.info("Executing report uri=" + uri);
+                    String task = ctx.getRestApi(p).executeReport(uri.trim());
+                    l.info("Report " + uri + " execution finished: " + task);
                 } catch (GdcRestApiException e) {
-                    l.debug("The report uri=" + uri + " can't be computed!");
+                    l.debug("The report uri=" + uri + " can't be computed!",e);
                     l.info("The report uri=" + uri + " can't be computed!");
                 }
             }
