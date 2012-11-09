@@ -1288,7 +1288,7 @@ public class GdcRESTApiWrapper {
             content.put("driver", driver);
         }
         if(accessToken != null && accessToken.length()>0) {
-            content.put("pgroup_name", accessToken);
+            content.put("authorizationToken", accessToken);
         }
         JSONObject project = new JSONObject();
         project.put("meta", meta);
