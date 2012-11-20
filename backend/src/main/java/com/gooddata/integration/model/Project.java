@@ -83,4 +83,9 @@ public class Project {
         return title;
     }
 
+    @Override
+    public String toString() {
+	return "Project [link=" + link + ", id=" + id + ", title=" + title
+		+ "]";
+    }
 }
