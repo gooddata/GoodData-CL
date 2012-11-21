@@ -41,6 +41,7 @@ import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -3007,6 +3008,10 @@ public class GdcRESTApiWrapper {
     private static DeleteMethod createDeleteMethod(String path) {
         return configureHttpMethod(new DeleteMethod(path));
     }
+    
+    private static PutMethod createPutMethod(String path) {
+        return configureHttpMethod(new PutMethod(path));
+    }
 
     private static <T extends HttpMethod> T configureHttpMethod(T request) {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
@@ -3401,6 +3406,28 @@ public class GdcRESTApiWrapper {
 	JSONObject createStructure = new JSONObject();
 	createStructure.put("project", project);
 	return createStructure;
+    }
+    
+    public void putUser(String uri, GdcUser user)
+            throws GdcRestApiException {
+        if (user != null) {
+            l.debug("Updating existing user id " + uri);
+            PutMethod req = createPutMethod(getServerUrl() + uri );
+            JSONObject param = getCreateUserStructure(user);
+            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                    param.toString().getBytes()));
+            req.setRequestEntity(request);
+            try {
+        	executeMethodOk(req);
+            } catch (HttpMethodException ex) {
+                l.debug("Error updating user ", ex);
+                throw new GdcRestApiException("Error updating user ", ex);
+            } finally {
+                req.releaseConnection();
+            }
+        } else {
+            throw new InvalidParameterException("The user must not be null.");
+        }
     }
 }
 
