@@ -298,7 +298,7 @@ public abstract class AbstractConnector implements Connector {
         final File mf = FileUtil.getFile(maqlFile, ifExists);
         if (mf != null) {
             final String maql = FileUtil.readStringFromFile(maqlFile);
-            ctx.getRestApi(p).executeMAQL(pid, maql);
+            ctx.getRestApi(p).executeMAQLAsync(pid, maql);
         }
         l.debug("Finished MAQL execution.");
         l.info("MAQL script " + maqlFile + " successfully executed.");

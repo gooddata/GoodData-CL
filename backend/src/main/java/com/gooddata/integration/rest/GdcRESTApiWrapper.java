@@ -28,6 +28,7 @@ import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.model.SLI;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
+import com.gooddata.util.FileUtil;
 import com.gooddata.util.NetUtil;
 
 import net.sf.json.JSON;
@@ -80,6 +81,7 @@ public class GdcRESTApiWrapper {
     private static final String IDENTIFIER_URI = "/identifiers";
     private static final String SLI_DESCRIPTOR_URI = "/descriptor";
     public static final String MAQL_EXEC_URI = "/ldm/manage";
+    public static final String MAQL_ASYNC_EXEC_URI = "/ldm/manage2";
     public static final String DML_EXEC_URI = "/dml/manage";
     public static final String PROJECT_EXPORT_URI = "/maintenance/export";
     public static final String PROJECT_IMPORT_URI = "/maintenance/import";
@@ -1387,6 +1389,57 @@ public class GdcRESTApiWrapper {
         } catch (HttpMethodException ex) {
             l.debug("MAQL execution: ", ex);
             throw new GdcRestApiException("MAQL execution: " + ex.getMessage(), ex);
+        } finally {
+            maqlPost.releaseConnection();
+        }
+    }
+
+    /**
+     * Executes the MAQL and creates/modifies the project's LDM asynchronously
+     *
+     * @param projectId the project's ID
+     * @param maql      String with the MAQL statements
+     * @return result String
+     * @throws GdcRestApiException
+     */
+    public void executeMAQLAsync(String projectId, String maql) throws GdcRestApiException {
+        l.debug("Executing async MAQL projectId=" + projectId + " MAQL:\n" + maql);
+        PostMethod maqlPost = createPostMethod(getProjectMdUrl(projectId) + MAQL_ASYNC_EXEC_URI);
+        JSONObject maqlStructure = getMAQLExecStructure(maql);
+        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                maqlStructure.toString().getBytes()));
+        maqlPost.setRequestEntity(request);
+        String result = null;
+        try {
+            String response = executeMethodOk(maqlPost);
+            JSONObject responseObject = JSONObject.fromObject(response);
+            JSONArray uris = responseObject.getJSONArray("entries");
+            String taskmanUri = "";
+            for(Object ouri : uris) {
+                JSONObject uri = (JSONObject)ouri;
+                String category = uri.getString("category");
+                if(category.equals("tasks-status")) {
+                    taskmanUri = uri.getString("link");
+                }
+            }
+            if(taskmanUri != null && taskmanUri.length()>0) {
+                l.debug("Checking async MAQL DDL execution status.");
+                String status = "";
+                while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
+                    status = getTaskManStatus(taskmanUri);
+                    l.debug("Async MAQL DDL status = " + status);
+                    Thread.sleep(500);
+                }
+                l.info("Async MAQL DDL finished with status " + status);
+                if (!("OK".equalsIgnoreCase(status) || !"WARNING".equalsIgnoreCase(status))) {
+                    throw new GdcRestApiException("Async MAQL execution failed with status "+status);
+                }
+            }
+        } catch (HttpMethodException ex) {
+            l.debug("MAQL execution: ", ex);
+            throw new GdcRestApiException("MAQL execution: " + ex.getMessage(), ex);
+        }  catch (InterruptedException e) {
+            throw new InternalErrorException(e);
         } finally {
             maqlPost.releaseConnection();
         }
