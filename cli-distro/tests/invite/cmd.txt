@@ -1,0 +1,5 @@
+#1 - CREATE OR RETRIEVE PROJECT ID
+CreateProject(name="Invite Test");
+StoreProject(fileName="tests/invite/pid");
+
+InviteUser(email="zdenek.svoboda@gooddata.com", msg="Testing invite.", role="admin");

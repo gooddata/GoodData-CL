@@ -171,3 +171,8 @@ bin/gdi.sh -T UTC tests/timezone/forex.txt
 echo 'Droping timezone test'
 drop "`cat tests/timezone/pid`"
 
+echo 'Running invite test'
+bin/gdi.sh -T UTC tests/invite/cmd.txt
+
+echo 'Droping invite test'
+drop "`cat tests/invite/pid`"
