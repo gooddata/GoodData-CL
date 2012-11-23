@@ -80,6 +80,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_HTTP_PROXY_USERNAME = {"proxyusername", "U"};
     public static String[] CLI_PARAM_HTTP_PROXY_PASSWORD = {"proxypassword", "P"};
     public static String[] CLI_PARAM_TIMEZONE = {"timezone", "T"};
+    public static String[] CLI_PARAM_AUTHORIZATION_TOKEN = {"authtoken", "a"};
     public static String CLI_PARAM_SCRIPT = "script";
 
     private static String DEFAULT_PROPERTIES = "gdi.properties";
@@ -90,6 +91,7 @@ public class GdcDI implements Executor {
             new Option(CLI_PARAM_HELP[1], CLI_PARAM_HELP[0], false, "Print command reference"),
             new Option(CLI_PARAM_USERNAME[1], CLI_PARAM_USERNAME[0], true, "GoodData username"),
             new Option(CLI_PARAM_PASSWORD[1], CLI_PARAM_PASSWORD[0], true, "GoodData password"),
+            new Option(CLI_PARAM_AUTHORIZATION_TOKEN[1], CLI_PARAM_AUTHORIZATION_TOKEN[0], true, "GoodData project creation authorization token."),
             new Option(CLI_PARAM_HTTP_PROXY_HOST[1], CLI_PARAM_HTTP_PROXY_HOST[0], true, "HTTP proxy hostname."),
             new Option(CLI_PARAM_HTTP_PROXY_PORT[1], CLI_PARAM_HTTP_PROXY_PORT[0], true, "HTTP proxy port."),
             new Option(CLI_PARAM_HTTP_PORT[1], CLI_PARAM_HTTP_PORT[0], true, "HTTP port."),
@@ -1045,8 +1047,17 @@ public class GdcDI implements Executor {
             String pTempUri = c.getParam("templateUri");
             String driver = c.getParam("driver");
             String token = c.getParam("authorizationToken");
-            if(token == null || token.length() <= 0) // backward compatibility
+            if(token == null || token.length() <= 0) { // backward compatibility
                 token = c.getParam("accessToken");
+                if(token == null || token.length() <= 0) { // take the token from the commandline (-a)
+                    token = p.get(CLI_PARAM_AUTHORIZATION_TOKEN[0]);
+                    if(token == null || token.length() <= 0) { // make the token mandatory
+                        throw new InvalidParameterException("The 'authorizationToken' parameter to the CreateProject " +
+                                "call is mandatory. Please specify it via the 'authorizationToken' parameter of the " +
+                                "CreateProject call or via the -a commandline parameter.");
+                    }
+                }
+            }
             c.paramsProcessed();
 
             if (desc == null || desc.length() <= 0)
