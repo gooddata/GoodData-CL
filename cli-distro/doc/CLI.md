@@ -3,7 +3,7 @@ Project Management Commands:
 
 `CreateProject(name="...", desc="...", templateUri="...", driver=[Pg|mysql], authorizationToken="...");` - create a new project on the server
 - name        - name of the new project
-- authorizationToken - project creation authorization token
+- authorizationToken - project creation authorization token (can be passed via the -a commandline parameter)
 - desc        - *(optional)* project description
 - templateUri - *(optional)* project template to create the project from
 - driver - *(optional)* underlying DB backend: `Pg`|`mysql`
