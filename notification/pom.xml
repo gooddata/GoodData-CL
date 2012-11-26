@@ -29,7 +29,7 @@
     <parent>
         <groupId>com.gooddata.cl</groupId>
         <artifactId>gooddata-cl</artifactId>
-        <version>1.2.63</version>
+        <version>1.2.64-SNAPSHOT</version>
     </parent>
 
     <artifactId>gooddata-notification</artifactId>
