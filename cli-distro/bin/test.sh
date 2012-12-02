@@ -29,8 +29,8 @@ echo "UseProject(fileName = \"examples/quotes_alter/pid\");" > "$tmp"
 grep '^\(UseCsv\|Transfer\)' examples/quotes_alter/quotes.txt >> "$tmp"
 bin/gdi.sh "$tmp"
 
-echo 'Testing GenerateUpdateMaql with updateTitles and updateDataTypes'
-bin/gdi.sh examples/quotes_alter/alter_titles_datatypes.txt
+echo 'Testing GenerateUpdateMaql with updateAll'
+bin/gdi.sh examples/quotes_alter/alter_titles_datatypes_sort.txt
 
 echo 'Altering the server-side model (-2 attributes -1 fact +1 fact)'
 bin/gdi.sh examples/quotes_alter/alter.txt

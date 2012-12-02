@@ -241,7 +241,7 @@ public class MaqlGenerator {
                 cpDefLabelSet = true;
             }
             if (!cpSortSet && l.column.getName().equals(StringUtil.toIdentifier(l.attr.column.getSortLabel()))) {
-                script += l.generateMaqlSortLabel(l.attr.column.getSortOrder());
+                script += l.generateMaqlSortLabel();
                 cpSortSet = true;
             }
         }
@@ -289,6 +289,24 @@ public class MaqlGenerator {
     	}
     	for (final Column c : state.getColumns()) {
     		maql.append(c.generateMaqlAlterDataType());
+    	}
+    	return maql.toString();
+    }
+
+    /**
+     * Generate MAQL to alter titles of provided columns
+     * @param columns
+     * @return
+     */
+    public String generateMaqlSorting(Iterable<SourceColumn> columns) {
+    	StringBuffer maql = new StringBuffer("");
+    	State state = new State();
+    	for (final SourceColumn sc : columns) {
+    		state.processColumn(sc);
+    	}
+    	for (final Column c : state.labels) {
+    		Label l = (Label) c;
+            maql.append(l.generateMaqlSortLabel());
     	}
     	return maql.toString();
     }
@@ -695,16 +713,20 @@ public class MaqlGenerator {
                 return "ALTER ATTRIBUTE  {" + attr.identifier + "} DEFAULT LABEL {" + labelId + "};\n";
             }
 
-            public String generateMaqlSortLabel(String sortOrder) {
+            public String generateMaqlSortLabel() {
                 attr = attributes.get(scnPk);
                 if (attr == null) {
                     throw new IllegalArgumentException("Label " + columnName + " points to non-existing attribute " + scnPk);
                 }
-                final String labelId = getLabelId();
-                if(sortOrder == null || sortOrder.length() <=0 || !(SourceColumn.LDM_SORT_ORDER_ASC.equals(sortOrder) &&
-                        SourceColumn.LDM_SORT_ORDER_DESC.equals(sortOrder)))
-                    sortOrder = SourceColumn.LDM_SORT_ORDER_ASC;
-                return "ALTER ATTRIBUTE  {" + attr.identifier + "} ORDER BY {" + labelId + "} "+sortOrder+";\n";
+                if (column.getName().equals(StringUtil.toIdentifier(attr.column.getSortLabel()))) {
+                	String sortOrder = attr.column.getSortOrder();
+	                final String labelId = getLabelId();
+	                if(sortOrder == null || sortOrder.length() <=0 || !(SourceColumn.LDM_SORT_ORDER_ASC.equals(sortOrder) &&
+	                        SourceColumn.LDM_SORT_ORDER_DESC.equals(sortOrder)))
+	                    sortOrder = SourceColumn.LDM_SORT_ORDER_ASC;
+	                return "ALTER ATTRIBUTE  {" + attr.identifier + "} ORDER BY {" + labelId + "} "+sortOrder+";\n";
+                }
+                return "";
             }
 
             public String generateMaqlAlterTitle() {
