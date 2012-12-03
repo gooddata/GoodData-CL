@@ -1046,17 +1046,22 @@ public class GdcDI implements Executor {
             String desc = c.getParam("desc");
             String pTempUri = c.getParam("templateUri");
             String driver = c.getParam("driver");
-            String token = c.getParam("authorizationToken");
-            if(token == null || token.length() <= 0) { // backward compatibility
-                token = c.getParam("accessToken");
-                if(token == null || token.length() <= 0) { // take the token from the commandline (-a)
-                    token = p.get(CLI_PARAM_AUTHORIZATION_TOKEN[0]);
-                    if(token == null || token.length() <= 0) { // make the token mandatory
-                        throw new InvalidParameterException("The 'authorizationToken' parameter to the CreateProject " +
-                                "call is mandatory. Please specify it via the 'authorizationToken' parameter of the " +
-                                "CreateProject call or via the -a commandline parameter.");
-                    }
-                }
+            String token = null;
+            String[] tokens = new String[] { c.getParam("authorizationToken"),
+            		c.getParam("accessToken"), p.get(CLI_PARAM_AUTHORIZATION_TOKEN[0]),
+            		System.getenv("AUTHORIZATION_TOKEN")
+            };
+            for (final String t : tokens) {
+            	if (t != null && t.length() > 0) {
+            		token = t;
+            		break;
+            	}
+            }
+            if (token == null) {
+                throw new InvalidParameterException("The 'authorizationToken' parameter to the CreateProject " +
+                        "call is mandatory. Please specify it via the 'authorizationToken' parameter of the " +
+                        "CreateProject call or via the -a commandline parameter or  the AUTHORIZATION_TOKEN " +
+                        "env variable.");
             }
             c.paramsProcessed();
 
