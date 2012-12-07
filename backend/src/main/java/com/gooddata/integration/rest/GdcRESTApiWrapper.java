@@ -42,6 +42,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -113,6 +114,8 @@ public class GdcRESTApiWrapper {
     private JSONObject profile;
 
     private static HashMap<String, String> ROLES = new HashMap<String, String>();
+    
+    private static final Pattern NEWLINE_SEPARATOR_PARSER = Pattern.compile( "\n" );
 
     /* TODO This is fragile and may not work for all projects and/or future versions.
      * Use /gdc/projects/{projectId}/roles to retrieve roles for a particular project.
@@ -1373,24 +1376,53 @@ public class GdcRESTApiWrapper {
      * @throws GdcRestApiException
      */
     public String[] executeMAQL(String projectId, String maql) throws GdcRestApiException {
-        l.debug("Executing MAQL projectId=" + projectId + " MAQL:\n" + maql);
-        PostMethod maqlPost = createPostMethod(getProjectMdUrl(projectId) + MAQL_EXEC_URI);
-        JSONObject maqlStructure = getMAQLExecStructure(maql);
-        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                maqlStructure.toString().getBytes()));
-        maqlPost.setRequestEntity(request);
-        String result = null;
-        try {
-            String response = executeMethodOk(maqlPost);
-            JSONObject responseObject = JSONObject.fromObject(response);
-            JSONArray uris = responseObject.getJSONArray("uris");
-            return (String[]) uris.toArray(new String[]{""});
-        } catch (HttpMethodException ex) {
-            l.debug("MAQL execution: ", ex);
-            throw new GdcRestApiException("MAQL execution: " + ex.getMessage(), ex);
-        } finally {
-            maqlPost.releaseConnection();
+        l.debug("Executing MAQL projectId=" + projectId + " MAQL:\n" + maql);       
+        List<String> results = new ArrayList<String>();
+        for (String maqlSplit : splitMAQL(maql)) {
+            PostMethod maqlPost = createPostMethod(getProjectMdUrl(projectId) + MAQL_EXEC_URI);
+            JSONObject maqlStructure = getMAQLExecStructure(maqlSplit);
+            InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
+                    maqlStructure.toString().getBytes()));
+            maqlPost.setRequestEntity(request);
+            try {
+                String response = executeMethodOk(maqlPost);
+                JSONObject responseObject = JSONObject.fromObject(response);
+                JSONArray uris = responseObject.getJSONArray("uris");
+                List<String> jsonResult = JSONArray.toList(uris, String.class);
+                results.addAll(jsonResult);
+            } catch (HttpMethodException ex) {
+                l.debug("MAQL execution: ", ex);
+                throw new GdcRestApiException("MAQL execution: " + ex.getMessage(), ex);
+            } finally {
+                maqlPost.releaseConnection();
+            }
         }
+        return results.toArray(new String[results.size()]);
+    }
+
+    
+    /**
+     * Split maql if size of executed script is likely to exceed 60s timeout on backend. 
+     *
+     * @see http://support.gooddata.com/requests/17258
+     * @param maql the maql
+     * @return the string[]
+     */
+    protected List<String> splitMAQL(String maql) {	
+	List<String> splits = new ArrayList<String>();
+	List<String> maqlLines = Arrays.asList(NEWLINE_SEPARATOR_PARSER.split(maql));
+	// split if we have more than 50 lines of MAQL 
+	if (maqlLines.size() >= 50) {
+	    // bisect: left part..
+	    int halfSize =maqlLines.size()/2;
+	    splits.addAll(splitMAQL(StringUtils.join(maqlLines.subList(0,halfSize), "\n")));
+	    // .. and right part
+	    splits.addAll(splitMAQL(StringUtils.join( maqlLines.subList(halfSize, maqlLines.size()),"\n")));
+	}else {
+	    // small enough, add string as a whole
+	    splits.add( StringUtils.join(maqlLines, "\n"));
+	}
+	return splits;
     }
 
     public static class ProjectExportResult {

@@ -1,0 +1,36 @@
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.varattr1} ADD LABELS {label.shippingorderitemcsv.varattr1} VISUAL(TITLE "varAttr1 (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_varattr1.nm_varattr1}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.varattr1} DEFAULT LABEL {label.shippingorderitemcsv.varattr1};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.varattr2} VISUAL(TITLE "varAttr2 (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_varattr2.id} FULLSET, {f_shippingorderitemcsv.varattr2_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.varattr2};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.varattr2} ADD LABELS {label.shippingorderitemcsv.varattr2} VISUAL(TITLE "varAttr2 (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_varattr2.nm_varattr2}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.varattr2} DEFAULT LABEL {label.shippingorderitemcsv.varattr2};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.refnsshippingordercsv} VISUAL(TITLE "refNsShippingOrderCSV (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_refnsshippingordercsv.id} FULLSET, {f_shippingorderitemcsv.refnsshippingordercsv_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.refnsshippingordercsv};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.refnsshippingordercsv} ADD LABELS {label.shippingorderitemcsv.refnsshippingordercsv} VISUAL(TITLE "refNsShippingOrderCSV (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_refnsshippingordercsv.nm_refnsshippingordercsv}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.refnsshippingordercsv} DEFAULT LABEL {label.shippingorderitemcsv.refnsshippingordercsv};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.varattr3} VISUAL(TITLE "varAttr3 (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_varattr3.id} FULLSET, {f_shippingorderitemcsv.varattr3_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.varattr3};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.varattr3} ADD LABELS {label.shippingorderitemcsv.varattr3} VISUAL(TITLE "varAttr3 (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_varattr3.nm_varattr3}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.varattr3} DEFAULT LABEL {label.shippingorderitemcsv.varattr3};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.connectionpoint} VISUAL(TITLE "connectionPoint (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {f_shippingorderitemcsv.id} FULLSET;
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.connectionpoint};
+
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.productname} VISUAL(TITLE "productName (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_productname.id} FULLSET, {f_shippingorderitemcsv.productname_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.productname};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.productname} ADD LABELS {label.shippingorderitemcsv.productname} VISUAL(TITLE "productName (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_productname.nm_productname}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.productname} DEFAULT LABEL {label.shippingorderitemcsv.productname};
+# Create facts.
+# Facts are numbers that are aggregated by attributes.
+CREATE FACT {fact.shippingorderitemcsv.amountgross} VISUAL(TITLE "amountGross (ShippingOrderItemCSV)", FOLDER {ffld.shippingorderitemcsv}) AS {f_shippingorderitemcsv.f_amountgross};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {fact.shippingorderitemcsv.amountgross};
+
+CREATE FACT {fact.shippingorderitemcsv.amountnet} VISUAL(TITLE "amountNet (ShippingOrderItemCSV)", FOLDER {ffld.shippingorderitemcsv}) AS {f_shippingorderitemcsv.f_amountnet};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {fact.shippingorderitemcsv.amountnet};
+
+CREATE FACT {fact.shippingorderitemcsv.costprice} VISUAL(TITLE "costPrice (ShippingOrderItemCSV)", FOLDER {ffld.shippingorderitemcsv}) AS {f_shippingorderitemcsv.f_costprice};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {fact.shippingorderitemcsv.costprice};

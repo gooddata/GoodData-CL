@@ -1,0 +1,38 @@
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.refdocidshippingorder} DEFAULT LABEL {label.shippingorderitemcsv.refdocidshippingorder};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.tombstone} VISUAL(TITLE "tombstone (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_tombstone.id} FULLSET, {f_shippingorderitemcsv.tombstone_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.tombstone};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.tombstone} ADD LABELS {label.shippingorderitemcsv.tombstone} VISUAL(TITLE "tombstone (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_tombstone.nm_tombstone}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.tombstone} DEFAULT LABEL {label.shippingorderitemcsv.tombstone};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.ean} VISUAL(TITLE "ean (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_ean.id} FULLSET, {f_shippingorderitemcsv.ean_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.ean};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.ean} ADD LABELS {label.shippingorderitemcsv.ean} VISUAL(TITLE "ean (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_ean.nm_ean}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.ean} DEFAULT LABEL {label.shippingorderitemcsv.ean};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.mastername} VISUAL(TITLE "masterName (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_mastername.id} FULLSET, {f_shippingorderitemcsv.mastername_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.mastername};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.mastername} ADD LABELS {label.shippingorderitemcsv.mastername} VISUAL(TITLE "masterName (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_mastername.nm_mastername}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.mastername} DEFAULT LABEL {label.shippingorderitemcsv.mastername};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.mastersku} VISUAL(TITLE "masterSku (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_mastersku.id} FULLSET, {f_shippingorderitemcsv.mastersku_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.mastersku};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.mastersku} ADD LABELS {label.shippingorderitemcsv.mastersku} VISUAL(TITLE "masterSku (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_mastersku.nm_mastersku}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.mastersku} DEFAULT LABEL {label.shippingorderitemcsv.mastersku};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.docid} VISUAL(TITLE "docId (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_docid.id} FULLSET, {f_shippingorderitemcsv.docid_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.docid};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.docid} ADD LABELS {label.shippingorderitemcsv.docid} VISUAL(TITLE "docId (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_docid.nm_docid}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.docid} DEFAULT LABEL {label.shippingorderitemcsv.docid};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.revision} VISUAL(TITLE "revision (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_revision.id} FULLSET, {f_shippingorderitemcsv.revision_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.revision};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.revision} ADD LABELS {label.shippingorderitemcsv.revision} VISUAL(TITLE "revision (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_revision.nm_revision}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.revision} DEFAULT LABEL {label.shippingorderitemcsv.revision};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.category} VISUAL(TITLE "category (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_category.id} FULLSET, {f_shippingorderitemcsv.category_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.category};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.category} ADD LABELS {label.shippingorderitemcsv.category} VISUAL(TITLE "category (ShippingOrderItemCSV)") AS {d_shippingorderitemcsv_category.nm_category}; 
+ALTER ATTRIBUTE  {attr.shippingorderitemcsv.category} DEFAULT LABEL {label.shippingorderitemcsv.category};
+CREATE ATTRIBUTE {attr.shippingorderitemcsv.varattr1} VISUAL(TITLE "varAttr1 (ShippingOrderItemCSV)", FOLDER {dim.shippingorderitemcsv}) AS KEYS {d_shippingorderitemcsv_varattr1.id} FULLSET, {f_shippingorderitemcsv.varattr1_id};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {attr.shippingorderitemcsv.varattr1};

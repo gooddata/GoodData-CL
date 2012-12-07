@@ -1,0 +1,38 @@
+CREATE FACT {fact.shippingorderitemcsv.itemprice} VISUAL(TITLE "itemPrice (ShippingOrderItemCSV)", FOLDER {ffld.shippingorderitemcsv}) AS {f_shippingorderitemcsv.f_itemprice};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {fact.shippingorderitemcsv.itemprice};
+
+CREATE FACT {fact.shippingorderitemcsv.quantity} VISUAL(TITLE "quantity (ShippingOrderItemCSV)", FOLDER {ffld.shippingorderitemcsv}) AS {f_shippingorderitemcsv.f_quantity};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {fact.shippingorderitemcsv.quantity};
+
+CREATE FACT {dt.shippingorderitemcsv.lastmodifiedtime} VISUAL(TITLE "lastModifiedTime (ShippingOrderItemCSV) (Date)") AS {f_shippingorderitemcsv.dt_lastmodifiedtime};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {dt.shippingorderitemcsv.lastmodifiedtime};
+ALTER DATATYPE {f_shippingorderitemcsv.dt_lastmodifiedtime} INT;
+CREATE FACT {tm.dt.shippingorderitemcsv.lastmodifiedtime} VISUAL(TITLE "lastModifiedTime (ShippingOrderItemCSV) (Time)") AS {f_shippingorderitemcsv.tm_lastmodifiedtime};
+ALTER DATASET {dataset.shippingorderitemcsv} ADD {tm.dt.shippingorderitemcsv.lastmodifiedtime};
+ALTER DATATYPE {f_shippingorderitemcsv.tm_lastmodifiedtime} INT;
+# Create date facts.
+# Dates are represented as facts.
+# Dates are also connected to the date dimensions.
+# Connect the date to the date dimension.
+ALTER ATTRIBUTE {lastmodifiedtimeshippingorderitemcsv.date} ADD KEYS {f_shippingorderitemcsv.dt_lastmodifiedtime_id};
+
+# Create references.
+# References connect the dataset to other datasets.
+# Connect the reference to the appropriate dimension.
+ALTER ATTRIBUTE {attr.shippingordercsv.connectionpoint} ADD KEYS {f_shippingorderitemcsv.refshippingordercsv_id};
+
+# Connect the reference to the appropriate dimension.
+ALTER ATTRIBUTE {attr.time.second.of.day.lastmodifiedtimeshippingorderitemcsv} ADD KEYS {f_shippingorderitemcsv.tm_lastmodifiedtime_id};
+
+ALTER ATTRIBUTE {attr.shippingorderitemcsv.connectionpoint} ADD LABELS {label.shippingorderitemcsv.connectionpoint} VISUAL(TITLE "connectionPoint (ShippingOrderItemCSV)") AS {f_shippingorderitemcsv.nm_connectionpoint}; 
+# Synchronize the storage and data loading interfaces with the new logical model.
+SYNCHRONIZE {dataset.shippingorderitemcsv};
+# add dummy lines to force 3 parts
+# add dummy lines to force 3 parts
+# add dummy lines to force 3 parts
+# add dummy lines to force 3 parts
+# add dummy lines to force 3 parts
+# add dummy lines to force 3 parts
+# add dummy lines to force 3 parts
+# add dummy lines to force 3 parts
+# add dummy lines to force 3 parts
