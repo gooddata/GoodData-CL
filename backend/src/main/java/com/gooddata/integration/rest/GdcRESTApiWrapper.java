@@ -1431,7 +1431,7 @@ public class GdcRESTApiWrapper {
                     Thread.sleep(500);
                 }
                 l.info("Async MAQL DDL finished with status " + status);
-                if (!("OK".equalsIgnoreCase(status) || !"WARNING".equalsIgnoreCase(status))) {
+                if (!("OK".equalsIgnoreCase(status) || "WARNING".equalsIgnoreCase(status))) {
                     throw new GdcRestApiException("Async MAQL execution failed with status "+status);
                 }
             }
