@@ -28,7 +28,7 @@
     <parent>
         <groupId>com.gooddata.cl</groupId>
         <artifactId>gooddata-cl</artifactId>
-        <version>1.2.63-internal3</version>
+        <version>1.2.63-internal4-SNAPSHOT</version>
     </parent>
 
     <artifactId>gooddata-cl-common</artifactId>
