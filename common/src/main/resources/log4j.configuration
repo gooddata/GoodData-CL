@@ -14,13 +14,13 @@ log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
 log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n
 
 log4j.appender.S=org.apache.log4j.RollingFileAppender
-log4j.appender.S.File=sql.log
+log4j.appender.S.File=target/sql.log
 log4j.appender.S.MaxFileSize=10000KB
 log4j.appender.S.layout=org.apache.log4j.PatternLayout
 log4j.appender.S.layout.ConversionPattern=%p %t %c - %m%n
 
 log4j.appender.H=org.apache.log4j.RollingFileAppender
-log4j.appender.H.File=http.log
+log4j.appender.H.File=target/http.log
 log4j.appender.H.MaxFileSize=10000KB
 log4j.appender.H.layout=org.apache.log4j.PatternLayout
 log4j.appender.H.layout.ConversionPattern=%p %t %c - %m%n
