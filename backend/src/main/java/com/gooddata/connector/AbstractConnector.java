@@ -25,6 +25,7 @@ package com.gooddata.connector;
 
 import com.gooddata.Constants;
 import com.gooddata.exception.GdcIntegrationErrorException;
+import com.gooddata.exception.GdcProjectAccessException;
 import com.gooddata.exception.HttpMethodException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
@@ -50,6 +51,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * GoodData abstract connector implements functionality that can be reused in several connectors.
@@ -571,12 +573,23 @@ public abstract class AbstractConnector implements Connector {
             final String updateDataTypes = c.getParam("updateDataTypes");
             final String updateSorting = c.getParam("updateSorting");
             final String updateAll = c.getParam("updateAll");
+            final String createIfNotExists = c.getParam("createIfNotExists");
             c.paramsProcessed();
 
             final String dataset = schema.getDatasetName();
 
             final GdcRESTApiWrapper gd = ctx.getRestApi(p);
-            final SLI sli = gd.getSLIById(dataset, pid);
+            final SLI sli;
+            try {
+            	sli = gd.getSLIById(dataset, pid);
+            } catch (GdcProjectAccessException e) {
+            	if (createIfNotExists != null && !createIfNotExists.equalsIgnoreCase("false")) {
+            		c.setParameters(new Properties() {{ put("maqlFile", maqlFile); }});
+            		generateMAQL(c, p, ctx);
+            		return;
+            	}
+            	throw e;
+            }
 
             final DataSetDiffMaker diffMaker = new DataSetDiffMaker(gd, sli, schema);
             final List<SourceColumn> newColumns = diffMaker.findNewColumns();

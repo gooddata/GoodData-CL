@@ -111,7 +111,7 @@ Logical Model Management Commands:
 - maqlFile - path to MAQL file (will be overwritten)
 
 
-`GenerateUpdateMaql(maqlFile="...", updateTitles="...", updateDataTypes="...", updateSorting="...", updateAll="...");` - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project. The command only checks for new or removed columns and does not detect changed columns. Instead, the "update" parameters can be used to ensure the remote model users the same titles, data types or sorting as prescribed in local XML files.
+`GenerateUpdateMaql(maqlFile="...", updateTitles="...", updateDataTypes="...", updateSorting="...", updateAll="...", createIfNotExists="...");` - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project. The command only checks for new or removed columns and does not detect changed columns. Instead, the "update" parameters can be used to ensure the remote model users the same titles, data types or sorting as prescribed in local XML files.
 - maqlFile - path to MAQL file (will be overwritten)
 
 `ExecuteMaql(maqlFile="...", ifExists="...");` - run MAQL DDL script on server to generate data model
@@ -121,6 +121,7 @@ Logical Model Management Commands:
   updateDataTypes - *(optional)* reset data types of all columns
   updateSorting - *(optional)* reset sorting label and order of all columns
   updateAll - *(optional)* shortcut for updateTitles, updateDataTypes and updateSorting
+  createIfNotExists - *(optional)* if set to true, GenerateUpdateMaql won't fail if the data set does not exist. Instead, it will produce the same result as GenerateMaql (i.e., it will generate the complete MAQL DDL code to create the data set)
 
 
 Data Commands:
