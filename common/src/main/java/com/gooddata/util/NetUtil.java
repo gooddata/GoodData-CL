@@ -65,10 +65,12 @@ public class NetUtil {
                 final String password = System.getProperty("http.proxyPassword");
                 l.debug("Configuring HTTP client with proxyUser=" + user + " and password.");
                 List authPrefs = new ArrayList();
-                authPrefs.add(AuthPolicy.BASIC);
-                client.getState().setProxyCredentials(new AuthScope(null, proxyPort, null), new UsernamePasswordCredentials(user,
+                if(user != null && password !=null) {
+                    authPrefs.add(AuthPolicy.BASIC);
+                    client.getState().setProxyCredentials(new AuthScope(null, proxyPort, null), new UsernamePasswordCredentials(user,
                         password));
-                client.getParams().setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs);
+                    client.getParams().setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs);
+                }
             }
             client.getHostConfiguration().setProxy(proxyHost, proxyPort);
         }
