@@ -23,6 +23,7 @@
 
 package com.gooddata.processor;
 
+import com.gooddata.Constants;
 import com.gooddata.exception.*;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
@@ -360,7 +361,7 @@ public class CreateZendeskV3Projects {
         while ("LOADING".equalsIgnoreCase(status)) {
             status = ctx.getRestApi(p).getProjectStatus(projectId);
             l.debug("Project " + projectId + " loading  status = " + status);
-            Thread.sleep(500);
+            Thread.sleep(Constants.POLL_INTERVAL);
         }
     }
 

@@ -50,4 +50,11 @@ public class Constants {
     public final static String DEFAULT_DATE_LABEL = "date";
     public final static String DEFAULT_DATE_LABEL_SUFFIX = ".mdyy";
 
+    // Maximum retries
+    public final static int MAX_RETRY = 1000;
+
+    // polling interval
+    public final static int POLL_INTERVAL = 10000;
+    public final static int RETRY_INTERVAL = 1000;
+
 }

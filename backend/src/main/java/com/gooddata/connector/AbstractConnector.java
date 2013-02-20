@@ -510,13 +510,13 @@ public abstract class AbstractConnector implements Connector {
             try {
                 status = ctx.getRestApi(p).getLoadingStatus(taskUri);
                 l.debug("Loading status = " + status);
-                Thread.sleep(ETL_POLL_INTERVAL);
+                Thread.sleep(Constants.POLL_INTERVAL);
             }
             catch (HttpMethodException e) {
                 retryCount++;
                 l.debug("Loading status call failed with: '" + e.getMessage()+"' Retry #"+retryCount+".");
-                Thread.sleep(retryCount*100);
-                if(retryCount > 10000)
+                Thread.sleep(retryCount*Constants.RETRY_INTERVAL);
+                if(retryCount > Constants.MAX_RETRY)
                     throw e;
             }
         }

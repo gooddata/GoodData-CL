@@ -23,6 +23,7 @@
 
 package com.gooddata.integration.rest;
 
+import com.gooddata.Constants;
 import com.gooddata.exception.*;
 import com.gooddata.integration.model.Column;
 import com.gooddata.integration.model.Project;
@@ -829,7 +830,7 @@ public class GdcRESTApiWrapper {
         obj.put("reportDefinition", reportDefinition);
         MetadataObject resp = new MetadataObject(createMetadataObject(projectId, obj));
 
-        int retryCnt = 1000;
+        int retryCnt = Constants.MAX_RETRY;
         boolean hasFinished = false;
         while (retryCnt-- > 0 && !hasFinished) {
             try {
@@ -857,7 +858,7 @@ public class GdcRESTApiWrapper {
             } catch (HttpMethodNotFinishedYetException e) {
                 l.debug("computeMetric: Waiting for DataResult");
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(Constants.POLL_INTERVAL);
                 } catch (InterruptedException ex) {
                     // do nothing
                 }
@@ -876,7 +877,7 @@ public class GdcRESTApiWrapper {
     public String computeReport(String reportUri) {
         l.debug("Computing report uri=" + reportUri);
         String retVal = "";
-        int retryCnt = 1000;
+        int retryCnt = Constants.MAX_RETRY;
         boolean hasFinished = false;
         while (retryCnt-- > 0 && !hasFinished) {
             try {
@@ -974,7 +975,7 @@ public class GdcRESTApiWrapper {
             } catch (HttpMethodNotFinishedYetException e) {
                 l.debug("computeReport: Waiting for DataResult");
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(Constants.POLL_INTERVAL);
                 } catch (InterruptedException ex) {
                     // do nothing
                 }
@@ -1151,7 +1152,7 @@ public class GdcRESTApiWrapper {
             } catch (HttpMethodNotFinishedYetException e) {
                 l.debug("Waiting for exporter to finish.");
                 try {
-                    Thread.currentThread().sleep(1000);
+                    Thread.currentThread().sleep(Constants.POLL_INTERVAL);
                 } catch (InterruptedException ex) {
                     // do nothing
                 }
@@ -1428,7 +1429,7 @@ public class GdcRESTApiWrapper {
                 while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
                     status = getTaskManStatus(taskmanUri);
                     l.debug("Async MAQL DDL status = " + status);
-                    Thread.sleep(500);
+                    Thread.sleep(Constants.POLL_INTERVAL);
                 }
                 l.info("Async MAQL DDL finished with status " + status);
                 if (!("OK".equalsIgnoreCase(status) || "WARNING".equalsIgnoreCase(status))) {
@@ -2455,7 +2456,7 @@ public class GdcRESTApiWrapper {
                 l.debug("Remote asked us to retry after " + timeout + " seconds, sleeping.");
                 l.debug(retries + " more retries");
                 try {
-                    Thread.currentThread().sleep(1000 * timeout);
+                    Thread.currentThread().sleep(Constants.RETRY_INTERVAL * timeout);
                 } catch (java.lang.InterruptedException e) {
                 }
                 executeMethodOkOnly(method, false, retries);
@@ -2995,7 +2996,7 @@ public class GdcRESTApiWrapper {
                 } catch (HttpMethodNotFinishedYetException e) {
                     l.debug("getTaskManStatus: Waiting for status");
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(Constants.POLL_INTERVAL);
                     } catch (InterruptedException ex) {
                         // do nothing
                     }
