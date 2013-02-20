@@ -63,6 +63,8 @@ public abstract class AbstractConnector implements Connector {
 
     private static Logger l = Logger.getLogger(AbstractConnector.class);
 
+    private static int ETL_POLL_INTERVAL = 10000;
+
     /**
      * The LDM schema of the data source
      */
@@ -508,7 +510,7 @@ public abstract class AbstractConnector implements Connector {
             try {
                 status = ctx.getRestApi(p).getLoadingStatus(taskUri);
                 l.debug("Loading status = " + status);
-                Thread.sleep(500);
+                Thread.sleep(ETL_POLL_INTERVAL);
             }
             catch (HttpMethodException e) {
                 retryCount++;
