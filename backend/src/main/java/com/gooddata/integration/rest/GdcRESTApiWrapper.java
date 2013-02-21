@@ -1412,7 +1412,7 @@ public class GdcRESTApiWrapper {
 	List<String> splits = new ArrayList<String>();
 	List<String> maqlLines = Arrays.asList(NEWLINE_SEPARATOR_PARSER.split(maql));
 	// split if we have more than 50 lines of MAQL 
-	if (maqlLines.size() >= 50) {
+	if (maqlLines.size() >= 20) {
 	    // bisect: left part..
 	    int halfSize =maqlLines.size()/2;
 	    splits.addAll(splitMAQL(StringUtils.join(maqlLines.subList(0,halfSize), "\n")));
