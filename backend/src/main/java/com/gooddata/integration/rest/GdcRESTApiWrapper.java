@@ -1426,15 +1426,23 @@ public class GdcRESTApiWrapper {
             }
             if(taskmanUri != null && taskmanUri.length()>0) {
                 l.debug("Checking async MAQL DDL execution status.");
-                String status = "";
-                while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
-                    status = getTaskManStatus(taskmanUri);
-                    l.debug("Async MAQL DDL status = " + status);
+                TaskmanStatus status = new TaskmanStatus("",new String[]{});
+                while (!"OK".equalsIgnoreCase(status.getStatus()) && !"ERROR".equalsIgnoreCase(status.getStatus()) &&
+                        !"WARNING".equalsIgnoreCase(status.getStatus())) {
+                    status = getDetailedTaskManStatus(taskmanUri);
+                    l.debug("Async MAQL DDL status = " + status.getStatus());
                     Thread.sleep(Constants.POLL_INTERVAL);
                 }
-                l.info("Async MAQL DDL finished with status " + status);
-                if (!("OK".equalsIgnoreCase(status) || "WARNING".equalsIgnoreCase(status))) {
-                    throw new GdcRestApiException("Async MAQL execution failed with status "+status);
+                l.info("Async MAQL DDL finished with status " + status.getStatus());
+                if (!("OK".equalsIgnoreCase(status.getStatus()) || "WARNING".equalsIgnoreCase(status.getStatus()))) {
+                    String[] messages = status.getMessage();
+                    String message = "";
+                    for(String msg : messages) {
+                        if(message.length()>0) message += "\n";
+                        message += msg;
+                    }
+                    throw new GdcRestApiException("Async MAQL execution failed with status "+status.getStatus() +
+                            ". Errors: "+message);
                 }
             }
         } catch (HttpMethodException ex) {
@@ -3010,8 +3018,88 @@ public class GdcRESTApiWrapper {
                 l.debug("TaskMan status=" + status);
                 return status;
             } else {
-                l.debug("No wTaskStatus structure in the migration status!");
-                throw new GdcRestApiException("No wTaskStatus structure in the migration status!");
+                l.debug("No wTaskStatus structure in the taskman status!");
+                throw new GdcRestApiException("No wTaskStatus structure in the taskman status!");
+            }
+        } finally {
+            ptm.releaseConnection();
+        }
+    }
+
+    public static class TaskmanStatus {
+
+        private String[] message;
+        private String status;
+
+        public TaskmanStatus(String s, String[] m) {
+            this.status = s;
+            this.message = m;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public String[] getMessage() {
+            return message;
+        }
+
+        public void setMessage(String[] message) {
+            this.message = message;
+        }
+
+    }
+
+    public TaskmanStatus getDetailedTaskManStatus(String link) throws HttpMethodException {
+        l.debug("Getting TaskMan status uri=" + link);
+        HttpMethod ptm = createGetMethod(getServerUrl() + link);
+        try {
+            String response = "";
+            boolean isFinished = false;
+            while (!isFinished) {
+                try {
+                    response = executeMethodOk(ptm);
+                    isFinished = true;
+                } catch (HttpMethodNotFinishedYetException e) {
+                    l.debug("getTaskManStatus: Waiting for status");
+                    try {
+                        Thread.sleep(Constants.POLL_INTERVAL);
+                    } catch (InterruptedException ex) {
+                        // do nothing
+                    }
+                }
+            }
+            JSONObject task = JSONObject.fromObject(response);
+            JSONObject state = task.getJSONObject("wTaskStatus");
+            if (state != null && !state.isNullObject() && !state.isEmpty()) {
+                String status = state.getString("status");
+                ArrayList<String> messages = new ArrayList<String>();
+                l.debug("TaskMan status=" + status);
+                JSONArray msgs = state.getJSONArray("messages");
+                if(msgs != null && !msgs.isEmpty()) {
+                    for (Object msgo : msgs) {
+                        JSONObject msg = (JSONObject)msgo;
+                        String root = (String)msg.keys().next();
+                        JSONObject inner = msg.getJSONObject(root);
+                        JSONArray prms = inner.getJSONArray("parameters");
+                        String message = inner.getString("message");
+                        if(prms != null && !prms.isEmpty()) {
+                            for(Object prmo : prms) {
+                                String prm = (String)prmo;
+                                message = message.replaceFirst("\\%s",prm);
+                            }
+                        }
+                        messages.add(message);
+                    }
+                }
+                return new TaskmanStatus(status, (String[])messages.toArray(new String[]{}));
+            } else {
+                l.debug("No wTaskStatus structure in the taskman status!");
+                throw new GdcRestApiException("No wTaskStatus structure in the taskman status!");
             }
         } finally {
             ptm.releaseConnection();
