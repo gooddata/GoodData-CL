@@ -3079,21 +3079,23 @@ public class GdcRESTApiWrapper {
                 String status = state.getString("status");
                 ArrayList<String> messages = new ArrayList<String>();
                 l.debug("TaskMan status=" + status);
-                JSONArray msgs = state.getJSONArray("messages");
-                if(msgs != null && !msgs.isEmpty()) {
-                    for (Object msgo : msgs) {
-                        JSONObject msg = (JSONObject)msgo;
-                        String root = (String)msg.keys().next();
-                        JSONObject inner = msg.getJSONObject(root);
-                        JSONArray prms = inner.getJSONArray("parameters");
-                        String message = inner.getString("message");
-                        if(prms != null && !prms.isEmpty()) {
-                            for(Object prmo : prms) {
-                                String prm = (String)prmo;
-                                message = message.replaceFirst("\\%s",prm);
+                if(state.containsKey("messages")) {
+                    JSONArray msgs = state.getJSONArray("messages");
+                    if(msgs != null && !msgs.isEmpty()) {
+                        for (Object msgo : msgs) {
+                            JSONObject msg = (JSONObject)msgo;
+                            String root = (String)msg.keys().next();
+                            JSONObject inner = msg.getJSONObject(root);
+                            JSONArray prms = inner.getJSONArray("parameters");
+                            String message = inner.getString("message");
+                            if(prms != null && !prms.isEmpty()) {
+                                for(Object prmo : prms) {
+                                    String prm = (String)prmo;
+                                    message = message.replaceFirst("\\%s",prm);
+                                }
                             }
+                            messages.add(message);
                         }
-                        messages.add(message);
                     }
                 }
                 return new TaskmanStatus(status, (String[])messages.toArray(new String[]{}));
