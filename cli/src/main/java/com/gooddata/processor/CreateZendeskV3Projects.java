@@ -268,7 +268,7 @@ public class CreateZendeskV3Projects {
         CliParams cp = new CliParams();
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
-            l.info("GoodData CL version 1.2.66");
+            l.info("GoodData CL version 1.2.67");
             System.exit(0);
         }
 
