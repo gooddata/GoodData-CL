@@ -25,6 +25,7 @@ package com.gooddata.connector;
 
 import com.gooddata.Constants;
 import com.gooddata.exception.GdcIntegrationErrorException;
+import com.gooddata.exception.GdcProjectAccessException;
 import com.gooddata.exception.HttpMethodException;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ProcessingException;
@@ -50,6 +51,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * GoodData abstract connector implements functionality that can be reused in several connectors.
@@ -60,6 +62,8 @@ import java.util.Map;
 public abstract class AbstractConnector implements Connector {
 
     private static Logger l = Logger.getLogger(AbstractConnector.class);
+
+    private static int ETL_POLL_INTERVAL = 10000;
 
     /**
      * The LDM schema of the data source
@@ -298,7 +302,7 @@ public abstract class AbstractConnector implements Connector {
         final File mf = FileUtil.getFile(maqlFile, ifExists);
         if (mf != null) {
             final String maql = FileUtil.readStringFromFile(maqlFile);
-            ctx.getRestApi(p).executeMAQL(pid, maql);
+            ctx.getRestApi(p).executeMAQLAsync(pid, maql);
         }
         l.debug("Finished MAQL execution.");
         l.info("MAQL script " + maqlFile + " successfully executed.");
@@ -506,13 +510,13 @@ public abstract class AbstractConnector implements Connector {
             try {
                 status = ctx.getRestApi(p).getLoadingStatus(taskUri);
                 l.debug("Loading status = " + status);
-                Thread.sleep(500);
+                Thread.sleep(Constants.POLL_INTERVAL);
             }
             catch (HttpMethodException e) {
                 retryCount++;
                 l.debug("Loading status call failed with: '" + e.getMessage()+"' Retry #"+retryCount+".");
-                Thread.sleep(retryCount*100);
-                if(retryCount > 10000)
+                Thread.sleep(retryCount*Constants.RETRY_INTERVAL);
+                if(retryCount > Constants.MAX_RETRY)
                     throw e;
             }
         }
@@ -569,12 +573,25 @@ public abstract class AbstractConnector implements Connector {
             final String maqlFile = c.getParamMandatory("maqlFile");
             final String updateTitles = c.getParam("updateTitles");
             final String updateDataTypes = c.getParam("updateDataTypes");
+            final String updateSorting = c.getParam("updateSorting");
+            final String updateAll = c.getParam("updateAll");
+            final String createIfNotExists = c.getParam("createIfNotExists");
             c.paramsProcessed();
 
             final String dataset = schema.getDatasetName();
 
             final GdcRESTApiWrapper gd = ctx.getRestApi(p);
-            final SLI sli = gd.getSLIById(dataset, pid);
+            final SLI sli;
+            try {
+            	sli = gd.getSLIById(dataset, pid);
+            } catch (GdcProjectAccessException e) {
+            	if (createIfNotExists != null && !createIfNotExists.equalsIgnoreCase("false")) {
+            		c.setParameters(new Properties() {{ put("maqlFile", maqlFile); }});
+            		generateMAQL(c, p, ctx);
+            		return;
+            	}
+            	throw e;
+            }
 
             final DataSetDiffMaker diffMaker = new DataSetDiffMaker(gd, sli, schema);
             final List<SourceColumn> newColumns = diffMaker.findNewColumns();
@@ -590,11 +607,20 @@ public abstract class AbstractConnector implements Connector {
                 mg.setSynchronize(false);
                 maql.append(mg.generateMaqlAdd(newColumns, diffMaker.getLocalColumns()));
             }
-            if (updateTitles != null && !updateTitles.equalsIgnoreCase("false")) {
+            if (updateAll != null && !updateAll.equalsIgnoreCase("false")) {
             	maql.append(mg.generateMaqlUpdateTitles(diffMaker.getLocalColumns()));
-            }
-            if (updateDataTypes != null && !updateDataTypes.equalsIgnoreCase("false")) {
             	maql.append(mg.generateMaqlUpdateDataTypes(diffMaker.getLocalColumns()));
+            	maql.append(mg.generateMaqlSorting(diffMaker.getLocalColumns()));            	
+            } else {
+            	if (updateTitles != null && !updateTitles.equalsIgnoreCase("false")) {
+	            	maql.append(mg.generateMaqlUpdateTitles(diffMaker.getLocalColumns()));
+	            }
+	            if (updateDataTypes != null && !updateDataTypes.equalsIgnoreCase("false")) {
+	            	maql.append(mg.generateMaqlUpdateDataTypes(diffMaker.getLocalColumns()));
+	            }
+	            if (updateSorting != null && !updateSorting.equalsIgnoreCase("false")) {
+	            	maql.append(mg.generateMaqlSorting(diffMaker.getLocalColumns()));
+	            }
             }
             if (maql.length() > 0) {
                 maql.append(mg.generateMaqlSynchronize());

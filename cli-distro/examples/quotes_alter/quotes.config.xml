@@ -20,6 +20,8 @@
             <name>SYMBOL</name>
             <title>Symbol</title>
             <ldmType>ATTRIBUTE</ldmType>
+            <sortLabel>COMPANY</sortLabel>
+            <sortOrder>DESC</sortOrder>
             <folder>Quotes</folder>
         </column>
         <column>

@@ -12,7 +12,9 @@ GenerateUpdateMaql(maqlFile="examples/quotes_alter/quotes_titles.alter.maql",upd
 ExecuteMaql(maqlFile="examples/quotes_alter/quotes_titles.alter.maql");
 
 GenerateUpdateMaql(maqlFile="examples/quotes_alter/quotes_datatypes.alter.maql",updateDataTypes="true");
-ExecuteMaql(maqlFile="examples/quotes_alter/quotes_datatypes.alter.maql");
+
+GenerateUpdateMaql(maqlFile="examples/quotes_alter/quotes_sorting.alter.maql",updateSorting="true");
+ExecuteMaql(maqlFile="examples/quotes_alter/quotes_sorting.alter.maql");
 
 # transfer the stock quotes data
 TransferData();

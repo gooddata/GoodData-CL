@@ -29,8 +29,8 @@ echo "UseProject(fileName = \"examples/quotes_alter/pid\");" > "$tmp"
 grep '^\(UseCsv\|Transfer\)' examples/quotes_alter/quotes.txt >> "$tmp"
 bin/gdi.sh "$tmp"
 
-echo 'Testing GenerateUpdateMaql with updateTitles and updateDataTypes'
-bin/gdi.sh examples/quotes_alter/alter_titles_datatypes.txt
+echo 'Testing GenerateUpdateMaql with updateAll'
+bin/gdi.sh examples/quotes_alter/alter_titles_datatypes_sort.txt
 
 echo 'Altering the server-side model (-2 attributes -1 fact +1 fact)'
 bin/gdi.sh examples/quotes_alter/alter.txt
@@ -171,3 +171,8 @@ bin/gdi.sh -T UTC tests/timezone/forex.txt
 echo 'Droping timezone test'
 drop "`cat tests/timezone/pid`"
 
+echo 'Running invite test'
+bin/gdi.sh -T UTC tests/invite/cmd.txt
+
+echo 'Droping invite test'
+drop "`cat tests/invite/pid`"

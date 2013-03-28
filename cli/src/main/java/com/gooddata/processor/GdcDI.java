@@ -23,6 +23,7 @@
 
 package com.gooddata.processor;
 
+import com.gooddata.Constants;
 import com.gooddata.connector.*;
 import com.gooddata.exception.*;
 import com.gooddata.integration.model.Column;
@@ -80,6 +81,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_HTTP_PROXY_USERNAME = {"proxyusername", "U"};
     public static String[] CLI_PARAM_HTTP_PROXY_PASSWORD = {"proxypassword", "P"};
     public static String[] CLI_PARAM_TIMEZONE = {"timezone", "T"};
+    public static String[] CLI_PARAM_AUTHORIZATION_TOKEN = {"authtoken", "a"};
     public static String CLI_PARAM_SCRIPT = "script";
 
     private static String DEFAULT_PROPERTIES = "gdi.properties";
@@ -90,6 +92,7 @@ public class GdcDI implements Executor {
             new Option(CLI_PARAM_HELP[1], CLI_PARAM_HELP[0], false, "Print command reference"),
             new Option(CLI_PARAM_USERNAME[1], CLI_PARAM_USERNAME[0], true, "GoodData username"),
             new Option(CLI_PARAM_PASSWORD[1], CLI_PARAM_PASSWORD[0], true, "GoodData password"),
+            new Option(CLI_PARAM_AUTHORIZATION_TOKEN[1], CLI_PARAM_AUTHORIZATION_TOKEN[0], true, "GoodData project creation authorization token."),
             new Option(CLI_PARAM_HTTP_PROXY_HOST[1], CLI_PARAM_HTTP_PROXY_HOST[0], true, "HTTP proxy hostname."),
             new Option(CLI_PARAM_HTTP_PROXY_PORT[1], CLI_PARAM_HTTP_PROXY_PORT[0], true, "HTTP proxy port."),
             new Option(CLI_PARAM_HTTP_PORT[1], CLI_PARAM_HTTP_PORT[0], true, "HTTP port."),
@@ -384,7 +387,7 @@ public class GdcDI implements Executor {
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.63" +
+            l.info("GoodData CL version 1.2.67" +
                     ((BUILD_NUMBER.length() > 0) ? ", build " + BUILD_NUMBER : "."));
             System.exit(0);
 
@@ -677,7 +680,7 @@ public class GdcDI implements Executor {
                 while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
                     status = ctx.getRestApi(p).getMigrationStatus(taskUri);
                     l.debug("MAQL DML execution status = " + status);
-                    Thread.sleep(500);
+                    Thread.sleep(Constants.POLL_INTERVAL);
                 }
                 l.info("MAQL DML execution finished with status " + status);
                 if ("ERROR".equalsIgnoreCase(status)) {
@@ -730,7 +733,7 @@ public class GdcDI implements Executor {
                 while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
                     status = ctx.getRestApi(p).getMigrationStatus(taskUri);
                     l.debug("Project export status = " + status);
-                    Thread.sleep(500);
+                    Thread.sleep(Constants.POLL_INTERVAL);
                 }
                 l.info("Project export finished with status " + status);
                 if ("OK".equalsIgnoreCase(status) || "WARNING".equalsIgnoreCase(status)) {
@@ -773,7 +776,7 @@ public class GdcDI implements Executor {
                 while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
                     status = ctx.getRestApi(p).getMigrationStatus(taskUri);
                     l.debug("Project import status = " + status);
-                    Thread.sleep(500);
+                    Thread.sleep(Constants.POLL_INTERVAL);
                 }
                 l.info("Project import finished with status " + status);
                 if ("ERROR".equalsIgnoreCase(status)) {
@@ -830,7 +833,7 @@ public class GdcDI implements Executor {
                     while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
                         status = ctx.getRestApi(p).getTaskManStatus(taskUri);
                         l.debug("MD export status = " + status);
-                        Thread.sleep(500);
+                        Thread.sleep(Constants.POLL_INTERVAL);
                     }
                     l.info("MD export finished with status " + status);
                     if ("OK".equalsIgnoreCase(status) || "WARNING".equalsIgnoreCase(status)) {
@@ -885,7 +888,7 @@ public class GdcDI implements Executor {
                 while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
                     status = ctx.getRestApi(p).getTaskManStatus(taskUri);
                     l.debug("MD import status = " + status);
-                    Thread.sleep(500);
+                    Thread.sleep(Constants.POLL_INTERVAL);
                 }
                 l.info("MD import finished with status " + status);
                 if ("ERROR".equalsIgnoreCase(status)) {
@@ -1044,9 +1047,23 @@ public class GdcDI implements Executor {
             String desc = c.getParam("desc");
             String pTempUri = c.getParam("templateUri");
             String driver = c.getParam("driver");
-            String token = c.getParam("authorizationToken");
-            if(token == null || token.length() <= 0) // backward compatibility
-                token = c.getParam("accessToken");
+            String token = null;
+            String[] tokens = new String[] { c.getParam("authorizationToken"),
+            		c.getParam("accessToken"), p.get(CLI_PARAM_AUTHORIZATION_TOKEN[0]),
+            		System.getenv("AUTHORIZATION_TOKEN")
+            };
+            for (final String t : tokens) {
+            	if (t != null && t.length() > 0) {
+            		token = t;
+            		break;
+            	}
+            }
+            if (token == null) {
+                throw new InvalidParameterException("The 'authorizationToken' parameter to the CreateProject " +
+                        "call is mandatory. Please specify it via the 'authorizationToken' parameter of the " +
+                        "CreateProject call or via the -a commandline parameter or  the AUTHORIZATION_TOKEN " +
+                        "env variable.");
+            }
             c.paramsProcessed();
 
             if (desc == null || desc.length() <= 0)
@@ -1106,7 +1123,7 @@ public class GdcDI implements Executor {
         while ("LOADING".equalsIgnoreCase(status)) {
             status = ctx.getRestApi(p).getProjectStatus(projectId);
             l.debug("Project " + projectId + " loading  status = " + status);
-            Thread.sleep(500);
+            Thread.sleep(Constants.POLL_INTERVAL);
         }
     }
 
@@ -1189,7 +1206,7 @@ public class GdcDI implements Executor {
                     while (!"OK".equalsIgnoreCase(status) && !"ERROR".equalsIgnoreCase(status) && !"WARNING".equalsIgnoreCase(status)) {
                         status = ctx.getRestApi(p).getMigrationStatus(taskUri);
                         l.debug("Migration status = " + status);
-                        Thread.sleep(500);
+                        Thread.sleep(Constants.POLL_INTERVAL);
                     }
                     l.info("Migration finished with status " + status);
                 } else {

@@ -23,6 +23,7 @@
 
 package com.gooddata.processor;
 
+import com.gooddata.Constants;
 import com.gooddata.exception.*;
 import com.gooddata.integration.model.Project;
 import com.gooddata.integration.rest.GdcRESTApiWrapper;
@@ -267,7 +268,7 @@ public class CreateZendeskV3Projects {
         CliParams cp = new CliParams();
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
-            l.info("GoodData CL version 1.2.63");
+            l.info("GoodData CL version 1.2.67");
             System.exit(0);
         }
 
@@ -360,7 +361,7 @@ public class CreateZendeskV3Projects {
         while ("LOADING".equalsIgnoreCase(status)) {
             status = ctx.getRestApi(p).getProjectStatus(projectId);
             l.debug("Project " + projectId + " loading  status = " + status);
-            Thread.sleep(500);
+            Thread.sleep(Constants.POLL_INTERVAL);
         }
     }
 

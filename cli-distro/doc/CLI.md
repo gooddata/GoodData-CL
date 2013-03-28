@@ -1,10 +1,9 @@
-
 Project Management Commands:
 ----------------------------
 
 `CreateProject(name="...", desc="...", templateUri="...", driver=[Pg|mysql], authorizationToken="...");` - create a new project on the server
 - name        - name of the new project
-- authorizationToken - project creation authorization token
+- authorizationToken - project creation authorization token (can be passed via the -a commandline parameter or AUTHORIZATION_TOKEN environment variable)
 - desc        - *(optional)* project description
 - templateUri - *(optional)* project template to create the project from
 - driver - *(optional)* underlying DB backend: `Pg`|`mysql`
@@ -112,12 +111,17 @@ Logical Model Management Commands:
 - maqlFile - path to MAQL file (will be overwritten)
 
 
-`GenerateUpdateMaql(maqlFile="...");` - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project
+`GenerateUpdateMaql(maqlFile="...", updateTitles="...", updateDataTypes="...", updateSorting="...", updateAll="...", createIfNotExists="...");` - generate MAQL DDL alter script that creates the columns available in the local configuration but missing in the remote GoodData project. The command only checks for new or removed columns and does not detect changed columns. Instead, the "update" parameters can be used to ensure the remote model users the same titles, data types or sorting as prescribed in local XML files.
 - maqlFile - path to MAQL file (will be overwritten)
 
 `ExecuteMaql(maqlFile="...", ifExists="...");` - run MAQL DDL script on server to generate data model
 - maqlFile - path to the MAQL file (relative to PWD)
 - ifExists - *(optional)* if set to true the command quits silently if the maqlFile does not exist (true | false, default is false)
+  updateTitles - *(optional)* reset titles of all columns
+  updateDataTypes - *(optional)* reset data types of all columns
+  updateSorting - *(optional)* reset sorting label and order of all columns
+  updateAll - *(optional)* shortcut for updateTitles, updateDataTypes and updateSorting
+  createIfNotExists - *(optional)* if set to true, GenerateUpdateMaql won't fail if the data set does not exist. Instead, it will produce the same result as GenerateMaql (i.e., it will generate the complete MAQL DDL code to create the data set)
 
 
 Data Commands:
