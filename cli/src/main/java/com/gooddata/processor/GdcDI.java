@@ -1400,7 +1400,7 @@ public class GdcDI implements Executor {
             for (String uri : uris) {
                 try {
                     l.info("Executing report uri=" + uri);
-                    String task = ctx.getRestApi(p).executeReport(uri.trim());
+                    String task = ctx.getRestApi(p).executeReport(uri.trim()).getJSONObject("execResult").getString("dataResult");
                     l.info("Report " + uri + " execution finished: " + task);
                 } catch (GdcRestApiException e) {
                     l.debug("The report uri=" + uri + " can't be computed!",e);
