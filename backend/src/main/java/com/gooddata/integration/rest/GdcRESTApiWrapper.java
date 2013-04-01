@@ -882,7 +882,7 @@ public class GdcRESTApiWrapper {
         boolean hasFinished = false;
         while (retryCnt-- > 0 && !hasFinished) {
             try {
-                String dataResultUri = executeReport(reportUri);
+                String dataResultUri = executeReport(reportUri).getJSONObject("execResult").getString("dataResult");
                 JSONObject result = getObjectByUri(dataResultUri);
                 hasFinished = true;
                 if (result != null && !result.isEmpty() && !result.isNullObject()) {
@@ -1037,11 +1037,12 @@ public class GdcRESTApiWrapper {
     }
 
     /**
-     * Report to execute
+     * Report to execute.
      *
+     * @return JSON representation of the report result (the "execResult" object including the "execResult" root key)
      * @param reportUri report definition to execute
      */
-    public String executeReport(String reportUri) {
+    public JSONObject executeReport(String reportUri) {
         l.debug("Executing report uri=" + reportUri);
         PostMethod execPost = createPostMethod(getServerUrl() + EXECUTOR);
         JSONObject execDef = new JSONObject();
@@ -1072,7 +1073,7 @@ public class GdcRESTApiWrapper {
                     throw new GdcRestApiException("Executing report uri=" + reportUri + " failed. " +
                             "Returned invalid dataResult=" + tr);
                 }
-                return dataResult;
+                return tr;
             } else {
                 l.debug("Executing report uri=" + reportUri + " failed. Returned invalid task link uri=" + task);
                 throw new GdcRestApiException("Executing report uri=" + reportUri +
@@ -1089,14 +1090,15 @@ public class GdcRESTApiWrapper {
     /**
      * Export a report result
      *
-     * @param resultUri report result to export
+     * @param execResult object returned by the {@link #executeReport(String)} method
      * @param format    export format (pdf | xls | png | csv)
      */
-    public byte[] exportReportResult(String resultUri, String format) {
+    public byte[] exportReportResult(JSONObject execResult, String format) {
+    	String resultUri = execResult.getJSONObject("execResult").getString("dataResult");
         l.debug("Exporting report result uri=" + resultUri);
         PostMethod execPost = createPostMethod(getServerUrl() + EXPORT_EXECUTOR);
         JSONObject execDef = new JSONObject();
-        execDef.put("report", resultUri);
+        execDef.put("result", execResult);
         execDef.put("format", format);
         JSONObject exec = new JSONObject();
         exec.put("result_req", execDef);
@@ -3157,7 +3159,7 @@ public class GdcRESTApiWrapper {
         request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
         request.setRequestHeader("Accept", "application/json");
         request.setRequestHeader("Accept-Charset", "utf-u");
-        request.setRequestHeader("User-Agent", "GoodData CL/1.2.67");
+        request.setRequestHeader("User-Agent", "GoodData CL/1.2.68");
         request.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
         return request;
     }
