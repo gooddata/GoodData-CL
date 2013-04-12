@@ -70,7 +70,6 @@ public class FileUtil {
                 fi.close();
             }
             out.close();
-            File file = new File(archiveName);
         } else
             throw new IOException("The referenced directory isn't directory!");
         l.debug("Compressed " + dirPath + " -> " + archiveName);

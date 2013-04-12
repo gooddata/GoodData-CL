@@ -94,9 +94,11 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
         MkColMethod mkdir = new MkColMethod(this.config.getUrl() + WEBDAV_URI + dir);
         executeMethodOk(mkdir);
         PutMethod put = new PutMethod(this.config.getUrl() + WEBDAV_URI + dir + "/" + DEFAULT_ARCHIVE_NAME);
-        RequestEntity requestEntity = new InputStreamRequestEntity(new FileInputStream(file));
+        FileInputStream fis = new FileInputStream(file);
+        RequestEntity requestEntity = new InputStreamRequestEntity(fis);
         put.setRequestEntity(requestEntity);
         executeMethodOk(put);
+        fis.close();
         l.debug("Transferred archive " + archiveName);
     }
 
