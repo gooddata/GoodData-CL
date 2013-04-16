@@ -27,7 +27,7 @@ This data set will be populated with records from the `department.csv` CSV file.
 
 The model is described by the _logical data model (LDM) diagram_ below:
 
-![Department LDM Diagram](http://developer.gooddata.com/images/gdcl/examples/hr/hr_1_department_ldm.png "Department LDM Diagram")
+![Department LDM Diagram](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/hr/hr_1_department_ldm.png "Department LDM Diagram")
 
 The data model is simple so far, containing one _Department_ box  that represents so called _attribute_ in GoodData jargon.
 
@@ -58,7 +58,7 @@ The `REFERENCE` field always connects to the target data set using the value of 
 
 The logical model diagram of these two connected data sets will be as follows:
 
-![Employee and Department LDM Diagram](http://developer.gooddata.com/images/gdcl/examples/hr/hr_2_employee_ldm.png "Employee and Deparment LDM Diagram")
+![Employee and Department LDM Diagram](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/hr/hr_2_employee_ldm.png "Employee and Deparment LDM Diagram")
  
 ### Salary Data Set
 
@@ -84,7 +84,7 @@ As described in the `salary.xml` configuration file, this data set connnects to 
 
 The complete logical data model can be illustrated by the following diagram:
 
-![Full HR Diagram](http://developer.gooddata.com/images/gdcl/examples/hr/hr_3_salary_ldm.png "Full HR Diagram")
+![Full HR Diagram](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/hr/hr_3_salary_ldm.png "Full HR Diagram")
 
 For the sake of simplicity, only some of the date related attributes are displayed.
 

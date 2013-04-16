@@ -51,4 +51,4 @@ Now that we have the date & time dimensions present in our project, we can defin
 
 * `<format>dd-MM-yyyy HH:mm:ss</format>` - this field helps GoodData CL understand how to parse the datetime string
 
-![Forex Logical Model Diagram](http://developer.gooddata.com/images/gdcl/examples/forex/forex_ldm.png "Forex Logical Model Diagram")
+![Forex Logical Model Diagram](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/forex/forex_ldm.png "Forex Logical Model Diagram")

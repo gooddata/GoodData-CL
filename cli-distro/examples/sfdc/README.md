@@ -35,7 +35,7 @@ For example, the `opportunity.xml` file describes the first field of the _Opport
 
 The structure of the logical data model built on the top of these three data sets is as follows:
 
-![SFDC example logical data model diagram](http://developer.gooddata.com/images/gdcl/examples/sfdc/sfdc_ldm.png "SFDC example logical data model diagram")
+![SFDC example logical data model diagram](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/sfdc/sfdc_ldm.png "SFDC example logical data model diagram")
 
 See the [Quotes example](../quotes/#readme) for explanation what these boxes and ovals stand for.
 
@@ -53,13 +53,13 @@ In order to customize this example to import your own SalesForce data into GoodD
 If you don't know your SFDC security token, you can either ask your SFDC administrator for help or generate a new one using the following procedure:
 
   1. Click the _Setup_ link in SFDC menu:
-     ![SFDC setup link screenshot](http://developer.gooddata.com/images/gdcl/examples/sfdc/sfdc_token_01_menu.png "SFDC Setup link screenshot")
+     ![SFDC setup link screenshot](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/sfdc/sfdc_token_01_menu.png "SFDC Setup link screenshot")
 
   1. Click the _Reset security token_:
-     ![SFDC setup screen screenshot](http://developer.gooddata.com/images/gdcl/examples/sfdc/sfdc_token_02_setup.png "SFDC Setup screen screenshot")
+     ![SFDC setup screen screenshot](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/sfdc/sfdc_token_02_setup.png "SFDC Setup screen screenshot")
 
   1. Click the _Reset security token_ button in the following confirmation screen:
-     ![SFDC token reset confirmation screenshot](http://developer.gooddata.com/images/gdcl/examples/sfdc/sfdc_token_03_confirm.png "SFDC token reset screenshot")
+     ![SFDC token reset confirmation screenshot](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/sfdc/sfdc_token_03_confirm.png "SFDC token reset screenshot")
 
 An e-mail with the SFDC security token will arrive into your mailbox soon; please check your _spam_ folder if it seems to take too long.
 
@@ -74,10 +74,10 @@ The most simple data set takes the form of `SELECT <field1>, <field2>, ... FROM 
 When adding a data set featuring custom fields or even custom object you need to know the API names of the custom fields. These API names can be found under the _Setup_ menu of your Salesforce. For example, in order to get the API name of the `Contract Value` field of GoodData's SalesForce we need to:
 
  1. **Click _Setup_ in the main menu** and expand App Setup / Customize / Opportunities / Fields items in the left menu bar:
- ![Click Setup and expand App Setup etc](http://developer.gooddata.com/images/gdcl/examples/sfdc/sfdc_fields_01_setup.png)
+ ![Click Setup and expand App Setup etc](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/sfdc/sfdc_fields_01_setup.png)
  2. **Scroll down** to the _Opportunity Custom Fields & Relationships_ and click the _Contract Value_ link
- ![Opportunity Custom Fields & Relationships](http://developer.gooddata.com/images/gdcl/examples/sfdc/sfdc_fields_02_custom_fields.png)
+ ![Opportunity Custom Fields & Relationships](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/sfdc/sfdc_fields_02_custom_fields.png)
  3. **Check the _API Name_ field** in the following screen:
- ![SFDC API Name](http://developer.gooddata.com/images/gdcl/examples/sfdc/sfdc_fields_03_api_name.png)
+ ![SFDC API Name](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/sfdc/sfdc_fields_03_api_name.png)
 
 So the last thing I need to add the `Contract_Value__c` field API name to the `query` parameter of the opportunity related occurences of the `UseSfdc` and `GenerateSfdcConfig` commands in the `sfdc.txt` script.
