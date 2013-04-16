@@ -1,7 +1,7 @@
 # This example shows how to create a new GoodData user in an existing GoodData domain
 # If you want to create new users you must first contact GoodData at support@gooddata.com to activate a new domain
 # and assign your account as the domain admin.
-# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+# see full command documentation at https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/CLI.md
 
 CreateUser(domain="GoodData", username="john.doe.3@gooddata.com", password="secretP@ssword", firstName="John", lastName="Doe", ssoProvider="SALESFORCE", usersFile="examples/create_user/users.txt", append="true");
 
