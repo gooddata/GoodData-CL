@@ -1,7 +1,7 @@
 # This example demonstrates how to load more complex structures to GoodData
 # Three datasets: department, employee, and salary are loaded are connected together
 # Check the configuration files that contains the connection points and references
-# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+# see full command documentation at https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/CLI.md
 
 # Retrieve the project ID saved by the first script
 UseProject(fileName="examples/hr/pid");

@@ -72,7 +72,7 @@ public class MaqlGenerator {
      */
     public String generateMaqlCreate() {
         String script = "# This is MAQL script that generates project logical model.\n# See the MAQL documentation " +
-                "at http://developer.gooddata.com/api/maql-ddl.html for more details.\n\n";
+                "at http://developer.gooddata.com/reference/maql/maql-ddl for more details.\n\n";
         script += "# Create dataset. Dataset groups all following logical model elements together.\n";
         script += "CREATE DATASET {" + schema.getDatasetName() + "} VISUAL(TITLE \"" + lsn + "\");\n\n";
         script += generateFoldersMaqlDdl(schema.getColumns());

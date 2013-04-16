@@ -49,7 +49,7 @@ In each `<column>` entry, following tags can be used:
     * UNIXTIME - this is the epoch format (number of seconds since 1970-01-01). Please note that the epoch is in the UTC by default and will be converted to the CL tool's timezone automatically.
     * GOODDATA - this is the GoodData format (number of days since 1900-01-01).
 5. `<reference>` - used with LABEL columns for pointing to the primary column; used with CONNECTION_POINT column and `<schemaReference>`
-6. `<schemaReference>` - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column. When connecting to a date dimension, use the same value as in the `name` parameter of the `LoadDateDimension` command (see also [the CLI commands documentation](http://developer.gooddata.com/gooddata-cl/cli-commands.html#time_dimension_connector_commands)).
+6. `<schemaReference>` - used with CONNECTION_POINT to identify the schema name of the counterpart REFERENCE column. When connecting to a date dimension, use the same value as in the `name` parameter of the `LoadDateDimension` command (see also [the CLI commands documentation](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/CLI.md#time_dimension_connector_commands)).
 7. `<folder>` allows to specify what folder this column is organized into (on UI level). 
 8. `<transformation>` - apply transformation on this column. Currently supports:
     * `IDENTITY` -- automatically fills this fields with an MD5 hash of all non-fact fields (attributes, labels etc.) in the current row. This column does not have any representation in the datasource (ie. it's purely generated).

@@ -1,5 +1,5 @@
 # This example shows how to export all tables in a database to set of CSV files
-# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+# see full command documentation at https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/CLI.md
 
 # load JDBC data
 ExportJdbcToCsv(dir="examples/export",driver="org.apache.derby.jdbc.EmbeddedDriver",url="jdbc:derby:examples/jdbc/fundamentals");

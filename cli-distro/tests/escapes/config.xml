@@ -35,7 +35,7 @@
   ~  */
   -->
 
-<!-- See documentation at http://developer.gooddata.com/gooddata-cl/xml-config.html -->
+<!-- See documentation at https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/XML.md -->
 <schema>
     <name>Separators</name>
     <columns>
