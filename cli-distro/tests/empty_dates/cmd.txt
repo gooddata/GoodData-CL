@@ -1,5 +1,5 @@
 # A simple example that loads a flat file with a stock quote data and connect a time dimension
-# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+# see full command documentation at https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/CLI.md
 
 # Create a new project
 CreateProject(name="Empty Dates");

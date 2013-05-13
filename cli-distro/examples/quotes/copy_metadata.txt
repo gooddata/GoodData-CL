@@ -1,5 +1,5 @@
 # A simple example that creates a new project and copies metadata objects (reports, dashboards) from the Quotes example
-# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+# see full command documentation at https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/CLI.md
 
 # Create a new project
 CreateProject(name="Quotes New");

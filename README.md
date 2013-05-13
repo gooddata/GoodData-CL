@@ -1,7 +1,7 @@
 This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities that
 work on top of the GoodData REST APIs.
 
-Unless you wish to participate in development of the tool, you should choose the easier [binary](http://developer.gooddata.com/gooddata-cl/install.html)
+Unless you wish to participate in development of the tool, you should choose the easier [binary](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/README.md)
 install.
 
 <a name="source"></a>

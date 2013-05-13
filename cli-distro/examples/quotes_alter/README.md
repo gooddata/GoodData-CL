@@ -54,7 +54,7 @@ Note the `schemaReference` property tells GoodData to connect this date field to
 
 The structure of the logical model built on the top of this data set is as follows:
 
-![Quotes Logical Model Diagram](http://developer.gooddata.com/images/gdcl/examples/quotes/quotes_ldm.png "Quotes Logical Model Diagram")
+![Quotes Logical Model Diagram](https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/examples/quotes/quotes_ldm.png "Quotes Logical Model Diagram")
 
 The light green boxes depict attributes including the `Id` connection point, the ovals represent facts. Labels and most of the attributes of the `Date (Quotes)` dimension hidden for the sake of simplicity. The attributes belonging to the date dimension are shown using double border line. 
 

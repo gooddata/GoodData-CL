@@ -34,7 +34,7 @@ public class NotificationConfig {
 
     // initial XML config comment
     public static String CONFIG_INITIAL_COMMENT = "<!-- See documentation at " +
-            "http://developer.gooddata.com/gooddata-cl/xml-config.html -->\n\n";
+            "https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/XML.md -->\n\n";
 
 
     private List<NotificationMessage> messages = new ArrayList<NotificationMessage>();

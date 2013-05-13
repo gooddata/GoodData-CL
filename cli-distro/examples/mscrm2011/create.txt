@@ -1,5 +1,5 @@
 # A simple example that creates a MS CRM 2011 data model
-# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+# see full command documentation at https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/CLI.md
 
 # CREATE A NEW PROJECT
 CreateProject(name="MS CRM 2011");

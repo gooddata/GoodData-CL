@@ -1,5 +1,5 @@
 # A simple example that loads a flat file with a facebook data
-# see full command documentation at http://developer.gooddata.com/gooddata-cl/cli-commands.html
+# see full command documentation at https://github.com/gooddata/GoodData-CL/blob/master/cli-distro/doc/CLI.md
 
 UseProject(fileName="examples/facebook-insights/pid");
 

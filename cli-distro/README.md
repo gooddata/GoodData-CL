@@ -39,4 +39,4 @@ See separate [Windows](#iwin) and [Unix](#iunix) instructions.
 
 # Next Steps
 
-Please see the [GoodData CL examples and documentation](http://developer.gooddata.com/gooddata-cl/).
+Please see the [GoodData CL examples and documentation](https://github.com/gooddata/GoodData-CL/tree/master/cli-distro/examples).
