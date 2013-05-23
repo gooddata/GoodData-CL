@@ -29,7 +29,7 @@
     <parent>
         <groupId>com.gooddata.cl</groupId>
         <artifactId>gooddata-cl</artifactId>
-        <version>1.2.68</version>
+        <version>1.2.69</version>
     </parent>
 
     <artifactId>gooddata-cli</artifactId>
@@ -59,10 +59,6 @@
         <dependency>
             <groupId>net.sourceforge.jtds</groupId>
             <artifactId>jtds</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>

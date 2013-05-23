@@ -28,7 +28,7 @@
 
     <groupId>com.gooddata.cl</groupId>
     <artifactId>gooddata-cl</artifactId>
-    <version>1.2.68</version>
+    <version>1.2.69</version>
     <name>gooddata-cl</name>
     <description>GoodData CL command line tool and Java API framework.</description>
     <url>http://developer.gooddata.com</url>
@@ -237,12 +237,6 @@
                 <groupId>com.ibm.icu</groupId>
                 <artifactId>icu4j</artifactId>
                 <version>4.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>5.1.12</version>
-                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.derby</groupId>
