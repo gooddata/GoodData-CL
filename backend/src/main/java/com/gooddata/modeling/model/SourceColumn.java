@@ -432,7 +432,33 @@ public class SourceColumn {
 
         return true;
     }
-
+    
+    /**
+     * Returns true if both columns are any of LABEL or HYPERLINK and their other
+     * properties are the same. Returns false otherwise
+     */
+    public boolean equalsToLabel(SourceColumn other) {
+      if (!(LDM_TYPE_LABEL.equals(ldmType) || LDM_TYPE_HYPERLINK
+            .equals(ldmType))) {
+         return false;
+      }
+      if (!(LDM_TYPE_LABEL.equals(other.getLdmType()) || LDM_TYPE_HYPERLINK
+            .equals(other.getLdmType()))) {
+         return false;
+      }
+      if (getName() == null) {
+         if (other.getName() != null)
+            return false;
+      } else if (!getName().equals(other.getName()))
+         return false;
+      if (getReference() == null) {
+         if (other.getReference() != null)
+            return false;
+      } else if (!getReference().equals(other.getReference()))
+         return false;
+      return true;
+    }
+ 
     /**
      * Transformation
      */

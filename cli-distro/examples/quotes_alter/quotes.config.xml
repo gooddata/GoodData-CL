@@ -11,7 +11,7 @@
         <column>
             <name>COMPANY</name>
             <title>Company</title>
-            <ldmType>LABEL</ldmType>
+            <ldmType>HYPERLINK</ldmType> <!-- ok, it's not really a hyperlink, but we need that for testing -->
             <dataType>VARCHAR(254)</dataType>
             <reference>SYMBOL</reference>
             <folder>Quotes</folder>

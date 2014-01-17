@@ -21,8 +21,14 @@ class DataSetDiffMaker {
     private final ColumnsSet remote = new ColumnsSet();
     private final ColumnsSet local = new ColumnsSet();
     private final List<SourceColumn> deletedColumns = new ArrayList<SourceColumn>();
-
+    private final boolean rebuildLabels;
+    
     DataSetDiffMaker(GdcRESTApiWrapper gd, SLI sli, SourceSchema ss) {
+       this(gd, sli, ss, true);
+    }
+
+    DataSetDiffMaker(GdcRESTApiWrapper gd, SLI sli, SourceSchema ss, boolean rebuildLabels) {
+        this.rebuildLabels = rebuildLabels;
         SourceColumn sourceConnectionPoint = null;
         Map<String, SourceColumn> sourceDateColumns = new HashMap<String, SourceColumn>();
         String remoteConnectionPointName = null;
@@ -209,7 +215,7 @@ class DataSetDiffMaker {
      * @param column        the reference column
      * @return
      */
-    private static boolean contains(Set<SourceColumn> sourceColumns, SourceColumn column) {
+    private boolean contains(Set<SourceColumn> sourceColumns, SourceColumn column) {
         if (SourceColumn.LDM_TYPE_REFERENCE.equals(column.getLdmType())) {
             for (final SourceColumn sc : sourceColumns) {
                 if ("REFERENCE".equals(sc.getLdmType())) {
@@ -223,6 +229,17 @@ class DataSetDiffMaker {
                 }
             }
             return false;
+        }
+        if (!rebuildLabels) {
+           // Hyperlinks and labels are actually the same, right?
+           if (SourceColumn.LDM_TYPE_LABEL.equals(column.getLdmType()) || SourceColumn.LDM_TYPE_HYPERLINK.equals(column.getLdmType())) {
+              for (final SourceColumn sc : sourceColumns) {
+                 if (column.equalsToLabel(sc)) {
+                    return true;
+                 }
+              }
+              return false;
+           }
         }
         return sourceColumns.contains(column);
     }

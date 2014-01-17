@@ -576,6 +576,7 @@ public abstract class AbstractConnector implements Connector {
             final String updateSorting = c.getParam("updateSorting");
             final String updateAll = c.getParam("updateAll");
             final String createIfNotExists = c.getParam("createIfNotExists");
+            final boolean rebuildLabels = !"FALSE".equals(c.getParam("rebuildLabels"));
             c.paramsProcessed();
 
             final String dataset = schema.getDatasetName();
@@ -593,7 +594,7 @@ public abstract class AbstractConnector implements Connector {
             	throw e;
             }
 
-            final DataSetDiffMaker diffMaker = new DataSetDiffMaker(gd, sli, schema);
+            final DataSetDiffMaker diffMaker = new DataSetDiffMaker(gd, sli, schema, rebuildLabels);
             final List<SourceColumn> newColumns = diffMaker.findNewColumns();
             final List<SourceColumn> deletedColumns = diffMaker.findDeletedColumns();
             final MaqlGenerator mg = new MaqlGenerator(schema);
