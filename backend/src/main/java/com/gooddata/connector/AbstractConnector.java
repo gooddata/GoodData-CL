@@ -576,7 +576,7 @@ public abstract class AbstractConnector implements Connector {
             final String updateSorting = c.getParam("updateSorting");
             final String updateAll = c.getParam("updateAll");
             final String createIfNotExists = c.getParam("createIfNotExists");
-            final boolean rebuildLabels = !"FALSE".equals(c.getParam("rebuildLabels"));
+            final boolean rebuildLabels = !"FALSE".equalsIgnoreCase(c.getParam("rebuildLabels"));
             c.paramsProcessed();
 
             final String dataset = schema.getDatasetName();
