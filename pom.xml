@@ -454,11 +454,11 @@
     <distributionManagement>
         <repository>
             <id>gooddata</id>
-            <url>https://maven.gooddata.com/nexus/content/repositories/gooddata/</url>
+            <url>https://nexus.intgdc.com/nexus/content/repositories/gooddata/</url>
         </repository>
         <snapshotRepository>
             <id>gooddata-snapshots</id>
-            <url>https://maven.gooddata.com/nexus/content/repositories/gooddata-snapshots/</url>
+            <url>https://nexus.intgdc.com/nexus/content/repositories/gooddata-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 

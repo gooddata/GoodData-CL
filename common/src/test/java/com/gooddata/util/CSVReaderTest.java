@@ -144,7 +144,8 @@ public class CSVReaderTest {
         Reader reader = new InputStreamReader(
                 CSVReaderTest.class.getResourceAsStream("/com/gooddata/util/spaces-quoted.csv"),
                 "utf8");
-        CSVReader csv = new CSVReader(reader);
+        CsvConfiguration config = CsvConfiguration.builder().setSkipSpaces(true).build();
+        CSVReader csv = new CSVReader(reader, config);
 
         String[] line = null;
         while ((line = csv.readNext()) != null) {

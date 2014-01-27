@@ -23,7 +23,6 @@
 
 package com.gooddata.util;
 
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
@@ -51,6 +50,7 @@ public class CSVReader implements Closeable {
     private final char quote;
     private final char escape;
     private boolean hasCommentSupport = false;
+    private boolean skipSpaces = false;
     private char commentChar;
 
     // status variables
@@ -71,7 +71,7 @@ public class CSVReader implements Closeable {
     /**
      * Constructs CSVReader using a comma for the separator.
      *
-     * @param reader the reader to an underlying CSV source.
+     * @param r the reader to an underlying CSV source.
      */
     public CSVReader(Reader r) {
         this(r, DEFAULT_SEPARATOR, DEFAULT_QUOTE_CHARACTER, DEFAULT_ESCAPE_CHARACTER);
@@ -80,7 +80,7 @@ public class CSVReader implements Closeable {
     /**
      * Constructs CSVReader with supplied separator.
      *
-     * @param reader    the reader to an underlying CSV source.
+     * @param r    the reader to an underlying CSV source.
      * @param separator the delimiter to use for separating entries.
      */
     public CSVReader(Reader r, char separator) {
@@ -90,7 +90,7 @@ public class CSVReader implements Closeable {
     /**
      * Constructs CSVReader with supplied separator and quote char.
      *
-     * @param reader    the reader to an underlying CSV source.
+     * @param r    the reader to an underlying CSV source.
      * @param separator the delimiter to use for separating entries
      * @param quotechar the character to use for quoted elements
      */
@@ -101,12 +101,11 @@ public class CSVReader implements Closeable {
     /**
      * Constructs CSVReader with supplied separator and quote char.
      *
-     * @param reader    the reader to an underlying CSV source.
+     * @param r    the reader to an underlying CSV source.
      * @param separator the delimiter to use for separating entries
      * @param quotechar the character to use for quoted elements
      * @param escape    the character to use for escaping a separator or quote
      */
-
     public CSVReader(Reader r, char separator, char quotechar, char escape) {
         this.r = r;
         this.separator = separator;
@@ -114,8 +113,25 @@ public class CSVReader implements Closeable {
         this.escape = escape;
     }
 
-    public CSVReader(BufferedReader reader, CsvConfiguration csvConfig) {
-        this(reader, csvConfig.getSeparator(), csvConfig.getQuotechar(), csvConfig.getEscape());
+    /**
+     * Constructs CSVReader with supplied separator and quote char.
+     *
+     * @param r    the reader to an underlying CSV source.
+     * @param separator the delimiter to use for separating entries
+     * @param quotechar the character to use for quoted elements
+     * @param escape    the character to use for escaping a separator or quote
+     * @param skipSpaces whether should spaces in front of quoted columns be skipped or taken as an error
+     */
+    public CSVReader(Reader r, char separator, char quotechar, char escape, boolean skipSpaces) {
+        this.r = r;
+        this.separator = separator;
+        this.quote = quotechar;
+        this.escape = escape;
+        this.skipSpaces = skipSpaces;
+    }
+
+    public CSVReader(Reader reader, CsvConfiguration csvConfig) {
+        this(reader, csvConfig.getSeparator(), csvConfig.getQuotechar(), csvConfig.getEscape(), csvConfig.getSkipSpaces());
     }
 
     /**
@@ -282,8 +298,10 @@ public class CSVReader implements Closeable {
         if (commentedLine)
             return;
 
+        String openFieldToBeChecked = skipSpaces ? openField.toString().trim() : openField.toString();
+
         // handle start of a new quoted field
-        if (openField.toString().trim().length() == 0 && !quotedField) {
+        if (openFieldToBeChecked.length() == 0 && !quotedField) {
             startQuotedField();
             wasEscapeOrNotOpeningQuote = false;
         } else {
