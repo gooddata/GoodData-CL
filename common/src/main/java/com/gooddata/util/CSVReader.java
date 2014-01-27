@@ -283,7 +283,7 @@ public class CSVReader implements Closeable {
             return;
 
         // handle start of a new quoted field
-        if (openField.length() == 0 && !quotedField) {
+        if (openField.toString().trim().length() == 0 && !quotedField) {
             startQuotedField();
             wasEscapeOrNotOpeningQuote = false;
         } else {
