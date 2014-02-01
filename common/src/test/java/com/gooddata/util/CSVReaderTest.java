@@ -138,4 +138,18 @@ public class CSVReaderTest {
         }
         Assert.assertFalse("IllegalStateException expected", true);
     }
+
+    @Test
+    public void testSpacesInFrontOfQuotes() throws IOException {
+        Reader reader = new InputStreamReader(
+                CSVReaderTest.class.getResourceAsStream("/com/gooddata/util/spaces-quoted.csv"),
+                "utf8");
+        CsvConfiguration config = CsvConfiguration.builder().setSkipSpaces(true).build();
+        CSVReader csv = new CSVReader(reader, config);
+
+        String[] line = null;
+        while ((line = csv.readNext()) != null) {
+            Assert.assertEquals(3, line.length);
+        }
+    }
 }
