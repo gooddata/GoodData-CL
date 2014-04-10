@@ -1110,7 +1110,7 @@ public class GdcDI implements Executor {
     }
 
     /**
-     * Checks the project status. Waits till the status is LOADING
+     * Checks the project status. Waits till the status is ENABLED or DELETED
      *
      * @param projectId project ID
      * @param p         cli parameters
@@ -1119,12 +1119,12 @@ public class GdcDI implements Executor {
      */
     private void checkProjectCreationStatus(String projectId, CliParams p, ProcessingContext ctx) throws InterruptedException {
         l.debug("Checking project " + projectId + " loading status.");
-        String status = "LOADING";
-        while ("LOADING".equalsIgnoreCase(status)) {
+        String status = null;
+        do {
             status = ctx.getRestApi(p).getProjectStatus(projectId);
             l.debug("Project " + projectId + " loading  status = " + status);
             Thread.sleep(Constants.POLL_INTERVAL);
-        }
+        } while (!("DELETED".equalsIgnoreCase(status) || "ENABLED".equalsIgnoreCase(status)));
     }
 
     /**
