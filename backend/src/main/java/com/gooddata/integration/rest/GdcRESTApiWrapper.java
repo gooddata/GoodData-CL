@@ -82,7 +82,6 @@ public class GdcRESTApiWrapper {
     private static final String PULL_URI = "/etl/pull";
     private static final String IDENTIFIER_URI = "/identifiers";
     private static final String SLI_DESCRIPTOR_URI = "/descriptor";
-    public static final String MAQL_EXEC_URI = "/ldm/manage";
     public static final String MAQL_ASYNC_EXEC_URI = "/ldm/manage2";
     public static final String DML_EXEC_URI = "/dml/manage";
     public static final String PROJECT_EXPORT_URI = "/maintenance/export";
@@ -1367,35 +1366,6 @@ public class GdcRESTApiWrapper {
         }
         l.debug("Can't get project from " + uri);
         throw new GdcRestApiException("Can't get project from " + uri);
-    }
-
-    /**
-     * Executes the MAQL and creates/modifies the project's LDM
-     *
-     * @param projectId the project's ID
-     * @param maql      String with the MAQL statements
-     * @return result String
-     * @throws GdcRestApiException
-     */
-    public String[] executeMAQL(String projectId, String maql) throws GdcRestApiException {
-        l.debug("Executing MAQL projectId=" + projectId + " MAQL:\n" + maql);
-        PostMethod maqlPost = createPostMethod(getProjectMdUrl(projectId) + MAQL_EXEC_URI);
-        JSONObject maqlStructure = getMAQLExecStructure(maql);
-        InputStreamRequestEntity request = new InputStreamRequestEntity(new ByteArrayInputStream(
-                maqlStructure.toString().getBytes()));
-        maqlPost.setRequestEntity(request);
-        String result = null;
-        try {
-            String response = executeMethodOk(maqlPost);
-            JSONObject responseObject = JSONObject.fromObject(response);
-            JSONArray uris = responseObject.getJSONArray("uris");
-            return (String[]) uris.toArray(new String[]{""});
-        } catch (HttpMethodException ex) {
-            l.debug("MAQL execution: ", ex);
-            throw new GdcRestApiException("MAQL execution: " + ex.getMessage(), ex);
-        } finally {
-            maqlPost.releaseConnection();
-        }
     }
 
     /**
