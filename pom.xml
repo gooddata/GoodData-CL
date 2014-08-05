@@ -43,9 +43,9 @@
     </licenses>
     
    <parent>
-        <groupId>dw.maventools</groupId>
+        <groupId>com.demandware.maventools</groupId>
         <artifactId>project-pom</artifactId>
-        <version>13.1.0.2</version>
+        <version>14.8.0.3</version>
     </parent>
 
 	<scm>
