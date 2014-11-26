@@ -27,7 +27,7 @@ import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_ATTRIBUTE;
 import static com.gooddata.modeling.model.SourceColumn.LDM_TYPE_CONNECTION_POINT;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -391,7 +391,7 @@ public class MaqlGenerator {
 
     class State {
 
-        private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
+        private Map<String, Attribute> attributes = new LinkedHashMap<String, Attribute>();
         private List<Fact> facts = new ArrayList<Fact>();
         private List<Label> labels = new ArrayList<Label>();
         private List<DateColumn> dates = new ArrayList<DateColumn>();
