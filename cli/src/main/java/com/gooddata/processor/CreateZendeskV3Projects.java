@@ -36,7 +36,6 @@ import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -268,7 +267,7 @@ public class CreateZendeskV3Projects {
         CliParams cp = new CliParams();
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
-            l.info("GoodData CL version 1.2.73");
+            l.info("GoodData CL version 1.3.0");
             System.exit(0);
         }
 

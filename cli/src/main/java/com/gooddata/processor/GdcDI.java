@@ -32,7 +32,6 @@ import com.gooddata.integration.rest.GdcRESTApiWrapper;
 import com.gooddata.integration.rest.MetadataObject;
 import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.modeling.model.SourceSchema;
-import com.gooddata.naming.N;
 import com.gooddata.processor.parser.DIScriptParser;
 import com.gooddata.processor.parser.ParseException;
 import com.gooddata.util.DatabaseToCsv;
@@ -40,7 +39,6 @@ import com.gooddata.util.FileUtil;
 import com.gooddata.util.StringUtil;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.joda.time.DateTimeZone;
 
 import java.io.*;
@@ -67,7 +65,6 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_PASSWORD = {"password", "p"};
 
     public static String[] CLI_PARAM_HOST = {"host", "h"};
-    public static String[] CLI_PARAM_FTP_HOST = {"ftphost", "f"};
     public static String[] CLI_PARAM_PROJECT = {"project", "i"};
     public static String[] CLI_PARAM_PROTO = {"proto", "t"};
     public static String[] CLI_PARAM_INSECURE = {"insecure", "s"};
@@ -77,7 +74,6 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_HTTP_PROXY_HOST = {"proxyhost", "K"};
     public static String[] CLI_PARAM_HTTP_PROXY_PORT = {"proxyport", "L"};
     public static String[] CLI_PARAM_HTTP_PORT = {"port", "S"};
-    public static String[] CLI_PARAM_FTP_PORT = {"ftpport", "O"};
     public static String[] CLI_PARAM_HTTP_PROXY_USERNAME = {"proxyusername", "U"};
     public static String[] CLI_PARAM_HTTP_PROXY_PASSWORD = {"proxypassword", "P"};
     public static String[] CLI_PARAM_TIMEZONE = {"timezone", "T"};
@@ -96,11 +92,9 @@ public class GdcDI implements Executor {
             new Option(CLI_PARAM_HTTP_PROXY_HOST[1], CLI_PARAM_HTTP_PROXY_HOST[0], true, "HTTP proxy hostname."),
             new Option(CLI_PARAM_HTTP_PROXY_PORT[1], CLI_PARAM_HTTP_PROXY_PORT[0], true, "HTTP proxy port."),
             new Option(CLI_PARAM_HTTP_PORT[1], CLI_PARAM_HTTP_PORT[0], true, "HTTP port."),
-            new Option(CLI_PARAM_FTP_PORT[1], CLI_PARAM_FTP_PORT[0], true, "Data stage port (deprecated)"),
             new Option(CLI_PARAM_HTTP_PROXY_USERNAME[1], CLI_PARAM_HTTP_PROXY_USERNAME[0], true, "HTTP proxy username."),
             new Option(CLI_PARAM_HTTP_PROXY_PASSWORD[1], CLI_PARAM_HTTP_PROXY_PASSWORD[0], true, "HTTP proxy password."),
             new Option(CLI_PARAM_HOST[1], CLI_PARAM_HOST[0], true, "GoodData host"),
-            new Option(CLI_PARAM_FTP_HOST[1], CLI_PARAM_FTP_HOST[0], true, "GoodData data stage host (deprecated)"),
             new Option(CLI_PARAM_PROJECT[1], CLI_PARAM_PROJECT[0], true, "GoodData project identifier (a string like nszfbgkr75otujmc4smtl6rf5pnmz9yl)"),
             new Option(CLI_PARAM_PROTO[1], CLI_PARAM_PROTO[0], true, "HTTP or HTTPS (deprecated)"),
             new Option(CLI_PARAM_INSECURE[1], CLI_PARAM_INSECURE[0], false, "Disable encryption"),
@@ -159,27 +153,6 @@ public class GdcDI implements Executor {
                 cliParams.setHttpConfig(new NamePasswordConfiguration(
                         cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
                         cliParams.get(CLI_PARAM_HOST[0]),
-                        cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
-            }
-
-            if(cliParams.containsKey(CLI_PARAM_FTP_PORT[0])) {
-                String ftpPortString = cliParams.get(CLI_PARAM_FTP_PORT[0]);
-                int ftpPort = 0;
-                try {
-                    ftpPort = Integer.parseInt(ftpPortString);
-                }
-                catch(NumberFormatException e) {
-                    throw new InvalidArgumentException("Invalid WebDav port value: '" + ftpPortString+"'.");
-                }
-                cliParams.setFtpConfig(new NamePasswordConfiguration(
-                        cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
-                        cliParams.get(CLI_PARAM_FTP_HOST[0]),
-                        cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0]),ftpPort));
-            }
-            else {
-                cliParams.setFtpConfig(new NamePasswordConfiguration(
-                        cliParams.containsKey(CLI_PARAM_INSECURE[0]) ? "http" : "https",
-                        cliParams.get(CLI_PARAM_FTP_HOST[0]),
                         cliParams.get(CLI_PARAM_USERNAME[0]), cliParams.get(CLI_PARAM_PASSWORD[0])));
             }
 
@@ -387,7 +360,7 @@ public class GdcDI implements Executor {
 
         if (cp.containsKey(CLI_PARAM_VERSION[0])) {
 
-            l.info("GoodData CL version 1.2.73" +
+            l.info("GoodData CL version 1.3.0" +
                     ((BUILD_NUMBER.length() > 0) ? ", build " + BUILD_NUMBER : "."));
             System.exit(0);
 

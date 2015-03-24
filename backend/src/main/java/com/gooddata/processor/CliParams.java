@@ -36,9 +36,7 @@ import java.util.HashMap;
  */
 public class CliParams extends HashMap<String, String> {
 
-
     private NamePasswordConfiguration httpConfig = null;
-    private NamePasswordConfiguration ftpConfig = null;
 
     private static Logger l = Logger.getLogger(CliParams.class);
 
@@ -58,23 +56,5 @@ public class CliParams extends HashMap<String, String> {
      */
     public void setHttpConfig(NamePasswordConfiguration httpConfig) {
         this.httpConfig = httpConfig;
-    }
-
-    /**
-     * FTP config getter
-     *
-     * @return FTP config
-     */
-    public NamePasswordConfiguration getFtpConfig() {
-        return ftpConfig;
-    }
-
-    /**
-     * FTP config setter
-     *
-     * @param ftpConfig FTP config
-     */
-    public void setFtpConfig(NamePasswordConfiguration ftpConfig) {
-        this.ftpConfig = ftpConfig;
     }
 }
