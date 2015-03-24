@@ -50,7 +50,7 @@ public class ProcessingContext {
     private String projectId;
     private Connector connector;
     private GdcRESTApiWrapper _restApi = null;
-    private GdcDataTransferAPI _ftpApi = null;
+    private GdcDataTransferAPI webDAVApiWrapper = null;
 
 
     public String getProjectId() throws InvalidParameterException {
@@ -109,22 +109,15 @@ public class ProcessingContext {
     }
 
     public GdcDataTransferAPI getFtpApi(CliParams cliParams) {
-        if (_ftpApi == null) {
-            NamePasswordConfiguration ftpConfig = cliParams.getFtpConfig();
-            String host = ftpConfig.getGdcHost();
-            int port = ftpConfig.getPort();
-            if(host == null || host.length() <= 0) {
-                GdcRESTApiWrapper rest = getRestApi(cliParams);
-                URL url = rest.getWebDavURL();
-                ftpConfig.setGdcHost(url.getHost());
-                ftpConfig.setProtocol(url.getProtocol());
-                ftpConfig.setPort(url.getPort());
-            }
-            checkConfig(ftpConfig);
-            l.debug("Using the GoodData data stage host '" + ftpConfig.getGdcHost() + "'.");
-            _ftpApi = new GdcWebDavApiWrapper(ftpConfig);
+        if (webDAVApiWrapper == null) {
+            GdcRESTApiWrapper rest = getRestApi(cliParams);
+            URL url = rest.getWebDavURL();
+            NamePasswordConfiguration httpConfig = cliParams.getHttpConfig();
+            checkConfig(httpConfig);
+            l.debug("Using the GoodData data stage host '" + url + "'.");
+            webDAVApiWrapper = new GdcWebDavApiWrapper(httpConfig.getUsername(), httpConfig.getPassword(), url);
         }
-        return _ftpApi;
+        return webDAVApiWrapper;
     }
 
     private static void checkConfig(NamePasswordConfiguration config) {

@@ -26,10 +26,11 @@ package com.gooddata.integration.webdav;
 import com.gooddata.exception.HttpMethodException;
 import com.gooddata.exception.HttpMethodNotFinishedYetException;
 import com.gooddata.integration.datatransfer.GdcDataTransferAPI;
-import com.gooddata.integration.rest.configuration.NamePasswordConfiguration;
 import com.gooddata.util.NetUtil;
+
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -47,6 +48,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,23 +63,25 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
     private static Logger l = Logger.getLogger(GdcWebDavApiWrapper.class);
 
     protected static final String DEFAULT_ARCHIVE_NAME = "upload.zip";
-    protected static final String WEBDAV_URI = "/uploads/";
 
     protected HttpClient client;
-    protected NamePasswordConfiguration config;
+    private URL webdavURL;
 
     /**
      * Constructs the GoodData WebDav API Java wrapper
      *
-     * @param config NamePasswordConfiguration object with the GDC name and password configuration
+     * @param username a user name for accessing WebDAV
+     * @param password a password for accessing WebDAV
+     * @param webdavURL a URL of WebDAV
      */
-    public GdcWebDavApiWrapper(NamePasswordConfiguration config) {
-        this.config = config;
+    public GdcWebDavApiWrapper(String username, String password, URL webdavURL) {
+
         client = new HttpClient();
 
         NetUtil.configureHttpProxy(client);
 
-        Credentials creds = new UsernamePasswordCredentials(this.config.getUsername(), this.config.getPassword());
+        Credentials creds = new UsernamePasswordCredentials(username, password);
+        this.webdavURL = webdavURL;
         client.getState().setCredentials(AuthScope.ANY, creds);
     }
 
@@ -91,9 +95,9 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
         l.debug("Transfering archive " + archiveName);
         File file = new File(archiveName);
         String dir = file.getName().split("\\.")[0];
-        MkColMethod mkdir = new MkColMethod(this.config.getUrl() + WEBDAV_URI + dir);
+        MkColMethod mkdir = new MkColMethod(webdavURL.toString() + "/" + dir);
         executeMethodOk(mkdir);
-        PutMethod put = new PutMethod(this.config.getUrl() + WEBDAV_URI + dir + "/" + DEFAULT_ARCHIVE_NAME);
+        PutMethod put = new PutMethod(webdavURL.toString() + "/" + dir + "/" + DEFAULT_ARCHIVE_NAME);
         FileInputStream fis = new FileInputStream(file);
         RequestEntity requestEntity = new InputStreamRequestEntity(fis);
         put.setRequestEntity(requestEntity);
@@ -112,12 +116,12 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
     public Map<String, String> getTransferLogs(String remoteDir) throws IOException {
         l.debug("Retrieveing transfer logs.");
         Map<String, String> result = new HashMap<String, String>();
-        PropFindMethod ls = new PropFindMethod(this.config.getUrl() + WEBDAV_URI + remoteDir + "/", DavConstants.PROPFIND_PROPERTY_NAMES, 1);
+        PropFindMethod ls = new PropFindMethod(webdavURL.toString() + "/" + remoteDir + "/", DavConstants.PROPFIND_PROPERTY_NAMES, 1);
         String ret = executeMethodOk(ls);
         String[] files = ret.split(",");
         for (String file : files) {
             if (file.endsWith(".log") || file.endsWith(".json")) {
-                GetMethod get = new GetMethod(this.config.getUrl() + file);
+                GetMethod get = new GetMethod(webdavURL.toString() + file);
                 String content = executeMethodOk(get);
                 result.put(file, content);
             }

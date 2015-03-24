@@ -1,5 +1,9 @@
 # GoodData CL Change Log
 
+## 1.3.0
+
+* Removed deprecated command line arguments for the FTP host and port. The WebDAV endpoint is discovered at runtime via the REST API.
+
 ## 1.1.9-beta
 
 * Authentication handling updated to be forward compatible with API change in the upcoming
