@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) 2009, GoodData Corporation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -78,7 +78,7 @@ public class GdcRESTApiWrapper {
     private static final String TOKEN_URI = "/gdc/account/token";
     private static final String DATA_INTERFACES_URI = "/ldm/singleloadinterface";
     private static final String PROJECTS_URI = "/gdc/projects";
-    private static final String PULL_URI = "/etl/pull";
+    private static final String PULL_URI = "/etl/pull2";
     private static final String IDENTIFIER_URI = "/identifiers";
     private static final String SLI_DESCRIPTOR_URI = "/descriptor";
     public static final String MAQL_ASYNC_EXEC_URI = "/ldm/manage2";
@@ -1185,7 +1185,7 @@ public class GdcRESTApiWrapper {
         try {
             String response = executeMethodOk(pullPost);
             JSONObject responseObject = JSONObject.fromObject(response);
-            taskLink = responseObject.getJSONObject("pullTask").getString("uri");
+            taskLink = responseObject.getJSONObject("pull2Task").getJSONObject("links").getString("poll");
         } catch (HttpMethodException ex) {
             throw new GdcRestApiException("Loading fails: " + ex.getMessage());
         } finally {
@@ -1220,7 +1220,7 @@ public class GdcRESTApiWrapper {
         try {
             String response = executeMethodOk(ptm);
             JSONObject task = JSONObject.fromObject(response);
-            String status = task.getString("taskStatus");
+            String status = task.getJSONObject("wTaskStatus").getString("status");
             l.debug("Loading status=" + status);
             return status;
         } finally {
