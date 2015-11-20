@@ -78,7 +78,7 @@ public class GdcRESTApiWrapper {
     private static final String TOKEN_URI = "/gdc/account/token";
     private static final String DATA_INTERFACES_URI = "/ldm/singleloadinterface";
     private static final String PROJECTS_URI = "/gdc/projects";
-    private static final String PULL_URI = "/etl/pull";
+    private static final String PULL_URI = "/etl/pull2";
     private static final String IDENTIFIER_URI = "/identifiers";
     private static final String SLI_DESCRIPTOR_URI = "/descriptor";
     public static final String MAQL_ASYNC_EXEC_URI = "/ldm/manage2";
