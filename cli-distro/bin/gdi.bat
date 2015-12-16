@@ -38,7 +38,7 @@ if defined CLASSPATH set CLSPTH=%CLASSPATH%;%PRJ%;.
 FOR /R "%PRJ%\lib" %%G IN (*.jar) DO set CLSPTH=!CLSPTH!;%%G
 
 setlocal DISABLEDELAYEDEXPANSION
-"%JAVA_EXE%" -Xmx1024M -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:CMSInitiatingOccupancyFraction=50 -Dfile.encoding="utf-8" -Dlog4j.configuration="%PRJ%\log4j.configuration" -Djava.io.tmpdir="%PRJ%\tmp" -classpath "%CLSPTH%" com.gooddata.processor.GdcDI %*
+"%JAVA_EXE%" -Xmx1024M -Dfile.encoding="utf-8" -Dlog4j.configuration="%PRJ%\log4j.configuration" -Djava.io.tmpdir="%PRJ%\tmp" -classpath "%CLSPTH%" com.gooddata.processor.GdcDI %*
 if %ERRORLEVEL% NEQ 0 goto error
 goto end
 

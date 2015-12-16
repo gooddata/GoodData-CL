@@ -100,4 +100,4 @@ if $cygwin; then
     TMPDIR==`cygpath --path --windows "$TMPDIR"`
 fi
 
-"$JAVACMD" -Xmx1024M -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:CMSInitiatingOccupancyFraction=50 -Dlog4j.configuration="$PROJECT_DIR/log4j.configuration" -Dfile.encoding="utf-8" -Djava.io.tmpdir="$TMPDIR" -cp "${CLSPTH}" com.gooddata.processor.GdcDI "$@"
+"$JAVACMD" -Xmx1024M -Dlog4j.configuration="$PROJECT_DIR/log4j.configuration" -Dfile.encoding="utf-8" -Djava.io.tmpdir="$TMPDIR" -cp "${CLSPTH}" com.gooddata.processor.GdcDI "$@"
