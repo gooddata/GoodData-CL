@@ -29,7 +29,8 @@
     <parent>
         <groupId>com.gooddata.cl</groupId>
         <artifactId>gooddata-cl</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>gooddata-cli</artifactId>
