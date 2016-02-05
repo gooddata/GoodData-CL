@@ -121,7 +121,8 @@ public class GdcWebDavApiWrapper implements GdcDataTransferAPI {
         String[] files = ret.split(",");
         for (String file : files) {
             if (file.endsWith(".log") || file.endsWith(".json")) {
-                GetMethod get = new GetMethod(webdavURL.toString() + file);
+                final URL logURL = new URL(webdavURL.getProtocol(), webdavURL.getHost(), webdavURL.getPort(), file);
+                GetMethod get = new GetMethod(logURL.toString());
                 String content = executeMethodOk(get);
                 result.put(file, content);
             }
