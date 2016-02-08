@@ -3,6 +3,7 @@
 ## 1.4.1
 
 * Fix maven build settings
+* GD-43509: Fix ETL pull log's URL construction
 
 ## 1.4.0
 
