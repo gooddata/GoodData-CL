@@ -92,7 +92,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
      * @throws SQLException if there is a problem with the db
      */
     public static void saveConfigTemplate(String name, String configFileName, String jdbcUsr, String jdbcPsw,
-                                          String jdbcDriver, String jdbcUrl, String query)
+                                          String jdbcDriver, String jdbcUrl, String query, final String guessKeys, final String dateDimension)
             throws IOException, SQLException {
         l.debug("Saving JDBC config template.");
         l.debug("Loading JDBC driver " + jdbcDriver);
@@ -110,6 +110,7 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         Connection con = null;
         try {
             con = connect(jdbcUrl, jdbcUsr, jdbcPsw);
+            final Connection _con = con;
             JdbcUtil.ResultSetHandler rh = new JdbcUtil.ResultSetHandler() {
                 public void handle(ResultSet rs) throws SQLException {
                     ResultSetMetaData rsm = rs.getMetaData();
@@ -124,6 +125,12 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                         String type = getColumnType(rsm.getColumnType(i));
                         l.debug("GenerateJdbcConfig: Processing column '" + cnm + "' type '" + type + "'");
                         SourceColumn column = new SourceColumn(cnm, type, cdsc);
+                        if (dateDimension != null && column.getLdmType().equals(SourceColumn.LDM_TYPE_DATE)) {
+                        	column.setSchemaReference(dateDimension);
+                        }
+                        if (guessKeys != null) {
+                            updateKeys(column, _con.getMetaData(), rsm, i);
+                        }
                         if (SourceColumn.LDM_TYPE_DATE.equals(type)) {
                             column.setFormat(Constants.DEFAULT_DATE_FMT_STRING);
                         }
@@ -191,7 +198,53 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         return type;
     }
 
-    /**
+    private static void updateKeys(SourceColumn column, DatabaseMetaData dm, ResultSetMetaData rsm, int i) throws SQLException {
+        String columnName = rsm.getColumnName(i);
+        String schemaName = rsm.getSchemaName(i);
+        String tableName  = rsm.getTableName(i);
+        String catalog    = rsm.getCatalogName(i);
+        checkConnectionPoint(column, columnName, dm.getPrimaryKeys(catalog, schemaName, tableName));
+        if (!column.getLdmType().equals(SourceColumn.LDM_TYPE_CONNECTION_POINT)) {
+        	checkReference(column, columnName, dm.getImportedKeys(catalog, schemaName, tableName));
+        }
+    }
+
+    private static void checkReference(SourceColumn column, String columnName, ResultSet importedKeys) throws SQLException {
+    	try {
+			while (importedKeys.next()) {
+				String fkname = importedKeys.getString("FKCOLUMN_NAME");
+				if (fkname.equalsIgnoreCase(columnName)) {
+					String targetTable  = importedKeys.getString("PKTABLE_NAME");
+					String targetColumn = importedKeys.getString("PKCOLUMN_NAME");
+					column.setLdmType(SourceColumn.LDM_TYPE_REFERENCE);
+					column.setSchemaReference(targetTable);
+					column.setReference(targetColumn);
+					return; // no need to check other foreign keys in this table
+				}
+			}
+    	} finally {
+    		importedKeys.close();
+    	}
+	}
+
+	private static void checkConnectionPoint(SourceColumn column, String columnName, ResultSet primaryKeys) throws SQLException {
+		try {
+			if (primaryKeys.next()) {
+				String pkname = primaryKeys.getString("COLUMN_NAME");
+				if (pkname.equalsIgnoreCase(columnName)) {
+					if (primaryKeys.next()) { // connection point detected only for single column primary key
+						l.warn("Only single column primary keys suppported as CONNECTION_POINTs");
+					} else {
+						column.setLdmType(SourceColumn.LDM_TYPE_CONNECTION_POINT);
+					}
+				}
+			}
+		} finally {
+			primaryKeys.close();
+		}
+	}
+
+	/**
      * {@inheritDoc}
      */
     public void extract(String dir) throws IOException {
@@ -509,11 +562,17 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         String drv = c.getParamMandatory("driver");
         String url = c.getParamMandatory("url");
         String query = c.getParamMandatory("query");
+        String guessKeys = null;
+        if (c.checkParam("guessKeys"))
+        	guessKeys = c.getParam("guessKeys");
+        String dateDimension = null;
+        if (c.checkParam("dateDimension"))
+        	dateDimension = c.getParam("dateDimension");
         c.paramsProcessed();
 
         loadDriver(drv);
         File cf = new File(configFile);
-        JdbcConnector.saveConfigTemplate(name, cf.getAbsolutePath(), usr, psw, drv, url, query);
+        JdbcConnector.saveConfigTemplate(name, cf.getAbsolutePath(), usr, psw, drv, url, query, guessKeys, dateDimension);
         l.info("JDBC Connector configuration successfully generated. See config file: " + configFile);
     }
 
