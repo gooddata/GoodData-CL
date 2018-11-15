@@ -78,6 +78,7 @@ public class GdcDI implements Executor {
     public static String[] CLI_PARAM_HTTP_PROXY_PASSWORD = {"proxypassword", "P"};
     public static String[] CLI_PARAM_TIMEZONE = {"timezone", "T"};
     public static String[] CLI_PARAM_AUTHORIZATION_TOKEN = {"authtoken", "a"};
+    public static String[] CLI_PARAM_PROPERTIES = {"properties", "S"};
     public static String CLI_PARAM_SCRIPT = "script";
 
     private static String DEFAULT_PROPERTIES = "gdi.properties";
@@ -119,7 +120,6 @@ public class GdcDI implements Executor {
     public GdcDI(CommandLine ln, Properties defaults) {
         try {
             cliParams = parse(ln, defaults);
-
             if(cliParams.containsKey(CLI_PARAM_TIMEZONE[0])) {
                 String timezone = cliParams.get(CLI_PARAM_TIMEZONE[0]);
                 if(timezone != null && timezone.length()>0) {
@@ -505,7 +505,11 @@ public class GdcDI implements Executor {
     public static void main(String[] args) {
 
         checkJavaVersion();
+        String propsFile = System.getenv("GDCL_PROPERTIES");
         Properties defaults = loadDefaults();
+        if (propsFile != null) {
+        	loadProperties(defaults, propsFile);
+        }
 
         for (Option o : Options)
             ops.addOption(o);
@@ -1479,23 +1483,27 @@ public class GdcDI implements Executor {
      */
     private static Properties loadDefaults() {
         final String[] dirs = new String[]{"user.dir", "user.home"};
-        final Properties props = new Properties();
+    	final Properties props = new Properties();
+
         for (final String d : dirs) {
             String path = System.getProperty(d) + File.separator + DEFAULT_PROPERTIES;
-            File f = new File(path);
-            if (f.exists() && f.canRead()) {
-                try {
-                    FileInputStream is = new FileInputStream(f);
-                    props.load(is);
-                    l.debug("Successfully red the gdi configuration from '" + f.getAbsolutePath() + "'.");
-                    return props;
-                } catch (IOException e) {
-                    l.warn("Readable gdi configuration '" + f.getAbsolutePath() + "' found be error occurred reading it.");
-                    l.debug("Error reading gdi configuration '" + f.getAbsolutePath() + "': ", e);
-                }
-            }
+            loadProperties(props, path);
         }
         return props;
+    }
+    
+    private static void loadProperties(Properties props, String path) {
+    	File f = new File(path);
+        if (f.exists() && f.canRead()) {
+            try {
+                FileInputStream is = new FileInputStream(f);
+                props.load(is);
+                l.debug("Successfully red the gdi configuration from '" + f.getAbsolutePath() + "'.");
+            } catch (IOException e) {
+                l.warn("Readable gdi configuration '" + f.getAbsolutePath() + "' found be error occurred reading it.");
+                l.debug("Error reading gdi configuration '" + f.getAbsolutePath() + "': ", e);
+            }
+        }
     }
 
 }

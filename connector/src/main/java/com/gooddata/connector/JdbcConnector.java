@@ -46,6 +46,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -449,6 +450,8 @@ public class JdbcConnector extends AbstractConnector implements Connector {
                 generateJdbcConfig(c, cli, ctx);
             } else if (c.match("LoadJdbc") || c.match("UseJdbc")) {
                 loadJdbc(c, cli, ctx);
+            } else if (c.match("ListEntities")) {
+            	listEntities(c, cli, ctx);
             } else {
                 l.debug("No match passing the command " + c.getCommand() + " further.");
                 return super.processCommand(c, cli, ctx);
@@ -576,5 +579,91 @@ public class JdbcConnector extends AbstractConnector implements Connector {
         l.info("JDBC Connector configuration successfully generated. See config file: " + configFile);
     }
 
+    /**
+     * Lists entities according to the Entities parameter (empty: all entities in given schema,
+     * otherwise comma separated list of names or wildcards) 
+     *
+     * @param c   command
+     * @param p   command line arguments
+     * @param ctx current processing context
+     * @throws IOException  in case of IO issues
+     * @throws SQLException in case of a DB issue
+     */
+    private void listEntities(Command c, CliParams p, ProcessingContext ctx) throws IOException, SQLException {
+    	String outputFile = c.getParamMandatory("outputFile");
+    	String entities     = null;
+    	if (c.checkParam("entities")) {
+    		entities = c.getParam("entities");
+    	}
+        String usr = null;
+        if (c.checkParam("username"))
+            usr = c.getParam("username");
+        String psw = null;
+        if (c.checkParam("password"))
+            psw = c.getParam("password");
+        String schema = null;
+        if (c.checkParam("schema"))
+            schema = c.getParam("schema");
+        String drv = c.getParamMandatory("driver");
+        String url = c.getParamMandatory("url");
+        String[] tableNames = (entities == null) ? new String[0] : entities.split("\\s*,\\s*");
+        List<String> tableExactNames = new ArrayList<String>();
+        List<String> tableRegexps = new ArrayList<String>();
+        for (String t : tableNames) {
+        	String regex = t.replaceAll("\\*", ".*");
+        	(regex.equals(t) ? tableExactNames : tableRegexps).add(regex);
+        }
+        fetchAndSaveEntityList(outputFile, url, schema, usr, psw, drv, tableExactNames, tableRegexps);
+    }
+    
+    private static void fetchAndSaveEntityList(String outputFile, String jdbcUrl, String schema, String jdbcUser, String jdbcPass,
+    		String jdbcDriver, final List<String> tableExactNames, final List<String> tableRegexps) throws SQLException, IOException {
+
+    	try {
+            Class.forName(jdbcDriver).newInstance();
+        } catch (Exception e) {
+            l.error("Can't load JDBC driver.", e);
+        }
+        l.debug("JDBC driver " + jdbcDriver + " loaded.");
+        Connection con = null;
+        final List<String> tables = new ArrayList<String>();
+        try {
+        	con = connect(jdbcUrl, jdbcUser, jdbcPass);
+            ResultSet rs = con.getMetaData().getTables(null, schema, null, null);
+            ResultSetHandler handler = new JdbcUtil.ResultSetHandler() {
+            	public void handle(ResultSet rs) throws SQLException, IOException {
+            		while (rs.next()) {
+            			String table = rs.getString("TABLE_NAME");
+            			if (tableExactNames.isEmpty() && tableRegexps.isEmpty()) {
+            				tables.add(table);
+            				continue;
+            			}
+            			boolean found = true;
+            			for (String tn : tableExactNames) {
+            				if (tn.equalsIgnoreCase(table)) {
+            					tables.add(table);
+            					found = true;
+            					break;
+            				};
+            			}
+            			if (found) continue;
+            			for (String tr : tableRegexps) {
+            				if (table.matches(tr)) {
+            					tables.add(table);
+            					break;
+            				}
+            			}
+            		}
+            	}
+            };
+            handler.handle(rs);
+            String tablesFileContent = String.join("\n", tables);
+            FileUtil.writeStringToFile(tablesFileContent, outputFile);
+        } finally {
+        	if (con != null) {
+        		con.close();
+        	}
+        }
+    }
 
 }
