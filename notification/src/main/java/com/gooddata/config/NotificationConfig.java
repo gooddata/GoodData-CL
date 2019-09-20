@@ -23,6 +23,7 @@
 
 package com.gooddata.config;
 
+import com.gooddata.util.XmlUtil;
 import com.thoughtworks.xstream.XStream;
 
 import java.io.*;
@@ -99,11 +100,7 @@ public class NotificationConfig {
      * @throws IOException in case of an IO issue
      */
     public static NotificationConfig fromXml(InputStream is) throws IOException {
-        XStream xstream = new XStream();
-        XStream.setupDefaultSecurity(xstream); // to be removed with XStream 1.5 and later
-        xstream.allowTypesByWildcard(new String[] {
-                "com.gooddata.modeling.model.**"
-        });
+        final XStream xstream = XmlUtil.initXStreamForDeserialization("com.gooddata.modeling.model.**");
         xstream.alias("metric", Metric.class);
         xstream.alias("report", Report.class);
         xstream.alias("message", NotificationMessage.class);

@@ -26,6 +26,7 @@ package com.gooddata.modeling.model;
 import com.gooddata.exception.InvalidParameterException;
 import com.gooddata.exception.ModelException;
 import com.gooddata.util.StringUtil;
+import com.gooddata.util.XmlUtil;
 import com.thoughtworks.xstream.XStream;
 import org.apache.log4j.Logger;
 
@@ -159,11 +160,7 @@ public class SourceSchema {
      * @throws IOException in case of an IO issue
      */
     protected static SourceSchema fromXml(InputStream is) throws IOException {
-        XStream xstream = new XStream();
-        XStream.setupDefaultSecurity(xstream); // to be removed with XStream 1.5 and later
-        xstream.allowTypesByWildcard(new String[] {
-                "com.gooddata.modeling.model.**"
-        });
+        final XStream xstream = XmlUtil.initXStreamForDeserialization("com.gooddata.modeling.model.**");
         xstream.alias("column", SourceColumn.class);
         xstream.alias("schema", SourceSchema.class);
         Reader r = new InputStreamReader(is, "utf8");
