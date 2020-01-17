@@ -55,12 +55,15 @@ public class DataTypeGuess {
     private final boolean hasHeader;
     private String defaultLdmType = null;
 
-    public DataTypeGuess(boolean hasHeader) {
-        this.hasHeader = hasHeader;
+    static {
         KNOWN_FORMATS = new DateTimeFormatter[DATE_FORMATS.length];
         for (int i = 0; i < DATE_FORMATS.length; i++) {
             KNOWN_FORMATS[i] = DateTimeFormat.forPattern(DATE_FORMATS[i]);
         }
+    }
+
+    public DataTypeGuess(boolean hasHeader) {
+        this.hasHeader = hasHeader;
     }
 
     /**

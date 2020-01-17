@@ -160,6 +160,10 @@ public class SourceSchema {
      */
     protected static SourceSchema fromXml(InputStream is) throws IOException {
         XStream xstream = new XStream();
+        XStream.setupDefaultSecurity(xstream); // to be removed with XStream 1.5 and later
+        xstream.allowTypesByWildcard(new String[] {
+                "com.gooddata.modeling.model.**"
+        });
         xstream.alias("column", SourceColumn.class);
         xstream.alias("schema", SourceSchema.class);
         Reader r = new InputStreamReader(is, "utf8");

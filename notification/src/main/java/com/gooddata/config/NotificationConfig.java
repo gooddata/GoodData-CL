@@ -100,6 +100,10 @@ public class NotificationConfig {
      */
     public static NotificationConfig fromXml(InputStream is) throws IOException {
         XStream xstream = new XStream();
+        XStream.setupDefaultSecurity(xstream); // to be removed with XStream 1.5 and later
+        xstream.allowTypesByWildcard(new String[] {
+                "com.gooddata.modeling.model.**"
+        });
         xstream.alias("metric", Metric.class);
         xstream.alias("report", Report.class);
         xstream.alias("message", NotificationMessage.class);
