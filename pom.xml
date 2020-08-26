@@ -487,11 +487,11 @@
     <distributionManagement>
         <repository>
             <id>gooddata</id>
-            <url>https://nexus.intgdc.com/nexus/content/repositories/gooddata/</url>
+            <url>https://sonatype-nexus.intgdc.com/repository/gooddata/</url>
         </repository>
         <snapshotRepository>
             <id>gooddata-snapshots</id>
-            <url>https://nexus.intgdc.com/nexus/content/repositories/gooddata-snapshots/</url>
+            <url>https://sonatype-nexus.intgdc.com/repository/gooddata-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
