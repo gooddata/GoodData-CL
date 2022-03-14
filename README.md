@@ -1,3 +1,11 @@
+# Deprecation Notice
+
+Please note that this tool has already reached its End of Support and although we are not preventing you from its usage at your own risk, we would like to encourage you to use [alternative options](https://help.gooddata.com/doc/enterprise/en/data-integration/data-preparation-and-distribution) with enhanced functionality ([further examples can be found also in our documentation](https://help.gooddata.com/doc/enterprise/en/data-integration/data-preparation-and-distribution/setting-up-data-loading-processes)). Use of these alternative options will guarantee you the fully supported troubleshooting, new functionalities and generally the best service possible.
+
+In case you are heavily depending on the current tooling you have in place, we can provide you with the zip file of the original source code from the public repository. This should give you more flexibility in maintaining the tool on your own but without any guarantee and any further support from the GoodData side.
+
+# GoodData CL Tool
+
 This is GoodData data integration toolkit. The toolkit contains data modeling, transformation and loading utilities that
 work on top of the GoodData REST APIs.
 
@@ -5,12 +13,12 @@ Unless you wish to participate in development of the tool, you should choose the
 install.
 
 <a name="source"></a>
-# Building from sources
+## Building from sources
 
 See separate [Windows](#swin) and [Unix](#sunix) instructions.
 
 <a name="sunix"></a>
-## UNIX/Mac installation
+### UNIX/Mac installation
 
 1. [download](http://github.com/gooddata/GoodData-CL/archives/master) the code and unpack *(or git clone this repository)*:
 
@@ -50,7 +58,7 @@ See separate [Windows](#swin) and [Unix](#sunix) instructions.
         [...]
 
 <a name="swin"></a>
-## Windows installation
+### Windows installation
 
 1. [download](http://github.com/gooddata/GoodData-CL/archives/master) the code and unzip
 
