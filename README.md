@@ -2,7 +2,7 @@
 
 Please note that this tool has already reached its End of Support and although we are not preventing you from its usage at your own risk, we would like to encourage you to use [alternative options](https://help.gooddata.com/doc/enterprise/en/data-integration/data-preparation-and-distribution) with enhanced functionality ([further examples can be found also in our documentation](https://help.gooddata.com/doc/enterprise/en/data-integration/data-preparation-and-distribution/setting-up-data-loading-processes)). Use of these alternative options will guarantee you the fully supported troubleshooting, new functionalities and generally the best service possible.
 
-In case you are heavily depending on the current tooling you have in place, we can provide you with the zip file of the original source code from the public repository. This should give you more flexibility in maintaining the tool on your own but without any guarantee and any further support from the GoodData side.
+In case you are heavily depending on the current tooling you have in place, you can download the source code from this repository or fork it and extend according to your needs. This should give you more flexibility in maintaining the tool on your own but without any guarantee and any further support from the GoodData side.
 
 # GoodData CL Tool
 
